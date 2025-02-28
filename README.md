@@ -17,7 +17,8 @@ Además, el proceso actual que sigue la institución limita la capacidad de opti
 ## Propuesta de Solución
 Desarrollar una aplicación web para la gestión académica que optimice la asignación de grupos y permita a los alumnos inscribirse de manera autónoma, considerando requisitos previos, disponibilidad de horarios y condiciones específicas de cada estudiante. La solución deberá integrar herramientas para la administración centralizada de horarios, sincronización con las plataformas administrativas y de validación de pagos, reduciendo así la carga operativa, agilizando el proceso y, en general, mejorando la eficiencia en la planificación académica.         
 
-### Enlace del video - Avance 2
+## Enlace del video - Avance 2
+
 https://youtu.be/B23o9NN3A2w
 
 
