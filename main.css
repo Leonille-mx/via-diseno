@@ -1,3 +1,31 @@
+/*Contenedor header*/
+header{
+    width: 1000px;
+    height: 40px;
+    margin-left: 10px; 
+    margin-right: 10px; 
+    margin-top: 10px;
+    background-color: #eeecec;
+    padding: 20px;
+    border-radius: 20px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+header input.form-control {
+    width: 150px; 
+    height: 30px;
+    font-size: 12px; 
+}
+
+header button {
+    height: 30px;
+}
+/*Nombre alumno*/
+header span {
+    font-size: 12px; 
+}
+
 /* Barra de navegación */
 .navbar-vertical {
     width: 150px;
@@ -43,3 +71,4 @@
     background-color: #eeecec !important; 
     padding: 20px;
     border-radius: 10px; }
+
