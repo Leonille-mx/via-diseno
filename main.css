@@ -1,33 +1,59 @@
-/*Barra superior*/
-.top{
-    width: 180vh;
+/* Barra superior */
+.top {
+    width: 100%; /* Se ajusta al ancho del contenedor */
+    max-width: 180vh;
     height: 40px;
-    margin-left: 10px; 
-    margin-right: 10px; 
-    margin-top: 10px;
+    margin: 10px;
     background-color: #eeecec;
-    padding: 20px;
-    border-radius: 20px;
+    padding: 10px 20px;
     display: flex;
-    justify-content: space-between;
+    border-radius: 20px;
     align-items: center;
+    justify-content: space-between;
 }
 
-/*Barra de busqueda*/
+/* Contenedor de búsqueda */
+.search-container {
+    display: flex;
+    align-items: center;
+    background: white; /* Fondo blanco para parecer un campo de búsqueda */
+    padding: 5px 10px;
+    border-radius: 15px;
+}
+
+/* Icono de búsqueda */
+.search-container img {
+    height: 20px;
+    width: auto;
+    margin-right: 10px;
+}
+
+/* Barra de búsqueda */
 .form-control {
-    width: 150px; 
-    height: 30px;
-    font-size: 12px; 
+    border: none;
+    outline: none;
+    width: 150px;
+    height: 28px;
+    font-size: 12px;
+    background: transparent; /* Transparente para fusionarse con el contenedor */
 }
 
-/*Botones*/
-.btn-light{
-    height: 30px;
+/* Botones y perfil */
+.user-actions {
+    display: flex;
+    align-items: center;
+    gap: 10px; /* Espacio entre elementos */
 }
 
-/*Nombre alumno*/
-.btn-span {
-    font-size: 12px; 
+/* Icono de perfil */
+.user-actions img {
+    height: 30px;
+    border-radius: 50%;
+}
+
+/* Nombre del usuario */
+.user-actions span {
+    font-size: 12px;
 }
 
 /* Barra de navegación vertical*/
