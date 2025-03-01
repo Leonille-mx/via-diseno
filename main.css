@@ -1,32 +1,62 @@
-/*Contenedor header*/
-header{
-    width: 1000px;
+/* Barra superior */
+.top {
+    width: 100%; /* Se ajusta al ancho del contenedor */
+    max-width: 180vh;
     height: 40px;
-    margin-left: 10px; 
-    margin-right: 10px; 
-    margin-top: 10px;
+    margin: 10px;
     background-color: #eeecec;
-    padding: 20px;
-    border-radius: 20px;
+    padding: 10px 20px;
     display: flex;
-    justify-content: space-between;
+    border-radius: 20px;
     align-items: center;
-}
-header input.form-control {
-    width: 150px; 
-    height: 30px;
-    font-size: 12px; 
+    justify-content: space-between;
 }
 
-header button {
-    height: 30px;
-}
-/*Nombre alumno*/
-header span {
-    font-size: 12px; 
+/* Contenedor de búsqueda */
+.search-container {
+    display: flex;
+    align-items: center;
+    background: white; /* Fondo blanco para parecer un campo de búsqueda */
+    padding: 5px 10px;
+    border-radius: 15px;
 }
 
-/* Barra de navegación */
+/* Icono de búsqueda */
+.search-container img {
+    height: 20px;
+    width: auto;
+    margin-right: 10px;
+}
+
+/* Barra de búsqueda */
+.form-control {
+    border: none;
+    outline: none;
+    width: 150px;
+    height: 28px;
+    font-size: 12px;
+    background: transparent; /* Transparente para fusionarse con el contenedor */
+}
+
+/* Botones y perfil */
+.user-actions {
+    display: flex;
+    align-items: center;
+    gap: 10px; /* Espacio entre elementos */
+}
+
+/* Icono de perfil */
+.user-actions img {
+    height: 30px;
+    border-radius: 50%;
+}
+
+/* Nombre del usuario */
+.user-actions span {
+    font-size: 12px;
+}
+
+/* Barra de navegación vertical*/
 .navbar-vertical {
     width: 150px;
     height: 98vh;
@@ -62,8 +92,8 @@ header span {
 
 /* Estilos para el contenedor principal */
 .mainContainer {
-    width: 100%;
-    height: 98vh;
+    width: 180vh;
+    height: 89vh;
     margin-left: 10px; 
     margin-right: 10px; 
     margin-top: 10px; 
@@ -71,4 +101,6 @@ header span {
     background-color: #eeecec !important; 
     padding: 20px;
     border-radius: 10px; }
+
+
 
