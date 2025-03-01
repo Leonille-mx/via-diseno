@@ -1,6 +1,6 @@
-/*Contenedor header*/
-header{
-    width: 1000px;
+/*Barra superior*/
+.top{
+    width: 180vh;
     height: 40px;
     margin-left: 10px; 
     margin-right: 10px; 
@@ -12,21 +12,25 @@ header{
     justify-content: space-between;
     align-items: center;
 }
-header input.form-control {
+
+/*Barra de busqueda*/
+.form-control {
     width: 150px; 
     height: 30px;
     font-size: 12px; 
 }
 
-header button {
+/*Botones*/
+.btn-light{
     height: 30px;
 }
+
 /*Nombre alumno*/
-header span {
+.btn-span {
     font-size: 12px; 
 }
 
-/* Barra de navegación */
+/* Barra de navegación vertical*/
 .navbar-vertical {
     width: 150px;
     height: 98vh;
@@ -62,8 +66,8 @@ header span {
 
 /* Estilos para el contenedor principal */
 .mainContainer {
-    width: 100%;
-    height: 98vh;
+    width: 180vh;
+    height: 89vh;
     margin-left: 10px; 
     margin-right: 10px; 
     margin-top: 10px; 
@@ -71,4 +75,6 @@ header span {
     background-color: #eeecec !important; 
     padding: 20px;
     border-radius: 10px; }
+
+
 
