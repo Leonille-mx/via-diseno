@@ -15,8 +15,8 @@ app.use('/iniciar-sesion',(req, res, nxt) => {
     res.send("Iniciar sesion");
 });
 
-const rutasCordinador = require('./routes/coordinador.routes');
-app.use('/coordinador', rutasCordinador);
+const rutasCoordinador = require('./routes/coordinador.routes');
+app.use('/coordinador', rutasCoordinador);
 
 const rutasAlumnoRegular = require('./routes/alumno-regular.routes');
 app.use('/alumno-regular', rutasAlumnoRegular);
