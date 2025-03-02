@@ -1,0 +1,27 @@
+const express = require('express');
+const path = require('path');
+const port = 3000;
+
+const app = express();
+app.use(express.static(path.join(__dirname, '..', 'public')));
+
+app.set('view engine', 'ejs');
+app.set('views', 'views');
+
+const bodyParser = require('body-parser');
+app.use(bodyParser.urlencoded({extended: false}));
+
+app.use('/iniciar-sesion',(req, res, nxt) => {
+    res.send("Iniciar sesion");
+});
+
+const rutasCordinador = require('./routes/coordinador.routes');
+app.use('/coordinador', rutasCordinador);
+
+const rutasAlumnoRegular = require('./routes/alumno-regular.routes');
+app.use('/alumno-regular', rutasAlumnoRegular);
+
+const rutasAlumnoIrregular = require('./routes/alumno-irregular.routes');
+app.use('/alumno-irregular', rutasAlumnoIrregular);
+
+app.listen(port);
