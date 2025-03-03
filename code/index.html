@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Formulario con ícono de búsqueda</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="main.css">
+</head>
+<body>
+    <header>
+        <nav class="navbar bg-body-tertiary">
+            <div class="container-fluid">
+                <form class="d-flex" role="search">
+                    <div class="input-group">
+                        <button class="btn btn-outline-secondary" type="submit">
+                            <i class="bi bi-search"></i>
+                        </button>
+                        <input type="search" class="form-control" placeholder="Buscar" aria-label="Search">
+                    </div>
+                </form>
+                <div class="butn">
+                    <button type="button" class="btn btn-light">
+                        <i class="bi bi-envelope-fill"></i>
+                    </button>
+                    <button type="button" class="btn btn-light">
+                        <i class="bi bi-bell-fill"></i>
+                    </button>
+                    <button type="button" class="btn btn-light">
+                        <i class="bi bi-person-fill"></i>
+                    </button>
+                    <p class="usuario">Dongju Mun</p>
+                </div>
+            </div>
+        </nav>
+    </header>
+
+    <div class="container-fluid">
+        <div class="row" style="height: 90vh;"> 
+            <nav class="col-12 col-md-2 col-lg-2 d-flex flex-column sidebar">
+                <img src="imagenes/logo.png" alt="Logo de via diseno">
+                <h4>Menu</h4>
+                <div class="nav-item">
+                    <i class="bi bi-bookmark-fill"></i><a href="#" class="nav-link">Dashboard</a>
+                </div>
+                <div class="nav-item">
+                    <i class="bi bi-calendar-fill"></i><a href="#" class="nav-link">Calendario</a>
+                </div>
+                <div class="nav-item">
+                    <i class="bi bi-gear-fill"></i><a href="#" class="nav-link">Configuración</a>
+                </div>
+                <div class="nav-item">
+                    <i class="bi bi-person-raised-hand"></i><a href="#" class="nav-link">Ayuda</a>
+                </div>
+            </nav>
+            <main class="col-12 col-md-10 col-lg-10 p-4">
+                <h1>Hoarario</h1>
+                <p>Aqui ponemos todo lo de horario</p>
+            </main>
+        </div>
+    </div> 
+
+</body>
+</html>
+

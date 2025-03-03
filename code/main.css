@@ -1,0 +1,65 @@
+body{
+    margin: 15px !important;
+}
+
+.navbar.bg-body-tertiary {
+    background-color: #f2f2f2!important;
+    border-radius: 8px;
+}
+
+.butn {
+    display: flex; 
+    align-items: center; 
+    gap: 8px; 
+}
+
+.usuario {
+    margin: 0; 
+    font-size: 16px; 
+}
+
+.container-fluid {
+    margin: 15px !important;
+    padding-left: 1px; 
+    padding-right: 45px;
+}
+
+.row {
+    display: flex;
+    flex-wrap: nowrap; 
+}
+
+.sidebar {
+    background-color: #f0f0f0; 
+    padding: 20px; 
+    margin-right: 15px; 
+    border-radius: 8px;
+    gap: 10px;
+    display: flex; 
+    flex-direction: column; 
+    align-items: flex-start;
+}
+/* La imagen no es responsiva */
+img{
+    border-radius: 8px;
+    width: 130px;       
+    height: 130px;
+    margin-bottom: 10px;
+    align-self: center;
+}
+.nav-item {
+    display: flex;       /* Usamos flex para alinearlos en la misma línea */
+    align-items: center; /* Alinea verticalmente el ícono y el texto */
+    gap: 8px;            /* Espacio entre el ícono y el texto */
+}
+
+.nav-link {
+    text-decoration: none; /* Elimina la línea subrayada si es necesario */
+}
+main {
+    background-color: #f0f0f0; 
+    padding: 20px; 
+    border-radius: 8px;
+}
+
+
