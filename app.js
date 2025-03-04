@@ -11,9 +11,8 @@ app.set('views', 'views');
 const bodyParser = require('body-parser');
 app.use(bodyParser.urlencoded({extended: false}));
 
-app.use('/iniciar-sesion',(req, res, nxt) => {
-    res.send("Iniciar sesion");
-});
+const rutasUsuario = require('./routes/users.routes');
+app.use('/usuario', rutasUsuario);
 
 const rutasCoordinador = require('./routes/coordinador.routes');
 app.use('/coordinador', rutasCoordinador);
