@@ -2,16 +2,12 @@ const express = require('express');
 const router = express.Router();
 const path = require('path');
 
-router.get('/horario', (req, res, nxt) => {
-    res.send("Horario");
-});
+const irregular_controller = require('../controllers/alumno-irregular.controller');
 
-router.get('/editar-horario', (req, res, nxt) => {
-    res.send("Editar Horario");
-});
+router.get('/horario', irregular_controller.get_horario);
 
-router.get('/prevista-horario', (req, res, nxt) => {
-    res.send("Prevista Horario");
-});
+router.get('/editar-horario', irregular_controller.get_editar_horario);
+
+router.get('/prevista-horario', irregular_controller.get_prevista_horario);
 
 module.exports = router;

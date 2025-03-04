@@ -2,32 +2,20 @@ const express = require('express');
 const router = express.Router();
 const path = require('path');
 
-router.get('/dashboard', (req, res, nxt) => {
-    res.send("Dashboard");
-});
+const coordinador_controller = require('../controllers/coordinador.controller');
 
-router.get('/materias', (req, res, nxt) => {
-    res.send("Materias");
-});
+router.get('/dashboard', coordinador_controller.get_dashboard);
 
-router.get('/profesores', (req, res, nxt) => {
-    res.send("Profesores");
-});
+router.get('/materias', coordinador_controller.get_materias);
 
-router.get('/salones', (req, res, nxt) => {
-    res.send("Salones");
-});
+router.get('/profesores', coordinador_controller.get_profesores);
 
-router.get('/grupos', (req, res, nxt) => {
-    res.send("Grupos");
-});
+router.get('/salones', coordinador_controller.get_salones);
 
-router.get('/alumnos', (req, res, nxt) => {
-    res.send("Alumnos");
-});
+router.get('/grupos', coordinador_controller.get_grupos);
 
-router.get('/horario-alumno', (req, res, nxt) => {
-    res.send("Horario Alumno");
-});
+router.get('/alumnos', coordinador_controller.get_alumnos);
+
+router.get('/horario-alumno', coordinador_controller.get_horario_alumno);
 
 module.exports = router;

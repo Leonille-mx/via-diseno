@@ -11,7 +11,7 @@ app.set('views', 'views');
 const bodyParser = require('body-parser');
 app.use(bodyParser.urlencoded({extended: false}));
 
-const rutasUsuario = require('./routes/users.routes');
+const rutasUsuario = require('./routes/usuario.routes');
 app.use('/usuario', rutasUsuario);
 
 const rutasCoordinador = require('./routes/coordinador.routes');
@@ -22,5 +22,9 @@ app.use('/alumno-regular', rutasAlumnoRegular);
 
 const rutasAlumnoIrregular = require('./routes/alumno-irregular.routes');
 app.use('/alumno-irregular', rutasAlumnoIrregular);
+
+app.use((request, response, next) => {  
+    response.status(404).send('Recurso No Encontrado'); 
+});
 
 app.listen(port);

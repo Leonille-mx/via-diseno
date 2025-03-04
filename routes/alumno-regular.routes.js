@@ -2,8 +2,8 @@ const express = require('express');
 const router = express.Router();
 const path = require('path');
 
-router.get('/horario', (req, res, nxt) => {
-    res.send("Horario");
-});
+const regular_controller = require('../controllers/alumno-regular.controller');
+
+router.get('/horario', regular_controller.get_horario);
 
 module.exports = router;
