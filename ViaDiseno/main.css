@@ -1,44 +1,50 @@
-/* Todo el contenido */
+/* Pantalla completa*/
+html, body {
+    min-height: 100vh; 
+    margin: 5px 0;
+}
 .container-fluid {
-    padding-left: 1px; 
-    padding-right: 45px;
-    margin: 5px !important;
-}
-
-.row {
-    height: 100vh; 
+    height: 100vh;
     display: flex;
-    flex-wrap: nowrap; 
+    gap: 15px; 
 }
 
- /* Navbar lateral */
-.sidebar {
-    background-color: #f0f0f0; 
-    padding: 20px; 
-    margin: 15px; 
+/* Navbar vertical */
+.navbar-vertical{
+    background-color: #f0f0f0;
+    padding: 15px; 
+    width: 15%; 
+    display: flex;
+    justify-content: center;
     border-radius: 8px;
 }
-
 img {
     border-radius: 8px;
     width: 130px;       
     height: 130px;
     margin-bottom: 30px;
 }
-
 .nav-item {
     display: flex;       
     align-items: center; 
-    gap: 8px;            
+    gap: 10px;            
 }
 
-/* Nav bar de arriba */
-.navbar.bg-body-tertiary {
-    background-color: #f2f2f2 !important;
-    border-radius: 8px !important;
-    padding: 5px 15px;
- }
-
+/* Contenedores horizontales */
+.columna-principal {
+    width: 85%; /* Ocupa el resto del espacio */
+    display: flex;
+    flex-direction: column;
+    gap: 15px; 
+}
+.navbar-horizontal {
+    background-color: #f0f0f0;
+    flex: 2;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 8px;
+}
 .butn {
     display: flex; 
     align-items: center; 
@@ -54,9 +60,11 @@ nav {
 }
 
  /* contenido principal*/
-main {
-    flex-grow: 1; 
+.main-container {
     background-color: #f0f0f0;
     padding: 20px;
+    flex: 10;
+    align-items: center;
+    justify-content: center;
     border-radius: 8px;
 }
