@@ -1,27 +1,31 @@
 exports.get_dashboard = (req, res, nxt) => {
-    res.send("Dashboard");
+    res.render('dashboard_coordinador');
 };
 
 exports.get_materias = (req, res, nxt) => {
-    res.send("Materias");
+    res.render('materias_coordinador');
 };
 
 exports.get_profesores = (req, res, nxt) => {
-    res.send("Profesores");
+    res.render('profesores_coordinador');
 };
 
 exports.get_salones = (req, res, nxt) => {
-    res.send("Salones");
+    res.render('salones_coordinador');
 };
 
 exports.get_grupos = (req, res, nxt) => {
-    res.send("Grupos");
+    res.render('grupos_coordinador');
 };
 
 exports.get_alumnos = (req, res, nxt) => {
-    res.send("Alumnos");
+    res.render('alumnos_coordinador');
 };
 
-exports.get_horario_alumno = (req, res, nxt) => {
-    res.send("Horario Alumno");
+exports.get_solicitudes_cambio = (req, res, nxt) => {
+    res.render('solicitudes_cambio_coordinador');
+};
+
+exports.get_ayuda = (req, res, nxt) => {
+    res.render('ayuda_coordinador');
 };

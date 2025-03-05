@@ -16,6 +16,8 @@ router.get('/grupos', coordinador_controller.get_grupos);
 
 router.get('/alumnos', coordinador_controller.get_alumnos);
 
-router.get('/horario-alumno', coordinador_controller.get_horario_alumno);
+router.get('/solicitudes-cambio', coordinador_controller.get_solicitudes_cambio);
+
+router.get('/ayuda', coordinador_controller.get_ayuda);
 
 module.exports = router;
