@@ -1,106 +1,71 @@
-/* Barra superior */
-.top {
-    width: 100%; /* Se ajusta al ancho del contenedor */
-    max-width: 180vh;
-    height: 40px;
-    margin: 10px;
-    background-color: #eeecec;
-    padding: 10px 20px;
+/* Pantalla completa*/
+html, body {
+    min-height: 100vh; 
+    margin: 5px 0;
+}
+.container-fluid {
+    height: 100vh;
     display: flex;
-    border-radius: 20px;
-    align-items: center;
-    justify-content: space-between;
+    gap: 15px; 
 }
 
-/* Contenedor de búsqueda */
-.search-container {
+/* Navbar vertical */
+.navbar-vertical{
+    background-color: #f0f0f0;
+    padding: 15px; 
+    width: 15%; 
     display: flex;
-    align-items: center;
-    background: white; /* Fondo blanco para parecer un campo de búsqueda */
-    padding: 5px 10px;
-    border-radius: 15px;
-}
-
-/* Icono de búsqueda */
-.search-container img {
-    height: 20px;
-    width: auto;
-    margin-right: 10px;
-}
-
-/* Barra de búsqueda */
-.form-control {
-    border: none;
-    outline: none;
-    width: 150px;
-    height: 28px;
-    font-size: 12px;
-    background: transparent; /* Transparente para fusionarse con el contenedor */
-}
-
-/* Botones y perfil */
-.user-actions {
-    display: flex;
-    align-items: center;
-    gap: 10px; /* Espacio entre elementos */
-}
-
-/* Icono de perfil */
-.user-actions img {
-    height: 30px;
-    border-radius: 50%;
-}
-
-/* Nombre del usuario */
-.user-actions span {
-    font-size: 12px;
-}
-
-/* Barra de navegación vertical*/
-.navbar-vertical {
-    width: 150px;
-    height: 98vh;
-    margin-left: 10px; 
-    margin-right: 10px; 
-    margin-top: 10px; 
-    margin-bottom: 10px; 
-    background-color: #eeecec;
-    padding: 20px;
-    border-radius: 20px;
-}
-
-/* Logo Vida Diseño */
-.navbar-vertical img {
-    width: 100%;
-    max-height: 100px;
-    object-fit: contain;
+    justify-content: center;
     border-radius: 8px;
 }
-
-/* Títulos del menú */
-.navbar-vertical h2 {
-    font-size: 20px;
-    font-weight: bold;
-    margin: 30px 0;
+img {
+    border-radius: 8px;
+    width: 130px;       
+    height: 130px;
+    margin-bottom: 30px;
+}
+.nav-item {
+    display: flex;       
+    align-items: center; 
+    gap: 10px;            
 }
 
-.navbar-vertical h3 {
-    font-size: 16px;
-    font-weight: normal;
-    margin: 10px 0;
+/* Contenedores horizontales */
+.columna-principal {
+    width: 85%; 
+    display: flex;
+    flex-direction: column;
+    gap: 15px; 
+}
+/* Barra de navegacion horizontal*/
+.navbar-horizontal {
+    background-color: #f0f0f0;
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 10px 20px; 
+    border-radius: 8px;
+}
+.butn {
+    display: flex; 
+    align-items: center; 
+    gap: 8px; 
+}
+.usuario {
+    margin: 0; 
+    font-size: 16px; 
+}
+nav {
+    margin-bottom: 15px; 
 }
 
-/* Estilos para el contenedor principal */
-.mainContainer {
-    width: 180vh;
-    height: 89vh;
-    margin-left: 10px; 
-    margin-right: 10px; 
-    margin-top: 10px; 
-    margin-bottom: 10px; 
-    background-color: #eeecec !important; 
+ /* contenido principal*/
+.main-container {
+    background-color: #f0f0f0;
     padding: 20px;
-    border-radius: 10px; }
-
-
-
+    flex: 11;
+    align-items: center;
+    justify-content: center;
+    border-radius: 8px;
+}

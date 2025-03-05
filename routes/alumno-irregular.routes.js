@@ -10,4 +10,6 @@ router.get('/editar-horario', irregular_controller.get_editar_horario);
 
 router.get('/prevista-horario', irregular_controller.get_prevista_horario);
 
+router.get('/ayuda', irregular_controller.get_ayuda);
+
 module.exports = router;
