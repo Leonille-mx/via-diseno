@@ -40,7 +40,7 @@ img {
 /* Barra de navegacion horizontal*/
 .navbar-horizontal {
     background-color: #f0f0f0;
-    flex: 2;
+    flex: 1;
     display: flex;
     align-items: center;
     justify-content: space-between;
@@ -64,7 +64,7 @@ nav {
 .main-container {
     background-color: #f0f0f0;
     padding: 20px;
-    flex: 10;
+    flex: 11;
     align-items: center;
     justify-content: center;
     border-radius: 8px;
