@@ -1,4 +1,4 @@
-<!-- Interfaz alumno  -->
+<!-- Interfaz coordinadora  -->
 <!DOCTYPE html>
 <html lang="es">
 
@@ -23,9 +23,24 @@
         <img src="imagenes/logo.png" class="img-fluid" alt="Responsive image">
         <h4>Menu</h4>
         <div class="nav-item">
-            <i class="bi bi-calendar-fill"></i><a href="#" class="nav-link">Horario</a>
+            <i class="bi bi-clipboard2-fill"></i><a href="#" class="nav-link">Dashboard</a>
         </div>
-        <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br>
+        <div class="nav-item">
+            <i class="bi bi-book-fill"></i><a href="#" class="nav-link">Materias</a>
+        </div>
+        <div class="nav-item">
+            <i class="bi bi-person-fill"></i><a href="#" class="nav-link">Alumnos</a>
+        </div>
+        <div class="nav-item">
+            <i class="bi bi-person-fill"></i><a href="#" class="nav-link">Profesores</a>
+        </div>
+        <div class="nav-item">
+            <i class="bi bi-person-plus-fill"></i><a href="#" class="nav-link">Grupos</a>
+        </div>
+        <div class="nav-item">
+            <i class="bi bi-person-workspace"></i><a href="#" class="nav-link">Salones</a>
+        </div>
+        <br> <br> <br> <br> <br> <br> 
         <h4>General</h4>
         <div class="nav-item">
             <i class="bi bi-person-raised-hand"></i><a href="#" class="nav-link">Ayuda</a>
@@ -33,6 +48,7 @@
         <div class="nav-item">
             <i class="bi bi-arrow-left-square-fill"></i><a href="#" class="nav-link">Cerrar sesión</a>
         </div>
+        
     </nav>
   </div>
 
@@ -40,24 +56,25 @@
   <div class="columna-principal">
 
     <!-- Navbar horizontal -->
-    <div class="navbar-horizontal">
-
-        <!-- Barra de búsqueda a la izquierda -->
-        <form class="d-flex" role="search">
-            <div class="input-group">
-                <button class="btn btn-outline-secondary" type="submit">
-                    <i class="bi bi-search"></i>
-                </button>
-                <input type="search" class="form-control" placeholder="Buscar" aria-label="Search">
-            </div>
-        </form>
+    <head>
+        <div class="navbar-horizontal">
+            <!-- Barra de búsqueda a la izquierda -->
+            <form class="d-flex" role="search">
+                <div class="input-group">
+                    <button class="btn btn-outline-secondary" type="submit">
+                        <i class="bi bi-search"></i>
+                    </button>
+                    <input type="search" class="form-control" placeholder="Buscar" aria-label="Search">
+                 </div>
+            </form>
         
-         <!-- Botones y usuario a la derecha -->
-         <div class="butn">
-            <p class="usuario">Dongju Mun</p>
+            <!-- Botones y usuario a la derecha -->
+            <div class="butn">
+                 <p class="usuario">Dongju Mun</p>
+            </div>
         </div>
-    </div>
-
+    </head>
+    
      <!-- Main horizontal -->
     <main class="main-container">
         <h1>Horario</h1>
