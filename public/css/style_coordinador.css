@@ -1,0 +1,22 @@
+.bg-grey {
+    background: #f0f0f0;
+}
+
+@media (min-width: 992px) {
+    .logo-size {
+        width: 140px;
+    }
+    .li-text-nav {
+        width: fit-content;
+        margin-left: 3rem;
+    }
+    .li-nav {
+        width: fit-content;
+        margin-left: 4rem;
+        font-size: large;
+    }
+    .li-nav > * {
+        padding-top: 0;
+        padding-bottom: 0;
+    } 
+}
