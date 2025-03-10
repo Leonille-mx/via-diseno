@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="es">
+<html lang="es" class="m-0 p-0">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -7,79 +7,113 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="/css/style_coordinador.css">
 </head>
-<body class="container-fluid m-0 p-0 vh-100" style="font-family: 'Lato', sans-serif;">
-    <div class="row">
-        <nav class="col-2 vh-100 navbar align-items-start justify-content-start flex-column bg-grey m-0 p-0 mx-4 my-3" style="height: auto; border-radius: 1.5rem;">   
-            <a class="navbar-brand m-0 a-logo mt-3 align-self-center" href="/alumno-regular/horario">
-                <img class="logo-size rounded-3" src="/images/logo.png" alt="Una imagen del logo de via diseño">
-            </a> 
-            <ul class="navbar-nav ul-nav">
-                <li class="nav-item li-text-nav text-secondary my-4">
-                    MENU
-                </li>
-                <li class="nav-item li-nav mb-2">
-                    <a class="nav-link active d-flex align-self-center" href="/coordinador/dashboard" aria-current="true">
-                        <img src="/images/columns-gap.svg" alt="Un icono de Dashboard">
-                        <span class="ms-1">Dashboard</span>
-                    </a>
-                </li>
-                <li class="nav-item li-nav mb-2">
-                    <a class="nav-link active d-flex align-self-center" href="/coordinador/materias">
-                        <img src="/images/book.svg" alt="Un icono de Materias">
-                        <span class="ms-1">Materias</span>
-                    </a>
-                </li>
-                <li class="nav-item li-nav mb-2">
-                    <a class="nav-link active d-flex align-self-center" href="/coordinador/alumnos">
-                        <img src="/images/person-vcard.svg" alt="Un icono de Alumnos">
-                        <span class="ms-1">Alumnos</span>
-                    </a>
-                </li>
-                <li class="nav-item li-nav mb-2">
-                    <a class="nav-link active d-flex align-self-center" href="/coordinador/profesores">
-                        <img src="/images/person-video3.svg" alt="Un icono de Profesores">
-                        <span class="ms-1">Profesores</span>
-                    </a>
-                </li>
-                <li class="nav-item li-nav mb-2">
-                    <a class="nav-link active d-flex align-self-center" href="/coordinador/grupos">
-                        <img src="/images/people.svg" alt="Un icono de Grupos">
-                        <span class="ms-1">Grupos</span>
-                    </a>
-                </li>
-                <li class="nav-item li-nav mb-2">
-                    <a class="nav-link active d-flex align-self-center" href="/coordinador/salones">
-                        <img src="/images/easel3-fill.svg" alt="Un icono de Salones">
-                        <span class="ms-1">Salones</span>
-                    </a>
-                </li>
-                <li class="nav-item li-nav">
-                    <a class="nav-link active d-flex align-self-center" href="/coordinador/solicitudes-cambio">
-                        <img src="/images/file-earmark-text.svg" alt="Un icono de Solicitudes">
-                        <span class="ms-1">Solicitudes</span>
-                    </a>
-                </li>
-                <li class="nav-item text-secondary li-text-nav my-4">
-                    GENERAL
-                </li>
-                <li class="nav-item li-nav mb-2">
-                    <a class="nav-link active d-flex align-self-center" href="/alumno-regular/ayuda">
-                        <img src="/images/question-circle.svg" alt="Un icono de Ayuda">
-                        <span class="ms-1">Ayuda</span>
-                    </a>
-                </li>
-                <li class="nav-item li-nav">
-                    <a class="nav-link active d-flex align-self-center" href="/usuario/iniciar-sesion">
-                        <img src="/images/box-arrow-right.svg" alt="Un icono de Cerrar Sesión">
-                        <span class="ms-1">Cerrar Sesión</span>
-                    </a>
-                </li>
-            </ul>
-        </nav>
-        <div class="col vh-100 p-0 d-flex flex-column me-4 my-3">
-            <header class="bg-grey mb-3" style="height: 15%; border-radius: 1.5rem;">
+<body class="container-fluid m-0 p-0" style="font-family: 'Lato', sans-serif;">
+    <div class="row p-0 m-0">
+        <div class="col-lg-2 pe-0 py-2">
+            <nav class="navbar navbar-expand-lg nav-coordinador align-items-center bg-grey pb-4" style="border-radius: 1.5rem;">   
+                <a class="navbar-brand m-0 a-logo mt-3" href="/alumno-regular/horario">
+                    <img class="logo-size rounded-3" src="/images/logo.png" alt="Una imagen del logo de via diseño">
+                </a> 
+                <button class="navbar-toggler me-5" type="button" data-bs-toggle="collapse" 
+                    data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" 
+                    aria-expanded="false" aria-label="Toggle navigation">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+                <div class="collapse navbar-collapse" id="navbarSupportedContent">
+                    <ul class="navbar-nav flex-column ul-nav px-3 ul-nav">
+                        <li class="nav-item li-text-nav text-secondary my-4 fs-6">
+                            MENU
+                        </li>
+                        <li class="nav-item li-nav mb-2">
+                            <a class="nav-link active d-flex align-self-center" href="/coordinador/dashboard" aria-current="true">
+                                <img src="/images/columns-gap.svg" alt="Un icono de Dashboard">
+                                <span class="ms-1 fs-6">Dashboard</span>
+                            </a>
+                        </li>
+                        <li class="nav-item li-nav mb-2">
+                            <a class="nav-link active d-flex align-self-center" href="/coordinador/materias">
+                                <img src="/images/book.svg" alt="Un icono de Materias">
+                                <span class="ms-1 fs-6">Materias</span>
+                            </a>
+                        </li>
+                        <li class="nav-item li-nav mb-2">
+                            <a class="nav-link active d-flex align-self-center" href="/coordinador/alumnos">
+                                <img src="/images/person-vcard.svg" alt="Un icono de Alumnos">
+                                <span class="ms-1 fs-6">Alumnos</span>
+                            </a>
+                        </li>
+                        <li class="nav-item li-nav mb-2">
+                            <a class="nav-link active d-flex align-self-center" href="/coordinador/profesores">
+                                <img src="/images/person-video3.svg" alt="Un icono de Profesores">
+                                <span class="ms-1 fs-6">Profesores</span>
+                            </a>
+                        </li>
+                        <li class="nav-item li-nav mb-2">
+                            <a class="nav-link active d-flex align-self-center" href="/coordinador/grupos">
+                                <img src="/images/people.svg" alt="Un icono de Grupos">
+                                <span class="ms-1 fs-6">Grupos</span>
+                            </a>
+                        </li>
+                        <li class="nav-item li-nav mb-2">
+                            <a class="nav-link active d-flex align-self-center" href="/coordinador/salones">
+                                <img src="/images/easel3-fill.svg" alt="Un icono de Salones">
+                                <span class="ms-1 fs-6">Salones</span>
+                            </a>
+                        </li>
+                        <li class="nav-item li-nav">
+                            <a class="nav-link active d-flex align-self-center" href="/coordinador/solicitudes-cambio">
+                                <img src="/images/file-earmark-text.svg" alt="Un icono de Solicitudes">
+                                <span class="ms-1 fs-6">Solicitudes</span>
+                            </a>
+                        </li>
+                        <li class="nav-item text-secondary li-text-nav my-4 fs-6">
+                            GENERAL
+                        </li>
+                        <li class="nav-item li-nav mb-2">
+                            <a class="nav-link active d-flex align-self-center" href="/alumno-regular/ayuda">
+                                <img src="/images/question-circle.svg" alt="Un icono de Ayuda">
+                                <span class="ms-1 fs-6">Ayuda</span>
+                            </a>
+                        </li>
+                        <li class="nav-item li-nav">
+                            <a class="nav-link active d-flex align-self-center" href="/usuario/iniciar-sesion">
+                                <img src="/images/box-arrow-right.svg" alt="Un icono de Cerrar Sesión">
+                                <span class="ms-1 fs-6">Cerrar Sesión</span>
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+            </nav>
+        </div>
+        <div class="col-lg-10 d-flex flex-column py-2">
+            <header class="bg-grey d-flex justify-content-between px-5 py-4" style="border-radius: 1.5rem;">
+                <form class="d-flex" role="search">
+                    <input class="form-control me-2 rounded-pill" type="search" placeholder="Buscar" aria-label="Search"
+                        style="background-image:url('/images/search.svg');
+                        background-repeat:no-repeat;
+                        background-position: 1rem center; 
+                        padding-left: 3rem; font-size: 1rem;"
+                    >
+                    <button class="btn rounded-pill ivd-bg-red text-white" type="submit">Search</button>
+                </form>
+                <div class="d-flex align-items-center">
+                    <div class="dropdown me-5">
+                        <button class="btn border dropdown-toggle rounded-pill ivd-border-red" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                            Enero - Junio 2025
+                        </button>
+                        <ul class="dropdown-menu">
+                          <li><a class="dropdown-item" href="#">Enero - Junio 2025</a></li>
+                          <li><a class="dropdown-item" href="#">Agosto - Diciembre 2024</a></li>
+                          <li><a class="dropdown-item" href="#">Enero - Junio 2024</a></li>
+                        </ul>
+                      </div>
+                    <div class="d-flex flex-column align-items-end">
+                        <strong>Alejandra Regina López Garza </strong>
+                        <span>301547@ivd.mx</span>
+                    </div>
+                </div>
             </header>
-            <main class="bg-grey" style="height: 85%; border-radius: 1.5rem;">
+            <main class="bg-grey mt-2" style="flex-grow: 4; border-radius: 1.5rem;">
             </main>
         </div>
     </div>
