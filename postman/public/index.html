@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>User Info</title>
+</head>
+<body>
+    <h1>User Info</h1>
+    <button onclick="fetchUser()">Get User Data</button>
+    <!-- <pre id="output"></pre> -->
+    <p><strong>ID:</strong> <span id="userId"></span></p>
+    <p><strong>Name:</strong> <span id="userName"></span></p>
+    <p><strong>First Surname:</strong> <span id="userFirstSurname"></span></p>
+    <p><strong>Email:</strong> <span id="userEmail"></span></p>
+    <p><strong>Phone:</strong> <span id="userPhone"></span></p>
+    <p><strong>Status:</strong> <span id="userStatus"></span></p>
+    <p><strong>Role id:</strong> <span id="userRoleId"></span></p>
+    <p><strong>Role name:</strong> <span id="userRoleName"></span></p>
+    <p><strong>Role description:</strong> <span id="userRoleDescription"></span></p> <br><br>
+    
+    <h2>User Groups</h2>
+    <button onclick="fetchUserGroups()">Get User Groups</button>
+    <ul id="userGroupsList"></ul> <!-- Empty list for user groups -->
+
+    <script>
+        async function fetchUser() {
+            // const userId = "100007"; // Replace with actual ID
+            // const response = await fetch(`http://localhost:3000/v1/users/find_one/${userId}`);
+            // const data = await response.json();
+            // document.getElementById("output").textContent = JSON.stringify(data, null, 2);
+            try {
+                const userId = "100007"; // Replace with actual ID
+                const response = await fetch(`http://localhost:3000/v1/users/find_one/${userId}`);
+                const result = await response.json(); // Convert response to JSON
+
+                // Extract user data
+                const user = result.data;
+
+                // Update the HTML with the extracted data
+                document.getElementById("userId").textContent = user.id;
+                document.getElementById("userName").textContent = user.name;
+                document.getElementById("userFirstSurname").textContent = user.first_surname;
+                document.getElementById("userEmail").textContent = user.email;
+                document.getElementById("userPhone").textContent = user.phone;
+                document.getElementById("userStatus").textContent = user.status;
+                document.getElementById("userRoleId").textContent = user.role.id;
+                document.getElementById("userRoleName").textContent = user.role.name;
+                document.getElementById("userRoleDescription").textContent = user.role.description;
+            } catch (error) {
+                console.error("Error fetching user data:", error);
+            }
+        }
+
+        async function fetchUserGroups() {
+            try {
+                const cycleId = "13";  // Replace with actual cycle ID
+                const userId = "100007"; // Replace with actual user ID
+                const response = await fetch(`http://localhost:3000/v1/school_cycles/user_groups_index/${cycleId}/${userId}`);
+                const result = await response.json(); // Convert response to JSON
+
+                const groupsList = document.getElementById("userGroupsList");
+                groupsList.innerHTML = ""; // Clear previous data
+
+                if (result.data && result.data.length > 0) {
+                    result.data.forEach((group) => {
+                        const listItem = document.createElement("li");
+                        listItem.textContent = `Group ID: ${group.id}, Name: ${group.name}`;
+                        groupsList.appendChild(listItem);
+                    });
+                } else {
+                    groupsList.innerHTML = "<li>No groups found</li>";
+                }
+            } catch (error) {
+                console.error("Error fetching user groups:", error);
+            }
+        }
+    </script>
+</body>
+</html>
