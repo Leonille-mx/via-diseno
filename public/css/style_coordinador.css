@@ -60,7 +60,7 @@
 
 @media (min-width: 992px) {
     nav {
-        height: 97vh;
+        height: fit-content;
     }
     .logo-size {
         width: 100px;
