@@ -1,3 +1,7 @@
+html {
+  font-size: 87.5%;
+}
+
 body {
     margin: 0;
     overflow: hidden;
@@ -14,9 +18,8 @@ body {
     left: 20px;
     top: 20px;
     z-index: 1001;
-    background: #84251C;
     border: none;
-    padding: 10px 15px;
+    padding: 10px 10px;
     border-radius: 50%;
     cursor: pointer;
     transition: 0.3s;
@@ -64,8 +67,8 @@ body {
   
   .logo-size {
     width: 60%;
-    min-width: 100px !important;
-    max-width: 150px !important;
+    min-width: 80px !important;
+    max-width: 100px !important;
     height: auto !important;
     object-fit: contain;
   }
@@ -73,6 +76,10 @@ body {
   .li-text-nav {
     width: 100%;
     text-align: left;
+  }
+
+  .li-nav > a {
+    padding-top: 0;
   }
   
   .ivd-text-red {
@@ -124,8 +131,8 @@ body {
       max-width: 200px;
     }
     header {
-      height: 70px !important;
-      min-height: 70px;
+      height: 90px !important;
+      min-height: 90px;
     }
     main {
       height: calc(100% - 70px - 1rem) !important;
