@@ -33,5 +33,5 @@ exports.get_ayuda = (req, res, nxt) => {
 };
 
 exports.get_prueba = (req, res, nxt) => {
-    res.sendFile(path.join(__dirname, '..', 'views', 'prueba_coordinador.html'));
+    res.sendFile(path.join(__dirname, '..', 'views', 'prueba2_coordinador.html'));
 };
