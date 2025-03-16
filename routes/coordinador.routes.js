@@ -19,6 +19,4 @@ router.get('/solicitudes-cambio', coordinador_controller.get_solicitudes_cambio)
 
 router.get('/ayuda', coordinador_controller.get_ayuda);
 
-router.get('/prueba', coordinador_controller.get_prueba);
-
 module.exports = router;

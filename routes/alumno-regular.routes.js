@@ -4,7 +4,7 @@ const router = express.Router();
 const regular_controller = require('../controllers/alumno-regular.controller');
 
 router.get('/horario', regular_controller.get_horario);
+
 router.get('/ayuda', regular_controller.get_ayuda);
-router.get('/prueba', regular_controller.get_prueba);
 
 module.exports = router;
