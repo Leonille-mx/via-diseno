@@ -1,55 +1,80 @@
-<!-- Interfaz alumno  -->
 <!DOCTYPE html>
 <html lang="es">
-
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>IVD</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css" rel="stylesheet">
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Lato:ital,wght@0,100;0,300;0,400;0,700;0,900;1,100;1,300;1,400;1,700;1,900&family=Oswald:wght@200..700&family=PT+Serif:ital,wght@0,400;0,700;1,400;1,700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="/css/main.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css">
+    <link rel="stylesheet" href="/css/coordinador.css">
 </head>
-
-<body>
-
-<div class="container-fluid">
-  <!-- Navbar vertical -->
-  <div class="navbar-vertical">
-    <nav>
-        <img src="/images/logo.png" class="img-fluid" alt="Responsive image">
-        <h4>Menu</h4>
-        <div class="nav-item">
-            <i class="bi bi-calendar-fill"></i><a href="/coordinador/dashboard" class="nav-link">Dashboard</a>
+<body class="container-fluid">
+    <button class="nav-collapse-btn ivd-bg-red" id="navToggle">
+        <span></span>
+        <span></span>
+        <span></span>
+    </button>
+    <div class="nav-overlay" id="navOverlay"></div>
+    <div class="row">
+        <div class="col-lg-2 vh-100 py-3">
+            <nav class="navbar nav-coordinador d-flex flex-column align-items-center bg-grey h-100 py-4 rounded-5">
+                <ul class="navbar-nav flex-column mx-2 w-80 px-3">
+                    <img class="logo-size rounded-3 my-2 mx-auto" src="/images/logo.png" alt="Logo de via diseño">
+                    <li class="nav-item li-text-nav text-secondary mt-3 mb-3">MENÚ</li>
+                    <li class="nav-item li-nav mb-1 w-100">
+                        <a class="nav-link active d-flex align-items-center" href="/coordinador/dashboard">
+                            <img class="me-2" src="/images/columns-gap.svg" alt="Dashboard" width="15">
+                            <span>Dashboard</span>
+                        </a>
+                    </li>
+                    <li class="nav-item li-nav mb-1 w-100">
+                        <a class="nav-link active d-flex align-items-center" href="/coordinador/materias">
+                            <img class="me-2" src="/images/book.svg" alt="Materias" width="15">
+                            <span>Materias</span>
+                        </a>
+                    </li>
+                    <li class="nav-item li-nav mb-1 w-100">
+                        <a class="nav-link active d-flex align-items-center" href="/coordinador/alumnos">
+                            <img class="me-2" src="/images/person-vcard.svg" alt="Alumnos" width="15">
+                            <span>Alumnos</span>
+                        </a>
+                    </li>
+                    <li class="nav-item li-nav mb-1 w-100">
+                        <a class="nav-link active d-flex align-items-center" href="/coordinador/profesores">
+                            <img class="me-2" src="/images/person-video3.svg" alt="Profesores" width="15">
+                            <span>Profesores</span>
+                        </a>
+                    </li>
+                    <li class="nav-item li-nav mb-1 w-100">
+                        <a class="nav-link active d-flex align-items-center" href="/coordinador/grupos">
+                            <img class="me-2" src="/images/people.svg" alt="Grupos" width="15">
+                            <span>Grupos</span>
+                        </a>
+                    </li>
+                    <li class="nav-item li-nav mb-1 w-100">
+                        <a class="nav-link active d-flex align-items-center" href="/coordinador/salones">
+                            <img class="me-2" src="/images/easel3-fill.svg" alt="Salones" width="15">
+                            <span>Salones</span>
+                        </a>
+                    </li>
+                    <li class="nav-item li-nav w-100">
+                        <a class="nav-link active d-flex align-items-center" href="/coordinador/solicitudes-cambio">
+                            <img class="me-2" src="/images/file-earmark-text.svg" alt="Solicitudes" width="15">
+                            <span>Solicitudes</span>
+                        </a>
+                    </li>
+                    <li class="nav-item text-secondary li-text-nav mt-3 mb-3">GENERAL</li>
+                    <li class="nav-item li-nav mb-1 w-100">
+                        <a class="nav-link active d-flex align-items-center" href="/coordinador/ayuda">
+                            <img class="me-2" src="/images/question-circle.svg" alt="Ayuda" width="15">
+                            <span>Ayuda</span>
+                        </a>
+                    </li>
+                    <li class="nav-item li-nav w-100">
+                        <a class="nav-link active d-flex align-items-center" href="/usuario/iniciar-sesion">
+                            <img class="me-2" src="/images/box-arrow-right.svg" alt="Cerrar Sesión" width="15">
+                            <span>Cerrar Sesión</span>
+                        </a>
+                    </li>
+                </ul>
+            </nav>
         </div>
-        <div class="nav-item">
-            <i class="bi bi-book-fill"></i><a href="/coordinador/materias" class="nav-link">Materias</a>
-        </div>
-        <div class="nav-item">
-            <i class="bi bi-person-fill"></i><a href="/coordinador/alumnos" class="nav-link">Alumnos</a>
-        </div>
-        <div class="nav-item">
-            <i class="bi bi-person-fill"></i><a href="/coordinador/profesores" class="nav-link">Profesores</a>
-        </div>
-        <div class="nav-item">
-            <i class="bi bi-person-plus-fill"></i><a href="/coordinador/grupos" class="nav-link">Grupos</a>
-        </div>
-        <div class="nav-item">
-            <i class="bi bi-person-workspace"></i><a href="/coordinador/salones" class="nav-link">Salones</a>
-        </div>
-        <div class="nav-item">
-            <i class="bi bi-calendar-fill"></i><a href="/coordinador/solicitudes-cambio" class="nav-link">Solicitudes</a>
-        </div>
-        <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br>
-        <h4>General</h4>
-        <div class="nav-item">
-            <i class="bi bi-person-raised-hand"></i><a href="/coordinador/ayuda" class="nav-link">Ayuda</a>
-        </div>
-        <div class="nav-item">
-            <i class="bi bi-arrow-left-square-fill"></i><a href="/usuario/iniciar-sesion" class="nav-link">Cerrar sesión</a>
-        </div>
-    </nav>
-  </div>
