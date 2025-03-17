@@ -2,7 +2,7 @@
 
 // Import required dependencies
 const express = require('express'); // Express is a web framework for building APIs and web servers
-const { getUserById, getUserGroups, getCycleIndex} = require('./adminApiClient'); // Import the functions we created earlier
+const { getUserById, getUserGroups, getCycleIndex, getAllUsers } = require('./adminApiClient'); // Import the functions we created earlier
 const path = require('path');
 
 // Initialize an Express application
@@ -57,6 +57,16 @@ app.get('/v1/school_cycles/index', async (req, res) => {
   try {
     const schoolCycles = await getCycleIndex(); 
     res.send(schoolCycles); 
+  } catch (error) {
+    console.error(error);
+    res.status(500).send('Error fetching school cycles');
+  }
+});
+
+app.get('/v1/users/all/:userType', async (req, res) => {
+  try{
+    const allUsers = await getAllUsers(req.params.type);
+    res.send(allUsers);
   } catch (error) {
     console.error(error);
     res.status(500).send('Error fetching school cycles');

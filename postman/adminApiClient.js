@@ -102,5 +102,18 @@ async function getCycleIndex() {
   return response.data;
 }
 
+async function getAllUsers(userType) {
+  const token = await getToken();
+  const headers = await getHeaders(token);
+
+  const response = await axiosAdminClient.get("v1/users/all", {
+    headers,
+    params: {
+      type: userType,
+    }
+  });
+  return response.data;
+}
+
 // Export the functions so they can be used in other files
-module.exports = { getUserById, getUserGroups, getCycleIndex };
+module.exports = { getUserById, getUserGroups, getCycleIndex, getAllUsers };
