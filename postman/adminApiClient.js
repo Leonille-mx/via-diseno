@@ -91,5 +91,16 @@ async function getUserGroups(cycle_id, user_ivd_id) {
   return response.data; // Return the API response data
 }
 
+async function getCycleIndex() {
+  const token  = await getToken();
+  const headers = await getHeaders(token);
+
+  const response = await axiosAdminClient.get("v1/school_cycles/index", {
+    headers,
+  });
+
+  return response.data;
+}
+
 // Export the functions so they can be used in other files
-module.exports = { getUserById, getUserGroups };
+module.exports = { getUserById, getUserGroups, getCycleIndex };

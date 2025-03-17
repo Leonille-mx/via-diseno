@@ -23,6 +23,11 @@
     <button onclick="fetchUserGroups()">Get User Groups</button>
     <ul id="userGroupsList"></ul> <!-- Empty list for user groups -->
 
+    <h2>School Cycles</h2>
+    <button onclick="fetchSchoolCycles()">Get School Cycles</button>
+    <ul id="SchoolCyclesList"></ul>
+    <p id="error" style="color: red;"></p>
+
     <script>
         async function fetchUser() {
             // const userId = "100007"; // Replace with actual ID
@@ -75,6 +80,38 @@
                 console.error("Error fetching user groups:", error);
             }
         }
+
+    async function fetchSchoolCycles() {
+        try {
+            const response = await fetch('/v1/school_cycles/index');
+
+            if (!response.ok) {
+                throw new Error(`Server Error: ${response.status} ${response.statusText}`);
+            }
+
+            const result = await response.json(); // Get full JSON response
+            const cycles = result.data; // ✅ Access the actual array inside 'data'
+
+            const list = document.getElementById("SchoolCyclesList");
+            list.innerHTML = ""; // Clear previous data
+
+            if (!Array.isArray(cycles) || cycles.length === 0) {
+                list.innerHTML = "<li>No school cycles found.</li>";
+                return;
+            }
+
+            cycles.forEach(cycle => {
+                const li = document.createElement("li");
+                li.textContent = `ID: ${cycle.id} - Code: ${cycle.code} - Start: ${cycle.start_date} - End: ${cycle.end_date}`;
+                list.appendChild(li);
+            });
+
+        } catch (error) {
+            console.error("Error fetching school cycles:", error);
+            document.getElementById("error").textContent = "Failed to load data. " + error.message;
+        }
+    }
+
     </script>
 </body>
 </html>
