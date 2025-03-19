@@ -3,7 +3,28 @@
 
         <main class="bg-grey flex-grow-1 rounded-5 p-4">
           <h1>Salones</h1>
-          <p>Aquí ponemos todo lo de salones</p>
+          <div class="table-responsive">
+            <table class="table table-striped table-hover table-bordered">
+                <thead class="table-light">
+                  <th scope="col">ID</th>
+                  <th scope="col">Capacidad</th>
+                  <th scope="col">Tipo</th>
+                  <th scope="col">Nota</th>
+                  <th scope="col">Campus</th>
+                </thead>
+                <tbody>
+                  <% for (let salon of salones) { %>
+                    <tr>
+                      <th scope="row"><%= salon.salon_id %></th>
+                      <td><%= salon.capacidad %></td>
+                      <td><%= salon.tipo %></td>
+                      <td><%= salon.nota %></td>
+                      <td><%= salon.nombre %></td>
+                    </tr>
+                  <% } %>
+                </tbody>
+              </table>
+            </div>
         </main>
       </div>
     </div>

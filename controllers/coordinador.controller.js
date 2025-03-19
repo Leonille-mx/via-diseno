@@ -1,3 +1,5 @@
+const Salon = require('../models/salon.model');
+
 exports.get_dashboard = (req, res, nxt) => {
     res.render('dashboard_coordinador');
 };
@@ -11,7 +13,15 @@ exports.get_profesores = (req, res, nxt) => {
 };
 
 exports.get_salones = (req, res, nxt) => {
-    res.render('salones_coordinador');
+    Salon.fetchAll()
+        .then((result) => {
+            res.render('salones_coordinador', {
+                salones : result.rows,
+            });
+        })
+        .catch((error) => {
+            console.log(error);
+        });
 };
 
 exports.get_grupos = (req, res, nxt) => {
