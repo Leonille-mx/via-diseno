@@ -1,12 +1,19 @@
-const { insertProfessors } = require('./professorsModel');  // Importamos el modelo de profesores
+const pool = require('./database');
 
-app.get('/v1/users/professors', async (req, res) => {
+const getTables = async () => {
   try {
-    const professors = await getAllProfessors();  // Obtener los profesores de la API
-    await insertProfessors(professors);  // Insertar los profesores en la base de datos
-    res.send(professors);  // Devuelves los profesores como respuesta
+    const result = await pool.query(`
+      SELECT table_name
+      FROM information_schema.tables
+      WHERE table_schema = 'public';
+    `);
+    console.log('Tablas en la base de datos:', result.rows);
   } catch (error) {
-    console.error(error);
-    res.status(500).send('Error fetching professors');
+    console.error('Error al obtener las tablas:', error);
+  } finally {
+    pool.end(); // Cierra la conexión
   }
-});
+};
+
+getTables();
+
