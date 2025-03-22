@@ -42,15 +42,23 @@
     <table class="table table-hover" style="min-width: 800px; width: 100%;">
       <thead class="table-light">
         <tr>
-          <th scope="col" style="width: 20; min-width: 100px;" class="text-center align-middle">Nombre</th>
-          <th scope="col" style="width: 20%; min-width: 100px;" class="text-center align-middle">Apellido</th>
           <th scope="col" style="width: 15%; min-width: 100px;" class="text-center align-middle">ID</th>
-          <th scope="col" style="width: 40%; min-width: 150px;" class="text-center align-middle">Correo institucional</th>
+          <th scope="col" style="width: 25; min-width: 100px;" class="text-center align-middle">Nombre</th>
+          <th scope="col" style="width: 25%; min-width: 100px;" class="text-center align-middle"> Primer Apellido</th>
+          <th scope="col" style="width: 25%; min-width: 100px;" class="text-center align-middle"> Segundo Apellido</th>
           <th scope="col" style="width: 5%; min-width: 50px;"></th>
         </tr>
       </thead>
       <tbody>
-      </tbody>
+        <% for (let profesor of profesores) { %>
+            <tr>
+                <th scope="row"><%= profesor.ivd_id %></th>
+                <td><%= profesor.nombre %></td>
+                <td><%= profesor.primer_apellido %></td>
+                <td><%= profesor.segundo_apellido %></td>
+            </tr>
+        <% } %>
+    </tbody>    
     </table>
   </div>
 </main>
