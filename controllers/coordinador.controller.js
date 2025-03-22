@@ -1,11 +1,24 @@
 const Salon = require('../models/salon.model');
+const Materia = require('../models/materia.model');
 
 exports.get_dashboard = (req, res, nxt) => {
     res.render('dashboard_coordinador');
 };
 
 exports.get_materias = (req, res, nxt) => {
-    res.render('materias_coordinador');
+    Materia.fetchAll()
+        .then((result) => {
+            res.render('materias_coordinador', {
+                materias: result.rows,
+            });
+        }).catch((error) => {
+            console.log(error);
+        });
+};
+
+exports.post_sincronizar_materias = (req, res, nxt) => {
+    
+    //res.redirect('coordinador/materias');
 };
 
 exports.get_profesores = (req, res, nxt) => {
