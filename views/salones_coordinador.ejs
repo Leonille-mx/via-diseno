@@ -139,7 +139,7 @@
         
         <!-- Cuerpo del modal con el formulario de registro -->
         <div class="modal-body">
-          <form class=" rounded-5 mx-3 py-4" id="registerSalonForm" method="POST" action="/salones" style="background-color: white;">
+          <form class=" rounded-5 mx-3 py-4" id="registerSalonForm" method="POST" action="/coordinador/salones" style="background-color: white;">
             <div class="mb-3">
               <label for="numero" class="form-label ms-1"><b>Número</b></label>
               <div style="border-bottom: 3px solid #84251C; width: 10rem; margin-top: -5px; margin-bottom: 10px;"></div>
@@ -170,8 +170,9 @@
               <div style="border-bottom: 3px solid #84251C; width: 10rem; margin-top: -5px; margin-bottom: 10px;"></div>
               <select class="form-select rounded-5 mx-auto" id="campus" name="campus" required style="background-color: #f0f0f0;">
                 <option value="">Seleccione un campus</option>
-                <option value="Campus1">Campus 1</option>
-                <option value="Campus2">Campus 2</option>
+                <% for (let c of campus) { %>
+                  <option value="<%= c.campus_id %>"><%= c.nombre %></option>
+                <% } %>
               </select>
             </div>
           </form>
@@ -210,6 +211,14 @@
   
       // Actualizar acción del formulario
       document.getElementById('deleteForm').action = `salones/eliminar/${salonId}`;
+    });
+
+    // Función para enviar valor "N/A" si textarea se deja vacío
+    document.getElementById('registerSalonForm').addEventListener('submit', function() {
+      const nota = document.getElementById('nota');
+      if (!nota.value.trim()) {
+        nota.value = 'N/A';
+      }
     });
   </script>
 </body>

@@ -1,4 +1,5 @@
 const Salon = require('../models/salon.model');
+const Campus = require('../models/campus.model');
 
 exports.get_dashboard = (req, res, nxt) => {
     res.render('dashboard_coordinador');
@@ -14,14 +15,21 @@ exports.get_profesores = (req, res, nxt) => {
 
 exports.get_salones = (req, res, nxt) => {
     Salon.fetchAll()
-        .then((result) => {
-            res.render('salones_coordinador', {
-                salones : result.rows,
+    .then((salones) => {
+        Campus.fetchAll()
+            .then((campus) => {
+                res.render('salones_coordinador', {
+                    salones : salones.rows,
+                    campus : campus.rows
+                });
+            })
+            .catch((error) => {
+                console.log(error);
             });
         })
-        .catch((error) => {
-            console.log(error);
-        });
+    .catch((error) => {
+        console.log(error);
+    });
 };
 
 exports.post_eliminar_salon = (req, res, nxt) => {
