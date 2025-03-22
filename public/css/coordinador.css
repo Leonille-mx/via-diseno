@@ -327,3 +327,10 @@ thead th {
   border-radius: 10px;
   border: 2px solid #84251c;
 }
+
+input.form-control,
+textarea.form-control,
+select.form-select {
+  width: calc(100% - 1.5rem); /* Resta los márgenes horizontales */
+  box-sizing: border-box;
+}

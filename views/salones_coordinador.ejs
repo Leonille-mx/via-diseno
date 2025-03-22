@@ -19,11 +19,13 @@
           </div>
           
           <!-- Botón para agregar un nuevo salón -->
-          <button class="btn btn-primary d-flex align-items-center gap-2 rounded-pill px-3 py-2" style="background-color: #84251C; border: none;">
+          <button class="btn btn-primary d-flex align-items-center gap-2 rounded-pill px-3 py-2" style="background-color: #84251C; border: none;"
+          data-bs-toggle="modal" 
+          data-bs-target="#registerSalonModal">
             <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-plus-lg" viewBox="0 0 16 16">
               <path fill-rule="evenodd" d="M8 2a.5.5 0 0 1 .5.5v5h5a.5.5 0 0 1 0 1h-5v5a.5.5 0 0 1-1 0v-5h-5a.5.5 0 0 1 0-1h5v-5A.5.5 0 0 1 8 2"/>
             </svg>
-            Agregar Salón
+            Añadir Salón
           </button>
         </div>
 
@@ -45,7 +47,7 @@
               <!-- Iteración sobre los datos de los salones -->
               <% for (let salon of salones) { %>
               <tr>
-                <th scope="row" class="text-center align-middle"><%= salon.salon_id %></th>
+                <th scope="row" class="text-center align-middle"><%= salon.numero %></th>
                 <td class="text-center align-middle"><%= salon.capacidad %></td>
                 <td class="text-center align-middle"><%= salon.tipo %></td>
                 <td class="text-center align-middle"><%= salon.nota %></td>
@@ -57,6 +59,7 @@
                     data-bs-toggle="modal" 
                     data-bs-target="#confirmDeleteModal"
                     data-salon-id="<%= salon.salon_id %>"
+                    data-salon-numero="<%= salon.numero%>"
                     data-capacidad="<%= salon.capacidad %>"
                     data-tipo="<%= salon.tipo %>"
                     data-nota="<%= salon.nota %>"
@@ -101,7 +104,7 @@
               </thead>
               <tbody>
                 <tr>
-                  <td id="modalSalonId" class="text-center align-middle"></td>
+                  <td id="modalSalonNumero" class="text-center align-middle"></td>
                   <td id="modalCapacidad" class="text-center align-middle"></td>
                   <td id="modalTipo" class="text-center align-middle"></td>
                   <td id="modalNota" class="text-center align-middle"></td>
@@ -124,6 +127,66 @@
     </div>
   </div>
 
+  <!-- Modal para registrar un nuevo salón -->
+  <div class="modal fade" id="registerSalonModal" tabindex="-1" aria-labelledby="registerSalonModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
+      <div class="modal-content rounded-5" style="max-width: 95vw; background-color: #f0f0f0">
+        
+        <!-- Encabezado del modal -->
+        <div class="modal-header justify-content-center">
+          <h5 class="modal-title" id="registerSalonModalLabel" style="color: #84251C;"><b>Estás añadiendo un nuevo salón</b></h5>
+        </div>
+        
+        <!-- Cuerpo del modal con el formulario de registro -->
+        <div class="modal-body">
+          <form class=" rounded-5 mx-3 py-4" id="registerSalonForm" method="POST" action="/salones" style="background-color: white;">
+            <div class="mb-3">
+              <label for="numero" class="form-label ms-1"><b>Número</b></label>
+              <div style="border-bottom: 3px solid #84251C; width: 10rem; margin-top: -5px; margin-bottom: 10px;"></div>
+              <input type="number" min="1" class="form-control rounded-5 mx-auto" id="numero" name="salon_id" required style="background-color: #f0f0f0;">
+            </div>
+            <div class="mb-3">
+              <label for="capacidad" class="form-label ms-1"><b>Capacidad</b></label>
+              <div style="border-bottom: 3px solid #84251C; width: 10rem; margin-top: -5px; margin-bottom: 10px;"></div>
+              <input type="number" min="0" class="form-control rounded-5 mx-auto" id="capacidad" name="capacidad" required style="background-color: #f0f0f0;">
+            </div>
+            <div class="mb-3">
+              <label for="tipo" class="form-label ms-1"><b>Tipo</b></label>
+              <div style="border-bottom: 3px solid #84251C; width: 10rem; margin-top: -5px; margin-bottom: 10px;"></div>
+              <select class="form-select rounded-5 mx-auto" id="campus" name="campus" required style="background-color: #f0f0f0;">
+                <option value="">Seleccione un tipo</option>
+                <option value="Normal">Normal</option>
+                <option value="Especial">Especial</option>
+                <option value="Ambos">Ambos</option>
+              </select>
+            </div>
+            <div class="mb-3">
+              <label for="nota" class="form-label ms-1"><b>Nota</b></label>
+              <div style="border-bottom: 3px solid #84251C; width: 10rem; margin-top: -5px; margin-bottom: 10px;"></div>
+              <textarea maxlength="60" class="form-control rounded-5 mx-auto" id="nota" name="nota" rows="2" style="background-color: #f0f0f0; resize: none;"></textarea>
+            </div>
+            <div class="mb-3">
+              <label for="campus" class="form-label ms-1"><b>Campus</b></label>
+              <div style="border-bottom: 3px solid #84251C; width: 10rem; margin-top: -5px; margin-bottom: 10px;"></div>
+              <select class="form-select rounded-5 mx-auto" id="campus" name="campus" required style="background-color: #f0f0f0;">
+                <option value="">Seleccione un campus</option>
+                <option value="Campus1">Campus 1</option>
+                <option value="Campus2">Campus 2</option>
+              </select>
+            </div>
+          </form>
+        </div>
+
+        <!-- Pie del modal con los botones de acción -->
+        <div class="modal-footer justify-content-center" style="background-color: #f0f0f0">
+          <button type="button" class="btn btn-secondary rounded-pill px-4 mx-4" style="background-color: white; border: 1px solid #84251C; color: #84251C;" data-bs-dismiss="modal">Cancelar</button>
+          <button type="submit" form="registerSalonForm" class="btn btn-primary rounded-pill px-4 mx-4" style="background-color: #84251C; border: none;">Registrar</button>
+        </div>
+
+      </div>
+    </div>
+  </div>
+
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
   <script src="/js/coordinador.js"></script>
   
@@ -132,13 +195,14 @@
     document.getElementById('confirmDeleteModal').addEventListener('show.bs.modal', function(event) {
       const button = event.relatedTarget;
       const salonId = button.getAttribute('data-salon-id');
+      const numero = button.getAttribute('data-salon-numero');
       const capacidad = button.getAttribute('data-capacidad');
       const tipo = button.getAttribute('data-tipo');
       const nota = button.getAttribute('data-nota');
       const campus = button.getAttribute('data-campus');
   
       // Actualizar contenido del modal
-      document.getElementById('modalSalonId').textContent = salonId;
+      document.getElementById('modalSalonNumero').textContent = numero;
       document.getElementById('modalCapacidad').textContent = capacidad;
       document.getElementById('modalTipo').textContent = tipo;
       document.getElementById('modalNota').textContent = nota;
