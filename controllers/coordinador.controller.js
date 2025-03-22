@@ -1,4 +1,3 @@
-const Salon = require('../models/salon.model');
 
 exports.get_dashboard = (req, res, nxt) => {
     res.render('dashboard_coordinador');
