@@ -10,7 +10,7 @@ router.get('/materias', coordinador_controller.get_materias);
 router.get('/profesores', coordinador_controller.get_profesores);
 
 router.get('/salones', coordinador_controller.get_salones);
-
+router.post('/salones', coordinador_controller.post_salones);
 router.post('/salones/eliminar/:id', coordinador_controller.post_eliminar_salon);
 
 router.get('/grupos', coordinador_controller.get_grupos);

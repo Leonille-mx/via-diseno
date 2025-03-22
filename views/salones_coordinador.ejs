@@ -143,17 +143,17 @@
             <div class="mb-3">
               <label for="numero" class="form-label ms-1"><b>Número</b></label>
               <div style="border-bottom: 3px solid #84251C; width: 10rem; margin-top: -5px; margin-bottom: 10px;"></div>
-              <input type="number" min="1" class="form-control rounded-5 mx-auto" id="numero" name="salon_id" required style="background-color: #f0f0f0;">
+              <input type="number" min="0" max="2000000" class="form-control rounded-5 mx-auto" id="numero" name="numero" required style="background-color: #f0f0f0;">
             </div>
             <div class="mb-3">
               <label for="capacidad" class="form-label ms-1"><b>Capacidad</b></label>
               <div style="border-bottom: 3px solid #84251C; width: 10rem; margin-top: -5px; margin-bottom: 10px;"></div>
-              <input type="number" min="0" class="form-control rounded-5 mx-auto" id="capacidad" name="capacidad" required style="background-color: #f0f0f0;">
+              <input type="number" min="1" max="32000" class="form-control rounded-5 mx-auto" id="capacidad" name="capacidad" required style="background-color: #f0f0f0;">
             </div>
             <div class="mb-3">
               <label for="tipo" class="form-label ms-1"><b>Tipo</b></label>
               <div style="border-bottom: 3px solid #84251C; width: 10rem; margin-top: -5px; margin-bottom: 10px;"></div>
-              <select class="form-select rounded-5 mx-auto" id="campus" name="campus" required style="background-color: #f0f0f0;">
+              <select class="form-select rounded-5 mx-auto" id="tipo" name="tipo" required style="background-color: #f0f0f0;">
                 <option value="">Seleccione un tipo</option>
                 <option value="Normal">Normal</option>
                 <option value="Especial">Especial</option>
@@ -211,14 +211,6 @@
   
       // Actualizar acción del formulario
       document.getElementById('deleteForm').action = `salones/eliminar/${salonId}`;
-    });
-
-    // Función para enviar valor "N/A" si textarea se deja vacío
-    document.getElementById('registerSalonForm').addEventListener('submit', function() {
-      const nota = document.getElementById('nota');
-      if (!nota.value.trim()) {
-        nota.value = 'N/A';
-      }
     });
   </script>
 </body>

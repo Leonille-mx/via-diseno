@@ -32,6 +32,17 @@ exports.get_salones = (req, res, nxt) => {
     });
 };
 
+exports.post_salones = (req, res, nxt) => {
+    const salon = new Salon(req.body.numero, req.body.capacidad, req.body.tipo, req.body.nota, req.body.campus);
+    salon.save()
+    .then(() => {
+        res.redirect('/coordinador/salones');
+    })
+    .catch((error) => {
+        console.log(error);
+    });
+};
+
 exports.post_eliminar_salon = (req, res, nxt) => {
     Salon.delete(req.params.id)
         .then(() => {
