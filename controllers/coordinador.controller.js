@@ -24,6 +24,16 @@ exports.get_salones = (req, res, nxt) => {
         });
 };
 
+exports.post_eliminar_salon = (req, res, nxt) => {
+    Salon.delete(req.params.id)
+        .then(() => {
+            res.redirect('/coordinador/salones');
+        })
+        .catch((error) => {
+            console.log(error);
+        });
+};
+
 exports.get_grupos = (req, res, nxt) => {
     res.render('grupos_coordinador');
 };
