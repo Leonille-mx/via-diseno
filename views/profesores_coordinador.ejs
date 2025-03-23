@@ -43,19 +43,51 @@
       <thead class="table-light">
         <tr>
           <th scope="col" style="width: 15%; min-width: 100px;" class="text-center align-middle">ID</th>
-          <th scope="col" style="width: 25; min-width: 100px;" class="text-center align-middle">Nombre</th>
+          <th scope="col" style="width: 20; min-width: 100px;" class="text-center align-middle">Nombre</th>
           <th scope="col" style="width: 25%; min-width: 100px;" class="text-center align-middle"> Primer Apellido</th>
           <th scope="col" style="width: 25%; min-width: 100px;" class="text-center align-middle"> Segundo Apellido</th>
+          <th scope="col" style="width: 5%; min-width: 50px;"></th>
           <th scope="col" style="width: 5%; min-width: 50px;"></th>
         </tr>
       </thead>
       <tbody>
         <% for (let profesor of profesores) { %>
             <tr>
-                <th scope="row"><%= profesor.ivd_id %></th>
-                <td><%= profesor.nombre %></td>
-                <td><%= profesor.primer_apellido %></td>
-                <td><%= profesor.segundo_apellido %></td>
+                <th scope="row" class="text-center align-middle"><%= profesor.ivd_id %></th>
+                <td class="text-center align-middle"><%= profesor.nombre %></td>
+                <td class="text-center align-middle"><%= profesor.primer_apellido %></td>
+                <td class="text-center align-middle"><%= profesor.segundo_apellido %></td>
+                <td class="text-center align-middle">
+                  <button class="btn btn-sm p-0 d-flex align-items-center justify-content-center" 
+                  style="
+                    width: 1.5rem;
+                    height: 1.5rem;
+                    border-radius: 50%;
+                    background-color: #84251c;
+                    color: white;
+                    border: none;
+                  ">
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-eye-fill" viewBox="0 0 16 16">
+              <path d="M10.5 8a2.5 2.5 0 1 1-5 0 2.5 2.5 0 0 1 5 0"/>
+              <path d="M0 8s3-5.5 8-5.5S16 8 16 8s-3 5.5-8 5.5S0 8 0 8m8 3.5a3.5 3.5 0 1 0 0-7 3.5 3.5 0 0 0 0 7"/>
+            </svg>
+          </button>
+                </td>
+                <td class="text-center align-middle">
+                  <button class="btn btn-sm p-0 d-flex align-items-center justify-content-center" 
+                  style="
+                    width: 1.5rem;
+                    height: 1.5rem;
+                    border-radius: 50%;
+                    background-color: #84251c;
+                    color: white;
+                    border: none;
+                  ">
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-x-lg" viewBox="0 0 16 16">
+              <path d="M2.146 2.854a.5.5 0 1 1 .708-.708L8 7.293l5.146-5.147a.5.5 0 0 1 .708.708L8.707 8l5.147 5.146a.5.5 0 0 1-.708.708L8 8.707l-5.146 5.147a.5.5 0 0 1-.708-.708L7.293 8z"/>
+            </svg>
+          </button>
+                </td>
             </tr>
         <% } %>
     </tbody>    
