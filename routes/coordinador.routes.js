@@ -7,7 +7,7 @@ router.get('/dashboard', coordinador_controller.get_dashboard);
 
 router.get('/materias', coordinador_controller.get_materias);
 
-router.post('/materias/sincronizar', coordinador_controller.post_sincronizar_materias);
+router.post('/v1/courses/all', coordinador_controller.post_sincronizar_materias);
 
 router.get('/profesores', coordinador_controller.get_profesores);
 

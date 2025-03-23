@@ -52,7 +52,7 @@ function getHeaders(token) {
   };
 }
 
-async function getAllCourses(userType) {
+async function getAllCourses() {
   const token = await getToken();
   const headers = await getHeaders(token);
 
