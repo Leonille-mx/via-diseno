@@ -1,24 +1,33 @@
-const Profesor = require('../models/consultar_profesor.model.js');
+const Profesor = require('../models/profesor.model.js');
 exports.get_dashboard = (req, res, nxt) => {
     res.render('dashboard_coordinador');
 };
 
-exports.get_materias = (req, res, nxt) => {
-    res.render('materias_coordinador');
+exports.get_profesores = (req, res, nxt) => {
+  Profesor.fetchAll()
+       .then((result) => {
+           res.render('profesores_coordinador', {
+               profesores: result.rows, 
+           });
+       })
+       .catch((error) => {
+           console.log(error);
+       });
 };
 
-exports.get_profesores = (req, res, nxt) => {
-    Profesor.fetchAll()
-         .then((result) => {
-             // Asegúrate de pasar los datos a la vista después de obtenerlos
-             res.render('profesores_coordinador', {
-                 profesores: result.rows, // Pasa los profesores a la vista
-             });
-         })
-         .catch((error) => {
-             console.log(error);
-             res.status(500).send('Error al obtener los profesores');
-         });
+
+exports.post_eliminar_profesor = (req, res, nxt) => {
+  Profesor.delete(req.params.id)
+      .then(() => {
+          res.redirect('/coordinador/profesores');
+      })
+      .catch((error) => {
+          console.log(error);
+      });
+};
+
+exports.get_materias = (req, res, nxt) => {
+    res.render('materias_coordinador');
 };
 
 exports.get_salones = (req, res, nxt) => {
