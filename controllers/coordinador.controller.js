@@ -1,6 +1,6 @@
 const Salon = require('../models/salon.model');
 const Materia = require('../models/materia.model');
-const { getAllCourses } = require('../adminApiClient');
+const { getAllCourses } = require('../util/adminApiClient');
 
 exports.get_dashboard = (req, res, nxt) => {
     res.render('dashboard_coordinador');
