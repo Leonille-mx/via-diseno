@@ -67,8 +67,10 @@ module.exports = class Profesor {
 
             // Elimina los profesores que ya no están en la API
             for (const [id] of profesoresMap) {
-                await client.query("DELETE FROM profesor WHERE ivd_id = $1", [id]);
-                deleted++;
+                if (id != 1) {
+                    await client.query("DELETE FROM profesor WHERE ivd_id = $1", [id]);
+                    deleted++;
+                }
             }
 
             return { inserted, updated, deleted };
@@ -90,7 +92,7 @@ module.exports = class Profesor {
 
     // Trae todos los profesores
     static fetchAll() {
-        return pool.query('SELECT ivd_id, nombre, primer_apellido, segundo_apellido FROM profesor');
+        return pool.query('SELECT ivd_id, nombre, primer_apellido, segundo_apellido FROM profesor WHERE activo = true');
     }
 
     // Elimina un profesor por id

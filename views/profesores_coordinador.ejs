@@ -159,6 +159,18 @@
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
 <script src="/js/coordinador.js"></script>
 
+<% if (msg) { %>
+  <script>
+    // Solo cuando el html carga completamente
+    document.addEventListener('DOMContentLoaded', () => {
+      // Crea una instancia de nuevo modal
+      var myModal = new bootstrap.Modal(document.getElementById('msgModal'));
+      // Muestra el nuevo modal
+      myModal.show();
+    });
+  </script>
+<% } %>
+
 <script>
   document.getElementById('confirmDeleteModal').addEventListener('show.bs.modal', function(event) {
   const button = event.relatedTarget;
