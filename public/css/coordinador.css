@@ -263,3 +263,8 @@ body {
     display: block;
     max-width: 100%;
   }
+
+  .scroll {
+    max-height: 100px;
+    overflow-y: auto;
+}

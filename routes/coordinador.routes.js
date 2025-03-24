@@ -19,4 +19,10 @@ router.get('/solicitudes-cambio', coordinador_controller.get_solicitudes_cambio)
 
 router.get('/ayuda', coordinador_controller.get_ayuda);
 
+router.get('/ciclo-escolar', coordinador_controller.get_cicloescolar);
+
+router.post('/ciclo-escolar/sincronizar', coordinador_controller.postSincronizarCicloEscolar);
+
+
+
 module.exports = router;
