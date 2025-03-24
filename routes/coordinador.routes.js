@@ -16,6 +16,7 @@ router.post('/salones/eliminar/:id', coordinador_controller.post_eliminar_salon)
 router.get('/grupos', coordinador_controller.get_grupos);
 
 router.get('/alumnos', coordinador_controller.get_alumnos);
+router.post('/alumnos/sincronizar', coordinador_controller.post_sincronizar_alumnos);
 
 router.get('/solicitudes-cambio', coordinador_controller.get_solicitudes_cambio);
 
