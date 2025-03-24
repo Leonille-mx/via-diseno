@@ -95,8 +95,8 @@ module.exports = class Materia {
                                     requisitoApi.requisite_course_id,
                                 ]
                             );
+                            changed = true;
                         }
-                        changed = true;
                     }
 
                     // Si ya no existen los requisito_id, los borra
@@ -111,8 +111,8 @@ module.exports = class Materia {
                                     requisitoDB
                                 ]
                             );
-                        }
-                        changed = true;
+                            changed = true;
+                        }  
                     }
 
                     if (
@@ -123,7 +123,8 @@ module.exports = class Materia {
                         // Conviértelos a números para una mejor comparasión
                         Number(materiaDB.horas_profesor) !== Number(mA.hours_professor) ||
                         // Normaliza el tipo de salon (trim strings) para una mejor comparasión
-                        (materiaDB.tipo_salon || "").trim() !== (mA.facilities || "").trim()
+                        (materiaDB.tipo_salon || "").trim() !== (mA.facilities || "").trim() ||
+                        (materiaDB.abierta) == true
                     ) {
                         // Actualiza los registros de nuestra base de datos
                         await client.query(
