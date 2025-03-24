@@ -9,6 +9,8 @@ router.get('/materias', coordinador_controller.get_materias);
 
 router.get('/profesores', coordinador_controller.get_profesores);
 
+router.post('/profesores/sincronizar', coordinador_controller.post_sincronizar_profesores);
+
 router.post('/profesores/eliminar/:id', coordinador_controller.post_eliminar_profesor);
 
 router.get('/salones', coordinador_controller.get_salones);

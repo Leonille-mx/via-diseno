@@ -1,43 +1,130 @@
 <%- include('includes/_nav_coordinador.ejs') %>
 <%- include('includes/_header_coordinador.ejs') %>
 
-<main class="bg-grey flex-grow-1 rounded-5 p-4">
-  <h1>Profesores</h1>
-  <div class="table-responsive">
-    <table class="table table-striped table-hover table-bordered">
+<main class="bg-grey flex-grow-1 rounded-5 p-0 d-flex flex-column" style="height: 100vh;">
+
+  <!-- Título de la sección -->
+  <div class="mb-4">
+    <h1 class="ms-3 mt-2">Profesores</h1>
+    <div style="border-bottom: 3px solid #84251C; width: 15rem; margin-top: -10px;"></div>
+  </div>
+
+  <!-- Mensaje de operación -->
+  <% if (msg) { %>
+    <div class="modal fade" id="msgModal" tabindex="-1" aria-labelledby="msgModalLabel" aria-hidden="true">
+      <div class="modal-dialog modal-dialog-centered modal-sm">
+        <div class="modal-content align-items-center rounded-5">
+          <div class="modal-header border-0">
+            <h5 class="modal-title ivd-text-red" id="msgModalLabel">Sincronizar Profesores</h5>
+          </div>
+          <div class="modal-body bg-grey rounded-5 text-center px-5">
+            <%- msg %>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn ivd-bg-red text-white rounded-5" data-bs-dismiss="modal">Aceptar</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  <% } %>
+
+  <!-- Barra de búsqueda y botones -->
+  <div class="d-flex align-items-center justify-content-between mx-5 mb-3 gap-3 flex-wrap">
+    <div class="d-flex align-items-center flex-grow-1" style="max-width: 200px;">
+      <input class="form-control me-2 rounded-pill" type="search" placeholder="Buscar profesor" aria-label="Search"
+        style="background-image:url('/images/search.svg'); background-repeat:no-repeat; background-position: 1rem center; padding-left: 3rem; font-size: 1rem; width: 100%; border: 1px solid #84251C;">
+    </div>
+    <div class="d-flex gap-3">
+      <form action="/coordinador/profesores/sincronizar" method="POST">
+        <button class="btn btn-primary d-flex align-items-center gap-2 rounded-pill px-3 py-2" style="background-color: #84251C; border: none;">
+          <i class="bi bi-arrow-repeat"></i> Sincronizar profesores
+        </button>
+      </form>
+      <button class="btn btn-primary d-flex align-items-center gap-2 rounded-pill px-3 py-2" style="background-color: #84251C; border: none;">
+        <i class="bi bi-plus-lg"></i> Añadir profesor
+      </button>
+    </div>
+  </div>
+
+  <!-- Tabla de profesores -->
+  <div class="table-responsive mx-5 mb-5 rounded-5 flex-grow-1" style="overflow: auto; background-color: white;">
+    <table class="table table-hover" style="min-width: 800px; width: 100%;">
       <thead class="table-light">
-        <th scope="col">ID</th>
-        <th scope="col">Nombre</th>
-        <th scope="col">Primer Apellido</th>
-        <th scope="col">Segundo Apellido</th>
-        <th scope="col">Acción</th>
+        <tr>
+          <th scope="col" class="text-center align-middle">ID</th>
+          <th scope="col" class="text-center align-middle">Nombre</th>
+          <th scope="col" class="text-center align-middle">Primer Apellido</th>
+          <th scope="col" class="text-center align-middle">Segundo Apellido</th>
+          <th scope="col" class="text-center align-middle">Ver</th>
+          <th scope="col" class="text-center align-middle">Eliminar</th>
+        </tr>
       </thead>
       <tbody>
         <% for (let profesor of profesores) { %>
           <tr>
-            <th scope="row"><%= profesor.ivd_id %></th>
-            <td><%= profesor.nombre %></td>
-            <td><%= profesor.primer_apellido %></td>
-            <td><%= profesor.segundo_apellido %></td>
-            <td>
-              <!-- Botón para abrir el modal de eliminación -->
-              <button type="button" class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#confirmDeleteModal"
-                data-profesor-id="<%= profesor.ivd_id %>"
-                data-nombre="<%= profesor.nombre %>"
-                data-primer-apellido="<%= profesor.primer_apellido %>"
-                data-segundo-apellido="<%= profesor.segundo_apellido %>">
-                Eliminar
+            <td class="text-center align-middle"><%= profesor.ivd_id %></td>
+            <td class="text-center align-middle"><%= profesor.nombre %></td>
+            <td class="text-center align-middle"><%= profesor.primer_apellido %></td>
+            <td class="text-center align-middle"><%= profesor.segundo_apellido %></td>
+            <td class="text-center align-middle">
+              <button class="btn btn-sm p-0 d-flex align-items-center justify-content-center btn-ver" data-id="<%= profesor.ivd_id %>">
+                <i class="bi bi-eye-fill"></i>
+              </button>
+            </td>
+            <td class="text-center align-middle">
+              <button class="btn btn-sm p-0 d-flex align-items-center justify-content-center btn-eliminar" data-id="<%= profesor.ivd_id %>" data-nombre="<%= profesor.nombre %>" data-primer-apellido="<%= profesor.primer_apellido %>" data-segundo-apellido="<%= profesor.segundo_apellido %>">
+                <i class="bi bi-x-lg"></i>
               </button>
             </td>
           </tr>
+        <% } %>
       </tbody>
     </table>
   </div>
 </main>
 
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
-<script src="/js/coordinador.js"></script>
+<!-- Modal de confirmación de eliminación -->
+<div class="modal fade" id="confirmDeleteModal" tabindex="-1" aria-labelledby="confirmDeleteModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content rounded-5">
+      <div class="modal-header justify-content-center" style="background-color: #f0f0f0">
+        <h5 class="modal-title" id="confirmDeleteModalLabel" style="color: #84251C;"><b>¿Está seguro de eliminar el siguiente profesor?</b></h5>
+      </div>
+      <div class="modal-body text-center">
+        <p id="modalProfesorInfo"></p>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+        <button type="button" class="btn btn-danger" id="confirmDeleteBtn">Eliminar</button>
+      </div>
+    </div>
+  </div>
+</div>
 
-</body>
-</html>
+<script>
+  document.addEventListener('DOMContentLoaded', () => {
+    const deleteModal = new bootstrap.Modal(document.getElementById('confirmDeleteModal'));
+    const modalProfesorInfo = document.getElementById('modalProfesorInfo');
+    const confirmDeleteBtn = document.getElementById('confirmDeleteBtn');
+
+    document.querySelectorAll('.btn-eliminar').forEach(button => {
+      button.addEventListener('click', (e) => {
+        const { id, nombre, primerApellido, segundoApellido } = e.target.closest('button').dataset;
+        modalProfesorInfo.textContent = `${id} - ${nombre} ${primerApellido} ${segundoApellido}`;
+        confirmDeleteBtn.dataset.id = id;
+        deleteModal.show();
+      });
+    });
+
+    confirmDeleteBtn.addEventListener('click', () => {
+      const id = confirmDeleteBtn.dataset.id;
+      window.location.href = `/coordinador/profesores/eliminar/${id}`;
+    });
+  });
+</script>
+
+
+
+
+  
 
