@@ -1,16 +1,21 @@
-const { Pool } = require("pg");
-const dotenv = require("dotenv");
+const { Pool } = require('pg');
+const dotenv = require('dotenv');
 
-// Load environment variables from .env file
 dotenv.config();
 
 const pool = new Pool({
-    host: process.env.DB_HOST,
-    user: process.env.DB_USER,
-    database: process.env.DB_NAME,
-    password: String(process.env.DB_PASSWORD), // Force string conversion
-    port: process.env.DB_PORT,
-    ssl: false // Add if not using SSL
-  });
+  host: process.env.DB_HOST,
+  user: process.env.DB_USER,
+  database: process.env.DB_NAME,
+  password: process.env.DB_PASSWORD, // Remove the extra parenthesis
+  port: process.env.DB_PORT,
+  ssl: false,
+  connectionTimeoutMillis: 2000
+});
 
-module.exports = pool; // 👈 This is crucial for other files to use the pool
+// Add connection test
+pool.query('SELECT NOW()')
+  .then(() => console.log('Database connected'))
+  .catch(err => console.error('Database connection error:', err));
+
+module.exports = pool; // Ensure proper export
