@@ -1,8 +1,8 @@
 const pool = require('../util/database')
 
 module.exports = class Alumno {
-    constructor(mi_id, mi_semestre, mi_regular, mi_inscripcion_completa, mi_plan_estudio_id) {
-        this.id = mi_id;
+    constructor(mi_ivd_id, mi_semestre, mi_regular, mi_inscripcion_completa, mi_plan_estudio_id) {
+        this.ivd_id = mi_ivd_id;
         this.semestre = mi_semestre;
         this.regular = mi_regular;
         this.inscripcion_completa = mi_inscripcion_completa;
