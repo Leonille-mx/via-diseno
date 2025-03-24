@@ -1,13 +1,125 @@
 <%- include('includes/_nav_coordinador.ejs') %>
 <%- include('includes/_header_coordinador.ejs') %>
 
-        <main class="bg-grey flex-grow-1 rounded-5 p-4">
-          <h1>Materias</h1>
-          <p>Aquí ponemos todo lo de materias</p>
-        </main>
+<main class="bg-grey flex-grow-1 rounded-5 p-0 d-flex flex-column" style="height: 100vh;">
+  <div class="mb-4">
+    <h1 class="ms-3 mt-2">Materias</h1>
+    <div style="border-bottom: 3px solid #84251C; width: 15rem; margin-top: -10px;"></div>
+  </div>
+  <!-- Si el msg string no es null, muestra un mensaje del resultado de la operación -->
+  <% if (msg) { %>
+    <div class="modal fade" id="msgModal" tabindex="-1" aria-labelledby="msgModalLabel" aria-hidden="true">
+      <div class="modal-dialog modal-dialog-centered modal-sm">
+        <div class="modal-content align-items-center rounded-5">
+          <div class="modal-header border border-0">
+            <h5 class="modal-title ivd-text-red" id="msgModalLabel">Sincronizar Materias</h5>
+          </div>
+          <div class="modal-body bg-grey rounded-5 text-center px-5">
+            <%- msg %>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn ivd-bg-red text-white rounded-5" data-bs-dismiss="modal">Aceptar</button>
+          </div>
+        </div>
       </div>
     </div>
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
-    <script src="/js/coordinador.js"></script>
-  </body>
+  <% } %>
+
+  <div class="d-flex align-items-center justify-content-between mx-5 mb-3 gap-3 flex-wrap">
+    <div class="d-flex align-items-center flex-grow-1" style="max-width: 200px;">
+      <input class="form-control me-2 rounded-pill" type="search" placeholder="Buscar salón" aria-label="Search"
+            style="background-image:url('/images/search.svg');
+                    background-repeat:no-repeat;
+                    background-position: 1rem center; 
+                    padding-left: 3rem; 
+                    font-size: 1rem;
+                    width: 100%;
+                    border: 1px solid #84251C;">
+    </div>
+    <div class="d-flex gap-3">
+      <form action="/coordinador/materias/sincronizar" method="POST">
+        <button type="submit" class="btn btn-primary d-flex align-items-center gap-2 rounded-pill px-3 py-2" 
+        style="background-color: #84251C; border: none;">
+          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-arrow-clockwise" viewBox="0 0 16 16">
+            <path fill-rule="evenodd" d="M8 3a5 5 0 1 0 4.546 2.914.5.5 0 0 1 .908-.417A6 6 0 1 1 8 2z"/>
+            <path d="M8 4.466V.534a.25.25 0 0 1 .41-.192l2.36 1.966c.12.1.12.284 0 .384L8.41 4.658A.25.25 0 0 1 8 4.466"/>
+          </svg>
+          Sincronizar Materias
+        </button>
+      </form>
+      <button class="btn btn-primary d-flex align-items-center gap-2 rounded-pill px-3 py-2" 
+      style="background-color: #84251C; border: none;">
+        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-plus-lg" viewBox="0 0 16 16">
+          <path fill-rule="evenodd" d="M8 2a.5.5 0 0 1 .5.5v5h5a.5.5 0 0 1 0 1h-5v5a.5.5 0 0 1-1 0v-5h-5a.5.5 0 0 1 0-1h5v-5A.5.5 0 0 1 8 2"/>
+        </svg>
+        Abrir Materia
+      </button>
+    </div>
+  </div>
+
+  <div class="table-responsive mx-5 mb-5 rounded-5 flex-grow-1" style="overflow: auto; background-color: white;">
+    <table class="table table-hover" style="min-width: 800px; width: 100%;">
+      <thead class="table-light">
+        <tr>
+          <th scope="col" style="width: 15%; min-width: 100px;" class="text-center align-middle">Nombre</th>
+          <th scope="col" style="width: 15%; min-width: 100px;" class="text-center align-middle">ID</th>
+          <th scope="col" style="width: 15%; min-width: 100px;" class="text-center align-middle">Créditos</th>
+          <th scope="col" style="width: 15%; min-width: 100px;" class="text-center align-middle">Horas profesor</th>
+          <th scope="col" style="width: 35%; min-width: 150px;" class="text-center align-middle">Tipo de Salon</th>
+          <th scope="col" style="width: 15%; min-width: 100px;" class="text-center align-middle">Obligatoria</th>
+          <th scope="col" style="width: 5%; min-width: 50px;"></th>
+        </tr>
+      </thead>
+      <tbody>
+        <% for (let materia of materias) { %>
+          <tr>
+            <th scope="row" class="text-center align-middle"><%= materia.materia_id %></th>
+            <td class="text-center align-middle"><%= materia.nombre %></td>
+            <td class="text-center align-middle"><%= materia.creditos %></td>
+            <td class="text-center align-middle"><%= materia.horas_profesor %></td>
+            <td class="text-center align-middle"><%= materia.tipo_salon %></td>
+            <td class="text-center align-middle">
+              <% if (materia.obligatoria === true) { %>
+                <%= "Sí" %>
+              <% } else if (materia.obligatoria === false) { %>
+                <%= "No" %>
+              <% } %>
+            </td>
+            <td class="text-center align-middle">
+              <button class="btn btn-sm p-0 d-flex align-items-center justify-content-center" 
+              style="
+                width: 1.5rem;
+                height: 1.5rem;
+                border-radius: 50%;
+                background-color: #84251c;
+                color: white;
+                border: none;
+              ">
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-x-lg" viewBox="0 0 16 16">
+                  <path d="M2.146 2.854a.5.5 0 1 1 .708-.708L8 7.293l5.146-5.147a.5.5 0 0 1 .708.708L8.707 8l5.147 5.146a.5.5 0 0 1-.708.708L8 8.707l-5.146 5.147a.5.5 0 0 1-.708-.708L7.293 8z"/>
+                </svg>
+              </button>
+            </td>
+          </tr>
+        <% } %>
+      </tbody>
+    </table>
+  </div>
+  </main>
+</div>
+</div>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+<script src="/js/coordinador.js"></script>
+  <% if (msg) { %>
+    <script>
+      // Solo cuando el html carga completamente
+      document.addEventListener('DOMContentLoaded', () => {
+        // Crea una instancia de nuevo modal
+        var myModal = new bootstrap.Modal(document.getElementById('msgModal'));
+        // Muestra el nuevo modal
+        myModal.show();
+      });
+    </script>
+  <% } %>
+</body>
 </html>
