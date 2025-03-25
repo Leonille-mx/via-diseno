@@ -287,6 +287,14 @@ thead th {
   z-index: 2;
 }
 
+.table .selected {
+  background-color:  #84251c44 !important;
+}
+
+#schedule td {
+  cursor: pointer;
+}
+
 .table-hover tbody tr:hover td,
 .table-hover tbody tr:hover th {
   background-color: #84251c44 !important;
@@ -331,6 +339,6 @@ thead th {
 input.form-control,
 textarea.form-control,
 select.form-select {
-  width: calc(100% - 1.5rem); /* Resta los márgenes horizontales */
+  width: calc(100% - 1.5rem);
   box-sizing: border-box;
 }
