@@ -2,6 +2,8 @@ const Salon = require('../models/salon.model');
 const Campus = require('../models/campus.model');
 const Materia = require('../models/materia.model');
 const { getAllCourses } = require('../util/adminApiClient');
+const Profesor = require('../models/profesor.model.js');
+const { getAllProfessors } = require('../util/adminApiClient.js');
 
 exports.get_dashboard = (req, res, nxt) => {
     res.render('dashboard_coordinador');
@@ -49,9 +51,48 @@ exports.post_sincronizar_materias = async (req, res, nxt) => {
         res.redirect(`/coordinador/materias?msg=${encodeURIComponent('La operación fue fracasada')}`);
     }
 };
+        
+exports.get_profesores = async (req, res, nxt) => {
+  try {
+    const profesoresDB = await Profesor.fetchAll();  
+    const msg = req.query.msg || null;
 
-exports.get_profesores = (req, res, nxt) => {
-    res.render('profesores_coordinador');
+    res.render('profesores_coordinador', {
+        profesores: profesoresDB.rows,  
+        msg, 
+    });
+  } catch (error) {
+    console.log(error);
+    res.status(500).send('Hubo un problema al obtener los profesores.');
+  }
+};
+
+exports.post_sincronizar_profesores = async (req, res, nxt) => {
+    try {
+        const courses = await getAllProfessors(); 
+        const profesoresApi = courses.data; 
+        
+        const resultado = await Profesor.sincronizarProfesores(profesoresApi); 
+        const msg = `La operación fue exitosa!<br>
+                    Insertado: ${resultado.inserted}<br>
+                    Actualizado: ${resultado.updated}<br>
+                    Eliminado: ${resultado.deleted}`; 
+
+        res.redirect(`/coordinador/profesores?msg=${encodeURIComponent(msg)}`);
+    } catch (error) {
+        console.error(error);
+        res.redirect(`/coordinador/profesores?msg=${encodeURIComponent('La operación fue fracasada')}`);
+    }
+};
+
+exports.post_eliminar_profesor = (req, res, nxt) => {
+  Profesor.delete(req.params.id)
+      .then(() => {
+          res.redirect('/coordinador/profesores');
+      })
+      .catch((error) => {
+          console.log(error);
+      });
 };
 
 exports.get_salones = (req, res, nxt) => {

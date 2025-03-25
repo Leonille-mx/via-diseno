@@ -62,5 +62,19 @@ async function getAllCourses() {
   return response.data;
 }
 
+async function getAllProfessors() {
+  const token = await getToken();  
+  const headers = getHeaders(token);  
+
+  const response = await axiosAdminClient.get("v1/users/all", {
+    headers,
+    params: {
+      type: "Users::Professor",  
+    }
+  });
+
+  return response.data;  
+}
+
 // Export the functions so they can be used in other files
-module.exports = { getAllCourses };
+module.exports = { getAllCourses, getAllProfessors };

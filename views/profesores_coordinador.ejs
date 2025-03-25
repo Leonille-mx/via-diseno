@@ -1,13 +1,198 @@
 <%- include('includes/_nav_coordinador.ejs') %>
 <%- include('includes/_header_coordinador.ejs') %>
 
-        <main class="bg-grey flex-grow-1 rounded-5 p-4">
-          <h1>Profesores</h1>
-          <p>Aquí ponemos todo lo de profesores</p>
-        </main>
+<main class="bg-grey flex-grow-1 rounded-5 p-0 d-flex flex-column" style="height: 100vh;">
+  
+  <!-- Título de la sección -->
+  <div class="mb-4">
+    <h1 class="ms-3 mt-2">Profesores</h1>
+    <div style="border-bottom: 3px solid #84251C; width: 15rem; margin-top: -10px;"></div>
+  </div>
+    <!-- Si el msg string no es null, muestra un mensaje del resultado de la operación -->
+    <% if (msg) { %>
+      <div class="modal fade" id="msgModal" tabindex="-1" aria-labelledby="msgModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered modal-sm">
+          <div class="modal-content align-items-center rounded-5">
+            <div class="modal-header border border-0">
+              <h5 class="modal-title ivd-text-red" id="msgModalLabel">Sincronizar Materias</h5>
+            </div>
+            <div class="modal-body bg-grey rounded-5 text-center px-5">
+              <%- msg %>
+            </div>
+            <div class="modal-footer">
+              <button type="button" class="btn ivd-bg-red text-white rounded-5" data-bs-dismiss="modal">Aceptar</button>
+            </div>
+          </div>
+        </div>
       </div>
+    <% } %>
+  <!-- Barra de búsqueda y botones para sincronizar y añadir profesor -->
+  <div class="d-flex align-items-center justify-content-between mx-5 mb-3 gap-3 flex-wrap">
+    
+    <!-- Campo de búsqueda con icono de lupa -->
+    <div class="d-flex align-items-center flex-grow-1" style="max-width: 200px;">
+      <input class="form-control me-2 rounded-pill" type="search" placeholder="Buscar profesor" aria-label="Search"
+      style="background-image:url('/images/search.svg'); background-repeat:no-repeat; background-position: 1rem center; padding-left: 3rem; font-size: 1rem; width: 100%; border: 1px solid #84251C;">
     </div>
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
-    <script src="/js/coordinador.js"></script>
-  </body>
+    
+    <!-- Botón para sincronizar profesores -->
+    <div class="d-flex gap-3">
+      <form action="/coordinador/profesores/sincronizar" method="POST">
+        <button type="submit" class="btn btn-primary d-flex align-items-center gap-2 rounded-pill px-3 py-2" style="background-color: #84251C; border: none;">
+          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-arrow-repeat" viewBox="0 0 16 16">
+            <path d="M11.534 7h3.932a.25.25 0 0 1 .192.41l-1.966 2.36a.25.25 0 0 1-.384 0l-1.966-2.36a.25.25 0 0 1 .192-.41m-11 2h3.932a.25.25 0 0 0 .192-.41L2.692 6.23a.25.25 0 0 0-.384 0L.342 8.59A.25.25 0 0 0 .534 9"/>
+            <path fill-rule="evenodd" d="M8 3c-1.552 0-2.94.707-3.857 1.818a.5.5 0 1 1-.771-.636A6.002 6.002 0 0 1 13.917 7H12.9A5 5 0 0 0 8 3M3.1 9a5.002 5.002 0 0 0 8.757 2.182.5.5 0 1 1 .771.636A6.002 6.002 0 0 1 2.083 9z"/>
+          </svg>
+          Sincronizar profesores
+        </button>
+      </form>
+
+
+      <!-- Botón para añadir profesor -->
+      <button class="btn btn-primary d-flex align-items-center gap-2 rounded-pill px-3 py-2" style="background-color: #84251C; border: none;">
+        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-plus-lg" viewBox="0 0 16 16">
+          <path fill-rule="evenodd" d="M8 2a.5.5 0 0 1 .5.5v5h5a.5.5 0 0 1 0 1h-5v5a.5.5 0 0 1-1 0v-5h-5a.5.5 0 0 1 0-1h5v-5A.5.5 0 0 1 8 2"/>
+        </svg>
+        Añadir profesor
+      </button>
+    </div>
+  </div>
+
+  <!-- Tabla de profesores -->
+  <div class="table-responsive mx-5 mb-5 rounded-5 flex-grow-1" style="overflow: auto; background-color: white;">
+    <table class="table table-hover" style="min-width: 800px; width: 100%;">
+      <thead class="table-light">
+        <tr>
+          <th scope="col" style="width: 15%; min-width: 100px;" class="text-center align-middle">ID</th>
+          <th scope="col" style="width: 20%; min-width: 100px;" class="text-center align-middle">Nombre</th>
+          <th scope="col" style="width: 25%; min-width: 100px;" class="text-center align-middle">Primer Apellido</th>
+          <th scope="col" style="width: 25%; min-width: 100px;" class="text-center align-middle">Segundo Apellido</th>
+          <th scope="col" style="width: 5%; min-width: 50px;"></th>
+          <th scope="col" style="width: 5%; min-width: 50px;"></th>
+        </tr>
+      </thead>
+      <tbody>
+        <% for (let profesor of profesores) { %>
+          <tr>
+            <th scope="row" class="text-center align-middle"><%= profesor.ivd_id %></th>
+            <td class="text-center align-middle"><%= profesor.nombre %></td>
+            <td class="text-center align-middle"><%= profesor.primer_apellido %></td>
+            <td class="text-center align-middle"><%= profesor.segundo_apellido %></td>
+            <td class="text-center align-middle">
+              <button class="btn btn-sm p-0 d-flex align-items-center justify-content-center" 
+              style="width: 1.5rem; height: 1.5rem; border-radius: 50%; background-color: #84251c; color: white; border: none;">
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-eye-fill" viewBox="0 0 16 16">
+                  <path d="M10.5 8a2.5 2.5 0 1 1-5 0 2.5 2.5 0 0 1 5 0"/>
+                  <path d="M0 8s3-5.5 8-5.5S16 8 16 8s-3 5.5-8 5.5S0 8 0 8m8 3.5a3.5 3.5 0 1 0 0-7 3.5 3.5 0 0 0 0 7"/>
+                </svg>
+              </button>
+            </td>
+            <td class="text-center align-middle">
+              <!-- Botón para abrir el modal de confirmación de eliminación -->
+              <button class="btn btn-sm p-0 d-flex align-items-center justify-content-center" 
+              style="width: 1.5rem; height: 1.5rem; border-radius: 50%; background-color: #84251c; color: white; border: none;"   
+                data-bs-toggle="modal" 
+                data-bs-target="#confirmDeleteModal"
+                data-profesor-id="<%= profesor.ivd_id %>"
+                data-profesor-nombre="<%= profesor.nombre %>"
+                data-profesor-primer-apellido="<%= profesor.primer_apellido %>"
+                data-profesor-segundo-apellido="<%= profesor.segundo_apellido %>">
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-x-lg" viewBox="0 0 16 16">
+                  <path d="M2.146 2.854a.5.5 0 1 1 .708-.708L8 7.293l5.146-5.147a.5.5 0 0 1 .708.708L8.707 8l5.147 5.146a.5.5 0 0 1-.708.708L8 8.707l-5.146 5.147a.5.5 0 0 1-.708-.708L7.293 8z"/>
+                </svg>
+              </button>
+            </td>
+          </tr>
+        <% } %>
+      </tbody>
+    </table>
+  </div>
+</main>
+
+
+<!-- Modal de confirmación de eliminación -->
+<div class="modal fade" id="confirmDeleteModal" tabindex="-1" aria-labelledby="confirmDeleteModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
+    <div class="modal-content rounded-5" style="max-width: 95vw;">
+      
+      <!-- Encabezado del modal -->
+      <div class="modal-header justify-content-center" style="background-color: #f0f0f0">
+        <h5 class="modal-title" id="confirmDeleteModalLabel" style="color: #84251C;"><b>¿Está seguro de eliminar el siguiente profesor?</b></h5>
+      </div>
+      
+      <!-- Cuerpo del modal con los detalles del salón a eliminar -->
+      <div class="modal-body" style="max-height: 60vh; overflow-y: auto;">
+        <div class="table-responsive">
+          <table class="table table-bordered m-0">
+            <thead class="table-light">
+              <tr>
+                <th style="min-width: 80px;" class="text-center align-middle">ID</th>
+                <th style="min-width: 80px;" class="text-center align-middle">Nombre</th>
+                <th style="min-width: 90px;" class="text-center align-middle">Apellido</th>
+                <th style="min-width: 90px;" class="text-center align-middle">Apellido</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td id="modalProfesorID" class="text-center align-middle"></td>
+                <td id="modalNombre" class="text-center align-middle"></td>
+                <td id="modalPrimerApellido" class="text-center align-middle"></td>
+                <td id="modalSegundoApellido" class="text-center align-middle"></td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+      
+      <!-- Pie del modal con botones de acción -->
+      <div class="modal-footer justify-content-center" style="background-color: #f0f0f0">
+        <button type="button" class="btn btn-secondary rounded-pill px-4 mx-4" style="background-color: white; border: 1px solid #84251C; color: #84251C;" data-bs-dismiss="modal">Cancelar</button>
+        <form id="deleteForm" method="POST" action="">
+          <button type="submit" class="btn btn-danger rounded-pill px-4 mx-4" style="background-color: #84251C; border: none;">Eliminar</button>
+        </form>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+<script src="/js/coordinador.js"></script>
+
+<% if (msg) { %>
+  <script>
+    // Solo cuando el html carga completamente
+    document.addEventListener('DOMContentLoaded', () => {
+      // Crea una instancia de nuevo modal
+      var myModal = new bootstrap.Modal(document.getElementById('msgModal'));
+      // Muestra el nuevo modal
+      myModal.show();
+    });
+  </script>
+<% } %>
+
+<script>
+  document.getElementById('confirmDeleteModal').addEventListener('show.bs.modal', function(event) {
+  const button = event.relatedTarget;
+  const profesorId = button.getAttribute('data-profesor-id');
+  const profesorNombre = button.getAttribute('data-profesor-nombre');
+  const profesorPrimerApellido = button.getAttribute('data-profesor-primer-apellido');
+  const profesorSegundoApellido = button.getAttribute('data-profesor-segundo-apellido');
+
+  // Actualizar contenido del modal
+  document.getElementById('modalProfesorID').textContent = profesorId;
+  document.getElementById('modalNombre').textContent = profesorNombre;
+  document.getElementById('modalPrimerApellido').textContent = profesorPrimerApellido;
+  document.getElementById('modalSegundoApellido').textContent = profesorSegundoApellido;
+
+  // Actualizar acción del formulario
+  document.getElementById('deleteForm').action = `profesores/eliminar/${profesorId}`;
+});
+
+</script>
+</body>
 </html>
+
+
+
+  
