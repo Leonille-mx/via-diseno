@@ -25,25 +25,27 @@ module.exports = class Profesor {
 
                 if (!profesorDB) {
                     // Inserta los nuevos registros
-                    await client.query(
-                        `INSERT INTO profesor (ivd_id, nombre, primer_apellido, segundo_apellido, activo) 
-                        VALUES ($1, $2, $3, $4, $5)`,
-                        [
-                            pA.ivd_id,
-                            pA.name,
-                            pA.first_surname,
-                            pA.second_surname,
-                            pA.status ? 1 : 0,
-                        ]
-                    );
-                    inserted++;
+                    if (pA.status) {
+                        await client.query(
+                            `INSERT INTO profesor (ivd_id, nombre, primer_apellido, segundo_apellido, activo) 
+                            VALUES ($1, $2, $3, $4, $5)`,
+                            [
+                                pA.ivd_id,
+                                pA.name,
+                                pA.first_surname,
+                                pA.second_surname,
+                                false,
+                            ]
+                        );
+                        inserted++;
+                    }
                 } else {
                     // Verifica si hay cambios en los atributos
                     if (
                         (profesorDB.nombre || '').trim() !== (pA.name || '').trim() ||
                         (profesorDB.primer_apellido || '').trim() !== (pA.first_surname || '').trim() ||
                         (profesorDB.segundo_apellido || '').trim() !== (pA.second_surname || '').trim() ||
-                        Number(profesorDB.activo) !== (pA.status ? 1 : 0)
+                        (profesorDB.activo) == true
                     ) {
                         // Actualiza el registro si hay cambios
                         await client.query(
@@ -53,11 +55,15 @@ module.exports = class Profesor {
                                 pA.name,
                                 pA.first_surname,
                                 pA.second_surname,
-                                pA.status ? 1 : 0,
+                                false,
                                 pA.ivd_id,
                             ]
                         );
                         updated++;
+                    }
+                    if (pA.status == false & profesorDB.activo == true) {
+                        await client.query("DELETE FROM profesor WHERE ivd_id = $1", pA.ivd_id);
+                        deleted++;
                     }
                 }
 
@@ -97,6 +103,6 @@ module.exports = class Profesor {
 
     // Elimina un profesor por id
     static delete(id) {
-        return pool.query('DELETE FROM profesor WHERE ivd_id = $1', [id]);
+        return pool.query('UPDATE profesor SET activo = false WHERE ivd_id = $1', [id]);
     }
 };
