@@ -1,5 +1,5 @@
 const Profesor = require('../models/profesor.model.js');
-const { getAllProfessors } = require('../adminApiClient');
+const { getAllProfessors } = require('../util/adminApiClient.js');
 
 exports.get_dashboard = (req, res, nxt) => {
     res.render('dashboard_coordinador');

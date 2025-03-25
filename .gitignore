@@ -3,7 +3,6 @@
 # Learn more about .gitignore:
 #     https://www.atlassian.com/git/tutorials/saving-changes/gitignore
 
-util/database.js
 .env*
 
 # Node artifact files
