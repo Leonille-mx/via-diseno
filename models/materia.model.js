@@ -1,14 +1,12 @@
-const pool = require('../util/database')
+const pool = require('../util/database');
 
 module.exports = class Materia {
-    constructor(mi_id, mi_nombre, mi_creditos, mi_horas_profesor, mi_tipo_salon, mi_abierta, mi_obligatoria, mi_profesor_id) {
+    constructor(mi_id, mi_nombre, mi_creditos, mi_horas_profesor, mi_tipo_salon, mi_profesor_id) {
         this.id = mi_id;
         this.nombre = mi_nombre;
         this.creditos = mi_creditos;
         this.horas_profesor = mi_horas_profesor;
         this.tipo_salon = mi_tipo_salon;
-        this.abierta = mi_abierta;
-        this.obligatoria = mi_obligatoria
         this.profesor_id = mi_profesor_id;
     }
     // Para sincronizar materias
@@ -123,19 +121,16 @@ module.exports = class Materia {
                         // Conviértelos a números para una mejor comparasión
                         Number(materiaDB.horas_profesor) !== Number(mA.hours_professor) ||
                         // Normaliza el tipo de salon (trim strings) para una mejor comparasión
-                        (materiaDB.tipo_salon || "").trim() !== (mA.facilities || "").trim() ||
-                        (materiaDB.abierta) == true
+                        (materiaDB.tipo_salon || "").trim() !== (mA.facilities || "").trim()
                     ) {
                         // Actualiza los registros de nuestra base de datos
                         await client.query(
-                            "UPDATE materia SET nombre = $1, creditos = $2, horas_profesor = $3, tipo_salon = $4, abierta = $5, profesor_id = $6 WHERE materia_id = $7",
+                            "UPDATE materia SET nombre = $1, creditos = $2, horas_profesor = $3, tipo_salon = $4, profesor_id = $5 WHERE materia_id = $7",
                             [
                                 mA.name, 
                                 mA.credits, 
                                 mA.hours_professor, 
                                 mA.facilities, 
-                                // Para no abrir la materia
-                                false,
                                 // profesor no registrado (ivd_id): 1
                                 1,
                                 mA.id,
@@ -169,8 +164,8 @@ module.exports = class Materia {
             client.release();
         }
     }
-    // Trae los registros donde su atributo 'abierta' es true
+    // Trae los registros
     static fetchAll() {
-        return pool.query('SELECT materia_id, nombre, creditos, horas_profesor, tipo_salon, obligatoria FROM Materia WHERE abierta = true');
+        return pool.query('SELECT materia_id, nombre, creditos, horas_profesor, tipo_salon FROM Materia');
     }
 }
