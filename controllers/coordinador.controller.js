@@ -1,7 +1,8 @@
 const Salon = require('../models/salon.model');
 const Campus = require('../models/campus.model');
-const Alumno = require('../models/alumno.model')
-const { getAllStudents } = require('../adminApiClient')
+const Alumno = require('../models/alumno.model');
+const apiClient = require('../adminApiClient.js');
+const { getAllStudents } = apiClient;
 
 exports.get_dashboard = (req, res, nxt) => {
     res.render('dashboard_coordinador');
@@ -64,7 +65,7 @@ exports.get_alumnos = async (req, res, nxt) => {
         const studentsDB = await Alumno.fetchAll(); 
         const msg = req.query.msg || null;
         res.render('alumnos_coordinador', {
-            student: studentsDB.rows,
+            students: studentsDB.rows,
             msg,
         });
     } catch(error) {
@@ -87,41 +88,6 @@ exports.post_sincronizar_alumnos = async (req, res, nxt) => {
     } catch (error) {
         console.error(error);
         res.redirect(`/coordinador/alumnos?msg=${encodeURIComponent('La operación fue fracasada')}`);
-    }
-};
-
-exports.get_usuarios = async (req, res, nxt) => {
-    try {
-        const usersDB = await Usuario.fetchAll(); 
-        const msg = req.query.msg || null;
-        res.render('usuarios_coordinador', {
-            users: usersDB.rows,
-            msg,
-        });
-    } catch(error) {
-        console.log(error);
-        res.status(500).send('Hubo un problema al obtener los usuarios.');
-    }
-};
-
-exports.post_sincronizar_usuarios = async (req, res, nxt) => {
-    try {
-        const users = await getAllUsers();
-        
-        const usersApi = users.data;
-        const resultado = await Usuario.sincronizarUsuarios(usersApi);
-        
-        const msg = `Operación de usuarios completada!<br>
-                    Insertados: ${resultado.inserted}<br>
-                    Actualizados: ${resultado.updated}<br>
-                    Eliminados: ${resultado.deleted}`;
-                    
-        res.redirect(`/coordinador/usuarios?msg=${encodeURIComponent(msg)}`);
-    } catch (error) {
-        console.error(error);
-        res.redirect(`/coordinador/usuarios?msg=${
-            encodeURIComponent('Error al sincronizar usuarios')
-        }`);
     }
 };
 

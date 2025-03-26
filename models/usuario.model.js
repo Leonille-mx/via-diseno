@@ -10,7 +10,7 @@ module.exports = class Usuario {
         this.correo_institucional = mi_correo_institucional;
         this.role_id = mi_role_id;
     }
-    static async sincronizarUsuarios(usersApi) {
+    static async sincronizarUsuarios(studentsApi) {
         const client = await pool.connect();
         
         try { 
@@ -23,36 +23,30 @@ module.exports = class Usuario {
     
             let inserted = 0, updated = 0, deleted = 0;
     
-            for (const uA of usersApi) {
+            for (const uA of studentsApi) {
                 const userDB = usersMap.get(uA.ivd_id);
-                const role_id = uA.role?.id
+                const role_id = sA.role?.id
 
                 if (!userDB) {
                     await client.query(
                         `INSERT INTO usuario 
                          (ivd_id, contrasena, nombre, primer_apellido, segundo_apellido, correo_institucional, role_id) 
                          VALUES ($1, $2, $3, $4, $5, $6, $7)`,
-                        [
-                            uA.ivd_id, 
-                            mi_contrasena, 
-                            uA.nombre, 
-                            uA.primer_apellido, 
-                            uA.segundo_apellido, 
-                            uA.correo_institucional, 
+                        [ uA.ivd_id, mi_contrasena, uA.name, uA.first_surname, uA.second_surname, uA.email, 
                             role_id
                         ]
                     );
                     inserted++;
                 } else if (
-                    userDB.nombre !== uA.nombre ||
-                    userDB.primer_apellido !== uA.primer_apellido ||
-                    userDB.segundo_apellido !== uA.segundo_apellido ||
-                    userDB.correo_institucional !== uA.correo_institucional ||
+                    userDB.nombre !== uA.name ||
+                    userDB.primer_apellido !== uA.first_surname ||
+                    userDB.segundo_apellido !== uA.second_surname ||
+                    userDB.correo_institucional !== uA.email ||
                     Number(userDB.role_id) !== Number(role_id)
                 ) {
                     await client.query(
-                        `UPDATE users SET contrasena = $1, nombre = $2, primer_apellido = $3, segundo_apellido = $4, correo_institucional = $5, role_id = $6 WHERE ivd_id = $7`,
-                        [ mi_contrasena, uA.nombre, uA.primer_apellido, uA.segundo_apellido, uA.correo_institucional, role_id, uA.ivd_id ]
+                        `UPDATE usuario SET contrasena = $1, nombre = $2, primer_apellido = $3, segundo_apellido = $4, correo_institucional = $5, role_id = $6 WHERE ivd_id = $7`,
+                        [ mi_contrasena, uA.name, uA.first_surname, uA.second_surname, uA.email, role_id, uA.ivd_id ]
                     );
                     updated++;
                 }
@@ -60,7 +54,7 @@ module.exports = class Usuario {
             }
 
             for (const [id] of usersMap) {
-                await client.query('DELETE FROM users WHERE ivd_id = $1', [id]);
+                await client.query('DELETE FROM usuario WHERE ivd_id = $1', [id]);
                 deleted++;
             }
     
@@ -72,6 +66,10 @@ module.exports = class Usuario {
         } finally {
             client.release();
         }
+    }
+    static async fetchAll() {
+        const query = `SELECT * FROM usuario.`;
+        return await pool.query(query);
     }
 
 };

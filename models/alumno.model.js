@@ -60,4 +60,13 @@ module.exports = class Alumno {
             client.release();
         }
     } 
+
+    static async fetchAll() {
+        const query = `
+            SELECT *
+            FROM alumno a, usuario u
+            WHERE a.ivd_id = u.ivd_id
+        `;
+        return await pool.query(query);
+    }
 }

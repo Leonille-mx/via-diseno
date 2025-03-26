@@ -18,9 +18,6 @@ router.get('/grupos', coordinador_controller.get_grupos);
 router.get('/alumnos', coordinador_controller.get_alumnos);
 router.post('/alumnos/sincronizar', coordinador_controller.post_sincronizar_alumnos);
 
-router.get('/usuarios', coordinador_controller.get_usuarios);
-router.post('/usuarios/sincronizar', coordinador_controller.post_sincronizar_usuarios);
-
 router.get('/solicitudes-cambio', coordinador_controller.get_solicitudes_cambio);
 
 router.get('/ayuda', coordinador_controller.get_ayuda);

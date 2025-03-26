@@ -52,23 +52,16 @@ function getHeaders(token) {
   };
 }
 
-async function getAllUsers() {
-  const token = await getToken();
-  const headers = await getHeaders();
-  
-  const response = await axiosAdminClient.get("v1/users/all", {
-      headers,
-  }); 
-  return response.data;
-}
-
 async function getAllStudents() {
     const token = await getToken();
     const headers = await getHeaders();
     
-    const response = await axiosAdminClient.get("v1/users/all?type=Users::Student", {
-        headers,
-    }); 
+    const response = await axiosAdminClient.get("v1/users/all", {
+      headers,
+      params: {
+        type: "Users::Student",  
+      }
+    }); 
     return response.data;
 }
 
