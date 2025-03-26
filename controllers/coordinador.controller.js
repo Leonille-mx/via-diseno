@@ -83,11 +83,45 @@ exports.post_sincronizar_alumnos = async (req, res, nxt) => {
                     Insertado: ${resultado.inserted}<br>
                     Actualizado: ${resultado.updated}<br>
                     Eliminado: ${resultado.deleted}`;
-        res.redirect(`/coordinador/profesores?msg=${encodeURIComponent(msg)}`);
         res.redirect('/coordinador/alumnos?msg=${encodeURIComponent(msg)}')
     } catch (error) {
         console.error(error);
-        res.redirect(`/coordinador/profesores?msg=${encodeURIComponent('La operación fue fracasada')}`);
+        res.redirect(`/coordinador/alumnos?msg=${encodeURIComponent('La operación fue fracasada')}`);
+    }
+};
+
+exports.get_usuarios = async (req, res, nxt) => {
+    try {
+        const usersDB = await Usuario.fetchAll(); 
+        const msg = req.query.msg || null;
+        res.render('usuarios_coordinador', {
+            users: usersDB.rows,
+            msg,
+        });
+    } catch(error) {
+        console.log(error);
+        res.status(500).send('Hubo un problema al obtener los usuarios.');
+    }
+};
+
+exports.post_sincronizar_usuarios = async (req, res, nxt) => {
+    try {
+        const users = await getAllUsers();
+        
+        const usersApi = users.data;
+        const resultado = await Usuario.sincronizarUsuarios(usersApi);
+        
+        const msg = `Operación de usuarios completada!<br>
+                    Insertados: ${resultado.inserted}<br>
+                    Actualizados: ${resultado.updated}<br>
+                    Eliminados: ${resultado.deleted}`;
+                    
+        res.redirect(`/coordinador/usuarios?msg=${encodeURIComponent(msg)}`);
+    } catch (error) {
+        console.error(error);
+        res.redirect(`/coordinador/usuarios?msg=${
+            encodeURIComponent('Error al sincronizar usuarios')
+        }`);
     }
 };
 

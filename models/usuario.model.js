@@ -1,5 +1,3 @@
-const pool = require('../util/database')
-
 const pool = require('../util/database');
 
 module.exports = class Usuario {
@@ -12,8 +10,68 @@ module.exports = class Usuario {
         this.correo_institucional = mi_correo_institucional;
         this.role_id = mi_role_id;
     }
+    static async sincronizarUsuarios(usersApi) {
+        const client = await pool.connect();
+        
+        try { 
 
-    static async sincronizarUsuarios() {
+            const usersDB_data = await client.query('SELECT * FROM usuario');
 
+            const usersDB = usersDB_data.rows;
+
+            const usersMap = new Map(usersDB.map(user => [user.ivd_id, user]));
+    
+            let inserted = 0, updated = 0, deleted = 0;
+    
+            for (const uA of usersApi) {
+                const userDB = usersMap.get(uA.ivd_id);
+                const role_id = uA.role?.id
+
+                if (!userDB) {
+                    await client.query(
+                        `INSERT INTO usuario 
+                         (ivd_id, contrasena, nombre, primer_apellido, segundo_apellido, correo_institucional, role_id) 
+                         VALUES ($1, $2, $3, $4, $5, $6, $7)`,
+                        [
+                            uA.ivd_id, 
+                            mi_contrasena, 
+                            uA.nombre, 
+                            uA.primer_apellido, 
+                            uA.segundo_apellido, 
+                            uA.correo_institucional, 
+                            role_id
+                        ]
+                    );
+                    inserted++;
+                } else if (
+                    userDB.nombre !== uA.nombre ||
+                    userDB.primer_apellido !== uA.primer_apellido ||
+                    userDB.segundo_apellido !== uA.segundo_apellido ||
+                    userDB.correo_institucional !== uA.correo_institucional ||
+                    Number(userDB.role_id) !== Number(role_id)
+                ) {
+                    await client.query(
+                        `UPDATE users SET contrasena = $1, nombre = $2, primer_apellido = $3, segundo_apellido = $4, correo_institucional = $5, role_id = $6 WHERE ivd_id = $7`,
+                        [ mi_contrasena, uA.nombre, uA.primer_apellido, uA.segundo_apellido, uA.correo_institucional, role_id, uA.ivd_id ]
+                    );
+                    updated++;
+                }
+                usersMap.delete(uA.ivd_id); 
+            }
+
+            for (const [id] of usersMap) {
+                await client.query('DELETE FROM users WHERE ivd_id = $1', [id]);
+                deleted++;
+            }
+    
+            return { inserted, updated, deleted };
+    
+        } catch(error) {
+            console.error('Error durante la sincronización de usuarios:', error);
+            throw error;
+        } finally {
+            client.release();
+        }
     }
+
 };

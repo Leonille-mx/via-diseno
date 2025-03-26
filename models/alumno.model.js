@@ -1,33 +1,14 @@
 const pool = require('../util/database')
 
-module.exports = class Alumno extends Usuario {
-    constructor(
-        mi_ivd_id, 
-        mi_contrasena, 
-        mi_nombre, 
-        mi_primer_apellido, 
-        mi_segundo_apellido, 
-        mi_correo_institucional, 
-        mi_role_id,
-        mi_semestre, 
-        mi_regular, 
-        mi_inscripcion_completa, 
-        mi_plan_estudio_id
-    ) {
-        super(
-            mi_ivd_id, 
-            mi_contrasena, 
-            mi_nombre, 
-            mi_primer_apellido, 
-            mi_segundo_apellido, 
-            mi_correo_institucional, 
-            mi_role_id
-        );
-        
+
+module.exports = class Alumno {
+    constructor(mi_ivd_id, mi_semestre, mi_regular, mi_inscripcion_completa, mi_plan_estudio_id, usuarioData = null) {
+        this.ivd_id = mi_ivd_id;
         this.semestre = mi_semestre;
         this.regular = mi_regular;
         this.inscripcion_completada = mi_inscripcion_completa;
         this.plan_estudio_id = mi_plan_estudio_id;
+        this.usuario = usuarioData ? new Usuario(...Object.values(usuarioData)) : null;
     }
 
     static async sincronizarAlumnos(studentsApi) {
@@ -64,7 +45,7 @@ module.exports = class Alumno extends Usuario {
                     );
                     updated++;
                 }
-                materiasMap.delete(sA.ivd_id);
+                studentsMap.delete(sA.ivd_id);
             }
             for (const [id] of studentsMap) {
                 await client.query('DELETE FROM alumno WHERE ivd_id = $1' [id]);
