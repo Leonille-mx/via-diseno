@@ -47,15 +47,17 @@
             </button>
           </form>
 
-          <!-- Botón para añadir profesor -->
-          <button class="btn btn-primary d-flex align-items-center gap-2 rounded-pill px-3 py-2" style="background-color: #84251C; border: none;">
-            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-plus-lg" viewBox="0 0 16 16">
-              <path fill-rule="evenodd" d="M8 2a.5.5 0 0 1 .5.5v5h5a.5.5 0 0 1 0 1h-5v5a.5.5 0 0 1-1 0v-5h-5a.5.5 0 0 1 0-1h5v-5A.5.5 0 0 1 8 2"/>
-            </svg>
-            Añadir profesor
-          </button>
-        </div>
-      </div>
+
+      <!-- Botón para añadir profesor -->
+      <button class="btn btn-primary d-flex align-items-center gap-2 rounded-pill px-3 py-2" style="background-color: #84251C; border: none;"
+      data-bs-toggle="modal" 
+      data-bs-target="#registerProfesorModal">
+        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-plus-lg" viewBox="0 0 16 16">
+          <path fill-rule="evenodd" d="M8 2a.5.5 0 0 1 .5.5v5h5a.5.5 0 0 1 0 1h-5v5a.5.5 0 0 1-1 0v-5h-5a.5.5 0 0 1 0-1h5v-5A.5.5 0 0 1 8 2"/>
+        </svg>
+        Añadir Profesor
+      </button>
+    </div>
 
       <!-- Tabla de profesores -->
       <div class="table-responsive mx-5 mb-5 rounded-5 flex-grow-1" style="overflow: auto; background-color: white;">
@@ -159,6 +161,55 @@
     </div>
   </div>
 </div>
+
+<!-- Modal para registrar un nuevo profesor -->
+<div class="modal fade" id="registerProfesorModal" tabindex="-1" aria-labelledby="registerProfesorModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
+    <div class="modal-content rounded-5" style="max-width: 95vw; background-color: #f0f0f0;">
+      
+      <!-- Encabezado del modal -->
+      <div class="modal-header justify-content-center">
+        <h5 class="modal-title" id="registerProfesorModalLabel" style="color: #84251C;">
+          <b>Estás añadiendo un nuevo profesor</b>
+        </h5>
+      </div>
+      
+      <!-- Cuerpo del modal con el formulario de registro -->
+      <div class="modal-body">
+        <form class="rounded-5 mx-3 py-4" id="registerProfesorForm" method="POST" action="/coordinador/profesores/activar" style="background-color: white;">
+          <div class="mb-3">
+              <label for="profesorId" class="form-label ms-1">
+                  <b>Nombre del Profesor</b>
+              </label>
+              <div style="border-bottom: 3px solid #84251C; width: 10rem; margin-top: -5px; margin-bottom: 10px;"></div>
+              
+              <select class="form-select rounded-5 mx-auto" id="profesorId" name="profesorId" required style="background-color: #f0f0f0;">
+                  <option value="" disabled selected>Seleccione un Profesor</option>
+                  <% for (let p of profesoresInactivos) { %>
+                      <option value="<%= p.ivd_id %>">
+                          <%= p.nombre %> <%= p.primer_apellido %> <%= p.segundo_apellido %>
+                      </option>
+                  <% } %>
+              </select>
+          </div>
+      </form>
+      </div>
+
+      <!-- Pie del modal con los botones de acción -->
+      <div class="modal-footer justify-content-center" style="background-color: #f0f0f0;">
+        <button type="button" class="btn btn-secondary rounded-pill px-4 mx-4" style="background-color: white; border: 1px solid #84251C; color: #84251C;" data-bs-dismiss="modal">
+          Cancelar
+        </button>
+        <button type="submit" form="registerProfesorForm" class="btn btn-primary rounded-pill px-4 mx-4" style="background-color: #84251C; border: none;">
+          Registrar
+        </button>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+
 
 <!-- Modal para modificar detalles de profesores -->
 <div class="modal fade" id="scheduleModal" tabindex="-1" aria-labelledby="scheduleModalLabel" aria-hidden="true">
