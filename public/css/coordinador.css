@@ -328,6 +328,22 @@ thead th {
   border: 2px solid #84251c;
 }
 
+.materia-scroll::-webkit-scrollbar {
+  height: 10px;
+  width: 8px;
+}
+
+.materia-scroll::-webkit-scrollbar-thumb {
+  background-color: #a83232;
+  border-radius: 10px;
+  border: 2px solid #84251c;
+}
+
+.materia-scroll {
+  overflow-y: auto; /* Enables vertical scrolling */
+  overflow-x: hidden; /* Prevents horizontal scrolling */
+}
+
 input.form-control,
 textarea.form-control,
 select.form-select {
