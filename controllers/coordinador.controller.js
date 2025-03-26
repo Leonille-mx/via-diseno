@@ -95,6 +95,35 @@ exports.post_eliminar_profesor = (req, res, nxt) => {
       });
 };
 
+exports.get_modificar_profesor = (req, res, next) => {
+    Profesor.getSchedule(req.params.id)
+    .then((bloques) => {
+        res.json({ bloques });
+    })
+    .catch((error) => {
+        console.error("Error al obtener bloques:", error);
+        res.status(500).json({ error: "Error al obtener horario" });
+    });
+};
+
+exports.post_modificar_profesor = (req, res, nxt) => {
+    const selectedBlocks = JSON.parse(req.body.selectedBlocks);
+    Profesor.deleteSchedule(req.params.id)
+    .then(() => {
+        for (const bloque of selectedBlocks) {
+            Profesor.updateSchedule(req.params.id, bloque)
+            .then()
+            .catch((error) => {
+                console.log(error);
+            });
+        }
+        res.redirect('/coordinador/profesores')
+    })
+    .catch((error) => {
+        console.log(error);
+    });
+}
+
 exports.get_salones = (req, res, nxt) => {
     Salon.fetchAll()
     .then((salones) => {

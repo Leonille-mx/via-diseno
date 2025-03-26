@@ -88,7 +88,7 @@ module.exports = class Profesor {
         }
     }
 
-    // No se si aun se necesita
+    // Guarda un nuevo profesor en el almacenamiento persistente
     save() {
         return pool.query(
             'INSERT INTO profesor (ivd_id, nombre, primer_apellido, segundo_apellido) VALUES ($1, $2, $3, $4)',
@@ -104,5 +104,29 @@ module.exports = class Profesor {
     // Elimina un profesor por id
     static delete(id) {
         return pool.query('UPDATE profesor SET activo = false WHERE ivd_id = $1', [id]);
+    }
+
+    static getSchedule(id) {
+        return pool.query(
+            'SELECT bloque_tiempo_id FROM profesor_bloque_tiempo WHERE profesor_id = $1',
+            [id]
+        )
+        .then(result => {
+            // Convertir explícitamente a array de strings
+            console.log(result.rows);
+            return result.rows.map(row => row.bloque_tiempo_id.toString());
+        })
+        .catch(error => {
+            console.error("Error en getBloquesByProfesorId:", error);
+            return []; // Retornar array vacío si hay error
+        });
+    }
+
+    static deleteSchedule(id) {
+        return pool.query('DELETE FROM profesor_bloque_tiempo WHERE profesor_id = $1', [id]);
+    }
+
+    static updateSchedule(id, bloque) {
+        return pool.query('INSERT INTO profesor_bloque_tiempo VALUES ($1, $2)', [id, bloque]);
     }
 };

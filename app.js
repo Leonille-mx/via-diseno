@@ -10,6 +10,7 @@ app.set('views', 'views');
 
 const bodyParser = require('body-parser');
 app.use(bodyParser.urlencoded({extended: false}));
+app.use(express.json());
 
 const rutasUsuario = require('./routes/usuario.routes');
 app.use('/usuario', rutasUsuario);
