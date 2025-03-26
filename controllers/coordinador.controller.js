@@ -51,36 +51,47 @@ exports.post_sincronizar_materias = async (req, res, nxt) => {
         res.redirect(`/coordinador/materias?msg=${encodeURIComponent('La operación fue fracasada')}`);
     }
 };
-        
-exports.get_profesores = async (req, res, nxt) => {
-  try {
-    const profesoresDB = await Profesor.fetchAll();  
-    const msg = req.query.msg || null;
 
-    res.render('profesores_coordinador', {
-        profesores: profesoresDB.rows,  
-        msg, 
-    });
-  } catch (error) {
-    console.log(error);
-    res.status(500).send('Hubo un problema al obtener los profesores.');
-  }
+  exports.get_profesores = async (req, res, next) => {
+    try {
+        // Trae todos los registros que tiene atributo activo 
+        // como true y false
+      const profesoresActivos = await Profesor.fetchActivos();  
+      const profesoresInactivos = await Profesor.fetchInactivos();
+      // Si hay query string, lo guarda en la variable msg
+      const msg = req.query.msg || null; 
+  
+      res.render('profesores_coordinador', {
+          profesores: profesoresActivos.rows,  
+          profesoresInactivos: profesoresInactivos.rows,  
+          msg 
+      });
+    } catch (error) {
+      console.log(error);
+      res.redirect('/coordinador/profesores?msg=Hubo un problema al obtener los profesores');
+    }
 };
 
 exports.post_sincronizar_profesores = async (req, res, nxt) => {
     try {
+        // Trae materias de la API
         const courses = await getAllProfessors(); 
+        // Extrae la 'data' de la JSON respuesta
         const profesoresApi = courses.data; 
-        
+        // Llama la función sincronizarProfesores() para sincronizar los datos del profesor        
         const resultado = await Profesor.sincronizarProfesores(profesoresApi); 
+        // Crea una variable para el mensaje de operación
         const msg = `La operación fue exitosa!<br>
                     Insertado: ${resultado.inserted}<br>
                     Actualizado: ${resultado.updated}<br>
                     Eliminado: ${resultado.deleted}`; 
-
+        // Redirige a la siguiente ruta con el mensaje en query string 
+        // con la función para encodificarlo
         res.redirect(`/coordinador/profesores?msg=${encodeURIComponent(msg)}`);
     } catch (error) {
         console.error(error);
+        // Redirige a la siguiente ruta con un mensaje de error en query string 
+        // con la función para encodificarlo
         res.redirect(`/coordinador/profesores?msg=${encodeURIComponent('La operación fue fracasada')}`);
     }
 };
@@ -93,6 +104,22 @@ exports.post_eliminar_profesor = (req, res, nxt) => {
       .catch((error) => {
           console.log(error);
       });
+};
+
+exports.post_activar_profesor = async (req, res, next) => {
+    try {
+        const profesorId = req.body.profesorId;
+        
+        if (!profesorId) {
+            return res.redirect('/coordinador/profesores?msg=Debe seleccionar un profesor');
+        }
+
+        await Profesor.activar(profesorId);
+        res.redirect('/coordinador/profesores?msg=Profesor activado correctamente');
+    } catch (error) {
+        console.error('Error al activar el profesor:', error);
+        res.redirect('/coordinador/profesores?msg=Error al activar el profesor');
+    }
 };
 
 exports.get_salones = (req, res, nxt) => {

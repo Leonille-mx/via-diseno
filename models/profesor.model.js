@@ -1,6 +1,7 @@
 const pool = require('../util/database');
 
 module.exports = class Profesor {
+     // Constructor de la clase
     constructor(mi_id, mi_nombre, mi_primer_apellido, mi_segundo_apellido) {
         this.id = mi_id;
         this.nombre = mi_nombre;
@@ -96,13 +97,35 @@ module.exports = class Profesor {
         );
     }
 
-    // Trae todos los profesores
+    // Método para devolver los objetos del almacenamiento persistente
     static fetchAll() {
+        return pool.query('SELECT ivd_id, nombre, primer_apellido, segundo_apellido, activo FROM profesor ORDER BY activo DESC');
+    }
+    // Método para devolver los objetos que estan activos
+    static async fetchActivos() {
         return pool.query('SELECT ivd_id, nombre, primer_apellido, segundo_apellido FROM profesor WHERE activo = true');
     }
+    // Método para devolver los objetos que estan no activos 
+    static fetchInactivos() {
+        return pool.query('SELECT ivd_id, nombre, primer_apellido, segundo_apellido FROM profesor WHERE activo = false');
+    }
 
-    // Elimina un profesor por id
+    // Método para el atributo activo a false 
     static delete(id) {
         return pool.query('UPDATE profesor SET activo = false WHERE ivd_id = $1', [id]);
+    }
+
+    // Método para cambiar el atributo activo a true 
+    static async activar(id) {
+        try {
+            const result = await pool.query(
+                'UPDATE profesor SET activo = true WHERE ivd_id = $1 RETURNING *',
+                [id]
+            );
+            return result.rows[0];
+        } catch (error) {
+            console.error('Error al activar el profesor:', error);
+            throw error;
+        }
     }
 };
