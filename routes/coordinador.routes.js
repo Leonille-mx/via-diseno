@@ -3,6 +3,7 @@ const router = express.Router();
 
 const coordinador_controller = require('../controllers/coordinador.controller');
 
+
 router.get('/dashboard', coordinador_controller.get_dashboard);
 
 router.get('/materias', coordinador_controller.get_materias);
@@ -18,5 +19,11 @@ router.get('/alumnos', coordinador_controller.get_alumnos);
 router.get('/solicitudes-cambio', coordinador_controller.get_solicitudes_cambio);
 
 router.get('/ayuda', coordinador_controller.get_ayuda);
+
+router.get('/ciclo-escolar', coordinador_controller.get_cicloescolar);
+
+router.post('/ciclo-escolar/sincronizar', coordinador_controller.postSincronizarCicloEscolar);
+
+
 
 module.exports = router;
