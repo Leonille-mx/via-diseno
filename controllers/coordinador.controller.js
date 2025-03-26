@@ -66,12 +66,14 @@ exports.post_sincronizar_materias = async (req, res, nxt) => {
         
 exports.get_profesores = async (req, res, nxt) => {
   try {
-    const profesoresDB = await Profesor.fetchAll();  
+    const profesoresDB = await Profesor.fetchAll(); 
+    const materias = await MateriaSemestre.fetchMateriasSemestre(); 
     const msg = req.query.msg || null;
 
     res.render('profesores_coordinador', {
         profesores: profesoresDB.rows,  
         msg, 
+        materias: materias.rows
     });
   } catch (error) {
     console.log(error);
@@ -107,29 +109,49 @@ exports.post_eliminar_profesor = (req, res, nxt) => {
       });
 };
 
-exports.get_modificar_profesor = (req, res, next) => {
-    Profesor.getSchedule(req.params.id)
-    .then((bloques) => {
-        res.json({ bloques });
+exports.get_modificar_profesor = (req, res, next) => {    
+    Promise.all([
+        Profesor.getSchedule(req.params.id),
+        Profesor.getCourses(req.params.id)
+    ])
+    .then(([bloques, materias]) => {
+        res.json({ 
+            bloques: bloques,
+            materias: materias 
+        });
     })
     .catch((error) => {
-        console.error("Error al obtener bloques:", error);
-        res.status(500).json({ error: "Error al obtener horario" });
+        console.error("Error al obtener datos:", error);
+        res.status(500).json({ 
+            error: "Error al obtener datos del profesor",
+            details: error.message
+        });
     });
 };
 
 exports.post_modificar_profesor = (req, res, nxt) => {
     const selectedBlocks = JSON.parse(req.body.selectedBlocks);
+    const selectedMaterias = JSON.parse(req.body.selectedMaterias);
     Profesor.deleteSchedule(req.params.id)
     .then(() => {
-        for (const bloque of selectedBlocks) {
-            Profesor.updateSchedule(req.params.id, bloque)
-            .then()
-            .catch((error) => {
-                console.log(error);
-            });
-        }
-        res.redirect('/coordinador/profesores')
+        Profesor.unassignCourses(req.params.id)
+        .then(() => {
+            for (const materia of selectedMaterias) {
+                Profesor.asignCourses(req.params.id, materia)
+                .then()
+                .catch((error) => {
+                    console.log(error);
+                });
+            } 
+            for (const bloque of selectedBlocks) {
+                Profesor.updateSchedule(req.params.id, bloque)
+                .then()
+                .catch((error) => {
+                    console.log(error);
+                });
+            }
+            res.redirect('/coordinador/profesores')
+        })
     })
     .catch((error) => {
         console.log(error);

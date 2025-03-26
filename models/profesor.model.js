@@ -113,7 +113,6 @@ module.exports = class Profesor {
         )
         .then(result => {
             // Convertir explícitamente a array de strings
-            console.log(result.rows);
             return result.rows.map(row => row.bloque_tiempo_id.toString());
         })
         .catch(error => {
@@ -128,5 +127,21 @@ module.exports = class Profesor {
 
     static updateSchedule(id, bloque) {
         return pool.query('INSERT INTO profesor_bloque_tiempo VALUES ($1, $2)', [id, bloque]);
+    }
+
+    static getCourses(id) {
+        return pool.query(
+            'SELECT materia_id FROM materia WHERE profesor_id = $1',
+            [id]
+        )
+        .then(result => result.rows.map(row => row.materia_id.toString()));
+    }
+
+    static asignCourses(id, materia) {
+        return pool.query('UPDATE materia SET profesor_id = $1 WHERE materia_id = $2', [id, materia]);
+    }
+
+    static unassignCourses(id) {
+        return pool.query('UPDATE materia SET profesor_id = 1 WHERE profesor_id = $1', [id]);
     }
 };
