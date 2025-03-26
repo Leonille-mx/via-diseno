@@ -1,9 +1,9 @@
 const Salon = require('../models/salon.model');
 const Campus = require('../models/campus.model');
 const Materia = require('../models/materia.model');
-const { getAllCourses } = require('../util/adminApiClient');
 const Profesor = require('../models/profesor.model.js');
-const { getAllProfessors } = require('../util/adminApiClient.js');
+const MateriaSemestre = require('../models/materia_semestre.model.js');
+const { getAllProfessors, getAllCourses } = require('../util/adminApiClient.js');
 
 exports.get_dashboard = (req, res, nxt) => {
     res.render('dashboard_coordinador');
@@ -11,13 +11,25 @@ exports.get_dashboard = (req, res, nxt) => {
 
 exports.get_materias = async (req, res, nxt) => {
     try {
-        // Trae todos los registros que tiene atributo abierta
-        // como true
-        const materiasDB = await Materia.fetchAll();
+        const materiasSemestreDB = await MateriaSemestre.fetchMateriasSemestre();
         // Si hay query string, lo guarda en la variable msg
         const msg = req.query.msg || null;
+        const allMaterias = materiasSemestreDB.rows;
+        // Creamos un nuevo objeto que tienen key-value relación y están separados
+        // por semestre
+        const materiasPorSemestre = allMaterias.reduce((accumulator, materia) => {
+            // Si no existe la llave de un semestre
+            if (!accumulator[materia.semestre_id]) {
+                // Crea una nueva llave con su valor vacío
+                accumulator[materia.semestre_id] = [];
+            }
+            // Si no, pushea la materia en el valor
+            accumulator[materia.semestre_id].push(materia);
+            // Regresa el acumulador para la siguiente iteración
+            return accumulator;
+        }, {});
         res.render('materias_coordinador', {
-            materias: materiasDB.rows,
+            materiasPorSemestre: materiasPorSemestre,
             msg,
         });
     } catch(error) {
