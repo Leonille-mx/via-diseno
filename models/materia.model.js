@@ -151,6 +151,7 @@ module.exports = class Materia {
             for (const [id] of materiasMap) {
                 await client.query("DELETE FROM materia WHERE materia_id = $1", [id]);
                 await client.query("DELETE FROM materia_requisito WHERE materia_id = $1", [id]);
+                await client.query("DELETE FROM materia_semestre WHERE materia_id = $1", [id])
                 deleted++;
             }
             // Regresa el resultado para el mensaje
