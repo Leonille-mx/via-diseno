@@ -54,7 +54,7 @@ function getHeaders(token) {
 
 async function getAllStudents() {
     const token = await getToken();
-    const headers = await getHeaders();
+    const headers = await getHeaders(token);
     
     const response = await axiosAdminClient.get("v1/users/all", {
       headers,

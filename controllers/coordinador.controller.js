@@ -2,6 +2,7 @@ const Salon = require('../models/salon.model');
 const Campus = require('../models/campus.model');
 const Alumno = require('../models/alumno.model');
 const apiClient = require('../adminApiClient.js');
+const Usuario = require('../models/usuario.model.js');
 const { getAllStudents } = apiClient;
 
 exports.get_dashboard = (req, res, nxt) => {
@@ -79,12 +80,13 @@ exports.post_sincronizar_alumnos = async (req, res, nxt) => {
         const students = await getAllStudents();
 
         const studentsApi = students.data;
-        const resultado = await Alumno.sincronizarAlumnos(studentsApi);
+        const resultadoUsuario = await Usuario.sincronizarUsuarios(studentsApi);
+        const resultadoAlumno = await Alumno.sincronizarAlumnos(studentsApi);
         const msg = `La operación fue exitosa!<br>
-                    Insertado: ${resultado.inserted}<br>
-                    Actualizado: ${resultado.updated}<br>
-                    Eliminado: ${resultado.deleted}`;
-        res.redirect('/coordinador/alumnos?msg=${encodeURIComponent(msg)}')
+                    Insertado: ${resultadoAlumno.inserted}<br>
+                    Actualizado: ${resultadoAlumno.updated}<br>
+                    Eliminado: ${resultadoAlumno.deleted}`;
+        res.redirect(`/coordinador/alumnos?msg=${encodeURIComponent(msg)}`);
     } catch (error) {
         console.error(error);
         res.redirect(`/coordinador/alumnos?msg=${encodeURIComponent('La operación fue fracasada')}`);
