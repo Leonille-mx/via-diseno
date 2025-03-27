@@ -194,7 +194,7 @@ exports.post_activar_profesor = async (req, res, next) => {
         }
 
         await Profesor.activar(profesorId);
-        res.redirect('/coordinador/profesores?msg=Profesor activado correctamente');
+        res.redirect('/coordinador/profesores');
     } catch (error) {
         console.error('Error al activar el profesor:', error);
         res.redirect('/coordinador/profesores?msg=Error al activar el profesor');

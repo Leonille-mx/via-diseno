@@ -5,8 +5,8 @@
       
       <!-- Título de la sección -->
       <div class="mb-4">
-        <h1 class="ms-3 mt-2">Profesores</h1>
-        <div style="border-bottom: 3px solid #84251C; width: 15rem; margin-top: -10px;"></div>
+        <h1 class="ms-3 mt-2">Profesores Disponibles</h1>
+        <div style="border-bottom: 3px solid #84251C; width: 30rem; margin-top: -10px;"></div>
       </div>
         <!-- Si el msg string no es null, muestra un mensaje del resultado de la operación -->
         <% if (msg) { %>
@@ -14,7 +14,7 @@
             <div class="modal-dialog modal-dialog-centered modal-sm">
               <div class="modal-content align-items-center rounded-5">
                 <div class="modal-header border border-0">
-                  <h5 class="modal-title ivd-text-red" id="msgModalLabel">Sincronizar Materias</h5>
+                  <h5 class="modal-title ivd-text-red" id="msgModalLabel">Sincronizar Profesores</h5>
                 </div>
                 <div class="modal-body bg-grey rounded-5 text-center px-5">
                   <%- msg %>
@@ -55,7 +55,7 @@
           <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-plus-lg" viewBox="0 0 16 16">
             <path fill-rule="evenodd" d="M8 2a.5.5 0 0 1 .5.5v5h5a.5.5 0 0 1 0 1h-5v5a.5.5 0 0 1-1 0v-5h-5a.5.5 0 0 1 0-1h5v-5A.5.5 0 0 1 8 2"/>
           </svg>
-          Añadir Profesor
+          Activar Profesor
         </button>
       </div>
     </div>
@@ -124,7 +124,7 @@
       
       <!-- Encabezado del modal -->
       <div class="modal-header justify-content-center" style="background-color: #f0f0f0">
-        <h5 class="modal-title" id="confirmDeleteModalLabel" style="color: #84251C;"><b>¿Está seguro de eliminar el siguiente profesor?</b></h5>
+        <h5 class="modal-title" id="confirmDeleteModalLabel" style="color: #84251C;"><b>¿Está seguro de desactivar el siguiente profesor?</b></h5>
       </div>
       
       <!-- Cuerpo del modal con los detalles del profesor a eliminar -->
