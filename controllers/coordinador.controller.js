@@ -1,5 +1,6 @@
 const Salon = require('../models/salon.model');
 const Campus = require('../models/campus.model');
+<<<<<<< HEAD
 const Materia = require('../models/materia.model');
 const Profesor = require('../models/profesor.model.js');
 const MateriaSemestre = require('../models/materia_semestre.model.js');
@@ -7,6 +8,12 @@ const { getAllProfessors, getAllCourses } = require('../util/adminApiClient.js')
 const CicloEscolar = require('../models/ciclo-escolar.model');
 const adminApiClient = require('../adminApiClient');
 const Grupos = require('../models/grupo.model');
+=======
+const Alumno = require('../models/alumno.model');
+const apiClient = require('../adminApiClient.js');
+const Usuario = require('../models/usuario.model.js');
+const { getAllStudents } = apiClient;
+>>>>>>> armando/CU21
 
 exports.get_dashboard = (req, res) => {
     try {
@@ -265,6 +272,7 @@ exports.get_grupos = (req, res, next) => {
         });
 };
 
+<<<<<<< HEAD
 
 
 exports.get_alumnos = (req, res, nxt) => {
@@ -272,6 +280,38 @@ exports.get_alumnos = (req, res, nxt) => {
         isLoggedIn: req.session.isLoggedIn || false,
         matricula: req.session.matricula || '',
     });
+=======
+exports.get_alumnos = async (req, res, nxt) => {
+    try {
+        const studentsDB = await Alumno.fetchAll(); 
+        const msg = req.query.msg || null;
+        res.render('alumnos_coordinador', {
+            students: studentsDB.rows,
+            msg,
+        });
+    } catch(error) {
+        console.log(error);
+        res.status(500).send('Hubo un problema al obtener los alumnos.');
+    }
+};
+
+exports.post_sincronizar_alumnos = async (req, res, nxt) => {
+    try {
+        const students = await getAllStudents();
+
+        const studentsApi = students.data;
+        const resultadoUsuario = await Usuario.sincronizarUsuarios(studentsApi);
+        const resultadoAlumno = await Alumno.sincronizarAlumnos(studentsApi);
+        const msg = `La operación fue exitosa!<br>
+                    Insertado: ${resultadoAlumno.inserted}<br>
+                    Actualizado: ${resultadoAlumno.updated}<br>
+                    Eliminado: ${resultadoAlumno.deleted}`;
+        res.redirect(`/coordinador/alumnos?msg=${encodeURIComponent(msg)}`);
+    } catch (error) {
+        console.error(error);
+        res.redirect(`/coordinador/alumnos?msg=${encodeURIComponent('La operación fue fracasada')}`);
+    }
+>>>>>>> armando/CU21
 };
 
 exports.get_solicitudes_cambio = (req, res, nxt) => {

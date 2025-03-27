@@ -13,6 +13,7 @@ const pool = new Pool({
 });
 
 pool.connect()
+<<<<<<< HEAD
     .then(client => {
         console.log("Connected to PostgreSQL Database");
         client.release(); // Release the connection back to the pool
@@ -22,3 +23,13 @@ pool.connect()
     ));
 
 module.exports = pool; // Export the pool for use in models
+=======
+  .then(client => {
+        console.log("Connected to PostgreSQL Database");
+        client.release(); // Release the connection back to the pool
+    })
+    .catch(err => console.error("PostgreSQL Connection Error:", err));
+
+
+module.exports = pool;
+>>>>>>> armando/CU21
