@@ -1,0 +1,19 @@
+<form action="/ciclo-escolar" method="POST">
+    <button type="submit">Sincronizar con sistema central</button>
+</form>
+
+<!-- Display ciclo escolar list -->
+<table>
+    <tr>
+        <th>Código</th>
+        <th>Fecha Inicio</th>
+        <th>Fecha Fin</th>
+    </tr>
+    <% cicloescolar.forEach(function(ciclo) { %>
+        <tr>
+            <td><%= ciclo.code %></td>
+            <td><%= ciclo.fecha_inicio.toLocaleDateString() %></td>
+            <td><%= ciclo.fecha_fin.toLocaleDateString() %></td>
+        </tr>
+    <% }); %>
+</table>
