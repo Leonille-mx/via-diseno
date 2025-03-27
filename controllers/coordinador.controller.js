@@ -4,12 +4,30 @@ const Materia = require('../models/materia.model');
 const Profesor = require('../models/profesor.model.js');
 const MateriaSemestre = require('../models/materia_semestre.model.js');
 const { getAllProfessors, getAllCourses } = require('../util/adminApiClient.js');
+const CicloEscolar = require('../models/ciclo-escolar.model');
+const adminApiClient = require('../adminApiClient');
+const Grupos = require('../models/grupo.model');
 
-exports.get_dashboard = (req, res, nxt) => {
-    res.render('dashboard_coordinador', {
-        isLoggedIn: req.session.isLoggedIn || false,
-        matricula: req.session.matricula || '',
-    });
+exports.get_dashboard = (req, res) => {
+    try {
+        const msg = req.query.msg || null;  
+        res.render('dashboard_coordinador', {
+            msg: msg,
+            isLoggedIn: req.session.isLoggedIn || false,
+            matricula: req.session.matricula || '',
+        });
+    } catch (error) {
+        console.error("Dashboard error:", error);
+        res.status(500).send("Error loading dashboard");
+    }
+};
+
+exports.postSincronizarCicloEscolar = async (req, res) => {
+    try {
+        res.redirect(`/coordinador/dashboard?msg=${encodeURIComponent(msg)}`);
+    } catch (error) {
+        res.redirect(`/coordinador/dashboard?msg=${encodeURIComponent('Error message')}`);
+    }
 };
 
 exports.get_materias = async (req, res, nxt) => {
@@ -232,12 +250,22 @@ exports.post_eliminar_salon = (req, res, nxt) => {
         });
 };
 
-exports.get_grupos = (req, res, nxt) => {
-    res.render('grupos_coordinador', {
-        isLoggedIn: req.session.isLoggedIn || false,
-        matricula: req.session.matricula || '',
-    });
+exports.get_grupos = (req, res, next) => {
+    Grupos.fetchAll()
+        .then((result) => {
+            res.render('grupos_coordinador', { 
+                grupos: result.rows,
+                isLoggedIn: req.session.isLoggedIn || false,
+                matricula: req.session.matricula || '',
+            });
+        })
+        .catch((error) => {
+            console.error('Error fetching grupos:', error);
+            res.status(500).send('Error al obtener los grupos'); 
+        });
 };
+
+
 
 exports.get_alumnos = (req, res, nxt) => {
     res.render('alumnos_coordinador', {
@@ -259,3 +287,69 @@ exports.get_ayuda = (req, res, nxt) => {
         matricula: req.session.matricula || '',
     });
 };
+
+exports.get_cicloescolar = (req, res, next) => {
+    CicloEscolar.fetchAll()
+        .then((result) => {
+            const formattedData = result.rows.map(row => ({
+                ...row,
+                fecha_inicio: new Date(row.fecha_inicio),
+                fecha_fin: new Date(row.fecha_fin)
+            }));
+            
+            res.render('ciclo_escolar_coordinador', {
+                cicloescolar: formattedData,
+                msg: req.query.msg || null
+            });
+        })
+        .catch((error) => {
+            console.error("Critical DB Error:", error);
+            res.status(500).send(`
+                <h1>Database Error</h1>
+                <p>Failed to load school cycles. Please try again later.</p>
+                <a href="/coordinador/ciclo-escolar">Retry</a>
+            `);
+        });
+    };
+
+    exports.post_eliminar_grupo = (req, res, nxt) => {
+        Grupos.delete(req.params.id)
+            .then(() => {
+                res.redirect('/coordinador/grupos');
+            })
+            .catch((error) => {
+                console.error('Delete error:', error);
+                res.redirect('/coordinador/grupos?error=delete_failed');
+            });
+    };
+
+    exports.postSincronizarCicloEscolar = async (req, res) => {
+        try {
+          const externalData = await adminApiClient.getCiclosEscolares();
+          const result = await CicloEscolar.sincronizarConAPI(externalData);
+      
+          let msg = `Sincronización completada:<br>
+                    Insertados: ${result.inserted}<br>
+                    Actualizados: ${result.updated}<br>
+                    Eliminados: ${result.deleted}`;
+      
+          if (result.invalid.length > 0) {
+            msg += `<br><br>Registros omitidos (fecha_fin ≤ fecha_inicio):<br>`;
+            msg += result.invalid.map(r => 
+              `${r.code}: ${r.start} → ${r.end}`
+            ).join('<br>');
+          }
+      
+          res.redirect(`/coordinador/dashboard?msg=${encodeURIComponent(msg)}`);
+          
+        } catch (error) {   
+          console.error("Error en sincronización:", error);
+          res.redirect(`/coordinador/dashboard?msg=${encodeURIComponent('Error: ' + error.message)}`);
+        }
+
+
+        
+    };
+    
+
+

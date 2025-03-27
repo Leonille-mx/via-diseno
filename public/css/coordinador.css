@@ -287,6 +287,7 @@ thead th {
   z-index: 2;
 }
 
+<<<<<<< HEAD
 .table .selected {
   background-color:  #84251c44 !important;
 }
@@ -295,6 +296,8 @@ thead th {
   cursor: pointer;
 }
 
+=======
+>>>>>>> sebas/CU20
 .table-hover tbody tr:hover td,
 .table-hover tbody tr:hover th {
   background-color: #84251c44 !important;
@@ -336,6 +339,7 @@ thead th {
   border: 2px solid #84251c;
 }
 
+<<<<<<< HEAD
 .materia-scroll::-webkit-scrollbar {
   height: 10px;
   width: 8px;
@@ -356,5 +360,11 @@ input.form-control,
 textarea.form-control,
 select.form-select {
   width: calc(100% - 1.5rem);
+=======
+input.form-control,
+textarea.form-control,
+select.form-select {
+  width: calc(100% - 1.5rem); /* Resta los márgenes horizontales */
+>>>>>>> sebas/CU20
   box-sizing: border-box;
 }
