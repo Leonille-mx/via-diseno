@@ -22,11 +22,8 @@ router.post('/profesores/activar', isAuth, coordinador_controller.post_activar_p
 router.get('/grupos', coordinador_controller.get_grupos);
 router.post('/grupos/eliminar/:id', coordinador_controller.post_eliminar_grupo);
 
-<<<<<<< HEAD
-=======
 router.get('/alumnos', coordinador_controller.get_alumnos);
 router.post('/alumnos/sincronizar', coordinador_controller.post_sincronizar_alumnos);
->>>>>>> armando/CU21
 
 router.get('/salones', isAuth, coordinador_controller.get_salones);
 

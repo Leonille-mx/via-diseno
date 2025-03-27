@@ -76,5 +76,44 @@ async function getAllProfessors() {
   return response.data;  
 }
 
+async function getCiclosEscolares() {
+  try {
+    const token = await getToken();
+    const headers = getHeaders(token);
+    
+    const response = await axiosAdminClient.get("v1/school_cycles/index", { headers });
+    
+    // Access the nested data array
+    const responseData = response.data.data;
+    
+    if (!Array.isArray(responseData)) {
+      throw new Error("Invalid API response format - expected array in data property");
+    }
+
+    return responseData.map(cycle => ({
+      code: cycle.code,  // Use actual code field from response
+      start_date: new Date(cycle.start_date),
+      end_date: new Date(cycle.end_date)
+    }));
+    
+  } catch (error) {
+    console.error("API Error:", error.config?.url, error.response?.status);
+    throw new Error(`School cycles fetch failed: ${error.message}`);
+  }
+}
+
+async function getAllStudents() {
+    const token = await getToken();
+    const headers = await getHeaders(token);
+    
+    const response = await axiosAdminClient.get("v1/users/all", {
+      headers,
+      params: {
+        type: "Users::Student",  
+      }
+    }); 
+    return response.data;
+}
+
 // Export the functions so they can be used in other files
-module.exports = { getAllCourses, getAllProfessors };
+module.exports = { getAllCourses, getAllProfessors, getAllStudents, getCiclosEscolares};
