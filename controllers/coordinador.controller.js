@@ -6,7 +6,10 @@ const MateriaSemestre = require('../models/materia_semestre.model.js');
 const { getAllProfessors, getAllCourses } = require('../util/adminApiClient.js');
 
 exports.get_dashboard = (req, res, nxt) => {
-    res.render('dashboard_coordinador');
+    res.render('dashboard_coordinador', {
+        isLoggedIn: req.session.isLoggedIn || false,
+        matricula: req.session.matricula || '',
+    });
 };
 
 exports.get_materias = async (req, res, nxt) => {
@@ -29,6 +32,8 @@ exports.get_materias = async (req, res, nxt) => {
             return accumulator;
         }, {});
         res.render('materias_coordinador', {
+            isLoggedIn: req.session.isLoggedIn || false,
+            matricula: req.session.matricula || '',
             materiasPorSemestre: materiasPorSemestre,
             msg,
         });
@@ -73,6 +78,8 @@ exports.get_profesores = async (req, res, nxt) => {
     const msg = req.query.msg || null;
 
     res.render('profesores_coordinador', {
+        isLoggedIn: req.session.isLoggedIn || false,
+        matricula: req.session.matricula || '',
         profesores: profesoresActivos.rows,  
         profesoresInactivos: profesoresInactivos.rows,  
         msg, 
@@ -189,6 +196,8 @@ exports.get_salones = (req, res, nxt) => {
         Campus.fetchAll()
             .then((campus) => {
                 res.render('salones_coordinador', {
+                    isLoggedIn: req.session.isLoggedIn || false,
+                    matricula: req.session.matricula || '',
                     salones : salones.rows,
                     campus : campus.rows
                 });
@@ -224,17 +233,29 @@ exports.post_eliminar_salon = (req, res, nxt) => {
 };
 
 exports.get_grupos = (req, res, nxt) => {
-    res.render('grupos_coordinador');
+    res.render('grupos_coordinador', {
+        isLoggedIn: req.session.isLoggedIn || false,
+        matricula: req.session.matricula || '',
+    });
 };
 
 exports.get_alumnos = (req, res, nxt) => {
-    res.render('alumnos_coordinador');
+    res.render('alumnos_coordinador', {
+        isLoggedIn: req.session.isLoggedIn || false,
+        matricula: req.session.matricula || '',
+    });
 };
 
 exports.get_solicitudes_cambio = (req, res, nxt) => {
-    res.render('solicitudes_cambio_coordinador');
+    res.render('solicitudes_cambio_coordinador', {
+        isLoggedIn: req.session.isLoggedIn || false,
+        matricula: req.session.matricula || '',
+    });
 };
 
 exports.get_ayuda = (req, res, nxt) => {
-    res.render('ayuda_coordinador');
+    res.render('ayuda_coordinador', {
+        isLoggedIn: req.session.isLoggedIn || false,
+        matricula: req.session.matricula || '',
+    });
 };

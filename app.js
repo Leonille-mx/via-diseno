@@ -8,6 +8,15 @@ app.use(express.static(path.join(__dirname, 'public')));
 app.set('view engine', 'ejs');
 app.set('views', 'views');
 
+const session = require('express-session');
+
+app.use(session({
+    secret: 'secret_key', 
+    resave: false, //La sesión no se guardará en cada petición, sino sólo se guardará si algo cambió 
+    saveUninitialized: false, //Asegura que no se guarde una sesión para una petición que no lo necesita
+    cookie: { maxAge: 1000 * 60 * 30 } // la sesión tiene 30 minutos de vida
+}));
+
 const bodyParser = require('body-parser');
 app.use(bodyParser.urlencoded({extended: false}));
 app.use(express.json());

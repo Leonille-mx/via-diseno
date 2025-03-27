@@ -1,35 +1,37 @@
 const express = require('express');
 const router = express.Router();
 
+const isAuth = require('../util/isAuth');
+
 const coordinador_controller = require('../controllers/coordinador.controller');
 
-router.get('/dashboard', coordinador_controller.get_dashboard);
+router.get('/dashboard', isAuth, coordinador_controller.get_dashboard);
 
-router.get('/materias', coordinador_controller.get_materias);
+router.get('/materias', isAuth, coordinador_controller.get_materias);
 
-router.post('/materias/sincronizar', coordinador_controller.post_sincronizar_materias);
+router.post('/materias/sincronizar', isAuth, coordinador_controller.post_sincronizar_materias);
 
-router.get('/profesores', coordinador_controller.get_profesores);
-router.post('/profesores/sincronizar', coordinador_controller.post_sincronizar_profesores);
-router.post('/profesores/eliminar/:id', coordinador_controller.post_eliminar_profesor);
-router.get('/profesores/modificar/:id', coordinador_controller.get_modificar_profesor);
-router.post('/profesores/modificar/:id', coordinador_controller.post_modificar_profesor);
-router.post('/profesores/eliminar/:id', coordinador_controller.post_eliminar_profesor); 
+router.get('/profesores', isAuth, coordinador_controller.get_profesores);
+router.post('/profesores/sincronizar', isAuth, coordinador_controller.post_sincronizar_profesores);
+router.post('/profesores/eliminar/:id', isAuth, coordinador_controller.post_eliminar_profesor);
+router.get('/profesores/modificar/:id', isAuth, coordinador_controller.get_modificar_profesor);
+router.post('/profesores/modificar/:id', isAuth, coordinador_controller.post_modificar_profesor);
+router.post('/profesores/eliminar/:id', isAuth, coordinador_controller.post_eliminar_profesor); 
 
-router.post('/profesores/activar', coordinador_controller.post_activar_profesor);
+router.post('/profesores/activar', isAuth, coordinador_controller.post_activar_profesor);
 
-router.get('/salones', coordinador_controller.get_salones);
+router.get('/salones', isAuth, coordinador_controller.get_salones);
 
-router.post('/salones', coordinador_controller.post_salones);
+router.post('/salones', isAuth, coordinador_controller.post_salones);
 
-router.post('/salones/eliminar/:id', coordinador_controller.post_eliminar_salon);
+router.post('/salones/eliminar/:id', isAuth, coordinador_controller.post_eliminar_salon);
 
-router.get('/grupos', coordinador_controller.get_grupos);
+router.get('/grupos', isAuth, coordinador_controller.get_grupos);
 
-router.get('/alumnos', coordinador_controller.get_alumnos);
+router.get('/alumnos', isAuth, coordinador_controller.get_alumnos);
 
-router.get('/solicitudes-cambio', coordinador_controller.get_solicitudes_cambio);
+router.get('/solicitudes-cambio', isAuth, coordinador_controller.get_solicitudes_cambio);
 
-router.get('/ayuda', coordinador_controller.get_ayuda);
+router.get('/ayuda', isAuth, coordinador_controller.get_ayuda);
 
 module.exports = router;
