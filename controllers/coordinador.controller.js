@@ -282,9 +282,9 @@ exports.post_sincronizar_alumnos = async (req, res, nxt) => {
         const resultadoUsuario = await Usuario.sincronizarUsuarios(studentsApi);
         const resultadoAlumno = await Alumno.sincronizarAlumnos(studentsApi);
         const msg = `La operación fue exitosa!<br>
-                    Insertado: ${resultadoAlumno.inserted}<br>
-                    Actualizado: ${resultadoAlumno.updated}<br>
-                    Eliminado: ${resultadoAlumno.deleted}`;
+                    Insertado: ${resultadoUsuario.inserted}<br>
+                    Actualizado: ${resultadoUsuario.updated + resultadoAlumno.updated}<br>
+                    Eliminado: ${resultadoUsuario.deleted}`;
         res.redirect(`/coordinador/alumnos?msg=${encodeURIComponent(msg)}`);
     } catch (error) {
         console.error(error);
