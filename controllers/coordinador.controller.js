@@ -219,6 +219,7 @@ exports.get_salones = (req, res, nxt) => {
         })
     .catch((error) => {
         console.log(error);
+        res.status(500).send('Error al obtener salones');
     });
 };
 
@@ -230,6 +231,7 @@ exports.post_salones = (req, res, nxt) => {
     })
     .catch((error) => {
         console.log(error);
+        res.status(500).send('Error al registrar el salón'); 
     });
 };
 
@@ -240,6 +242,7 @@ exports.post_eliminar_salon = (req, res, nxt) => {
         })
         .catch((error) => {
             console.log(error);
+            res.status(500).send('Error al eliminar el salón'); 
         });
 };
 
