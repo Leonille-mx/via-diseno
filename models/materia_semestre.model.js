@@ -11,7 +11,7 @@ module.exports = class MateriaSemestre {
         return pool.query(`SELECT 
                            m.materia_id, nombre, creditos, 
                            horas_profesor, tipo_salon, 
-                           semestre_id
+                           semestre_id, obligatoria
                            FROM materia m, materia_semestre ms
                            WHERE m.materia_id = ms.materia_id`);
     }

@@ -1,6 +1,7 @@
 const pool = require('../util/database');
 
 module.exports = class Profesor {
+     // Constructor de la clase
     constructor(mi_id, mi_nombre, mi_primer_apellido, mi_segundo_apellido) {
         this.id = mi_id;
         this.nombre = mi_nombre;
@@ -88,7 +89,7 @@ module.exports = class Profesor {
         }
     }
 
-    // No se si aun se necesita
+    // Guarda un nuevo profesor en el almacenamiento persistente
     save() {
         return pool.query(
             'INSERT INTO profesor (ivd_id, nombre, primer_apellido, segundo_apellido) VALUES ($1, $2, $3, $4)',
@@ -96,13 +97,74 @@ module.exports = class Profesor {
         );
     }
 
-    // Trae todos los profesores
+    // Método para devolver los objetos del almacenamiento persistente
     static fetchAll() {
+        return pool.query('SELECT ivd_id, nombre, primer_apellido, segundo_apellido, activo FROM profesor ORDER BY activo DESC');
+    }
+    // Método para devolver los objetos que estan activos
+    static async fetchActivos() {
         return pool.query('SELECT ivd_id, nombre, primer_apellido, segundo_apellido FROM profesor WHERE activo = true');
     }
+    // Método para devolver los objetos que estan no activos 
+    static fetchInactivos() {
+        return pool.query('SELECT ivd_id, nombre, primer_apellido, segundo_apellido FROM profesor WHERE activo = false');
+    }
 
-    // Elimina un profesor por id
+    // Método para el atributo activo a false 
     static delete(id) {
         return pool.query('UPDATE profesor SET activo = false WHERE ivd_id = $1', [id]);
+    }
+
+    static getSchedule(id) {
+        return pool.query(
+            'SELECT bloque_tiempo_id FROM profesor_bloque_tiempo WHERE profesor_id = $1',
+            [id]
+        )
+        .then(result => {
+            // Convertir explícitamente a array de strings
+            return result.rows.map(row => row.bloque_tiempo_id.toString());
+        })
+        .catch(error => {
+            console.error("Error en getBloquesByProfesorId:", error);
+            return []; // Retornar array vacío si hay error
+        });
+    }
+
+    static deleteSchedule(id) {
+        return pool.query('DELETE FROM profesor_bloque_tiempo WHERE profesor_id = $1', [id]);
+    }
+
+    static updateSchedule(id, bloque) {
+        return pool.query('INSERT INTO profesor_bloque_tiempo VALUES ($1, $2)', [id, bloque]);
+    }
+
+    static getCourses(id) {
+        return pool.query(
+            'SELECT materia_id FROM materia WHERE profesor_id = $1',
+            [id]
+        )
+        .then(result => result.rows.map(row => row.materia_id.toString()));
+    }
+
+    static asignCourses(id, materia) {
+        return pool.query('UPDATE materia SET profesor_id = $1 WHERE materia_id = $2', [id, materia]);
+    }
+
+    static unassignCourses(id) {
+        return pool.query('UPDATE materia SET profesor_id = 1 WHERE profesor_id = $1', [id]);
+    }
+    
+    // Método para cambiar el atributo activo a true 
+    static async activar(id) {
+        try {
+            const result = await pool.query(
+                'UPDATE profesor SET activo = true WHERE ivd_id = $1 RETURNING *',
+                [id]
+            );
+            return result.rows[0];
+        } catch (error) {
+            console.error('Error al activar el profesor:', error);
+            throw error;
+        }
     }
 };

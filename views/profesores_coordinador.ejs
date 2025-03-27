@@ -47,15 +47,18 @@
             </button>
           </form>
 
-          <!-- Botón para añadir profesor -->
-          <button class="btn btn-primary d-flex align-items-center gap-2 rounded-pill px-3 py-2" style="background-color: #84251C; border: none;">
-            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-plus-lg" viewBox="0 0 16 16">
-              <path fill-rule="evenodd" d="M8 2a.5.5 0 0 1 .5.5v5h5a.5.5 0 0 1 0 1h-5v5a.5.5 0 0 1-1 0v-5h-5a.5.5 0 0 1 0-1h5v-5A.5.5 0 0 1 8 2"/>
-            </svg>
-            Añadir profesor
-          </button>
-        </div>
+
+        <!-- Botón para añadir profesor -->
+        <button class="btn btn-primary d-flex align-items-center gap-2 rounded-pill px-3 py-2" style="background-color: #84251C; border: none;"
+        data-bs-toggle="modal" 
+        data-bs-target="#registerProfesorModal">
+          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-plus-lg" viewBox="0 0 16 16">
+            <path fill-rule="evenodd" d="M8 2a.5.5 0 0 1 .5.5v5h5a.5.5 0 0 1 0 1h-5v5a.5.5 0 0 1-1 0v-5h-5a.5.5 0 0 1 0-1h5v-5A.5.5 0 0 1 8 2"/>
+          </svg>
+          Añadir Profesor
+        </button>
       </div>
+    </div>
 
       <!-- Tabla de profesores -->
       <div class="table-responsive mx-5 mb-5 rounded-5 flex-grow-1" style="overflow: auto; background-color: white;">
@@ -82,7 +85,8 @@
                   <button class="btn btn-sm p-0 d-flex align-items-center justify-content-center" 
                   style="width: 1.5rem; height: 1.5rem; border-radius: 50%; background-color: #84251c; color: white; border: none;"
                   data-bs-toggle="modal" 
-                  data-bs-target="#scheduleModal">
+                  data-bs-target="#scheduleModal"
+                  data-profesor-id="<%= profesor.ivd_id %>">
                     <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-eye-fill" viewBox="0 0 16 16">
                       <path d="M10.5 8a2.5 2.5 0 1 1-5 0 2.5 2.5 0 0 1 5 0"/>
                       <path d="M0 8s3-5.5 8-5.5S16 8 16 8s-3 5.5-8 5.5S0 8 0 8m8 3.5a3.5 3.5 0 1 0 0-7 3.5 3.5 0 0 0 0 7"/>
@@ -159,6 +163,55 @@
   </div>
 </div>
 
+<!-- Modal para registrar un nuevo profesor -->
+<div class="modal fade" id="registerProfesorModal" tabindex="-1" aria-labelledby="registerProfesorModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
+    <div class="modal-content rounded-5" style="max-width: 95vw; background-color: #f0f0f0;">
+      
+      <!-- Encabezado del modal -->
+      <div class="modal-header justify-content-center">
+        <h5 class="modal-title" id="registerProfesorModalLabel" style="color: #84251C;">
+          <b>Estás añadiendo un nuevo profesor</b>
+        </h5>
+      </div>
+      
+      <!-- Cuerpo del modal con el formulario de registro -->
+      <div class="modal-body">
+        <form class="rounded-5 mx-3 py-4" id="registerProfesorForm" method="POST" action="/coordinador/profesores/activar" style="background-color: white;">
+          <div class="mb-3">
+              <label for="profesorId" class="form-label ms-1">
+                  <b>Nombre del Profesor</b>
+              </label>
+              <div style="border-bottom: 3px solid #84251C; width: 10rem; margin-top: -5px; margin-bottom: 10px;"></div>
+              
+              <select class="form-select rounded-5 mx-auto" id="profesorId" name="profesorId" required style="background-color: #f0f0f0;">
+                  <option value="" disabled selected>Seleccione un Profesor</option>
+                  <% for (let p of profesoresInactivos) { %>
+                      <option value="<%= p.ivd_id %>">
+                          <%= p.nombre %> <%= p.primer_apellido %> <%= p.segundo_apellido %>
+                      </option>
+                  <% } %>
+              </select>
+          </div>
+      </form>
+      </div>
+
+      <!-- Pie del modal con los botones de acción -->
+      <div class="modal-footer justify-content-center" style="background-color: #f0f0f0;">
+        <button type="button" class="btn btn-secondary rounded-pill px-4 mx-4" style="background-color: white; border: 1px solid #84251C; color: #84251C;" data-bs-dismiss="modal">
+          Cancelar
+        </button>
+        <button type="submit" form="registerProfesorForm" class="btn btn-primary rounded-pill px-4 mx-4" style="background-color: #84251C; border: none;">
+          Registrar
+        </button>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+
+
 <!-- Modal para modificar detalles de profesores -->
 <div class="modal fade" id="scheduleModal" tabindex="-1" aria-labelledby="scheduleModalLabel" aria-hidden="true">
   <div class="modal-dialog modal-xl modal-dialog-centered modal-dialog-scrollable">
@@ -169,37 +222,82 @@
         <h5 class="modal-title" id="scheduleModalLabel" style="color: #84251C;"><b>Estás modificando los detalles del profesor</b></h5>
       </div>
       
-      <!-- Curpo del modal -->
+      <!-- Cuerpo del modal -->
       <div class="modal-body px-4">
         <div class="rounded-5 p-4" style="background-color: white;">
-          
-          <!-- Tabla para seleccionar disponibilidad del profesor -->
-          <h6 class="ms-1"><b>Disponibilidad</b></h6>
-          <div style="border-bottom: 3px solid #84251C; width: 10rem; margin-top: -5px; margin-bottom: 10px;"></div>
-          <div class="table-responsive">
-            <form id="scheduleForm" method="POST" action="/coordinador/profesores/modificar">
-              <table id="schedule" class="table table-bordered">
+
+          <form id="scheduleForm" method="POST" action="/coordinador/profesores/modificar">
+            <h6 class="ms-1"><b>Materias</b></h6>
+            <div style="border-bottom: 3px solid #84251C; width: 10rem; margin-top: -5px; margin-bottom: 10px;"></div> 
+            
+            <!-- Tabla de materias -->
+            <div class="table-responsive" style="overflow: auto; background-color: white;">
+              <table class="table table-hover" style="min-width: 800px; width: 100%;">
                 <thead class="table-light">
                   <tr>
-                    <th class="text-center align-middle">Hora</th>
-                    <th class="text-center align-middle">Lunes</th>
-                    <th class="text-center align-middle">Martes</th>
-                    <th class="text-center align-middle">Miércoles</th>
-                    <th class="text-center align-middle">Jueves</th>
-                    <th class="text-center align-middle">Viernes</th>
+                    <th scope="col" style="width: 30%; min-width: 100px;" class="text-center align-middle">Nombre</th>
+                    <th scope="col" style="width: 10%; min-width: 100px;" class="text-center align-middle">ID</th>
+                    <th scope="col" style="width: 14%; min-width: 100px;" class="text-center align-middle">Créditos</th>
+                    <th scope="col" style="width: 14%; min-width: 100px;" class="text-center align-middle">Horas profesor</th>
+                    <th scope="col" style="width: 13%; min-width: 150px;" class="text-center align-middle">Tipo de Salon</th>
+                    <th scope="col" style="width: 14%; min-width: 100px;" class="text-center align-middle">Obligatoria</th>
+                    <th scope="col" style="width: 5%; min-width: 50px;"></th>
                   </tr>
                 </thead>
-                <tbody id="scheduleTable">
-                  <!-- La tabla se genera dinámicamente con JavaScript -->
+                <tbody>
+                  <% for (let materia of materias) { %>
+                    <tr>
+                      <th scope="row" class="text-center align-middle"><%= materia.nombre %></th>
+                      <td class="text-center align-middle"><%= materia.materia_id %></td>
+                      <td class="text-center align-middle"><%= materia.creditos %></td>
+                      <td class="text-center align-middle"><%= materia.horas_profesor %></td>
+                      <td class="text-center align-middle"><%= materia.tipo_salon %></td>
+                      <% if (materia.obligatoria == true) { %>
+                        <td class="text-center align-middle">Si</td>
+                      <% } else { %>
+                        <td class="text-center align-middle">No</td>
+                      <% } %>
+                      <td class="text-center align-middle">
+                        <button type="button" class="btn btn-sm p-0 d-flex align-items-center justify-content-center materia-btn" 
+                        style="width: 1.5rem; height: 1.5rem; border-radius: 50%; background-color: #84251c; color: white; border: none;"
+                        data-materia-id="<%= materia.materia_id %>">
+                          <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" class="bi bi-plus" viewBox="0 0 16 16">
+                            <path d="M8 4a.5.5 0 0 1 .5.5v3h3a.5.5 0 0 1 0 1h-3v3a.5.5 0 0 1-1 0v-3h-3a.5.5 0 0 1 0-1h3v-3A.5.5 0 0 1 8 4"/>
+                          </svg>
+                        </button>
+                      </td>
+                    </tr>
+                  <% } %>
                 </tbody>
               </table>
-              <input type="hidden" name="selectedBlocks" id="selectedBlocks">
-            </form>
-          </div>  
+            </div>
 
+            <!-- Tabla para seleccionar disponibilidad del profesor -->
+            <h6 class="ms-1"><b>Disponibilidad</b></h6>
+            <div style="border-bottom: 3px solid #84251C; width: 10rem; margin-top: -5px; margin-bottom: 10px;"></div>
+            <div class="table-responsive">
+                <table id="schedule" class="table table-bordered">
+                  <thead class="table-light">
+                    <tr>
+                      <th class="text-center align-middle">Hora</th>
+                      <th class="text-center align-middle">Lunes</th>
+                      <th class="text-center align-middle">Martes</th>
+                      <th class="text-center align-middle">Miércoles</th>
+                      <th class="text-center align-middle">Jueves</th>
+                      <th class="text-center align-middle">Viernes</th>
+                    </tr>
+                  </thead>
+                  <tbody id="scheduleTable">
+                    <!-- La tabla se genera dinámicamente con JavaScript -->
+                  </tbody>
+                </table>
+                <input type="hidden" name="selectedMaterias" id="selectedMaterias">
+                <input type="hidden" name="selectedBlocks" id="selectedBlocks">
+            </div>
+          </form>  
         </div>
       </div>
-      
+
       <!-- Pie del modal con botones de acción -->
       <div class="modal-footer justify-content-center" style="background-color: #f0f0f0;">
         <button type="button" class="btn btn-secondary rounded-pill px-4 mx-4" style="background-color: white; border: 1px solid #84251C; color: #84251C;" data-bs-dismiss="modal">Cancelar</button>
@@ -226,67 +324,148 @@
 
 <script>
   document.getElementById('confirmDeleteModal').addEventListener('show.bs.modal', function(event) {
-  const button = event.relatedTarget;
-  const profesorId = button.getAttribute('data-profesor-id');
-  const profesorNombre = button.getAttribute('data-profesor-nombre');
-  const profesorPrimerApellido = button.getAttribute('data-profesor-primer-apellido');
-  const profesorSegundoApellido = button.getAttribute('data-profesor-segundo-apellido');
+    const button = event.relatedTarget;
+    const profesorId = button.getAttribute('data-profesor-id');
+    const profesorNombre = button.getAttribute('data-profesor-nombre');
+    const profesorPrimerApellido = button.getAttribute('data-profesor-primer-apellido');
+    const profesorSegundoApellido = button.getAttribute('data-profesor-segundo-apellido');
 
-  // Actualizar contenido del modal
-  document.getElementById('modalProfesorID').textContent = profesorId;
-  document.getElementById('modalNombre').textContent = profesorNombre;
-  document.getElementById('modalPrimerApellido').textContent = profesorPrimerApellido;
-  document.getElementById('modalSegundoApellido').textContent = profesorSegundoApellido;
+    // Actualizar contenido del modal
+    document.getElementById('modalProfesorID').textContent = profesorId;
+    document.getElementById('modalNombre').textContent = profesorNombre;
+    document.getElementById('modalPrimerApellido').textContent = profesorPrimerApellido;
+    document.getElementById('modalSegundoApellido').textContent = profesorSegundoApellido;
 
-  // Actualizar acción del formulario
-  document.getElementById('deleteForm').action = `profesores/eliminar/${profesorId}`;
-});
+    // Actualizar acción del formulario
+    document.getElementById('deleteForm').action = `profesores/eliminar/${profesorId}`;
+  });
 
-// Generación dinámica de la tabla de disponibilidad en el modal de modificar detalles del profesor
-document.addEventListener("DOMContentLoaded", function () {
-    const scheduleTable = document.getElementById("scheduleTable");
-    const selectedBlocksInput = document.getElementById("selectedBlocks");
-    let selectedBlocks = [];
-    const days = ["Lunes", "Martes", "Miércoles", "Jueves", "Viernes"];
-    const startTime = 7;
-    const endTime = 19;
-    const blocksPerDay = 24;
 
-    // Para cada fila (hora) y cada bloque (0 y 30 minutos)
-    for (let hour = startTime; hour < endTime; hour++) {
-      for (let minute of [0, 30]) {
-        let row = document.createElement("tr");
+  let selectedBlocks = [];
+  let selectedMaterias = [];
 
-        // Celda de la hora
-        let timeCell = document.createElement("td");
-        timeCell.textContent = `${hour}:${minute === 0 ? "00" : "30"}`;
-        timeCell.classList.add("text-center");
-        row.appendChild(timeCell);
+  // Manejo de materias
+  document.querySelectorAll('.materia-btn').forEach(button => {
+      button.addEventListener('click', function() {
+          const materiaId = this.dataset.materiaId;
+          const icon = this.querySelector('svg');
+          
+          // Toggle selección
+          if (this.classList.contains('selected')) {
+              icon.innerHTML = `<path d="M8 4a.5.5 0 0 1 .5.5v3h3a.5.5 0 0 1 0 1h-3v3a.5.5 0 0 1-1 0v-3h-3a.5.5 0 0 1 0-1h3v-3A.5.5 0 0 1 8 4"/>`;
+              selectedMaterias = selectedMaterias.filter(id => id !== materiaId);
+          } else {
+              icon.innerHTML = `<path d="M12.736 3.97a.733.733 0 0 1 1.047 0c.286.289.29.756.01 1.05L7.88 12.01a.733.733 0 0 1-1.065.02L3.217 8.384a.757.757 0 0 1 0-1.06.733.733 0 0 1 1.047 0l3.052 3.093 5.4-6.425z"/>`;
+              selectedMaterias.push(materiaId);
+          }
+          
+          this.classList.toggle('selected');
+          document.getElementById('selectedMaterias').value = JSON.stringify(selectedMaterias);
+          console.log(selectedMaterias);
+      });
+  });
 
-        // Generar celdas para cada día
-        days.forEach((day, index) => {
-          let blockNumber = index * blocksPerDay + (hour - startTime) * 2 + (minute === 30 ? 2 : 1);
-          let cell = document.createElement("td");
-          cell.dataset.value = blockNumber;
-          cell.addEventListener("click", function(event) {
-            let cell = event.currentTarget;
-            let value = cell.dataset.value;
-            if (cell.classList.contains("selected")) {
-              cell.classList.remove("selected");
-              selectedBlocks = selectedBlocks.filter(num => num !== value);
-            } else {
-              cell.classList.add("selected");
-              selectedBlocks.push(value);
-            }
-            selectedBlocksInput.value = JSON.stringify(selectedBlocks);
-            console.log("Bloques seleccionados:", selectedBlocks);
+  // Configuración del modal de horario
+  document.getElementById('scheduleModal').addEventListener('show.bs.modal', async function(event) {
+      const button = event.relatedTarget;
+      const profesorId = button.getAttribute('data-profesor-id');
+      
+      // Resetear selecciones
+      const scheduleTable = document.getElementById("scheduleTable");
+      scheduleTable.innerHTML = '';
+      selectedBlocks = [];
+      selectedMaterias = [];
+      document.getElementById('selectedBlocks').value = '[]';
+      document.getElementById('selectedMaterias').value = '[]';
+
+      try {
+         // Resetear materias no confirmadas
+          document.querySelectorAll('.materia-btn').forEach(button => {
+              button.classList.remove('selected');
+              const icon = button.querySelector('svg');
+              icon.innerHTML = `<path d="M8 4a.5.5 0 0 1 .5.5v3h3a.5.5 0 0 1 0 1h-3v3a.5.5 0 0 1-1 0v-3h-3a.5.5 0 0 1 0-1h3v-3A.5.5 0 0 1 8 4"/>`;
           });
-          row.appendChild(cell);
-        });
 
-        scheduleTable.appendChild(row);
+          // Obtener datos existentes
+          const response = await fetch(`/coordinador/profesores/modificar/${profesorId}`);
+          const data = await response.json();
+          
+          // Cargar materias
+          if (data.materias) {
+              selectedMaterias = data.materias;
+              document.querySelectorAll('.materia-btn').forEach(button => {
+                  const materiaId = button.dataset.materiaId;
+                  if (data.materias.includes(materiaId)) {
+                      button.querySelector('svg').innerHTML = `<path d="M12.736 3.97a.733.733 0 0 1 1.047 0c.286.289.29.756.01 1.05L7.88 12.01a.733.733 0 0 1-1.065.02L3.217 8.384a.757.757 0 0 1 0-1.06.733.733 0 0 1 1.047 0l3.052 3.093 5.4-6.425z"/>`;
+                      button.classList.add('selected');
+                  }
+              });
+          }
+
+          // Generar tabla de horarios
+          const days = ["Lunes", "Martes", "Miércoles", "Jueves", "Viernes"];
+          const startTime = 7;
+          const endTime = 19;
+
+          // Función para formatear horas
+          const formatTime = (num) => num.toString().padStart(2, '0');
+
+          for (let hour = startTime; hour < endTime; hour++) {
+              for (let minute of [0, 30]) {
+                  const row = document.createElement("tr");
+                  
+                  // Calcular hora final
+                  let endHour = hour;
+                  let endMinute = minute + 30;
+                  if (endMinute >= 60) {
+                      endHour += 1;
+                      endMinute %= 60;
+                  }
+
+                  // Celda de tiempo
+                  const timeCell = document.createElement("td");
+                  timeCell.textContent = `${formatTime(hour)}:${formatTime(minute)} - ${formatTime(endHour)}:${formatTime(endMinute)}`;
+                  timeCell.classList.add("text-center");
+                  row.appendChild(timeCell);
+
+                  // Celdas por día
+                  days.forEach((day, index) => {
+                      const blockNumber = index * 24 + (hour - startTime) * 2 + (minute === 30 ? 1 : 0) + 1;
+                      const cell = document.createElement("td");
+                      cell.dataset.value = blockNumber.toString();
+                      
+                      // Preselección
+                      if (data.bloques && data.bloques.includes(blockNumber.toString())) {
+                          cell.classList.add("selected");
+                          selectedBlocks.push(blockNumber.toString());
+                      }
+
+                      // Evento click
+                      cell.addEventListener("click", function() {
+                          this.classList.toggle("selected");
+                          const value = this.dataset.value;
+                          selectedBlocks = selectedBlocks.includes(value) 
+                              ? selectedBlocks.filter(num => num !== value) 
+                              : [...selectedBlocks, value];
+                          document.getElementById("selectedBlocks").value = JSON.stringify(selectedBlocks);
+                          console.log(selectedBlocks);
+                      });
+
+                      row.appendChild(cell);
+                  });
+                  
+                  scheduleTable.appendChild(row);
+              }
+          }
+
+      } catch (error) {
+          console.error("Error al cargar datos:", error);
       }
-    }
+
+      // Actualizar formulario
+      document.getElementById('scheduleForm').action = `/coordinador/profesores/modificar/${profesorId}`;
+      document.getElementById('selectedBlocks').value = JSON.stringify(selectedBlocks);
+      document.getElementById('selectedMaterias').value = JSON.stringify(selectedMaterias);
   });
 </script>
 </body>
