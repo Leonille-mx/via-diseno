@@ -125,7 +125,9 @@ module.exports = class Materia {
                     ) {
                         // Actualiza los registros de nuestra base de datos
                         await client.query(
-                            "UPDATE materia SET nombre = $1, creditos = $2, horas_profesor = $3, tipo_salon = $4, profesor_id = $5 WHERE materia_id = $7",
+                            `UPDATE materia 
+                            SET nombre = $1, creditos = $2, horas_profesor = $3, 
+                            tipo_salon = $4, profesor_id = $5 WHERE materia_id = $7`,
                             [
                                 mA.name, 
                                 mA.credits, 
@@ -151,7 +153,7 @@ module.exports = class Materia {
             for (const [id] of materiasMap) {
                 await client.query("DELETE FROM materia WHERE materia_id = $1", [id]);
                 await client.query("DELETE FROM materia_requisito WHERE materia_id = $1", [id]);
-                await client.query("DELETE FROM materia_semestre WHERE materia_id = $1", [id])
+                await client.query("DELETE FROM materia_semestre WHERE materia_id = $1", [id]);
                 deleted++;
             }
             // Regresa el resultado para el mensaje

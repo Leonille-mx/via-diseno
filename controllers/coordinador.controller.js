@@ -323,8 +323,8 @@ exports.get_cicloescolar = (req, res, next) => {
         .catch((error) => {
             console.error("Critical DB Error:", error);
             res.status(500).send(`
-                <h1>Database Error</h1>
-                <p>Failed to load school cycles. Please try again later.</p>
+                <h1>Error</h1>
+                <p>No se pudieron cargar los ciclos escolares. Inténtelo de nuevo más tarde..</p>
                 <a href="/coordinador/ciclo-escolar">Retry</a>
             `);
         });
@@ -352,9 +352,9 @@ exports.postSincronizarCicloEscolar = async (req, res) => {
                 Eliminados: ${result.deleted}`;
     
         if (result.invalid.length > 0) {
-        msg += `<br><br>Registros omitidos (fecha_fin ≤ fecha_inicio):<br>`;
+        msg += `<br><br>- Registros omitidos -<br><br>`;
         msg += result.invalid.map(r => 
-            `${r.code}: ${r.start} → ${r.end}`
+            `code: ${r.code}<br><br>Fecha Inicio: ${r.start}<br><br>Fecha Fin: ${r.end}`
         ).join('<br>');
         }
     

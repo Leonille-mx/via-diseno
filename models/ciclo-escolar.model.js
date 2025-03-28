@@ -58,13 +58,9 @@ module.exports = class cicloescolar {
           const invalidRecords = [];
       
           // Process external data
-          for (const extCycle of externalData) {
-            // Convert to Date objects
-            const startDate = new Date(extCycle.start_date);
-            const endDate = new Date(extCycle.end_date);
-      
+          for (const extCycle of externalData) {      
             // Validate date constraint
-            if (endDate <= startDate) {
+            if (extCycle.end_date <= extCycle.start_date) {
               invalidRecords.push({
                 code: extCycle.code,
                 start: extCycle.start_date,
@@ -77,19 +73,32 @@ module.exports = class cicloescolar {
             const existing = localCycles.find(lc => lc.code === extCycle.code);
             
             if (existing) {
-              await client.query(
-                `UPDATE ciclo_escolar 
-                SET fecha_inicio = $1, fecha_fin = $2 
-                WHERE ciclo_escolar_id = $3`,
-                [startDate, endDate, existing.ciclo_escolar_id]
+              // forma una fecha a un string de YYYY-MM-DD
+              const formatDate = (date) => {
+                    if (!date) return null;
+                    // Convierte a YYYY-MM-DD
+                    return new Date(date).toLocaleDateString('en-US'); 
+                };
+  
+              if (formatDate(existing.fecha_inicio) !== formatDate(extCycle.start_date) ||
+                  formatDate(existing.fecha_fin) !== formatDate(extCycle.end_date) ||
+                  (existing.code || "").trim() !== (extCycle.code || "").trim()
+                )
+              {
+                await client.query(
+                  `UPDATE ciclo_escolar 
+                  SET fecha_inicio = $1, fecha_fin = $2 
+                  WHERE ciclo_escolar_id = $3`,
+                  [extCycle.start_date, extCycle.end_date, existing.ciclo_escolar_id]
               );
-              updated++;
+                updated++;
+              }
             } else {
               await client.query(
                 `INSERT INTO ciclo_escolar 
                 (ciclo_escolar_id, code, fecha_inicio, fecha_fin)
                 VALUES ($1, $2, $3, $4)`,
-                [nextId, extCycle.code, startDate, endDate]
+                [nextId, extCycle.code, extCycle.start_date, extCycle.end_date]
               );
               nextId++;
               inserted++;
@@ -107,9 +116,7 @@ module.exports = class cicloescolar {
             );
             deleted++;
           }
-      
-          await client.query('COMMIT');
-          
+
           return {
             inserted,
             updated,
@@ -118,7 +125,6 @@ module.exports = class cicloescolar {
           };
       
         } catch (error) {
-          await client.query('ROLLBACK');
           throw error;
         } finally {
           client.release();
