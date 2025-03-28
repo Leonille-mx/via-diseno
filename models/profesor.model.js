@@ -156,15 +156,6 @@ module.exports = class Profesor {
     
     // Método para cambiar el atributo activo a true 
     static async activar(id) {
-        try {
-            const result = await pool.query(
-                'UPDATE profesor SET activo = true WHERE ivd_id = $1 RETURNING *',
-                [id]
-            );
-            return result.rows[0];
-        } catch (error) {
-            console.error('Error al activar el profesor:', error);
-            throw error;
-        }
+        return pool.query('UPDATE profesor SET activo = true WHERE ivd_id = $1 RETURNING *', [id]);
     }
-};
+}
