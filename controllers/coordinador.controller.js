@@ -368,4 +368,4 @@ exports.postSincronizarCicloEscolar = async (req, res) => {
         res.redirect(`/coordinador/dashboard?msg=${encodeURIComponent('Error: ' + error.message)}`);
     }        
 };
-    
+    1
