@@ -1,7 +1,6 @@
 const pool = require('../util/database');
 
 module.exports = class Profesor {
-     // Constructor de la clase
     constructor(mi_id, mi_nombre, mi_primer_apellido, mi_segundo_apellido) {
         this.id = mi_id;
         this.nombre = mi_nombre;
@@ -26,27 +25,25 @@ module.exports = class Profesor {
 
                 if (!profesorDB) {
                     // Inserta los nuevos registros
-                    if (pA.status) {
-                        await client.query(
-                            `INSERT INTO profesor (ivd_id, nombre, primer_apellido, segundo_apellido, activo) 
-                            VALUES ($1, $2, $3, $4, $5)`,
-                            [
-                                pA.ivd_id,
-                                pA.name,
-                                pA.first_surname,
-                                pA.second_surname,
-                                false,
-                            ]
-                        );
-                        inserted++;
-                    }
+                    await client.query(
+                        `INSERT INTO profesor (ivd_id, nombre, primer_apellido, segundo_apellido, activo) 
+                        VALUES ($1, $2, $3, $4, $5)`,
+                        [
+                            pA.ivd_id,
+                            pA.name,
+                            pA.first_surname,
+                            pA.second_surname,
+                            pA.status ? 1 : 0,
+                        ]
+                    );
+                    inserted++;
                 } else {
                     // Verifica si hay cambios en los atributos
                     if (
                         (profesorDB.nombre || '').trim() !== (pA.name || '').trim() ||
                         (profesorDB.primer_apellido || '').trim() !== (pA.first_surname || '').trim() ||
                         (profesorDB.segundo_apellido || '').trim() !== (pA.second_surname || '').trim() ||
-                        (profesorDB.activo) == true
+                        Number(profesorDB.activo) !== (pA.status ? 1 : 0)
                     ) {
                         // Actualiza el registro si hay cambios
                         await client.query(
@@ -56,15 +53,11 @@ module.exports = class Profesor {
                                 pA.name,
                                 pA.first_surname,
                                 pA.second_surname,
-                                false,
+                                pA.status ? 1 : 0,
                                 pA.ivd_id,
                             ]
                         );
                         updated++;
-                    }
-                    if (pA.status == false & profesorDB.activo == true) {
-                        await client.query("DELETE FROM profesor WHERE ivd_id = $1", pA.ivd_id);
-                        deleted++;
                     }
                 }
 
@@ -74,10 +67,8 @@ module.exports = class Profesor {
 
             // Elimina los profesores que ya no están en la API
             for (const [id] of profesoresMap) {
-                if (id != 1) {
-                    await client.query("DELETE FROM profesor WHERE ivd_id = $1", [id]);
-                    deleted++;
-                }
+                await client.query("DELETE FROM profesor WHERE ivd_id = $1", [id]);
+                deleted++;
             }
 
             return { inserted, updated, deleted };
@@ -88,7 +79,6 @@ module.exports = class Profesor {
             client.release();
         }
     }
-
     // Guarda un nuevo profesor en el almacenamiento persistente
     save() {
         return pool.query(
@@ -99,21 +89,13 @@ module.exports = class Profesor {
 
     // Método para devolver los objetos del almacenamiento persistente
     static fetchAll() {
-        return pool.query('SELECT ivd_id, nombre, primer_apellido, segundo_apellido, activo FROM profesor ORDER BY activo DESC');
+        return pool.query('SELECT ivd_id, nombre, primer_apellido, segundo_apellido, activo FROM profesor');
     }
     // Método para devolver los objetos que estan activos
     static async fetchActivos() {
         return pool.query('SELECT ivd_id, nombre, primer_apellido, segundo_apellido FROM profesor WHERE activo = true');
     }
-    // Método para devolver los objetos que estan no activos 
-    static fetchInactivos() {
-        return pool.query('SELECT ivd_id, nombre, primer_apellido, segundo_apellido FROM profesor WHERE activo = false');
-    }
 
-    // Método para el atributo activo a false 
-    static delete(id) {
-        return pool.query('UPDATE profesor SET activo = false WHERE ivd_id = $1', [id]);
-    }
 
     static getSchedule(id) {
         return pool.query(
@@ -152,10 +134,5 @@ module.exports = class Profesor {
 
     static unassignCourses(id) {
         return pool.query('UPDATE materia SET profesor_id = 1 WHERE profesor_id = $1', [id]);
-    }
-    
-    // Método para cambiar el atributo activo a true 
-    static async activar(id) {
-        return pool.query('UPDATE profesor SET activo = true WHERE ivd_id = $1 RETURNING *', [id]);
     }
 }
