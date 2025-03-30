@@ -84,14 +84,12 @@ exports.get_profesores = async (req, res, nxt) => {
   try {
     const materias = await MateriaSemestre.fetchMateriasSemestre(); 
     const profesoresActivos = await Profesor.fetchActivos();  
-    const profesoresInactivos = await Profesor.fetchInactivos();
     const msg = req.query.msg || null;
 
     res.render('profesores_coordinador', {
         isLoggedIn: req.session.isLoggedIn || false,
         matricula: req.session.matricula || '',
         profesores: profesoresActivos.rows,  
-        profesoresInactivos: profesoresInactivos.rows,  
         msg, 
         materias: materias.rows
     });
@@ -125,15 +123,6 @@ exports.post_sincronizar_profesores = async (req, res, nxt) => {
     }
 };
 
-exports.post_eliminar_profesor = (req, res, nxt) => {
-  Profesor.delete(req.params.id)
-      .then(() => {
-          res.redirect('/coordinador/profesores');
-      })
-      .catch((error) => {
-          console.log(error);
-      });
-};
 
 exports.get_modificar_profesor = (req, res, next) => {    
     Promise.all([
@@ -192,23 +181,6 @@ exports.post_modificar_profesor = (req, res, nxt) => {
     } catch (error) {
         console.error("Error al procesar la solicitud:", error);
         res.status(500).send("Error en los datos enviados");
-    }
-};
-
-
-exports.post_activar_profesor = async (req, res, next) => {
-    try {
-        const profesorId = req.body.profesorId;
-        
-        if (!profesorId) {
-            return res.redirect('/coordinador/profesores?msg=Debe seleccionar un profesor');
-        }
-
-        await Profesor.activar(profesorId);
-        res.redirect('/coordinador/profesores');
-    } catch (error) {
-        console.error('Error al activar el profesor:', error);
-        res.redirect('/coordinador/profesores?msg=Error al activar el profesor');
     }
 };
 

@@ -13,11 +13,8 @@ router.post('/materias/sincronizar', isAuth, coordinador_controller.post_sincron
 
 router.get('/profesores', isAuth, coordinador_controller.get_profesores);
 router.post('/profesores/sincronizar', isAuth, coordinador_controller.post_sincronizar_profesores);
-router.post('/profesores/eliminar/:id', isAuth, coordinador_controller.post_eliminar_profesor);
 router.get('/profesores/modificar/:id', isAuth, coordinador_controller.get_modificar_profesor);
 router.post('/profesores/modificar/:id', isAuth, coordinador_controller.post_modificar_profesor);
-router.post('/profesores/eliminar/:id', isAuth, coordinador_controller.post_eliminar_profesor); 
-router.post('/profesores/activar', isAuth, coordinador_controller.post_activar_profesor);
 
 router.get('/grupos', isAuth, coordinador_controller.get_grupos);
 router.post('/grupos/eliminar/:id', isAuth, coordinador_controller.post_eliminar_grupo);
