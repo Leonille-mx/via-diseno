@@ -122,17 +122,17 @@ module.exports = class Profesor {
 
     static getCourses(id) {
         return pool.query(
-            'SELECT materia_id FROM materia WHERE profesor_id = $1',
+            'SELECT materia_id FROM profesor_materia WHERE profesor_id = $1',
             [id]
         )
         .then(result => result.rows.map(row => row.materia_id.toString()));
     }
 
     static asignCourses(id, materia) {
-        return pool.query('UPDATE materia SET profesor_id = $1 WHERE materia_id = $2', [id, materia]);
+        return pool.query('INSERT INTO profesor_materia VALUES($1, $2)', [id, materia]);
     }
 
     static unassignCourses(id) {
-        return pool.query('UPDATE materia SET profesor_id = 1 WHERE profesor_id = $1', [id]);
+        return pool.query('DELETE FROM profesor_materia WHERE profesor_id = $1', [id]);
     }
 }
