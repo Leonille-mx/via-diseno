@@ -1,13 +1,12 @@
 const pool = require('../util/database');
 
 module.exports = class Materia {
-    constructor(mi_id, mi_nombre, mi_creditos, mi_horas_profesor, mi_tipo_salon, mi_profesor_id) {
+    constructor(mi_id, mi_nombre, mi_creditos, mi_horas_profesor, mi_tipo_salon) {
         this.id = mi_id;
         this.nombre = mi_nombre;
         this.creditos = mi_creditos;
         this.horas_profesor = mi_horas_profesor;
         this.tipo_salon = mi_tipo_salon;
-        this.profesor_id = mi_profesor_id;
     }
     // Para sincronizar materias
     static async sincronizarMaterias(materiasApi) {
@@ -38,7 +37,7 @@ module.exports = class Materia {
                     // Inserta los nuevos registros en nuestra base de datos
                     await client.query(
                         `INSERT INTO materia 
-                        (materia_id, nombre, creditos, horas_profesor, tipo_salon, profesor_id) 
+                        (materia_id, nombre, creditos, horas_profesor, tipo_salon) 
                         VALUES ($1, $2, $3, $4, $5, $6)`,
                         [
                             mA.id, 
@@ -46,8 +45,6 @@ module.exports = class Materia {
                             mA.credits,
                             mA.hours_professor,
                             mA.facilities,
-                            // profesor no registrado (ivd_id): 1
-                            1,
                         ]
                     );
                     for (const requisito of mA.requisites) {
@@ -127,14 +124,12 @@ module.exports = class Materia {
                         await client.query(
                             `UPDATE materia 
                             SET nombre = $1, creditos = $2, horas_profesor = $3, 
-                            tipo_salon = $4, profesor_id = $5 WHERE materia_id = $7`,
+                            tipo_salon = $4 WHERE materia_id = $5`,
                             [
                                 mA.name, 
                                 mA.credits, 
                                 mA.hours_professor, 
                                 mA.facilities, 
-                                // profesor no registrado (ivd_id): 1
-                                1,
                                 mA.id,
                             ]
                         );
