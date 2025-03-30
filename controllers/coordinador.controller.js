@@ -184,47 +184,6 @@ exports.post_modificar_profesor = (req, res, nxt) => {
     }
 };
 
-
-exports.post_activar_profesor = async (req, res, next) => {
-    try {
-        const selectedBlocks = JSON.parse(req.body.selectedBlocks);
-        const selectedMaterias = JSON.parse(req.body.selectedMaterias);
-        const profesorId = req.params.id;
-
-        // Eliminar horario actual del profesor
-        Profesor.deleteSchedule(profesorId)
-            .then(() => {
-                // Desasignar materias actuales del profesor
-                return Profesor.unassignCourses(profesorId);
-            })
-            .then(() => {
-                // Asignar nuevas materias al profesor
-                const materiaPromises = selectedMaterias.map(materia => 
-                    Profesor.asignCourses(profesorId, materia)
-                );
-
-                // Actualizar bloques de horario del profesor
-                const bloquePromises = selectedBlocks.map(bloque => 
-                    Profesor.updateSchedule(profesorId, bloque)
-                );
-
-                // Ejecutar todas las promesas en paralelo
-                return Promise.all([...materiaPromises, ...bloquePromises]);
-            })
-            .then(() => {
-                res.redirect('/coordinador/profesores');
-            })
-            .catch(error => {
-                console.error("Error en post_modificar_profesor:", error);
-                res.status(500).send("Error al modificar el profesor");
-            });
-
-    } catch (error) {
-        console.error("Error al procesar la solicitud:", error);
-        res.status(400).send("Error en los datos enviados");
-    }
-};
-
 exports.get_salones = (req, res, nxt) => {
     Salon.fetchAll()
     .then((salones) => {
@@ -392,4 +351,4 @@ exports.postSincronizarCicloEscolar = async (req, res) => {
         res.redirect(`/coordinador/dashboard?msg=${encodeURIComponent('Error: ' + error.message)}`);
     }        
 };
-    
+    1
