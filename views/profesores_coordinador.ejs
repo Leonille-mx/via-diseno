@@ -91,22 +91,6 @@
 </div>
 
 
-          </table>
-        </div>
-      </div>
-      
-      <!-- Pie del modal con botones de acción -->
-      <div class="modal-footer justify-content-center" style="background-color: #f0f0f0">
-        <button type="button" class="btn btn-secondary rounded-pill px-4 mx-4" style="background-color: white; border: 1px solid #84251C; color: #84251C;" data-bs-dismiss="modal">Cancelar</button>
-        <form id="deleteForm" method="POST" action="">
-          <button type="submit" class="btn btn-danger rounded-pill px-4 mx-4" style="background-color: #84251C; border: none;">Eliminar</button>
-        </form>
-      </div>
-
-    </div>
-  </div>
-</div>
-
 <!-- Modal para modificar detalles de profesores -->
 <div class="modal fade" id="scheduleModal" tabindex="-1" aria-labelledby="scheduleModalLabel" aria-hidden="true">
   <div class="modal-dialog modal-xl modal-dialog-centered modal-dialog-scrollable">
@@ -218,24 +202,6 @@
 <% } %>
 
 <script>
-  document.getElementById('confirmDeleteModal').addEventListener('show.bs.modal', function(event) {
-    const button = event.relatedTarget;
-    const profesorId = button.getAttribute('data-profesor-id');
-    const profesorNombre = button.getAttribute('data-profesor-nombre');
-    const profesorPrimerApellido = button.getAttribute('data-profesor-primer-apellido');
-    const profesorSegundoApellido = button.getAttribute('data-profesor-segundo-apellido');
-
-    // Actualizar contenido del modal
-    document.getElementById('modalProfesorID').textContent = profesorId;
-    document.getElementById('modalNombre').textContent = profesorNombre;
-    document.getElementById('modalPrimerApellido').textContent = profesorPrimerApellido;
-    document.getElementById('modalSegundoApellido').textContent = profesorSegundoApellido;
-
-    // Actualizar acción del formulario
-    document.getElementById('deleteForm').action = `profesores/eliminar/${profesorId}`;
-  });
-
-
   let selectedBlocks = [];
   let selectedMaterias = [];
 
