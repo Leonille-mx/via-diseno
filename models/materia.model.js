@@ -171,4 +171,7 @@ module.exports = class Materia {
     static fetchAll() {
         return pool.query('SELECT materia_id, nombre, creditos, horas_profesor, tipo_salon FROM Materia');
     }
+    static delete(id) {
+        return pool.query('DELETE FROM materia_semestre WHERE materia_id = $1', [id]);
+    }
 }

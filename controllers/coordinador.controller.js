@@ -52,7 +52,7 @@ exports.get_materias = async (req, res, nxt) => {
         console.log(error);
     }
 };
-
+  
 exports.post_sincronizar_materias = async (req, res, nxt) => {
     try {
         // Trae materias de la API
@@ -79,7 +79,17 @@ exports.post_sincronizar_materias = async (req, res, nxt) => {
         res.redirect(`/coordinador/materias?msg=${encodeURIComponent('La operación fue fracasada')}`);
     }
 };
-        
+     
+exports.post_eliminar_materias = (req, res, nxt) => {
+    Materia.delete(req.params.id)
+        .then(() => {
+            res.redirect('/coordinador/materias');
+        })
+        .catch((error) => {
+            console.log(error);
+        });
+  };
+  
 exports.get_profesores = async (req, res, nxt) => {
   try {
     const profesoresDB = await Profesor.fetchAll(); 

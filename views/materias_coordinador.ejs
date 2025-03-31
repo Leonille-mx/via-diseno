@@ -66,8 +66,8 @@
         <table class="table table-hover" style="min-width: 800px; width: 100%;">
           <thead class="table-light">
             <tr>
-              <th scope="col" style="width: 15%; min-width: 100px;" class="text-center align-middle">Nombre</th>
               <th scope="col" style="width: 15%; min-width: 100px;" class="text-center align-middle">ID</th>
+              <th scope="col" style="width: 15%; min-width: 100px;" class="text-center align-middle">Nombre</th>
               <th scope="col" style="width: 15%; min-width: 100px;" class="text-center align-middle">Créditos</th>
               <th scope="col" style="width: 15%; min-width: 100px;" class="text-center align-middle">Horas profesor</th>
               <th scope="col" style="width: 35%; min-width: 150px;" class="text-center align-middle">Tipo de Salon</th>
@@ -92,19 +92,18 @@
                     <% } %>
                   </td>
                   <td class="text-center align-middle">
+                    <!-- Botón para abrir el modal de confirmación de eliminación -->
                     <button class="btn btn-sm p-0 d-flex align-items-center justify-content-center" 
-                    style="
-                      width: 1.5rem;
-                      height: 1.5rem;
-                      border-radius: 50%;
-                      background-color: #84251c;
-                      color: white;
-                      border: none;
-                    ">
-                      <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-x-lg" viewBox="0 0 16 16">
-                        <path d="M2.146 2.854a.5.5 0 1 1 .708-.708L8 7.293l5.146-5.147a.5.5 0 0 1 .708.708L8.707 8l5.147 5.146a.5.5 0 0 1-.708.708L8 8.707l-5.146 5.147a.5.5 0 0 1-.708-.708L7.293 8z"/>
-                      </svg>
-                    </button>
+                    style="width: 1.5rem; height: 1.5rem; border-radius: 50%; background-color: #84251c; color: white; border: none;"  
+                     data-bs-toggle="modal" 
+                     data-bs-target="#confirmDeleteModal"
+                     data-materia-id="<%= materia.materia_id %>"
+                     data-materia-nombre="<%= materia.nombre %>"
+                     data-materia-creditos="<%= materia.creditos %>">
+                     <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-x-lg" viewBox="0 0 16 16">
+                      <path d="M2.146 2.854a.5.5 0 1 1 .708-.708L8 7.293l5.146-5.147a.5.5 0 0 1 .708.708L8.707 8l5.147 5.146a.5.5 0 0 1-.708.708L8 8.707l-5.146 5.147a.5.5 0 0 1-.708-.708L7.293 8z"/>
+                    </svg>
+                  </button>
                   </td>
                 </tr>
               <% } %>
@@ -113,6 +112,49 @@
         </table>
       </div>
     </div>
+
+<!-- Modal de confirmación de eliminación -->
+<div class="modal fade" id="confirmDeleteModal" tabindex="-1" aria-labelledby="confirmDeleteModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
+    <div class="modal-content rounded-5" style="max-width: 95vw;">
+      
+      <!-- Encabezado del modal -->
+      <div class="modal-header justify-content-center" style="background-color: #f0f0f0">
+        <h5 class="modal-title" id="confirmDeleteModalLabel" style="color: #84251C;"><b>¿Está seguro de eliminar la siguiente materia?</b></h5>
+      </div>
+      
+      <!-- Cuerpo del modal con los detalles del profesor a eliminar -->
+      <div class="modal-body" style="max-height: 60vh; overflow-y: auto;">
+        <div class="table-responsive">
+          <table class="table table-bordered m-0">
+            <thead class="table-light">
+              <tr>
+                <th style="min-width: 80px;" class="text-center align-middle">ID</th>
+                <th style="min-width: 80px;" class="text-center align-middle">Nombre</th>
+                <th style="min-width: 90px;" class="text-center align-middle">Creditos</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td id="modalMateriaID" class="text-center align-middle"></td>
+                <td id="modalNombre" class="text-center align-middle"></td>
+                <td id="modalCreditos" class="text-center align-middle"></td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+      
+      <!-- Pie del modal con botones de acción -->
+      <div class="modal-footer justify-content-center" style="background-color: #f0f0f0">
+        <button type="button" class="btn btn-secondary rounded-pill px-4 mx-4" style="background-color: white; border: 1px solid #84251C; color: #84251C;" data-bs-dismiss="modal">Cancelar</button>
+        <form id="deleteForm" method="POST" action="">
+          <button type="submit" class="btn btn-danger rounded-pill px-4 mx-4" style="background-color: #84251C; border: none;">Eliminar</button>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
 
     <div>
       <div class="d-flex justify-content-between">
@@ -142,8 +184,8 @@
         <table class="table table-hover" style="min-width: 800px; width: 100%;">
           <thead class="table-light">
             <tr>
-              <th scope="col" style="width: 15%; min-width: 100px;" class="text-center align-middle">Nombre</th>
               <th scope="col" style="width: 15%; min-width: 100px;" class="text-center align-middle">ID</th>
+              <th scope="col" style="width: 15%; min-width: 100px;" class="text-center align-middle">Nombre</th>
               <th scope="col" style="width: 15%; min-width: 100px;" class="text-center align-middle">Créditos</th>
               <th scope="col" style="width: 15%; min-width: 100px;" class="text-center align-middle">Horas profesor</th>
               <th scope="col" style="width: 35%; min-width: 150px;" class="text-center align-middle">Tipo de Salon</th>
@@ -217,8 +259,8 @@
         <table class="table table-hover" style="min-width: 800px; width: 100%;">
           <thead class="table-light">
             <tr>
-              <th scope="col" style="width: 15%; min-width: 100px;" class="text-center align-middle">Nombre</th>
               <th scope="col" style="width: 15%; min-width: 100px;" class="text-center align-middle">ID</th>
+              <th scope="col" style="width: 15%; min-width: 100px;" class="text-center align-middle">Nombre</th>
               <th scope="col" style="width: 15%; min-width: 100px;" class="text-center align-middle">Créditos</th>
               <th scope="col" style="width: 15%; min-width: 100px;" class="text-center align-middle">Horas profesor</th>
               <th scope="col" style="width: 35%; min-width: 150px;" class="text-center align-middle">Tipo de Salon</th>
@@ -293,8 +335,8 @@
         <table class="table table-hover" style="min-width: 800px; width: 100%;">
           <thead class="table-light">
             <tr>
-              <th scope="col" style="width: 15%; min-width: 100px;" class="text-center align-middle">Nombre</th>
               <th scope="col" style="width: 15%; min-width: 100px;" class="text-center align-middle">ID</th>
+              <th scope="col" style="width: 15%; min-width: 100px;" class="text-center align-middle">Nombre</th>
               <th scope="col" style="width: 15%; min-width: 100px;" class="text-center align-middle">Créditos</th>
               <th scope="col" style="width: 15%; min-width: 100px;" class="text-center align-middle">Horas profesor</th>
               <th scope="col" style="width: 35%; min-width: 150px;" class="text-center align-middle">Tipo de Salon</th>
@@ -369,8 +411,8 @@
         <table class="table table-hover" style="min-width: 800px; width: 100%;">
           <thead class="table-light">
             <tr>
-              <th scope="col" style="width: 15%; min-width: 100px;" class="text-center align-middle">Nombre</th>
               <th scope="col" style="width: 15%; min-width: 100px;" class="text-center align-middle">ID</th>
+              <th scope="col" style="width: 15%; min-width: 100px;" class="text-center align-middle">Nombre</th>
               <th scope="col" style="width: 15%; min-width: 100px;" class="text-center align-middle">Créditos</th>
               <th scope="col" style="width: 15%; min-width: 100px;" class="text-center align-middle">Horas profesor</th>
               <th scope="col" style="width: 35%; min-width: 150px;" class="text-center align-middle">Tipo de Salon</th>
@@ -444,8 +486,8 @@
         <table class="table table-hover" style="min-width: 800px; width: 100%;">
           <thead class="table-light">
             <tr>
-              <th scope="col" style="width: 15%; min-width: 100px;" class="text-center align-middle">Nombre</th>
               <th scope="col" style="width: 15%; min-width: 100px;" class="text-center align-middle">ID</th>
+              <th scope="col" style="width: 15%; min-width: 100px;" class="text-center align-middle">Nombre</th>
               <th scope="col" style="width: 15%; min-width: 100px;" class="text-center align-middle">Créditos</th>
               <th scope="col" style="width: 15%; min-width: 100px;" class="text-center align-middle">Horas profesor</th>
               <th scope="col" style="width: 35%; min-width: 150px;" class="text-center align-middle">Tipo de Salon</th>
@@ -520,8 +562,8 @@
         <table class="table table-hover" style="min-width: 800px; width: 100%;">
           <thead class="table-light">
             <tr>
-              <th scope="col" style="width: 15%; min-width: 100px;" class="text-center align-middle">Nombre</th>
               <th scope="col" style="width: 15%; min-width: 100px;" class="text-center align-middle">ID</th>
+              <th scope="col" style="width: 15%; min-width: 100px;" class="text-center align-middle">Nombre</th>
               <th scope="col" style="width: 15%; min-width: 100px;" class="text-center align-middle">Créditos</th>
               <th scope="col" style="width: 15%; min-width: 100px;" class="text-center align-middle">Horas profesor</th>
               <th scope="col" style="width: 35%; min-width: 150px;" class="text-center align-middle">Tipo de Salon</th>
@@ -596,8 +638,8 @@
         <table class="table table-hover" style="min-width: 800px; width: 100%;">
           <thead class="table-light">
             <tr>
-              <th scope="col" style="width: 15%; min-width: 100px;" class="text-center align-middle">Nombre</th>
               <th scope="col" style="width: 15%; min-width: 100px;" class="text-center align-middle">ID</th>
+              <th scope="col" style="width: 15%; min-width: 100px;" class="text-center align-middle">Nombre</th>
               <th scope="col" style="width: 15%; min-width: 100px;" class="text-center align-middle">Créditos</th>
               <th scope="col" style="width: 15%; min-width: 100px;" class="text-center align-middle">Horas profesor</th>
               <th scope="col" style="width: 35%; min-width: 150px;" class="text-center align-middle">Tipo de Salon</th>
@@ -672,8 +714,8 @@
         <table class="table table-hover" style="min-width: 800px; width: 100%;">
           <thead class="table-light">
             <tr>
-              <th scope="col" style="width: 15%; min-width: 100px;" class="text-center align-middle">Nombre</th>
               <th scope="col" style="width: 15%; min-width: 100px;" class="text-center align-middle">ID</th>
+              <th scope="col" style="width: 15%; min-width: 100px;" class="text-center align-middle">Nombre</th>
               <th scope="col" style="width: 15%; min-width: 100px;" class="text-center align-middle">Créditos</th>
               <th scope="col" style="width: 15%; min-width: 100px;" class="text-center align-middle">Horas profesor</th>
               <th scope="col" style="width: 35%; min-width: 150px;" class="text-center align-middle">Tipo de Salon</th>
@@ -720,6 +762,7 @@
       </div>
     </div>
   </div>
+
   
 </main>
 </div>
@@ -737,5 +780,21 @@
       });
     </script>
   <% } %>
+  <script>
+    document.getElementById('confirmDeleteModal').addEventListener('show.bs.modal', function(event) {
+      const button = event.relatedTarget;
+      const materiaId = button.getAttribute('data-materia-id');
+      const materiaNombre = button.getAttribute('data-materia-nombre');
+      const materiaCreditos = button.getAttribute('data-materia-creditos');
+  
+      // Actualizar contenido del modal
+      document.getElementById('modalMateriaID').textContent = materiaId;
+      document.getElementById('modalNombre').textContent = materiaNombre;
+      document.getElementById('modalCreditos').textContent = materiaCreditos;
+  
+      // Actualizar acción del formulario
+      document.getElementById('deleteForm').action = `/coordinador/materias/eliminar/${materiaId}`;
+    });
+  </script>  
 </body>
 </html>
