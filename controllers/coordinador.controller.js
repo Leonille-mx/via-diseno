@@ -7,6 +7,7 @@ const CicloEscolar = require('../models/ciclo-escolar.model');
 const Grupos = require('../models/grupo.model');
 const Alumno = require('../models/alumno.model');
 const Usuario = require('../models/usuario.model.js');
+const generarGrupos = require('../models/generarGrupos.model.js');
 const { getAllProfessors, getAllCourses, getAllStudents, getCiclosEscolares} = require('../util/adminApiClient.js');
 
 exports.get_dashboard = (req, res) => {
@@ -351,4 +352,101 @@ exports.postSincronizarCicloEscolar = async (req, res) => {
         res.redirect(`/coordinador/dashboard?msg=${encodeURIComponent('Error: ' + error.message)}`);
     }        
 };
-    1
+
+exports.get_generar_grupos = async (req, res, next) => {
+    try {
+
+        // Borrar datos de grupos anteriores
+        await generarGrupos.deleteAllGruposBloqueTiempo();
+        await generarGrupos.deleteAllGrupos();
+
+        // Pre-fetch de datos:
+        // 1. Materias abiertas
+        // 2. Relación materia-profesor
+        // 3. Disponibilidad de todos los profesores
+        // 4. Salones disponibles
+        const [materiasAbiertas, profesorMaterias, profesorHorarios, salonesDisponibles] = await Promise.all([
+            generarGrupos.getMateriasAbiertas(),
+            generarGrupos.getProfesorMaterias(),
+            generarGrupos.getProfesorHorarios(),
+            generarGrupos.getSalonesDisponibles()
+        ]);
+
+        const materias = materiasAbiertas.rows;
+        const salones = salonesDisponibles.rows;
+
+        let gruposAsignados = []; // Almacenará los grupos asignados para validar restricciones
+
+        // Función recursiva de backtracking
+        async function backtrack(i) {
+            if (i === materias.length) return true; // Si todas las materias ya han sido asignadas
+
+            const materia = materias[i]; // Materia que se asignará
+            const bloquesNecesarios = materia.horas_profesor * 2; // Bloques de tiempo requeridos
+
+            // Filtrar profesores disponibles para la materia
+            let profesoresDisponibles = profesorMaterias[materia.materia_id] || [];
+
+            // Iterar sobre cada profesor candidato para la materia
+            for (let profesor of profesoresDisponibles) {
+                const disponibilidad = profesorHorarios[profesor] || [];
+
+                // Generar todas las combinaciones de bloques de tiempo que cumplan con bloquesNecesarios
+                const combinaciones = generarGrupos.generarCombinaciones(disponibilidad, bloquesNecesarios);
+                if (!combinaciones.length) continue; // Si no hay combinaciones posibles, probar con otro profesor
+
+                for (let salon of salones) {
+                    for (let combinacion of combinaciones) {
+                        // Validar que la asignación no tenga conflicto con grupos ya asignados
+                        if (generarGrupos.validarRestricciones(combinacion, profesor, salon.salon_id, gruposAsignados, materia.semestre_id)) {
+
+                            // Crear el objeto grupo con la información necesaria
+                            const grupo = {
+                                materia_id: materia.materia_id,
+                                profesor_id: profesor,
+                                salon_id: salon.salon_id,
+                                ciclo_escolar_id: null // No se asigna de momento
+                            };
+
+                            // Insertar el grupo en la BD y obtener el grupo_id
+                            const grupoInsertado = await generarGrupos.saveGrupo(grupo);
+                            const grupo_id = grupoInsertado.rows[0].grupo_id;
+
+                            // Insertar la asignación de bloques en grupo_horario
+                            await generarGrupos.saveGrupoHorario(grupo_id, combinacion);
+
+                            // Registrar la asignación para validar restricciones futuras
+                            gruposAsignados.push({
+                                grupo_id,
+                                profesor_id: profesor,
+                                salon_id: salon.salon_id,
+                                bloques: combinacion,
+                                semestre_id: materia.semestre_id
+                            });
+
+                            // Intentar asignar la siguiente materia
+                            if (await backtrack(i + 1)) return true;
+
+                            // Backtracking: si no se pudo asignar, se retira la asignación actual
+                            gruposAsignados.pop();
+                            await generarGrupos.deleteGrupoHorario(grupo_id);
+                            await generarGrupos.deleteGrupo(grupo_id);
+                        }
+                    }
+                }
+            }
+            return false; // Si ninguna asignación funcionó para la materia actual, retorna false
+        }
+
+        const exito = await backtrack(0);
+        if (exito) {
+          res.redirect('/coordinador/grupos');
+        } else {
+          res.status(400).json({ mensaje: "No se pudo generar una asignación válida de grupos" });
+        }
+
+
+    } catch (error) {
+        console.error("Error en la generación de grupos:", error);    
+    }
+};

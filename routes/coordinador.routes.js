@@ -29,6 +29,7 @@ router.post('/salones', isAuth, coordinador_controller.post_salones);
 router.post('/salones/eliminar/:id', isAuth, coordinador_controller.post_eliminar_salon);
 
 router.get('/grupos', isAuth, coordinador_controller.get_grupos);
+router.get('/grupos/generar', isAuth, coordinador_controller.get_generar_grupos);
 
 router.get('/alumnos', isAuth, coordinador_controller.get_alumnos);
 
