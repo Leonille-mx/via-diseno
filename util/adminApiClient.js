@@ -115,14 +115,14 @@ async function getAllStudents() {
     return response.data;
 }
 
-async function getAllAcademyHistory() {
+async function getAllAcademyHistory( ivd_id ) {
   const token = await getToken();
   const headers = await getHeaders(token);
   
   const response = await axiosAdminClient.get("v1/students/academic_history", {
     headers,
     params: {
-      ivd_id: "100123",  
+      ivd_id: ivd_id,  
     }
   }); 
   return response.data;

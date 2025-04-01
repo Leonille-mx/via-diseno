@@ -7,7 +7,8 @@ const CicloEscolar = require('../models/ciclo-escolar.model');
 const Grupos = require('../models/grupo.model');
 const Alumno = require('../models/alumno.model');
 const Usuario = require('../models/usuario.model.js');
-const { getAllProfessors, getAllCourses, getAllStudents, getCiclosEscolares} = require('../util/adminApiClient.js');
+const { getAllProfessors, getAllCourses, getAllStudents, getCiclosEscolares, getAllAcademyHistory} = require('../util/adminApiClient.js');
+const Historial_Academico = require('../models/historial_academico.model.js');
 
 exports.get_dashboard = (req, res) => {
     try {
@@ -265,8 +266,15 @@ exports.post_sincronizar_alumnos = async (req, res, nxt) => {
         const students = await getAllStudents();
 
         const studentsApi = students.data;
+
         const resultadoUsuario = await Usuario.sincronizarUsuarios(studentsApi);
         const resultadoAlumno = await Alumno.sincronizarAlumnos(studentsApi);
+
+        for (const student of studentsApi) {
+            const historial = await getAllAcademyHistory(student.ivd_id);
+            const historialApi = historial.data;
+            await Historial_Academico.sincronizarHistorialAcademico(student.ivd_id, historialApi);
+        }
         const msg = `La operación fue exitosa!<br>
                     Insertado: ${resultadoUsuario.inserted}<br>
                     Actualizado: ${resultadoUsuario.updated + resultadoAlumno.updated}<br>
