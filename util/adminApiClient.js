@@ -115,5 +115,18 @@ async function getAllStudents() {
     return response.data;
 }
 
+async function getAllAcademyHistory() {
+  const token = await getToken();
+  const headers = await getHeaders(token);
+  
+  const response = await axiosAdminClient.get("v1/students/academic_history", {
+    headers,
+    params: {
+      ivd_id: "100123",  
+    }
+  }); 
+  return response.data;
+}
+
 // Export the functions so they can be used in other files
-module.exports = { getAllCourses, getAllProfessors, getAllStudents, getCiclosEscolares};
+module.exports = { getAllCourses, getAllProfessors, getAllStudents, getCiclosEscolares, getAllAcademyHistory };
