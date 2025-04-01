@@ -318,14 +318,17 @@ exports.get_cicloescolar = (req, res, next) => {
 };
 
 exports.post_eliminar_grupo = (req, res, nxt) => {
-    Grupos.delete(req.params.id)
-        .then(() => {
-            res.redirect('/coordinador/grupos');
-        })
-        .catch((error) => {
-            console.error('Delete error:', error);
-            res.redirect('/coordinador/grupos?error=delete_failed');
-        });
+    Grupos.deleteHorario(req.params.id)
+    .then(() => {
+        return Grupos.delete(req.params.id);
+    })
+    .then(() => {
+        res.redirect('/coordinador/grupos');
+    })
+    .catch((error) => {
+        console.error('Delete error:', error);
+        res.redirect('/coordinador/grupos?error=delete_failed');
+    });
 };
 
 exports.postSincronizarCicloEscolar = async (req, res) => {

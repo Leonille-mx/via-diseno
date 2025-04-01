@@ -42,4 +42,11 @@ module.exports = class Grupo {
         );
     }
 
+    static deleteHorario(grupo_id) {
+        return pool.query(
+            'DELETE FROM grupo_bloque_tiempo WHERE grupo_id = $1',
+            [grupo_id]
+        );
+    }
+
 };

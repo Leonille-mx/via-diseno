@@ -9,7 +9,7 @@
 
       <div class="d-flex align-items-center justify-content-between mx-5 mb-3 gap-3 flex-wrap">
         <div class="d-flex align-items-center flex-grow-1" style="max-width: 200px;">
-          <input class="form-control me-2 rounded-pill" type="search" placeholder="Buscar salón" aria-label="Search"
+          <input class="form-control me-2 rounded-pill" type="search" placeholder="Buscar grupo" aria-label="Search"
                 style="background-image:url('/images/search.svg');
                         background-repeat:no-repeat;
                         background-position: 1rem center; 
@@ -24,6 +24,9 @@
           <a href="/coordinador/grupos/generar" 
              class="btn btn-primary d-flex align-items-center gap-2 rounded-pill px-3 py-2"
              style="background-color: #84251C; border: none;">
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-plus-lg" viewBox="0 0 16 16">
+              <path fill-rule="evenodd" d="M8 2a.5.5 0 0 1 .5.5v5h5a.5.5 0 0 1 0 1h-5v5a.5.5 0 0 1-1 0v-5h-5a.5.5 0 0 1 0-1h5v-5A.5.5 0 0 1 8 2"/>
+            </svg>
             Generar Grupos
           </a>
       
@@ -37,61 +40,6 @@
           </button>
         </div>
       </div>
-
-      <!-- Modal de confirmación de eliminación -->
-<div class="modal fade" id="deleteModal" tabindex="-1" aria-labelledby="deleteModalLabel" aria-hidden="true">
-  <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
-    <div class="modal-content rounded-5" style="max-width: 95vw;">
-      
-      <!-- Encabezado del modal -->
-      <div class="modal-header justify-content-center" style="background-color: #f0f0f0">
-        <h5 class="modal-title" id="deleteModalLabel" style="color: #84251C;"><b>¿Está seguro de eliminar el siguiente grupo?</b></h5>
-      </div>
-      
-      <!-- Cuerpo del modal -->
-      <div class="modal-body" style="max-height: 60vh; overflow-y: auto;">
-        <div class="table-responsive">
-          <table class="table table-bordered m-0">
-            <thead class="table-light">
-              <tr>
-                <th style="min-width: 80px;" class="text-center align-middle">ID Grupo</th>
-                <th style="min-width: 90px;" class="text-center align-middle">Materia</th>
-                <th style="min-width: 90px;" class="text-center align-middle">Profesor</th>
-                <th style="min-width: 120px;" class="text-center align-middle">Salón</th>
-                <th style="min-width: 100px;" class="text-center align-middle">Ciclo_Escolar</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr>
-                <td id="modalGrupoId" class="text-center align-middle"></td>
-                <td id="modalMateria" class="text-center align-middle"></td>
-                <td id="modalProfesor" class="text-center align-middle"></td>
-                <td id="modalSalon" class="text-center align-middle"></td>
-                <td id="modalCiclo" class="text-center align-middle"></td>
-              </tr>
-            </tbody>
-          </table>
-        </div>
-      </div>
-      
-      <!-- Pie del modal -->
-      <div class="modal-footer justify-content-center" style="background-color: #f0f0f0">
-        <button type="button" class="btn btn-secondary rounded-pill px-4 mx-4" 
-                style="background-color: white; border: 1px solid #84251C; color: #84251C;" 
-                data-bs-dismiss="modal">
-          Cancelar
-        </button>
-        <form id="deleteGrupoForm" method="POST" action="">
-          <button type="submit" class="btn btn-danger rounded-pill px-4 mx-4" 
-                  style="background-color: #84251C; border: none;">
-            Eliminar
-          </button>
-        </form>
-      </div>
-
-    </div>
-  </div>
-</div>
       
       <div class="table-responsive mx-5 mb-5 rounded-5 flex-grow-1" style="overflow: auto; background-color: white;">
         <table class="table table-hover" style="min-width: 800px; width: 100%;">
@@ -118,8 +66,8 @@
                       <button type="button" class="btn btn-sm p-0 d-flex align-items-center justify-content-center delete-btn"
                         style="width: 1.5rem; height: 1.5rem; border-radius: 50%; background-color: #84251c; color: white; border: none;"
                         data-bs-toggle="modal" data-bs-target="#deleteModal" data-grupo-id="<%= grupo.grupo_id %>"
-                        data-materia="<%= grupo.materia_id %>" data-profesor="<%= grupo.profesor_id %>" data-salon="<%= grupo.salon_id %>"
-                        data-ciclo="<%= grupo.ciclo_escolar_id %>">
+                        data-materia="<%= grupo.materia %>"
+                        data-ciclo="<%= grupo.code %>">
                         <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-x-lg" viewBox="0 0 16 16">
                           <path d="M2.146 2.854a.5.5 0 1 1 .708-.708L8 7.293l5.146-5.147a.5.5 0 0 1 .708.708L8.707 8l5.147 5.146a.5.5 0 0 1-.708.708L8 8.707l-5.146 5.147a.5.5 0 0 1-.708-.708L7.293 8z"/>
                       </svg>
@@ -134,6 +82,58 @@
       </main>
     </div>
   </div>
+
+  <!-- Modal de confirmación de eliminación -->
+<div class="modal fade" id="deleteModal" tabindex="-1" aria-labelledby="deleteModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
+    <div class="modal-content rounded-5" style="max-width: 95vw;">
+      
+      <!-- Encabezado del modal -->
+      <div class="modal-header justify-content-center" style="background-color: #f0f0f0">
+        <h5 class="modal-title" id="deleteModalLabel" style="color: #84251C;"><b>¿Está seguro de eliminar el siguiente grupo?</b></h5>
+      </div>
+      
+      <!-- Cuerpo del modal -->
+      <div class="modal-body" style="max-height: 60vh; overflow-y: auto;">
+        <div class="table-responsive">
+          <table class="table table-bordered m-0">
+            <thead class="table-light">
+              <tr>
+                <th style="min-width: 80px;" class="text-center align-middle">Grupo</th>
+                <th style="min-width: 100px;" class="text-center align-middle">Materia</th>
+                <th style="min-width: 80px;" class="text-center align-middle">Ciclo</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td id="modalGrupoId" class="text-center align-middle"></td>
+                <td id="modalMateria" class="text-center align-middle"></td>
+                <td id="modalCiclo" class="text-center align-middle"></td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+      
+      <!-- Pie del modal -->
+      <div class="modal-footer justify-content-center" style="background-color: #f0f0f0">
+        <button type="button" class="btn btn-secondary rounded-pill px-4 mx-4" 
+                style="background-color: white; border: 1px solid #84251C; color: #84251C;" 
+                data-bs-dismiss="modal">
+          Cancelar
+        </button>
+        <form id="deleteGrupoForm" method="POST" action="">
+          <button type="submit" class="btn btn-danger rounded-pill px-4 mx-4" 
+                  style="background-color: #84251C; border: none;">
+            Eliminar
+          </button>
+        </form>
+      </div>
+
+    </div>
+  </div>
+</div>
+
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
   <script src="/js/coordinador.js"></script>
 
@@ -145,8 +145,6 @@
 
       document.getElementById('modalGrupoId').textContent = grupoId;
       document.getElementById('modalMateria').textContent = button.getAttribute('data-materia');
-      document.getElementById('modalProfesor').textContent = button.getAttribute('data-profesor');
-      document.getElementById('modalSalon').textContent = button.getAttribute('data-salon');
       document.getElementById('modalCiclo').textContent = button.getAttribute('data-ciclo');
 
       document.getElementById('deleteGrupoForm').action = `/coordinador/grupos/eliminar/${grupoId}`;
