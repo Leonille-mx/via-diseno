@@ -18,11 +18,17 @@ module.exports = class Grupo {
     }
 
     static fetchAll() {
-        return pool.query('SELECT * FROM grupo'); // Ajusta si necesitas JOINs
+        return pool.query(`SELECT g.grupo_id, m.nombre materia, p.nombre, p.primer_apellido, p.segundo_apellido, s.numero, c.code
+                           FROM grupo g, materia m, profesor p, salon s, ciclo_escolar c
+                           WHERE g.materia_id = m.materia_id
+                           AND g.profesor_id = p.ivd_id
+                           AND g.salon_id = s.salon_id
+                           AND g.ciclo_escolar_id = c.ciclo_escolar_id
+                           ORDER BY g.grupo_id`);
     }
 
     static fetchOne(id) {
-        return pool.query('SELECT * FROM grupo WHERE grupo_id = $1', [id]); // Corrección del error "$" -> "$1"
+        return pool.query('SELECT * FROM grupo WHERE grupo_id = $1', [id]); 
     }
 
     static fetch(id) {

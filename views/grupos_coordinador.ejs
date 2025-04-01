@@ -97,10 +97,10 @@
         <table class="table table-hover" style="min-width: 800px; width: 100%;">
           <thead class="table-light">
             <tr>
-              <th scope="col" style="width: 15%; min-width: 100px;" class="text-center align-middle">ID Grupo</th>
-              <th scope="col" style="width: 15%; min-width: 100px;" class="text-center align-middle">Materia</th>
-              <th scope="col" style="width: 15%; min-width: 100px;" class="text-center align-middle">Profesor</th>
-              <th scope="col" style="width: 35%; min-width: 150px;" class="text-center align-middle">Salon</th>
+              <th scope="col" style="width: 15%; min-width: 100px;" class="text-center align-middle">Grupo</th>
+              <th scope="col" style="width: 25%; min-width: 100px;" class="text-center align-middle">Materia</th>
+              <th scope="col" style="width: 25%; min-width: 100px;" class="text-center align-middle">Profesor</th>
+              <th scope="col" style="width: 15%; min-width: 150px;" class="text-center align-middle">Salón</th>
               <th scope="col" style="width: 15%; min-width: 100px;" class="text-center align-middle">Ciclo Escolar</th>
               <th scope="col" style="width: 5%; min-width: 50px;"></th>
             </tr>
@@ -109,10 +109,10 @@
             <% for (let grupo of grupos) { %>
               <tr>
                   <th scope="row" class="text-center align-middle"><%= grupo.grupo_id %></th>
-                  <td class="text-center align-middle"><%= grupo.materia_id %></td>
-                  <td class="text-center align-middle"><%= grupo.profesor_id %></td> 
-                  <td class="text-center align-middle"><%= grupo.salon_id %></td>
-                  <td class="text-center align-middle"><%= grupo.ciclo_escolar_id %></td>
+                  <td class="text-center align-middle"><%= grupo.materia %></td>
+                  <td class="text-center align-middle"><%= grupo.nombre + ' ' + grupo.primer_apellido + ' ' + grupo.segundo_apellido %></td> 
+                  <td class="text-center align-middle"><%= grupo.numero %></td>
+                  <td class="text-center align-middle"><%= grupo.code %></td>
                   <td class="text-center align-middle">
                     <form action="/coordinador/grupos/eliminar/<%= grupo.grupo_id %>" method="POST">
                       <button type="button" class="btn btn-sm p-0 d-flex align-items-center justify-content-center delete-btn"
