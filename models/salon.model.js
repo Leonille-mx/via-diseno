@@ -36,4 +36,11 @@ module.exports = class Salon {
     static delete(id) {
         return pool.query('DELETE FROM salon WHERE salon_id = $1', [id]);
     }
+
+    // Método para obtener número total de salones registrados
+    static async numero_TotalSalones() {
+        const result = await pool.query('SELECT count(*) FROM public.salon');
+        return parseInt(result.rows[0].count);
+    };
+
 }      

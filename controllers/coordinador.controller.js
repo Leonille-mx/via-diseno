@@ -9,19 +9,33 @@ const Alumno = require('../models/alumno.model');
 const Usuario = require('../models/usuario.model.js');
 const { getAllProfessors, getAllCourses, getAllStudents, getCiclosEscolares} = require('../util/adminApiClient.js');
 
-exports.get_dashboard = (req, res) => {
+
+exports.get_dashboard = async (req, res) => {
     try {
-        const msg = req.query.msg || null;  
+        const msg = req.query.msg || null; 
+        //Consulta el total de profesores activos de la Base de Datos
+        const profesoresTotales = await Profesor.numeroProfesores();
+        const alumnosNoInscritos = await Alumno.totalNoInscritos();
+        const alumnosInscritos = await Alumno.numero_TotalAlumnoInscritos();
+        const salon_Totales = await Salon.numero_TotalSalones();
+
         res.render('dashboard_coordinador', {
             msg: msg,
             isLoggedIn: req.session.isLoggedIn || false,
             matricula: req.session.matricula || '',
+            //Total de profesores para mostrar en el dashboard
+            profesoresTotales: profesoresTotales,
+            alumnosNoInscritos: alumnosNoInscritos,
+            alumnosInscritos: alumnosInscritos,
+            salon_Totales: salon_Totales
+            
         });
     } catch (error) {
         console.error("Dashboard error:", error);
         res.status(500).send("Error loading dashboard");
     }
 };
+
 
 exports.get_materias = async (req, res, nxt) => {
     try {

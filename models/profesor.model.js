@@ -158,4 +158,12 @@ module.exports = class Profesor {
     static async activar(id) {
         return pool.query('UPDATE profesor SET activo = true WHERE ivd_id = $1 RETURNING *', [id]);
     }
+
+    // Método para obtener número total de profesores activos
+    static async numeroProfesores() {
+        const result = await pool.query('SELECT count(*) FROM public.profesor WHERE activo = true');
+        return parseInt(result.rows[0].count);
+    };
+
+
 }

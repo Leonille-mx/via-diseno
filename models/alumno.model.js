@@ -69,4 +69,17 @@ module.exports = class Alumno {
         `;
         return await pool.query(query);
     }
+
+    // Método para obtener número total de alumnos no inscritos
+    static async totalNoInscritos() {
+        const result = await pool.query('SELECT count(*) FROM public.alumno WHERE inscripcion_completada = false');
+        return parseInt(result.rows[0].count);
+    };
+
+    // Método para obtener número total de alumnos no inscritos
+    static async numero_TotalAlumnoInscritos() {
+        const result = await pool.query('SELECT count(*) FROM public.alumno WHERE inscripcion_completada = true');
+        return parseInt(result.rows[0].count);
+    };
+
 }
