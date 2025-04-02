@@ -16,9 +16,6 @@ router.post('/profesores/sincronizar', isAuth, coordinador_controller.post_sincr
 router.get('/profesores/modificar/:id', isAuth, coordinador_controller.get_modificar_profesor);
 router.post('/profesores/modificar/:id', isAuth, coordinador_controller.post_modificar_profesor);
 
-router.get('/grupos', isAuth, coordinador_controller.get_grupos);
-router.post('/grupos/eliminar/:id', isAuth, coordinador_controller.post_eliminar_grupo);
-
 router.get('/alumnos', isAuth, coordinador_controller.get_alumnos);
 router.post('/alumnos/sincronizar', isAuth, coordinador_controller.post_sincronizar_alumnos);
 
@@ -30,6 +27,7 @@ router.post('/salones/eliminar/:id', isAuth, coordinador_controller.post_elimina
 
 router.get('/grupos', isAuth, coordinador_controller.get_grupos);
 router.get('/grupos/generar', isAuth, coordinador_controller.get_generar_grupos);
+router.post('/grupos/eliminar/:id', isAuth, coordinador_controller.post_eliminar_grupo);
 
 router.get('/alumnos', isAuth, coordinador_controller.get_alumnos);
 

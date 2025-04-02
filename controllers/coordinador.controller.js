@@ -83,26 +83,24 @@ exports.post_sincronizar_materias = async (req, res, nxt) => {
 };
         
 exports.get_profesores = async (req, res, nxt) => {
-  try {
-    const profesoresDB = await Profesor.fetchAll(); 
-    const materias = await MateriaSemestre.fetchMateriasSemestre(); 
-    const profesoresActivos = await Profesor.fetchActivos();  
-    const profesoresInactivos = await Profesor.fetchInactivos();
-    const msg = req.query.msg || null;
-
-    res.render('profesores_coordinador', {
-        isLoggedIn: req.session.isLoggedIn || false,
-        matricula: req.session.matricula || '',
-        profesores: profesoresActivos.rows,  
-        profesoresInactivos: profesoresInactivos.rows,  
-        msg, 
-        materias: materias.rows
-    });
-  } catch (error) {
-    console.log(error);
-    res.status(500).send('Hubo un problema al obtener los profesores.');
-  }
-};
+    try {
+      const profesoresDB = await Profesor.fetchAll(); 
+      const materias = await MateriaSemestre.fetchMateriasSemestre(); 
+      const profesoresActivos = await Profesor.fetchActivos();  
+      const msg = req.query.msg || null;
+  
+      res.render('profesores_coordinador', {
+          isLoggedIn: req.session.isLoggedIn || false,
+          matricula: req.session.matricula || '',
+          profesores: profesoresActivos.rows,  
+          msg, 
+          materias: materias.rows
+      });
+    } catch (error) {
+      console.log(error);
+      res.status(500).send('Hubo un problema al obtener los profesores.');
+    }
+  };
 
 exports.post_sincronizar_profesores = async (req, res, nxt) => {
     try {

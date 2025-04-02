@@ -114,12 +114,11 @@
               <table class="table table-hover" style="min-width: 800px; width: 100%;">
                 <thead class="table-light">
                   <tr>
-                    <th scope="col" style="width: 30%; min-width: 100px;" class="text-center align-middle">Nombre</th>
-                    <th scope="col" style="width: 10%; min-width: 100px;" class="text-center align-middle">ID</th>
-                    <th scope="col" style="width: 14%; min-width: 100px;" class="text-center align-middle">Créditos</th>
-                    <th scope="col" style="width: 14%; min-width: 100px;" class="text-center align-middle">Horas profesor</th>
-                    <th scope="col" style="width: 13%; min-width: 150px;" class="text-center align-middle">Tipo de Salon</th>
-                    <th scope="col" style="width: 14%; min-width: 100px;" class="text-center align-middle">Obligatoria</th>
+                    <th scope="col" style="width: 31%; min-width: 100px;" class="text-center align-middle">Nombre</th>
+                    <th scope="col" style="width: 16%; min-width: 100px;" class="text-center align-middle">ID</th>
+                    <th scope="col" style="width: 16%; min-width: 100px;" class="text-center align-middle">Créditos</th>
+                    <th scope="col" style="width: 16%; min-width: 100px;" class="text-center align-middle">Horas profesor</th>
+                    <th scope="col" style="width: 16%; min-width: 150px;" class="text-center align-middle">Tipo de Salón</th>
                     <th scope="col" style="width: 5%; min-width: 50px;"></th>
                   </tr>
                 </thead>
@@ -131,11 +130,6 @@
                       <td class="text-center align-middle"><%= materia.creditos %></td>
                       <td class="text-center align-middle"><%= materia.horas_profesor %></td>
                       <td class="text-center align-middle"><%= materia.tipo_salon %></td>
-                      <% if (materia.obligatoria == true) { %>
-                        <td class="text-center align-middle">Si</td>
-                      <% } else { %>
-                        <td class="text-center align-middle">No</td>
-                      <% } %>
                       <td class="text-center align-middle">
                         <button type="button" class="btn btn-sm p-0 d-flex align-items-center justify-content-center materia-btn" 
                         style="width: 1.5rem; height: 1.5rem; border-radius: 50%; background-color: #84251c; color: white; border: none;"
