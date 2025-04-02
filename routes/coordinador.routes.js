@@ -40,6 +40,8 @@ router.get('/ciclo-escolar', isAuth, coordinador_controller.get_cicloescolar);
 
 router.post('/ciclo-escolar/sincronizar', isAuth, coordinador_controller.postSincronizarCicloEscolar);
 
+router.post('/dashboard/sincronizar-planes-de-estudio', isAuth, coordinador_controller.post_sincronizar_planes_de_estudio);
+
 
 
 module.exports = router;
