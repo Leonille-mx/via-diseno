@@ -103,17 +103,27 @@ async function getCiclosEscolares() {
 }
 
 async function getAllStudents() {
-    const token = await getToken();
-    const headers = await getHeaders(token);
-    
-    const response = await axiosAdminClient.get("v1/users/all", {
-      headers,
-      params: {
-        type: "Users::Student",  
-      }
-    }); 
-    return response.data;
+  const token = await getToken();
+  const headers = await getHeaders(token);
+  
+  const response = await axiosAdminClient.get("v1/users/all", {
+    headers,
+    params: {
+      type: "Users::Student",
+    }
+  }); 
+  return response.data;
+}
+
+async function getAllDegree() {
+  const token = await getToken();
+  const headers = await getHeaders(token);
+
+  const response = await axiosAdminClient.get("v1/degrees/index", {
+    headers, 
+  });
+  return response.data;
 }
 
 // Export the functions so they can be used in other files
-module.exports = { getAllCourses, getAllProfessors, getAllStudents, getCiclosEscolares};
+module.exports = { getAllCourses, getAllProfessors, getAllStudents, getCiclosEscolares, getAllDegree};

@@ -8,7 +8,8 @@ const Grupos = require('../models/grupo.model');
 const Alumno = require('../models/alumno.model');
 const Usuario = require('../models/usuario.model.js');
 const generarGrupos = require('../models/generarGrupos.model.js');
-const { getAllProfessors, getAllCourses, getAllStudents, getCiclosEscolares} = require('../util/adminApiClient.js');
+const Carrera = require('../models/carrera.model.js');
+const { getAllProfessors, getAllCourses, getAllStudents, getCiclosEscolares, getAllDegree} = require('../util/adminApiClient.js');
 
 exports.get_dashboard = (req, res) => {
     try {
@@ -83,14 +84,17 @@ exports.post_sincronizar_materias = async (req, res, nxt) => {
         
 exports.get_profesores = async (req, res, nxt) => {
   try {
+    const profesoresDB = await Profesor.fetchAll(); 
     const materias = await MateriaSemestre.fetchMateriasSemestre(); 
     const profesoresActivos = await Profesor.fetchActivos();  
+    const profesoresInactivos = await Profesor.fetchInactivos();
     const msg = req.query.msg || null;
 
     res.render('profesores_coordinador', {
         isLoggedIn: req.session.isLoggedIn || false,
         matricula: req.session.matricula || '',
         profesores: profesoresActivos.rows,  
+        profesoresInactivos: profesoresInactivos.rows,  
         msg, 
         materias: materias.rows
     });
@@ -124,6 +128,15 @@ exports.post_sincronizar_profesores = async (req, res, nxt) => {
     }
 };
 
+exports.post_eliminar_profesor = (req, res, nxt) => {
+  Profesor.delete(req.params.id)
+      .then(() => {
+          res.redirect('/coordinador/profesores');
+      })
+      .catch((error) => {
+          console.log(error);
+      });
+};
 
 exports.get_modificar_profesor = (req, res, next) => {    
     Promise.all([
@@ -146,42 +159,47 @@ exports.get_modificar_profesor = (req, res, next) => {
 };
 
 exports.post_modificar_profesor = (req, res, nxt) => {
+    const selectedBlocks = JSON.parse(req.body.selectedBlocks);
+    const selectedMaterias = JSON.parse(req.body.selectedMaterias);
+    Profesor.deleteSchedule(req.params.id)
+    .then(() => {
+        Profesor.unassignCourses(req.params.id)
+        .then(() => {
+            for (const materia of selectedMaterias) {
+                Profesor.asignCourses(req.params.id, materia)
+                .then()
+                .catch((error) => {
+                    console.log(error);
+                });
+            } 
+            for (const bloque of selectedBlocks) {
+                Profesor.updateSchedule(req.params.id, bloque)
+                .then()
+                .catch((error) => {
+                    console.log(error);
+                });
+            }
+            res.redirect('/coordinador/profesores')
+        })
+    })
+    .catch((error) => {
+        console.log(error);
+    });
+}
+
+exports.post_activar_profesor = async (req, res, next) => {
     try {
-        const selectedBlocks = JSON.parse(req.body.selectedBlocks);
-        const selectedMaterias = JSON.parse(req.body.selectedMaterias);
-        const profesorId = req.params.id;
+        const profesorId = req.body.profesorId;
+        
+        if (!profesorId) {
+            return res.redirect('/coordinador/profesores?msg=Debe seleccionar un profesor');
+        }
 
-        // Eliminar horario actual del profesor
-        Profesor.deleteSchedule(profesorId)
-            .then(() => {
-                // Desasignar materias actuales del profesor
-                return Profesor.unassignCourses(profesorId);
-            })
-            .then(() => {
-                // Asignar nuevas materias al profesor
-                const materiaPromises = selectedMaterias.map(materia => 
-                    Profesor.asignCourses(profesorId, materia)
-                );
-
-                // Actualizar bloques de horario del profesor
-                const bloquePromises = selectedBlocks.map(bloque => 
-                    Profesor.updateSchedule(profesorId, bloque)
-                );
-
-                // Ejecutar todas las promesas en paralelo
-                return Promise.all([...materiaPromises, ...bloquePromises]);
-            })
-            .then(() => {
-                res.redirect('/coordinador/profesores');
-            })
-            .catch(error => {
-                console.error("Error en post_modificar_profesor:", error);
-                res.status(500).send("Error al modificar el profesor");
-            });
-
+        await Profesor.activar(profesorId);
+        res.redirect('/coordinador/profesores');
     } catch (error) {
-        console.error("Error al procesar la solicitud:", error);
-        res.status(500).send("Error en los datos enviados");
+        console.error('Error al activar el profesor:', error);
+        res.redirect('/coordinador/profesores?msg=Error al activar el profesor');
     }
 };
 
@@ -453,3 +471,29 @@ exports.get_generar_grupos = async (req, res, next) => {
         console.error("Error en la generación de grupos:", error);    
     }
 };
+exports.post_sincronizar_planes_de_estudio = async (req, res) => {
+    try {
+        // Trae carreras de la API
+        const degrees = await getAllDegree();
+
+        // Extrae la 'data' de la JSON respuesta
+        const carrerasApi = degrees.data;
+
+        // Llama la función sincronizarPlanesDeEstudio() para sincronizar los planes de estudios juntoss con las carreras
+        const resultado = await Carrera.sincronizarCarreras(carrerasApi);
+        // Crea una variable para el mensaje de operación
+        const msg = `La operación fue exitosa!<br>
+                    Insertado: ${resultado.inserted}<br>
+                    Actualizado: ${resultado.updated}<br>
+                    Eliminado: ${resultado.deleted}`;
+
+        // Redirige a la siguiente ruta con el mensaje en query string 
+        // con la función para encodificarlo
+        res.redirect(`/coordinador/dashboard?msg=${encodeURIComponent(msg)}`);
+    } catch (error) {
+        console.error(error);
+        // Redirige a la siguiente ruta con un mensaje de error en query string 
+        // con la función para encodificarlo
+        res.redirect(`/coordinador/dashboard?msg=${encodeURIComponent('La operación fue fracasada')}`);
+    }
+}
