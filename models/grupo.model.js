@@ -36,4 +36,36 @@ module.exports = class Grupo {
         );
     }
 
+     // Método para obtener número total de grupos abiertos
+     static async numeroTotalGrupos() {
+        const result = await pool.query('SELECT count(*) FROM public.grupo');
+        return parseInt(result.rows[0].count);
+    };
+
+    //Metodo para obtener los grupos con las relaciones entre otras tablas
+    static async grupoDashboard() {
+        const result = await pool.query(
+            ` SELECT 
+            g.grupo_id,
+            bt.dia,
+            bt.hora_inicio,
+            bt.hora_fin,
+            m.nombre AS materia_nombre,
+            p.nombre || ' ' || p.primer_apellido AS profesor_nombre
+        FROM 
+            grupo_bloque_tiempo gbt
+        JOIN 
+            bloque_tiempo bt ON gbt.bloque_tiempo_id = bt.bloque_tiempo_id
+        JOIN 
+            grupo g ON gbt.grupo_id = g.grupo_id
+        JOIN 
+            materia m ON g.materia_id = m.materia_id
+        JOIN 
+            profesor p ON g.profesor_id = p.ivd_id
+        ORDER BY 
+            g.grupo_id, bt.dia, bt.hora_inicio`
+            );
+        return result.rows;
+    };
+
 };

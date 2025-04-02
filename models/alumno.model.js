@@ -54,7 +54,7 @@ module.exports = class Alumno {
             return { inserted, updated, deleted };
 
         } catch(error){
-            console.error('Errr durante la sincronización de alumnos:', error);
+            console.error('Error durante la sincronización de alumnos:', error);
             throw error;
         } finally {
             client.release();
@@ -81,5 +81,16 @@ module.exports = class Alumno {
         const result = await pool.query('SELECT count(*) FROM public.alumno WHERE inscripcion_completada = true');
         return parseInt(result.rows[0].count);
     };
+
+    //metodo para obtener el numero de alumnos no inscritos e inscritos, agrupado por semestres
+    static async alumnosComparacion(){
+        const result = await pool.query (`SELECT 
+            semestre, count(CASE WHEN inscripcion_completada = TRUE THEN 1 END) AS inscritos, 
+            COUNT(CASE WHEN inscripcion_completada = FALSE THEN 1 END) AS no_inscritos 
+            FROM public.alumno
+            group by semestre
+            order by semestre ASC;`);
+        return result.rows;
+    }
 
 }

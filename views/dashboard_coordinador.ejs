@@ -81,7 +81,9 @@
                     </button>
                   </div>
                   <div style="border-bottom: 3px solid #84251c98; width: 100%; margin-top: -7px;"></div>
-                  <p class="card-text text-start ms-4" style="margin-top: 10px; font-size: 2rem;">36</p>
+                  <p class="card-text text-start ms-4" style="margin-top: 10px; font-size: 2rem;">
+                    <%= grupos_Totales %>
+                  </p>
                 </div>
               </div>
 
@@ -102,7 +104,9 @@
                     </button>
                   </div>
                   <div style="border-bottom: 3px solid #84251c98; width: 100%; margin-top: -7px;"></div>
-                  <p class="card-text text-start ms-4" style="margin-top: 10px; font-size: 2rem;"><%= alumnosInscritos %></p>
+                  <p class="card-text text-start ms-4" style="margin-top: 10px; font-size: 2rem;">
+                    <%= alumnosInscritos %>
+                  </p>
                 </div>
               </div>
 
@@ -122,7 +126,9 @@
                     </button>
                   </div>
                   <div style="border-bottom: 3px solid #84251c98; width: 100%; margin-top: -7px;"></div>
-                  <p class="card-text text-start ms-4" style="margin-top: 10px; font-size: 2rem;"> <%= alumnosNoInscritos %></p>
+                  <p class="card-text text-start ms-4" style="margin-top: 10px; font-size: 2rem;">
+                    <%= alumnosNoInscritos %>
+                  </p>
                 </div>
               </div>
 
@@ -173,30 +179,35 @@
                 </div>
 
                 <div class="card-body p-0 overflow-auto" style="max-height: 150px;">
-                  <div class="px-3 pt-2">
+                  <div class="materia-scroll px-3 pt-2"
+                    style="width: auto; min-width: 600px; overflow-x: auto !important; overflow-y: hidden !important;">
                     <div class="table-responsive">
                       <table class="table table-sm">
                         <tbody>
-                          <tr>
-                            <td>Grupo 1</td>
-                            <td>20 alumnos</td>
-                          </tr>
-                          <tr>
-                            <td>Grupo 2</td>
-                            <td>18 alumnos</td>
-                          </tr>
-                          <tr>
-                            <td>Grupo 3</td>
-                            <td>22 alumnos</td>
-                          </tr>
-                          <tr>
-                            <td>Grupo 4</td>
-                            <td>15 alumnos</td>
-                          </tr>
-                          <tr>
-                            <td>Grupo 5</td>
-                            <td>25 alumnos</td>
-                          </tr>
+                          <% if (grupos_Dashboard && grupos_Dashboard.length> 0) { %>
+                            <% grupos_Dashboard.forEach(bloque=> { %>
+                              <tr>
+                                <td> [<%= bloque.hora_inicio %>
+                                </td>
+                                <td>
+                                  <%= bloque.hora_fin %>]
+                                </td>
+                                <td>
+                                  <%= bloque.dia %>
+                                </td>
+                                <td style="max-width: 300px; white-space: normal; word-break: break-word;">
+                                  <%= bloque.materia_nombre %>
+                                </td>
+                                <td style="max-width: 300px; white-space: normal; word-break: break-word;">
+                                  <%= bloque.profesor_nombre %>
+                                </td>
+                              </tr>
+                              <% }); %>
+                                <% } else { %>
+                                  <tr>
+                                    <td colspan="2">No hay grupos disponibles</td>
+                                  </tr>
+                                  <% } %>
                         </tbody>
                       </table>
                     </div>
@@ -204,7 +215,7 @@
                 </div>
 
                 <div class="card-footer bg-transparent border-0 py-2 px-3">
-                  <small class="text-muted">Total: 36 grupos</small>
+                  <small class="text-muted">Total: <%= grupos_Totales %> grupos</small>
                 </div>
               </div>
 
@@ -233,27 +244,22 @@
                     <div class="table-responsive">
                       <table class="table table-sm">
                         <tbody>
-                          
-                          <tr>
-                            <td>Grupo 1</td>
-                            <td>20 alumnos</td>
-                          </tr>
-                          <tr>
-                            <td>Grupo 2</td>
-                            <td>18 alumnos</td>
-                          </tr>
-                          <tr>
-                            <td>Grupo 3</td>
-                            <td>22 alumnos</td>
-                          </tr>
-                          <tr>
-                            <td>Grupo 4</td>
-                            <td>15 alumnos</td>
-                          </tr>
-                          <tr>
-                            <td>Grupo 5</td>
-                            <td>25 alumnos</td>
-                          </tr>
+                          <% if (salones_Dashboard && salones_Dashboard.length> 0) { %>
+                            <% salones_Dashboard.forEach(function(salon) { %>
+                              <tr>
+                                <td>
+                                  Número: <%= salon.numero %>
+                                </td>
+                                <td>
+                                  <%= salon.capacidad || '0' %> capacidad
+                                </td>
+                              </tr>
+                              <% }); %>
+                                <% } else { %>
+                                  <tr>
+                                    <td colspan="2">No hay grupos disponibles</td>
+                                  </tr>
+                                  <% } %>
                         </tbody>
                       </table>
                     </div>
@@ -317,20 +323,109 @@
                 </div>
 
                 <div class="card-footer bg-transparent border-0 py-2 px-3">
-                  <small class="text-muted">Total: 36 grupos</small>
+                  <small class="text-muted">Total: 36 solicitudes</small>
                 </div>
               </div>
-
             </div>
 
+            <div class="container">
 
-
-
-
+              <div class="row justify-content-center mt-3 mb-4">
+                <div class="col-lg-8 col-md-10 col-sm-12">
+                  <div id="chart-data" data-json='<%= JSON.stringify(grafica_Alumnos || []) %>' style="display:none;">
+                  </div>
+                  <div class="card rounded-5 ivd-bg-white bg-gradient text-black ">
+                    <div class="card-header bg-transparent border-0 p-0">
+                      <div class="px-3 pt-3">
+                        <div class="d-flex align-items-center justify-content-between">
+                          <p class="card-title m-0 w-100 text-center">Comparación de Alumnos por semestre
+                          </p>
+                        </div>
+                      </div>
+                    </div>
+                    <div class="card-body">
+                      <canvas id="grafica_Alumnos" height="300"></canvas>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
 
     </main>
     </div>
     </div>
+
+
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script>
+      // Chart.js para poder utilizar graficos. 
+      //Se aplica el cambio de Objeto js a Json en el html debido a que se conserva la estructura de datos
+      //En vez de ser manejados de manera de objetos.
+      // A cuestiones de vulnabilidad y porque el JSON 
+      //Antes de ejecutar el codigo se espera para que exista la variable ctx
+      document.addEventListener('DOMContentLoaded', () => {
+        try {
+          //Obtenemos el json de chart-data
+          const rawData = document.getElementById('chart-data').dataset.json;
+          //Convertimos el string del JSON a un objeto de Js para poder utilizarlo
+          const chartData = JSON.parse(rawData);
+
+          //Se crea la variable ctx para poder obtener los elementos para que este posteriormente se pueda dibujar
+          // 'ctx' será el objeto que nos permita interactuar con el lienzo 2D.
+          const ctx = document.getElementById('grafica_Alumnos');
+          //Error si no se encuentra el canvas, no se puede graficar
+          if (!ctx) {
+            throw new Error("Canvas element not found!");
+          }
+
+          //Se crea una grafica 2D utilizando el canvas(ctx) y posteriormente se pasan los datos
+          new Chart(ctx.getContext('2d'), {
+            //Tipo de grafico de chart.js y formato de grafica
+            type: 'bar',
+            data: {
+              labels: chartData.map(d => `${d.semestre} Semestre `),
+              datasets: [
+                {
+                  label: 'Inscritos',
+                  data: chartData.map(d => d.inscritos),
+                  backgroundColor: '#000000',
+                  borderColor: '#000000',
+                  borderWidth: 1
+                },
+                {
+                  label: 'No Inscritos',
+                  data: chartData.map(d => d.no_inscritos),
+                  backgroundColor: '#84251c',
+                  borderColor: '#84251c',
+                  borderWidth: 1
+                }
+              ]
+            },
+            options: {
+              responsive: true,
+              scales: {
+                y: {
+                  beginAtZero: true,
+                  ticks: {
+                    stepSize: 1
+                  }
+                }
+              }
+            }
+          });
+
+        } catch (error) {
+          console.error("Chart initialization error:", error);
+          // Mensaje de error en caso que no se carguen bien los datos
+          document.querySelector('.card-body').innerHTML = `
+            <div class="alert alert-danger">
+              Error loading chart: ${error.message}
+            </div>
+          `;
+        }
+      });
+    </script>
+
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
     <script src="/js/coordinador.js"></script>
     <script>

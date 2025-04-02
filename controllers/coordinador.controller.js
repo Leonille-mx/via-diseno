@@ -18,6 +18,10 @@ exports.get_dashboard = async (req, res) => {
         const alumnosNoInscritos = await Alumno.totalNoInscritos();
         const alumnosInscritos = await Alumno.numero_TotalAlumnoInscritos();
         const salon_Totales = await Salon.numero_TotalSalones();
+        const grupos_Totales = await Grupos.numeroTotalGrupos();
+        const grupos_Dashboard = await Grupos.grupoDashboard();
+        const salones_Dashboard = await Salon.salonesDashboard();
+        const grafica_Alumnos = await Alumno.alumnosComparacion();
 
         res.render('dashboard_coordinador', {
             msg: msg,
@@ -27,7 +31,11 @@ exports.get_dashboard = async (req, res) => {
             profesoresTotales: profesoresTotales,
             alumnosNoInscritos: alumnosNoInscritos,
             alumnosInscritos: alumnosInscritos,
-            salon_Totales: salon_Totales
+            salon_Totales: salon_Totales,
+            grupos_Totales: grupos_Totales,
+            grupos_Dashboard: grupos_Dashboard,
+            salones_Dashboard: salones_Dashboard,
+            grafica_Alumnos: grafica_Alumnos
             
         });
     } catch (error) {

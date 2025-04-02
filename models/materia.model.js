@@ -166,4 +166,7 @@ module.exports = class Materia {
     static fetchAll() {
         return pool.query('SELECT materia_id, nombre, creditos, horas_profesor, tipo_salon FROM Materia');
     }
+
+
+    
 }
