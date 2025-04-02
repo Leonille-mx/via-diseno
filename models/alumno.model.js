@@ -69,4 +69,6 @@ module.exports = class Alumno {
         `;
         return await pool.query(query);
     }
+
+    
 }

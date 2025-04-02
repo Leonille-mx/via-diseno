@@ -9,6 +9,7 @@ const Alumno = require('../models/alumno.model');
 const Usuario = require('../models/usuario.model.js');
 const generarGrupos = require('../models/generarGrupos.model.js');
 const Carrera = require('../models/carrera.model.js');
+const Solicitud = require('../models/solicitudes-cambio.model.js');
 const { getAllProfessors, getAllCourses, getAllStudents, getCiclosEscolares, getAllDegree} = require('../util/adminApiClient.js');
 
 exports.get_dashboard = (req, res) => {
@@ -495,3 +496,23 @@ exports.post_sincronizar_planes_de_estudio = async (req, res) => {
         res.redirect(`/coordinador/dashboard?msg=${encodeURIComponent('La operación fue fracasada')}`);
     }
 }
+
+exports.get_solicitudes_cambio = async (req, res, next) => {
+    try {
+        const solicitudes = await Solicitud.fetchAll();
+        const solicitudesActivas = await Solicitud.fetchActivos();
+        const msg = req.query.msg || null;
+
+        res.render('solicitudes_cambio_coordinador', {
+            isLoggedIn: req.session.isLoggedIn || false,
+            matricula: req.session.matricula || '',
+            solicitudes: solicitudes.rows,
+            solicitudesActivas: solicitudesActivas.rows,
+            msg  
+        });
+    } catch (error) {
+        console.error(error);
+        res.status(500).send('Hubo un problema al obtener las solicitudes de cambio.');
+    }
+};
+
