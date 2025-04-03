@@ -316,7 +316,6 @@ etag@~1.8.1:
   resolved "https://registry.npmjs.org/etag/-/etag-1.8.1.tgz"
   integrity sha512-aIL5Fx7mawVa300al2BnEE4iNvo1qETxLrPI/o05L7z6go7fCw1J6EQmbK4FmJ2AS7kgVF/KEZWufBfdClMcPg==
 
-<<<<<<< HEAD
 express-session@^1.18.1:
   version "1.18.1"
   resolved "https://registry.npmjs.org/express-session/-/express-session-1.18.1.tgz"
@@ -331,8 +330,6 @@ express-session@^1.18.1:
     safe-buffer "5.2.1"
     uid-safe "~2.1.5"
 
-=======
->>>>>>> armando/CU21
 express@^4.21.2:
   version "4.21.2"
   resolved "https://registry.npmjs.org/express/-/express-4.21.2.tgz"
