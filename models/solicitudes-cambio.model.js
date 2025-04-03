@@ -57,7 +57,7 @@ static fetchActivos() {
 }
 
 static aprobar(id) {
-    return pool.query('UPDATE solicitud_cambio SET aprobada = true WHERE solicitud_cambio_id = $1', [id]);
+    return pool.query('UPDATE solicitud_cambio SET aprobada = true WHERE ivd_id = $1', [id]);
 }
     
 };

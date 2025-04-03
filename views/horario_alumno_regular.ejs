@@ -78,7 +78,11 @@
               </button>
             </div>
             <div class="d-flex">
-              <button type="submit" class="btn btn-primary d-flex align-items-center gap-2 rounded-pill px-3 py-2" style="background-color: #84251C; border: none;">
+              <button type="submit" 
+              class="btn btn-primary d-flex align-items-center gap-2 rounded-pill px-3 py-2" 
+              style="background-color: #84251C; border: none;"
+              data-bs-toggle="modal"
+              data-bs-target="#registerInscripcionModal">
               Confirmar
               </button>
             </div>
@@ -87,52 +91,39 @@
       </div>
     </main>
 
-  <!-- Modal para registrar un nuevo salón -->
-  <div class="modal fade" id="registerSolicitudModal" tabindex="-1" aria-labelledby="registerSolicitudModalLabel" aria-hidden="true">
-    <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
-      <div class="modal-content rounded-5" style="max-width: 95vw; background-color: #f0f0f0">
-        
-        <!-- Encabezado del modal -->
-        <div class="modal-header justify-content-center">
-          <h5 class="modal-title" id="registerSolicitudModalLabel" style="color: #84251C;"><b>Estás haciendo una solicitud de cambio de horario</b></h5>
+<!-- Modal de confirmación para Aceptar -->
+<div class="modal fade" id="registerInscripcionModal" tabindex="-1" aria-labelledby="registerInscripcionModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content rounded-5" style="background-color: #f0f0f0; max-width: 95vw;">
+      
+      <!-- Cuerpo del modal -->
+      <div class="modal-body  px-4">
+        <div class="rounded-5 p-4" style="background-color: white;">
+          <h5 class="modal-title text-center" id="scheduleModalLabel" style="color: #84251C;"><b>Usted esta cerrando su proceso de admision. 
+            ¿Esta seguro?</b></h5>
         </div>
-        
-        <!-- Cuerpo del modal con el formulario de registro -->
-        <div class="modal-body">
-          <form class=" rounded-5 mx-3 py-4" id="registerSolicitudForm" method="POST" action="/coordinador/salones" style="background-color: white;">
-            <div class="mb-3">
-              <label for="nota" class="form-label ms-1"><b>Nota</b> </label>
-              <div style="border-bottom: 3px solid #84251C; width: 10rem; margin-top: -5px; margin-bottom: 10px;"></div>
-              <textarea maxlength="60" class="form-control rounded-5 mx-auto" id="nota" name="nota" rows="2"  placeholder="Especifique sus cambios y motivos aquí" style="background-color: #f0f0f0; resize: none; "></textarea>
-            </div>
-          </form>
-        </div>
-
-        <!-- Pie del modal con los botones de acción -->
-        <div class="modal-footer justify-content-center" style="background-color: #f0f0f0">
-          <button type="button" class="btn btn-secondary rounded-pill px-4 mx-4" style="background-color: white; border: 1px solid #84251C; color: #84251C;" data-bs-dismiss="modal">Cancelar</button>
-          <button type="submit" form="registerSsolicituForm" class="btn btn-primary rounded-pill px-4 mx-4" style="background-color: #84251C; border: none;">Registrar</button>
-        </div>
-
+      </div>
+      
+      <!-- Pie del modal con botones de acción -->
+      <div class="modal-footer justify-content-center" style="background-color: #f0f0f0; border-bottom-left-radius: 20px; border-bottom-right-radius: 20px; border-top: none; padding: 1.5rem;">
+        <form id="endForm" method="POST" action="">
+          <button type="submit" class="btn btn-primary rounded-pill px-4 py-2 mx-2" 
+            style="background-color: #84251C; border: none; min-width: 120px;">
+            Confirmar
+          </button>
+        </form>
+        <button type="button" class="btn btn-secondary rounded-pill px-4 py-2 mx-2" 
+          style="background-color: white; border: 1px solid #84251C; color: #84251C; min-width: 120px;" 
+          data-bs-dismiss="modal">
+          Cancelar
+        </button>
       </div>
     </div>
   </div>
+</div>
 
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
   <script src="/js/alumno.js"></script>
-  
-  <script>
-    // Función para actualizar el modal de confirmación de eliminación, de acuerdo al registro seleccionado
-    document.getElementById('confirmDeleteModal').addEventListener('show.bs.modal', function(event) {
-      const nota = button.getAttribute('data-nota');
-  
-      // Actualizar contenido del modal
-      document.getElementById('modalNota').textContent = nota;
-  
-      // Actualizar acción del formulario
-      document.getElementById('deleteForm').action = `salones/eliminar/${salonId}`;
-    });
-  </script>
 </body>
 </html>
 

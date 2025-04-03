@@ -9,4 +9,6 @@ router.get('/horario', isAuth, regular_controller.get_horario);
 
 router.get('/ayuda', isAuth, regular_controller.get_ayuda);
 
+router.get('/horario/confirmar/:id ', isAuth, regular_controller.post_confirmar);
+
 module.exports = router;
