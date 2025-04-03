@@ -11,6 +11,8 @@ router.get('/materias', isAuth, coordinador_controller.get_materias);
 
 router.post('/materias/sincronizar', isAuth, coordinador_controller.post_sincronizar_materias);
 
+router.post('/materia_semestre/eliminar/:materiaId/:semestreId', isAuth, coordinador_controller.post_eliminar_materias);
+
 router.get('/profesores', isAuth, coordinador_controller.get_profesores);
 router.post('/profesores/sincronizar', isAuth, coordinador_controller.post_sincronizar_profesores);
 router.get('/profesores/modificar/:id', isAuth, coordinador_controller.get_modificar_profesor);

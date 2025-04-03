@@ -15,4 +15,10 @@ module.exports = class MateriaSemestre {
                            FROM materia m, materia_semestre ms
                            WHERE m.materia_id = ms.materia_id`);
     }
+    static eliminar(idMateria, idSemestre) {
+        return pool.query(
+            'DELETE FROM materia_semestre WHERE materia_id = $1 AND semestre_id = $2',
+            [idMateria, idSemestre]
+        );
+    }
 }

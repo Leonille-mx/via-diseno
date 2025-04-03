@@ -82,7 +82,18 @@ exports.post_sincronizar_materias = async (req, res, nxt) => {
         res.redirect(`/coordinador/materias?msg=${encodeURIComponent('La operación fue fracasada')}`);
     }
 };
-        
+exports.post_eliminar_materias = (req, res, next) => {
+    const { materiaId, semestreId } = req.params; 
+    MateriaSemestre.eliminar(materiaId, semestreId) 
+        .then(() => {
+            res.redirect('/coordinador/materias');
+        })
+        .catch((error) => {
+            console.log(error);
+            res.status(500).send("Error al eliminar la materia");
+        });
+};
+
 exports.get_profesores = async (req, res, nxt) => {
     try {
       const profesoresDB = await Profesor.fetchAll(); 
@@ -102,6 +113,8 @@ exports.get_profesores = async (req, res, nxt) => {
       res.status(500).send('Hubo un problema al obtener los profesores.');
     }
   };
+
+
 
 exports.post_sincronizar_profesores = async (req, res, nxt) => {
     try {
@@ -125,16 +138,6 @@ exports.post_sincronizar_profesores = async (req, res, nxt) => {
         // con la función para encodificarlo
         res.redirect(`/coordinador/profesores?msg=${encodeURIComponent('La operación fue fracasada')}`);
     }
-};
-
-exports.post_eliminar_profesor = (req, res, nxt) => {
-  Profesor.delete(req.params.id)
-      .then(() => {
-          res.redirect('/coordinador/profesores');
-      })
-      .catch((error) => {
-          console.log(error);
-      });
 };
 
 exports.get_modificar_profesor = (req, res, next) => {    
