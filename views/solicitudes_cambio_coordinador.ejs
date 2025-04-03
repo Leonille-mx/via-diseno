@@ -67,7 +67,7 @@
                style="background-color: white; border: 1px solid #84251C; color: #84251C;" 
                data-bs-toggle="modal"
                data-bs-target="#confirmRechazarModal"
-               data-solicitud-id="<%= solicitud.ivd_id %>">
+               data-solicitud-id="<%= solicitud.ivd_id %>"> 
               Rechazar
             </button>
           </div>
@@ -95,7 +95,7 @@
       
       <!-- Pie del modal con botones de acción -->
       <div class="modal-footer justify-content-center" style="background-color: #f0f0f0; border-bottom-left-radius: 20px; border-bottom-right-radius: 20px; border-top: none; padding: 1.5rem;">
-        <form id="aceptarForm" method="POST" action="">
+        <form id="activateForm" method="POST" action="">
           <button type="submit" class="btn btn-primary rounded-pill px-4 py-2 mx-2" 
             style="background-color: #84251C; border: none; min-width: 120px;">
             Confirmar
@@ -111,19 +111,17 @@
   </div>
 </div>
 
-<!-- Modal de confirmación para Rechazar -->
+<!-- Modal de confirmación para Rechazar --->
 <div class="modal fade" id="confirmRechazarModal" tabindex="-1" aria-labelledby="confirmRechazarModalLabel" aria-hidden="true">
   <div class="modal-dialog modal-dialog-centered">
     <div class="modal-content rounded-5" style="background-color: #f0f0f0; max-width: 95vw;">
-      <!-- Cuerpo del modal -->
       <div class="modal-body  px-4">
         <div class="rounded-5 p-4" style="background-color: white;">
           <h5 class="modal-title text-center" id="scheduleModalLabel" style="color: #84251C;"><b>Usted está rechazando la solicitud solicitada. Una vez que haya 
             ¿Deseas confirmar el horario?</b></h5>
         </div>
       </div>
-      
-      <!-- Pie del modal con botones de acción -->
+
       <div class="modal-footer justify-content-center" style="background-color: #f0f0f0; border-bottom-left-radius: 20px; border-bottom-right-radius: 20px; border-top: none; padding: 1.5rem;">
         <button type="submit" class="btn btn-primary rounded-pill px-4 py-2 mx-2" 
           style="background-color: #84251C; border: none; min-width: 120px;">
@@ -137,7 +135,7 @@
       </div>
     </div>
   </div>
-</div>
+</div> 
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
 <script src="/js/coordinador.js"></script>
@@ -160,16 +158,18 @@
       });
     });
 
-    // Configurar modal de aceptación
-    const aceptarModal = document.getElementById('confirmAceptarModal');
-    if (aceptarModal) {
-      aceptarModal.addEventListener('show.bs.modal', function(event) {
-        const button = event.relatedTarget;
-        const solicitudId = button.getAttribute('data-solicitud-id');
-        document.getElementById('aceptarForm').action = `/coordinador/solicitudes-cambio/eliminar/${solicitudId}`;
-      });
-    }
+  
   });
+
+  // Para el modal de aceptar
+document.getElementById('confirmAceptarModal').addEventListener('show.bs.modal', function(event) {
+    const button = event.relatedTarget; 
+    const solicitudId = button.getAttribute("data-solicitud-id");
+    if (solicitudId) {
+        document.getElementById('activateForm').action = `solicitudes-cambio/aprobar/${solicitudId}`;
+    }
+});
+
 </script>
 </body>
 </html>

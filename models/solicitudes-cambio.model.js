@@ -9,12 +9,12 @@ module.exports = class Solicitud {
         this.id = mi_id;
     }
 
-    save() {
+save() {
         return pool.query(
             'INSERT INTO solicitud_cambio(solicitud_cambio_id, descripcion, aprobada, created_at, ivd_id) VALUES ($1, $2, $3, $4, $5)',
             [this.solicitud, this.descripcion, this.estatus, this.fecha, this.id]
         );
-    }
+}
 
     static fetchAll() {
     return pool.query(`
@@ -56,9 +56,8 @@ static fetchActivos() {
     `);
 }
 
-static delete(id) {
-    return pool.query('UPDATE solicitud_cambio SET aprobada = true WHERE solicitud_cambio_id = $1', [id])
+static aprobar(id) {
+    return pool.query('UPDATE solicitud_cambio SET aprobada = true WHERE solicitud_cambio_id = $1', [id]);
 }
-
     
 };

@@ -516,13 +516,15 @@ exports.get_solicitudes_cambio = async (req, res, next) => {
         });
     }
 };
-exports.post_eliminar_solicitud = (req, res, nxt) => {
-    Solicitud.delete(req.params.id)
-        .then(() => {
-            res.redirect('/coordinador/solicitudes-cambio');
-        })
-        .catch((error) => {
-            console.log(error);
-        });
-  };
+
+exports.post_aprobar_solicitud = async (req, res, nxt) => {
+    Solicitud.aprobar(req.params.id)
+    .then (( ) => {
+        res.redirect('/coordinador/solicitudes-cambio')
+    })
+    .catch((error) => {
+        console.log(error);
+    });
+};
+    
 
