@@ -270,10 +270,18 @@ exports.post_sincronizar_alumnos = async (req, res, nxt) => {
         const resultadoUsuario = await Usuario.sincronizarUsuarios(studentsApi);
         const resultadoAlumno = await Alumno.sincronizarAlumnos(studentsApi);
 
+        const alumnos_sin_historial = [];
+
         for (const student of studentsApi) {
-            const historial = await getAllAcademyHistory(student.ivd_id);
-            const historialApi = historial.data;
-            await Historial_Academico.sincronizarHistorialAcademico(student.ivd_id, historialApi);
+            try {
+                const historial = await getAllAcademyHistory(student.ivd_id);
+                const historialApi = historial.data;
+                await Historial_Academico.sincronizarHistorialAcademico(student.ivd_id, historialApi);
+            } catch (error) {
+                console.error(`Saltando la sincronización del historial del estudiante ${student.ivd_id}:`, error.message);
+                alumnos_sin_historial.push(student.ivd_id);
+                continue;
+            }
         }
         const msg = `La operación fue exitosa!<br>
                     Insertado: ${resultadoUsuario.inserted}<br>
