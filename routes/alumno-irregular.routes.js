@@ -5,11 +5,11 @@ const isAuth = require('../util/isAuth');
 
 const irregular_controller = require('../controllers/alumno-irregular.controller');
 
-router.get('/horario', isAuth, irregular_controller.get_horario);
-
-router.get('/editar-horario', isAuth, irregular_controller.get_editar_horario);
+router.get('/modificar-horario', isAuth, irregular_controller.get_modificar_horario);
 
 router.get('/prevista-horario', isAuth, irregular_controller.get_prevista_horario);
+
+router.get('/resultado-de-horario', isAuth, irregular_controller.get_resultado_de_horario);
 
 router.get('/ayuda', isAuth, irregular_controller.get_ayuda);
 

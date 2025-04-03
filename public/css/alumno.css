@@ -23,6 +23,32 @@ html {
     width: fit-content;
 }
 
+.ivd-text-red {
+    color: #84251C !important;
+}
+.ivd-bg-red {
+    background-color: #84251C !important;
+}
+.ivd-border-red {
+    border-color: #84251C !important;
+}
+
+.alumno-scroll::-webkit-scrollbar {
+    height: 10px;
+    width: 8px;
+}
+  
+.alumno-scroll::-webkit-scrollbar-thumb {
+    background-color: #a83232;
+    border-radius: 10px;
+    border: 2px solid #84251c;
+}
+
+.alumno-scroll {
+    overflow-y: auto; /* Enables vertical scrolling */
+    overflow-x: hidden; /* Prevents horizontal scrolling */
+}
+
 @media (min-width: 992px) {
     .logo-size {
         width: 70px;
