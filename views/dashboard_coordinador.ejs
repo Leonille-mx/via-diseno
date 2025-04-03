@@ -60,7 +60,8 @@
                     </button>
                   </div>
                   <div style="border-bottom: 3px solid #ffffff; min-width: 100%; margin-top: -7px;"></div>
-                  <p class="card-text text-start ms-4" style="margin-top: 10px; font-size: 2rem;"> 40 </p>
+                  <p class="card-text text-start ms-4" style="margin-top: 10px; font-size: 2rem;"> 
+                    <%= materias_Abiertas %> </p>
                 </div>
               </div>
 
@@ -330,7 +331,7 @@
             <div class="container">
 
               <div class="row justify-content-center mt-3 mb-4">
-                <div class="col-lg-8 col-md-10 col-sm-12">
+                <div class="m-12">
                   <div id="chart-data" data-json='<%= JSON.stringify(grafica_Alumnos || []) %>' style="display:none;">
                   </div>
                   <div class="card rounded-5 ivd-bg-white bg-gradient text-black ">
@@ -343,13 +344,12 @@
                       </div>
                     </div>
                     <div class="card-body">
-                      <canvas id="grafica_Alumnos" height="300"></canvas>
+                      <canvas id="grafica_Alumnos" height="50" width="300"></canvas>
                     </div>
                   </div>
                 </div>
               </div>
             </div>
-
     </main>
     </div>
     </div>

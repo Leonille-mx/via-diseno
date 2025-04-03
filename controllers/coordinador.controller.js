@@ -22,6 +22,7 @@ exports.get_dashboard = async (req, res) => {
         const grupos_Dashboard = await Grupos.grupoDashboard();
         const salones_Dashboard = await Salon.salonesDashboard();
         const grafica_Alumnos = await Alumno.alumnosComparacion();
+        const materias_Abiertas  = await Materia.numeroMaterias();
 
         res.render('dashboard_coordinador', {
             msg: msg,
@@ -35,7 +36,8 @@ exports.get_dashboard = async (req, res) => {
             grupos_Totales: grupos_Totales,
             grupos_Dashboard: grupos_Dashboard,
             salones_Dashboard: salones_Dashboard,
-            grafica_Alumnos: grafica_Alumnos
+            grafica_Alumnos: grafica_Alumnos,
+            materias_Abiertas: materias_Abiertas
             
         });
     } catch (error) {
