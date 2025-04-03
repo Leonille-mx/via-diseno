@@ -167,6 +167,7 @@ document.getElementById('confirmAceptarModal').addEventListener('show.bs.modal',
     const solicitudId = button.getAttribute("data-solicitud-id");
     if (solicitudId) {
         document.getElementById('activateForm').action = `solicitudes-cambio/aprobar/${solicitudId}`;
+        document.getElementById('activateForm').action = `solicitudes-cambio/aprobar/${solicitudId}`;
     }
 });
 
