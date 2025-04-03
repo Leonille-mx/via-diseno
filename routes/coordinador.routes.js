@@ -32,6 +32,7 @@ router.post('/grupos/eliminar/:id', isAuth, coordinador_controller.post_eliminar
 router.get('/alumnos', isAuth, coordinador_controller.get_alumnos);
 
 router.get('/solicitudes-cambio', isAuth, coordinador_controller.get_solicitudes_cambio);
+router.post('/solicitudes-cambio/eliminar/:id', isAuth, coordinador_controller.post_eliminar_solicitud);
 
 router.get('/ayuda', isAuth, coordinador_controller.get_ayuda);
 

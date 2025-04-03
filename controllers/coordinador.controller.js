@@ -499,20 +499,30 @@ exports.post_sincronizar_planes_de_estudio = async (req, res) => {
 
 exports.get_solicitudes_cambio = async (req, res, next) => {
     try {
-        const solicitudes = await Solicitud.fetchAll();
         const solicitudesActivas = await Solicitud.fetchActivos();
         const msg = req.query.msg || null;
 
         res.render('solicitudes_cambio_coordinador', {
             isLoggedIn: req.session.isLoggedIn || false,
             matricula: req.session.matricula || '',
-            solicitudes: solicitudes.rows,
-            solicitudesActivas: solicitudesActivas.rows,
+            solicitudes: solicitudesActivas.rows, 
             msg  
         });
     } catch (error) {
-        console.error(error);
-        res.status(500).send('Hubo un problema al obtener las solicitudes de cambio.');
+        console.error('Error al obtener solicitudes:', error);
+        res.status(500).render('error', {
+            message: 'Hubo un problema al obtener las solicitudes de cambio',
+            error
+        });
     }
 };
+exports.post_eliminar_solicitud = (req, res, nxt) => {
+    Solicitud.delete(req.params.id)
+        .then(() => {
+            res.redirect('/coordinador/solicitudes-cambio');
+        })
+        .catch((error) => {
+            console.log(error);
+        });
+  };
 

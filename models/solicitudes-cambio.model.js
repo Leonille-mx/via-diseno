@@ -17,20 +17,48 @@ module.exports = class Solicitud {
     }
 
     static fetchAll() {
-        return pool.query('SELECT solicitud_cambio_id, descripcion, aprobada, created_at, ivd_id FROM solicitud_cambio');
-    }
+    return pool.query(`
+        SELECT 
+            sc.solicitud_cambio_id, 
+            sc.descripcion, 
+            sc.aprobada, 
+            sc.created_at, 
+            sc.ivd_id,
+            u.nombre, 
+            u.primer_apellido, 
+            u.correo_institucional 
 
-    static fetchActivos() {
-        return pool.query('SELECT solicitud_cambio_id, descripcion, aprobada, created_at, ivd_id FROM solicitud_cambio WHERE aprobada = true');
-    }
+        FROM 
+            solicitud_cambio sc
+        JOIN 
+            usuario u ON sc.ivd_id = u.ivd_id
+    `);
+}
+static fetchActivos() {
+    return pool.query(`
+        SELECT 
+            sc.solicitud_cambio_id, 
+            sc.descripcion, 
+            sc.aprobada, 
+            sc.created_at, 
+            sc.ivd_id,
+            u.nombre, 
+            u.primer_apellido,
+            u.correo_institucional
+        FROM 
+            solicitud_cambio sc
+        JOIN 
+            usuario u ON sc.ivd_id = u.ivd_id
+        WHERE 
+            sc.aprobada = false
+        ORDER BY 
+            sc.solicitud_cambio_id
+    `);
+}
 
-    static delete(id) {
-        return pool.query('DELETE FROM solicitud_cambio WHERE solicitud_cambio_id = $1', [id]);
-    }
+static delete(id) {
+    return pool.query('UPDATE solicitud_cambio SET aprobada = true WHERE solicitud_cambio_id = $1', [id])
+}
+
     
-    // Métodos adicionales recomendados
-    static findById(id) {
-        return pool.query('SELECT * FROM solicitud_cambio WHERE solicitud_cambio_id = $1', [id]);
-    }
-
 };
