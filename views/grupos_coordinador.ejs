@@ -144,16 +144,46 @@
       
       <!-- Encabezado del modal -->
       <div class="modal-header justify-content-center">
-        <h5 class="modal-title" id="scheduleModalLabel" style="color: #84251C;"><b>Estás modificando los detalles del profesor</b></h5>
+        <h5 class="modal-title" id="scheduleModalLabel" style="color: #84251C;"><b>Estás agregando un nuevo grupo</b></h5>
       </div>
       
       <!-- Cuerpo del modal -->
       <div class="modal-body px-4">
         <div class="rounded-5 p-4" style="background-color: white;">
 
-          <form id="scheduleForm" method="POST" action="/coordinador/salones/registrar">
-            <h6 class="ms-1"><b>Materias</b></h6>
-            <div style="border-bottom: 3px solid #84251C; width: 10rem; margin-top: -5px; margin-bottom: 10px;"></div> 
+          <form id="scheduleForm" method="POST" action="/coordinador/grupos">
+            <div class="mb-3">
+              <label for="materia" class="form-label ms-1"><b>Materia</b></label>
+              <div style="border-bottom: 3px solid #84251C; width: 10rem; margin-top: -5px; margin-bottom: 10px;"></div>
+              <select class="form-select rounded-5 mx-auto" id="materia" name="materia" required style="background-color: #f0f0f0;">
+                <option value="">Seleccione una materia</option>
+                <% for (let materia of materias) { %>
+                  <option value="<%= materia.materia_id %>"><%= materia.nombre %></option>
+                <% } %>
+              </select>
+            </div>
+
+            <div class="mb-3">
+              <label for="profesor" class="form-label ms-1"><b>Profesor</b></label>
+              <div style="border-bottom: 3px solid #84251C; width: 10rem; margin-top: -5px; margin-bottom: 10px;"></div>
+              <select class="form-select rounded-5 mx-auto" id="profesor" name="profesor" required style="background-color: #f0f0f0;">
+                <option value="">Seleccione un profesor</option>
+                <% for (let profesor of profesores) { %>
+                  <option value="<%= profesor.ivd_id %>"><%= profesor.nombre + ' ' + profesor.primer_apellido + ' ' + profesor.segundo_apellido %></option>
+                <% } %>
+              </select>
+            </div>
+
+            <div class="mb-3">
+              <label for="salon" class="form-label ms-1"><b>Salón</b></label>
+              <div style="border-bottom: 3px solid #84251C; width: 10rem; margin-top: -5px; margin-bottom: 10px;"></div>
+              <select class="form-select rounded-5 mx-auto" id="salon" name="salon" required style="background-color: #f0f0f0;">
+                <option value="">Seleccione un salón</option>
+                <% for (let salon of salones) { %>
+                  <option value="<%= salon.salon_id %>"><%= salon.numero %></option>
+                <% } %>
+              </select>
+            </div>
 
             <!-- Tabla para seleccionar horario del grupo -->
             <h6 class="ms-1"><b>Horario</b></h6>
@@ -174,7 +204,6 @@
                     <!-- La tabla se genera dinámicamente con JavaScript -->
                   </tbody>
                 </table>
-                <input type="hidden" name="selectedMaterias" id="selectedMaterias">
                 <input type="hidden" name="selectedBlocks" id="selectedBlocks">
             </div>
           </form>  
@@ -184,7 +213,7 @@
       <!-- Pie del modal con botones de acción -->
       <div class="modal-footer justify-content-center" style="background-color: #f0f0f0;">
         <button type="button" class="btn btn-secondary rounded-pill px-4 mx-4" style="background-color: white; border: 1px solid #84251C; color: #84251C;" data-bs-dismiss="modal">Cancelar</button>
-        <button type="submit" form="scheduleForm" class="btn btn-primary rounded-pill px-4 mx-4" style="background-color: #84251C; border: none;">Modificar</button>
+        <button type="submit" form="scheduleForm" class="btn btn-primary rounded-pill px-4 mx-4" style="background-color: #84251C; border: none;">Registrar</button>
       </div>
     </div>
   </div>
@@ -206,7 +235,7 @@
       document.getElementById('deleteGrupoForm').action = `/coordinador/grupos/eliminar/${grupoId}`;
     });
 
-  let selectedBlocks = [];
+
 
   // Configuración del modal de horario
   document.getElementById('scheduleModal').addEventListener('show.bs.modal', async function(event) {
@@ -217,7 +246,6 @@
       const scheduleTable = document.getElementById("scheduleTable");
       scheduleTable.innerHTML = '';
       selectedBlocks = [];
-      selectedMaterias = [];
       document.getElementById('selectedBlocks').value = '[]';
 
       try {
@@ -277,9 +305,7 @@
       }
 
       // Actualizar formulario
-      document.getElementById('scheduleForm').action = `/coordinador/profesores/modificar/${profesorId}`;
       document.getElementById('selectedBlocks').value = JSON.stringify(selectedBlocks);
-      document.getElementById('selectedMaterias').value = JSON.stringify(selectedMaterias);
   });
   </script>
 </body>

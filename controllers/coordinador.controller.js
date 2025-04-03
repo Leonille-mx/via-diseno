@@ -127,16 +127,6 @@ exports.post_sincronizar_profesores = async (req, res, nxt) => {
     }
 };
 
-exports.post_eliminar_profesor = (req, res, nxt) => {
-  Profesor.delete(req.params.id)
-      .then(() => {
-          res.redirect('/coordinador/profesores');
-      })
-      .catch((error) => {
-          console.log(error);
-      });
-};
-
 exports.get_modificar_profesor = (req, res, next) => {    
     Promise.all([
         Profesor.getSchedule(req.params.id),
@@ -157,48 +147,31 @@ exports.get_modificar_profesor = (req, res, next) => {
     });
 };
 
-exports.post_modificar_profesor = (req, res, nxt) => {
-    const selectedBlocks = JSON.parse(req.body.selectedBlocks);
-    const selectedMaterias = JSON.parse(req.body.selectedMaterias);
-    Profesor.deleteSchedule(req.params.id)
-    .then(() => {
-        Profesor.unassignCourses(req.params.id)
-        .then(() => {
-            for (const materia of selectedMaterias) {
-                Profesor.asignCourses(req.params.id, materia)
-                .then()
-                .catch((error) => {
-                    console.log(error);
-                });
-            } 
-            for (const bloque of selectedBlocks) {
-                Profesor.updateSchedule(req.params.id, bloque)
-                .then()
-                .catch((error) => {
-                    console.log(error);
-                });
-            }
-            res.redirect('/coordinador/profesores')
-        })
-    })
-    .catch((error) => {
-        console.log(error);
-    });
-}
-
-exports.post_activar_profesor = async (req, res, next) => {
+exports.post_modificar_profesor = async (req, res, next) => {
     try {
-        const profesorId = req.body.profesorId;
-        
-        if (!profesorId) {
-            return res.redirect('/coordinador/profesores?msg=Debe seleccionar un profesor');
-        }
+        const selectedBlocks = JSON.parse(req.body.selectedBlocks);
+        const selectedMaterias = JSON.parse(req.body.selectedMaterias);
+        const profesorId = req.params.id;
 
-        await Profesor.activar(profesorId);
+        await Profesor.deleteSchedule(profesorId);
+        await Profesor.unassignCourses(profesorId);
+
+        // Asignar cursos
+        const asignarCursosPromises = selectedMaterias.map(materia => 
+            Profesor.asignCourses(profesorId, materia)
+        );
+        await Promise.all(asignarCursosPromises);
+
+        // Actualizar horarios
+        const actualizarHorarioPromises = selectedBlocks.map(bloque => 
+            Profesor.updateSchedule(profesorId, bloque)
+        );
+        await Promise.all(actualizarHorarioPromises);
+
         res.redirect('/coordinador/profesores');
     } catch (error) {
-        console.error('Error al activar el profesor:', error);
-        res.redirect('/coordinador/profesores?msg=Error al activar el profesor');
+        console.error(error);
+        res.status(500).send('Error al modificar detalles del profesor');
     }
 };
 
@@ -248,18 +221,47 @@ exports.post_eliminar_salon = (req, res, nxt) => {
 };
 
 exports.get_grupos = (req, res, next) => {
-    Grupos.fetchAll()
-        .then((result) => {
-            res.render('grupos_coordinador', { 
-                grupos: result.rows,
-                isLoggedIn: req.session.isLoggedIn || false,
-                matricula: req.session.matricula || '',
-            });
-        })
-        .catch((error) => {
-            console.error('Error fetching grupos:', error);
-            res.status(500).send('Error al obtener los grupos'); 
+    Promise.all([
+        MateriaSemestre.fetchMateriasSemestre(),
+        Profesor.fetchAll(),
+        Grupos.fetchAll(),
+        Salon.fetchAll()
+    ])
+    .then(([materias, profesores, grupos, salones]) => {
+        res.render('grupos_coordinador', { 
+            grupos: grupos.rows,
+            materias: materias.rows,
+            profesores: profesores.rows,
+            salones: salones.rows,
+            isLoggedIn: req.session.isLoggedIn || false,
+            matricula: req.session.matricula || '',
         });
+    })
+    .catch((error) => {
+        console.error('Error fetching data:', error);
+        res.status(500).send('Error al obtener los datos');
+    });
+};
+
+exports.post_grupos = async (req, res, next) => {
+    try {
+        const selectedBlocks = JSON.parse(req.body.selectedBlocks);
+        const grupo = new Grupos(req.body.materia, req.body.profesor, req.body.salon);
+        
+        const savedGroup = await grupo.save();
+        const groupId = savedGroup.rows[0].grupo_id;
+
+        // Asignar bloques al grupo
+        const asignarBloquesPromises = selectedBlocks.map(bloque => 
+            Grupos.updateHorario(groupId, bloque)
+        );
+        await Promise.all(asignarBloquesPromises);
+
+        res.redirect('/coordinador/grupos');
+    } catch (error) {
+        console.error(error);
+        res.status(500).send('Error al registrar el grupo'); 
+    }
 };
 
 exports.get_alumnos = async (req, res, nxt) => {

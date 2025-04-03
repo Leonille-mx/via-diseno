@@ -2,18 +2,23 @@ const pool = require('../util/database');
 
 
 module.exports = class Grupo {
-    constructor(mi_grupo_id, mi_material_id, mi_professor_id, mi_salon_id, mi_ciclo_escolar_id) {
-        this.id = mi_grupo_id;
-        this.material_id = mi_material_id;
-        this.professor_id = mi_professor_id;
+    constructor(mi_materia_id, mi_profesor_id, mi_salon_id) {
+        this.materia_id = mi_materia_id;
+        this.profesor_id = mi_profesor_id;
         this.salon_id = mi_salon_id;
-        this.ciclo_escolar_id = mi_ciclo_escolar_id;
     }
 
-    save() {
+    async save() {
+        
+        const resultMax = await pool.query(`SELECT COALESCE(MAX(grupo_id), 0) AS max_id FROM grupo`);
+        const newId = resultMax.rows[0].max_id + 1;
+
+        const cicloMax = await pool.query(`SELECT ciclo_escolar_id FROM ciclo_escolar ORDER BY fecha_fin DESC LIMIT 1;`)
+        const ciclo = cicloMax.rows[0].ciclo_escolar_id;
+
         return pool.query(
-            'INSERT INTO grupo(grupo_id, material_id, professor_id, salon_id, ciclo_escolar_id) VALUES ($1, $2, $3, $4, $5)',
-            [this.id, this.material_id, this.professor_id, this.salon_id, this.ciclo_escolar_id]
+            'INSERT INTO grupo(grupo_id, materia_id, profesor_id, salon_id, ciclo_escolar_id) VALUES ($1, $2, $3, $4, $5) RETURNING grupo_id',
+            [newId, this.materia_id, this.profesor_id, this.salon_id, ciclo]
         );
     }
 
@@ -47,6 +52,10 @@ module.exports = class Grupo {
             'DELETE FROM grupo_bloque_tiempo WHERE grupo_id = $1',
             [grupo_id]
         );
+    }
+
+    static updateHorario(id, bloque) {
+        return pool.query('INSERT INTO grupo_bloque_tiempo VALUES ($1, $2)', [id, bloque]);
     }
 
 };
