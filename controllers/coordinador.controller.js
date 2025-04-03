@@ -9,7 +9,8 @@ const Alumno = require('../models/alumno.model');
 const Usuario = require('../models/usuario.model.js');
 const generarGrupos = require('../models/generarGrupos.model.js');
 const Carrera = require('../models/carrera.model.js');
-const { getAllProfessors, getAllCourses, getAllStudents, getCiclosEscolares, getAllDegree} = require('../util/adminApiClient.js');
+const Historial_Academico = require('../models/historial_academico.model.js');
+const { getAllProfessors, getAllCourses, getAllStudents, getCiclosEscolares, getAllDegree, getAllAcademyHistory} = require('../util/adminApiClient.js');
 
 exports.get_dashboard = (req, res) => {
     try {
@@ -282,8 +283,23 @@ exports.post_sincronizar_alumnos = async (req, res, nxt) => {
         const students = await getAllStudents();
 
         const studentsApi = students.data;
+
         const resultadoUsuario = await Usuario.sincronizarUsuarios(studentsApi);
         const resultadoAlumno = await Alumno.sincronizarAlumnos(studentsApi);
+
+        const alumnos_sin_historial = [];
+
+        for (const student of studentsApi) {
+            try {
+                const historial = await getAllAcademyHistory(student.ivd_id);
+                const historialApi = historial.data;
+                await Historial_Academico.sincronizarHistorialAcademico(student.ivd_id, historialApi);
+            } catch (error) {
+                console.error(`Saltando la sincronización del historial del estudiante ${student.ivd_id}:`, error.message);
+                alumnos_sin_historial.push(student.ivd_id);
+                continue;
+            }
+        }
         const msg = `La operación fue exitosa!<br>
                     Insertado: ${resultadoUsuario.inserted}<br>
                     Actualizado: ${resultadoUsuario.updated + resultadoAlumno.updated}<br>
