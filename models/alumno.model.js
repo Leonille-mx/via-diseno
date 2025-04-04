@@ -93,7 +93,6 @@ module.exports = class Alumno {
         return result.rows;
     }
 
-
     static async fetchAllResultadoAlumnoIrregular(id) {
         return pool.query(`
             SELECT (SELECT b.hora_inicio

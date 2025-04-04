@@ -21,10 +21,16 @@ exports.get_ayuda = (req, res, nxt) => {
 };
 
 exports.get_prevista_horario = (req, res, nxt) => {
-    res.render('prevista_horario_alumno_irregular', {
-        isLoggedIn: req.session.isLoggedIn || false,
-        matricula: req.session.matricula || '',
-    });
+    Alumno.fetchAllResultadoAlumnoIrregular(req.session.matricula)
+    .then((materias_resultado) => {
+        res.render('prevista_horario_alumno_irregular', {
+            isLoggedIn: req.session.isLoggedIn || false,
+            matricula: req.session.matricula || '',
+            materias_resultado: materias_resultado.rows,
+        });
+    }).catch((error) => {
+        console.log(error);
+    })
 };
 
 exports.get_resultado_de_horario = (req, res, nxt) => {

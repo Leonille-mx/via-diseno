@@ -1,6 +1,6 @@
 <%- include('includes/_nav_alumno.ejs') %>
 
-<main class="bg-grey mx-4 mb-3 p-4" style="height: 85%; border-radius: 1.5rem;">
+<main class="bg-grey mx-4 mb-3 p-4" style="height: 100vh; border-radius: 1.5rem;">
   <div class="d-flex flex-wrap justify-content-start w-100 mt-4" style="gap: 10px;">
 
     <div class="card rounded-5 ivd-bg-red bg-gradient text-white flex-grow-1 ms-3"
@@ -59,24 +59,33 @@
   <div class="container-fluid"> 
     <div class="row g-4 mt-0"> 
 
-      <div class="col-lg-5">
-        <div class="card rounded-5 bg-grey bg-gradient border border-2 border-grey text-black h-100">
 
-          <div class="card-header bg-transparent border-0 p-0">
-            <div class="d-flex justify-content-center px-3 pt-3"> 
-              <div class="card rounded-5 ivd-bg-white bg-gradient text-black" 
-                   style="width: 100%; max-width: 400px;"> 
-                <div class="card-body px-0 text-start w-100" style="margin-top: -5px;">
-                  <div class="d-flex align-items-center justify-content-center">
-                    <p class="card-title ms-3">Materias</p>
+      <div class="col-lg-5">
+        <div class="card rounded-5 bg-grey  border border-2 border-grey text-black h-100">
+
+          <div class="card-body p-3 overflow-auto" style="max-height: 60vh;">
+            <h5 class="card-title ms-3">Materias Seleccionadas: </h5>
+            <% for (let materia_resultado of materias_resultado) { %>
+              <div class="card rounded-0 border-0 border-bottom ivd-border-red mb-2">
+                <div class="card-body p-3">
+                  <div class="d-flex justify-content-between align-items-center mb-2">
+                    <div class="d-flex align-items-center">
+                      <p class="m-0 me-3"><%= materia_resultado.hora_inicio %> - <%= materia_resultado.hora_fin %></p>
+                      <p class="m-0 ivd-text-red">(<%= materia_resultado.dias.join(', ') %>)</p>
+                    </div>
+                  
                   </div>
-                  <div style="border-bottom: 3px solid #84251c98; width: 100%; margin-top: -7px;"></div>
-                  <p class="card-text text-start ms-4" style="margin-top: 10px; font-size: 2rem;">
-                    1
+        
+                  <h5 class="card-title fw-semibold"><%= materia_resultado.materia_nombre %></h5>
+                  <p class="card-text">
+                    Salon <%= materia_resultado.salon_numero %> | 
+                    <%= materia_resultado.profesor_nombre %> 
+                    <%= materia_resultado.profesor_primer_apellido %>
+                    <%= materia_resultado.profesor_segundo_apellido %>
                   </p>
                 </div>
               </div>
-            </div>
+            <% } %>
           </div>
           
 
