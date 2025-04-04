@@ -7,7 +7,10 @@ const CicloEscolar = require('../models/ciclo-escolar.model');
 const Grupos = require('../models/grupo.model');
 const Alumno = require('../models/alumno.model');
 const Usuario = require('../models/usuario.model.js');
-const { getAllProfessors, getAllCourses, getAllStudents, getCiclosEscolares} = require('../util/adminApiClient.js');
+const generarGrupos = require('../models/generarGrupos.model.js');
+const Carrera = require('../models/carrera.model.js');
+const Historial_Academico = require('../models/historial_academico.model.js');
+const { getAllProfessors, getAllCourses, getAllStudents, getCiclosEscolares, getAllDegree, getAllAcademyHistory} = require('../util/adminApiClient.js');
 
 exports.get_dashboard = (req, res) => {
     try {
@@ -81,26 +84,24 @@ exports.post_sincronizar_materias = async (req, res, nxt) => {
 };
         
 exports.get_profesores = async (req, res, nxt) => {
-  try {
-    const profesoresDB = await Profesor.fetchAll(); 
-    const materias = await MateriaSemestre.fetchMateriasSemestre(); 
-    const profesoresActivos = await Profesor.fetchActivos();  
-    const profesoresInactivos = await Profesor.fetchInactivos();
-    const msg = req.query.msg || null;
-
-    res.render('profesores_coordinador', {
-        isLoggedIn: req.session.isLoggedIn || false,
-        matricula: req.session.matricula || '',
-        profesores: profesoresActivos.rows,  
-        profesoresInactivos: profesoresInactivos.rows,  
-        msg, 
-        materias: materias.rows
-    });
-  } catch (error) {
-    console.log(error);
-    res.status(500).send('Hubo un problema al obtener los profesores.');
-  }
-};
+    try {
+      const profesoresDB = await Profesor.fetchAll(); 
+      const materias = await MateriaSemestre.fetchMateriasSemestre(); 
+      const profesoresActivos = await Profesor.fetchActivos();  
+      const msg = req.query.msg || null;
+  
+      res.render('profesores_coordinador', {
+          isLoggedIn: req.session.isLoggedIn || false,
+          matricula: req.session.matricula || '',
+          profesores: profesoresActivos.rows,  
+          msg, 
+          materias: materias.rows
+      });
+    } catch (error) {
+      console.log(error);
+      res.status(500).send('Hubo un problema al obtener los profesores.');
+    }
+  };
 
 exports.post_sincronizar_profesores = async (req, res, nxt) => {
     try {
@@ -282,8 +283,23 @@ exports.post_sincronizar_alumnos = async (req, res, nxt) => {
         const students = await getAllStudents();
 
         const studentsApi = students.data;
+
         const resultadoUsuario = await Usuario.sincronizarUsuarios(studentsApi);
         const resultadoAlumno = await Alumno.sincronizarAlumnos(studentsApi);
+
+        const alumnos_sin_historial = [];
+
+        for (const student of studentsApi) {
+            try {
+                const historial = await getAllAcademyHistory(student.ivd_id);
+                const historialApi = historial.data;
+                await Historial_Academico.sincronizarHistorialAcademico(student.ivd_id, historialApi);
+            } catch (error) {
+                console.error(`Saltando la sincronización del historial del estudiante ${student.ivd_id}:`, error.message);
+                alumnos_sin_historial.push(student.ivd_id);
+                continue;
+            }
+        }
         const msg = `La operación fue exitosa!<br>
                     Insertado: ${resultadoUsuario.inserted}<br>
                     Actualizado: ${resultadoUsuario.updated + resultadoAlumno.updated}<br>
@@ -334,14 +350,17 @@ exports.get_cicloescolar = (req, res, next) => {
 };
 
 exports.post_eliminar_grupo = (req, res, nxt) => {
-    Grupos.delete(req.params.id)
-        .then(() => {
-            res.redirect('/coordinador/grupos');
-        })
-        .catch((error) => {
-            console.error('Delete error:', error);
-            res.redirect('/coordinador/grupos?error=delete_failed');
-        });
+    Grupos.deleteHorario(req.params.id)
+    .then(() => {
+        return Grupos.delete(req.params.id);
+    })
+    .then(() => {
+        res.redirect('/coordinador/grupos');
+    })
+    .catch((error) => {
+        console.error('Delete error:', error);
+        res.redirect('/coordinador/grupos?error=delete_failed');
+    });
 };
 
 exports.postSincronizarCicloEscolar = async (req, res) => {
@@ -368,4 +387,127 @@ exports.postSincronizarCicloEscolar = async (req, res) => {
         res.redirect(`/coordinador/dashboard?msg=${encodeURIComponent('Error: ' + error.message)}`);
     }        
 };
-    1
+
+exports.get_generar_grupos = async (req, res, next) => {
+    try {
+
+        // Borrar datos de grupos anteriores
+        await generarGrupos.deleteAllGruposBloqueTiempo();
+        await generarGrupos.deleteAllGrupos();
+
+        // Pre-fetch de datos:
+        // 1. Materias abiertas
+        // 2. Relación materia-profesor
+        // 3. Disponibilidad de todos los profesores
+        // 4. Salones disponibles
+        const [materiasAbiertas, profesorMaterias, profesorHorarios, salonesDisponibles] = await Promise.all([
+            generarGrupos.getMateriasAbiertas(),
+            generarGrupos.getProfesorMaterias(),
+            generarGrupos.getProfesorHorarios(),
+            generarGrupos.getSalonesDisponibles()
+        ]);
+
+        const materias = materiasAbiertas.rows;
+        const salones = salonesDisponibles.rows;
+
+        let gruposAsignados = []; // Almacenará los grupos asignados para validar restricciones
+
+        // Función recursiva de backtracking
+        async function backtrack(i) {
+            if (i === materias.length) return true; // Si todas las materias ya han sido asignadas
+
+            const materia = materias[i]; // Materia que se asignará
+            const bloquesNecesarios = materia.horas_profesor * 2; // Bloques de tiempo requeridos
+
+            // Filtrar profesores disponibles para la materia
+            let profesoresDisponibles = profesorMaterias[materia.materia_id] || [];
+
+            // Iterar sobre cada profesor candidato para la materia
+            for (let profesor of profesoresDisponibles) {
+                const disponibilidad = profesorHorarios[profesor] || [];
+
+                // Generar todas las combinaciones de bloques de tiempo que cumplan con bloquesNecesarios
+                const combinaciones = generarGrupos.generarCombinaciones(disponibilidad, bloquesNecesarios);
+                if (!combinaciones.length) continue; // Si no hay combinaciones posibles, probar con otro profesor
+
+                for (let salon of salones) {
+                    for (let combinacion of combinaciones) {
+                        // Validar que la asignación no tenga conflicto con grupos ya asignados
+                        if (generarGrupos.validarRestricciones(combinacion, profesor, salon.salon_id, gruposAsignados, materia.semestre_id)) {
+
+                            // Crear el objeto grupo con la información necesaria
+                            const grupo = {
+                                materia_id: materia.materia_id,
+                                profesor_id: profesor,
+                                salon_id: salon.salon_id,
+                                ciclo_escolar_id: null // No se asigna de momento
+                            };
+
+                            // Insertar el grupo en la BD y obtener el grupo_id
+                            const grupoInsertado = await generarGrupos.saveGrupo(grupo);
+                            const grupo_id = grupoInsertado.rows[0].grupo_id;
+
+                            // Insertar la asignación de bloques en grupo_horario
+                            await generarGrupos.saveGrupoHorario(grupo_id, combinacion);
+
+                            // Registrar la asignación para validar restricciones futuras
+                            gruposAsignados.push({
+                                grupo_id,
+                                profesor_id: profesor,
+                                salon_id: salon.salon_id,
+                                bloques: combinacion,
+                                semestre_id: materia.semestre_id
+                            });
+
+                            // Intentar asignar la siguiente materia
+                            if (await backtrack(i + 1)) return true;
+
+                            // Backtracking: si no se pudo asignar, se retira la asignación actual
+                            gruposAsignados.pop();
+                            await generarGrupos.deleteGrupoHorario(grupo_id);
+                            await generarGrupos.deleteGrupo(grupo_id);
+                        }
+                    }
+                }
+            }
+            return false; // Si ninguna asignación funcionó para la materia actual, retorna false
+        }
+
+        const exito = await backtrack(0);
+        if (exito) {
+          res.redirect('/coordinador/grupos');
+        } else {
+          res.status(400).json({ mensaje: "No se pudo generar una asignación válida de grupos" });
+        }
+
+
+    } catch (error) {
+        console.error("Error en la generación de grupos:", error);    
+    }
+};
+exports.post_sincronizar_planes_de_estudio = async (req, res) => {
+    try {
+        // Trae carreras de la API
+        const degrees = await getAllDegree();
+
+        // Extrae la 'data' de la JSON respuesta
+        const carrerasApi = degrees.data;
+
+        // Llama la función sincronizarPlanesDeEstudio() para sincronizar los planes de estudios juntoss con las carreras
+        const resultado = await Carrera.sincronizarCarreras(carrerasApi);
+        // Crea una variable para el mensaje de operación
+        const msg = `La operación fue exitosa!<br>
+                    Insertado: ${resultado.inserted}<br>
+                    Actualizado: ${resultado.updated}<br>
+                    Eliminado: ${resultado.deleted}`;
+
+        // Redirige a la siguiente ruta con el mensaje en query string 
+        // con la función para encodificarlo
+        res.redirect(`/coordinador/dashboard?msg=${encodeURIComponent(msg)}`);
+    } catch (error) {
+        console.error(error);
+        // Redirige a la siguiente ruta con un mensaje de error en query string 
+        // con la función para encodificarlo
+        res.redirect(`/coordinador/dashboard?msg=${encodeURIComponent('La operación fue fracasada')}`);
+    }
+}

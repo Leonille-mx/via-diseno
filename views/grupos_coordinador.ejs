@@ -9,7 +9,7 @@
 
       <div class="d-flex align-items-center justify-content-between mx-5 mb-3 gap-3 flex-wrap">
         <div class="d-flex align-items-center flex-grow-1" style="max-width: 200px;">
-          <input class="form-control me-2 rounded-pill" type="search" placeholder="Buscar salón" aria-label="Search"
+          <input class="form-control me-2 rounded-pill" type="search" placeholder="Buscar grupo" aria-label="Search"
                 style="background-image:url('/images/search.svg');
                         background-repeat:no-repeat;
                         background-position: 1rem center; 
@@ -19,16 +19,73 @@
                         border: 1px solid #84251C;">
         </div>
         
-        <button class="btn btn-primary d-flex align-items-center gap-2 rounded-pill px-3 py-2" 
-                style="background-color: #84251C; border: none;">
-          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-plus-lg" viewBox="0 0 16 16">
-            <path fill-rule="evenodd" d="M8 2a.5.5 0 0 1 .5.5v5h5a.5.5 0 0 1 0 1h-5v5a.5.5 0 0 1-1 0v-5h-5a.5.5 0 0 1 0-1h5v-5A.5.5 0 0 1 8 2"/>
-          </svg>
-          Agregar Grupo
-        </button>
+        <div class="d-flex gap-3">
+          <!-- Botón Generar Grupos -->
+          <a href="/coordinador/grupos/generar" 
+             class="btn btn-primary d-flex align-items-center gap-2 rounded-pill px-3 py-2"
+             style="background-color: #84251C; border: none;">
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-plus-lg" viewBox="0 0 16 16">
+              <path fill-rule="evenodd" d="M8 2a.5.5 0 0 1 .5.5v5h5a.5.5 0 0 1 0 1h-5v5a.5.5 0 0 1-1 0v-5h-5a.5.5 0 0 1 0-1h5v-5A.5.5 0 0 1 8 2"/>
+            </svg>
+            Generar Grupos
+          </a>
+      
+          <!-- Botón Agregar Grupo -->
+          <button class="btn btn-primary d-flex align-items-center gap-2 rounded-pill px-3 py-2" 
+                  style="background-color: #84251C; border: none";
+                  data-bs-toggle="modal" 
+                  data-bs-target="#scheduleModal">
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-plus-lg" viewBox="0 0 16 16">
+              <path fill-rule="evenodd" d="M8 2a.5.5 0 0 1 .5.5v5h5a.5.5 0 0 1 0 1h-5v5a.5.5 0 0 1-1 0v-5h-5a.5.5 0 0 1 0-1h5v-5A.5.5 0 0 1 8 2"/>
+            </svg>
+            Agregar Grupo
+          </button>
+        </div>
       </div>
+      
+      <div class="table-responsive mx-5 mb-5 rounded-5 flex-grow-1" style="overflow: auto; background-color: white;">
+        <table class="table table-hover" style="min-width: 800px; width: 100%;">
+          <thead class="table-light">
+            <tr>
+              <th scope="col" style="width: 15%; min-width: 100px;" class="text-center align-middle">Grupo</th>
+              <th scope="col" style="width: 25%; min-width: 100px;" class="text-center align-middle">Materia</th>
+              <th scope="col" style="width: 25%; min-width: 100px;" class="text-center align-middle">Profesor</th>
+              <th scope="col" style="width: 15%; min-width: 150px;" class="text-center align-middle">Salón</th>
+              <th scope="col" style="width: 15%; min-width: 100px;" class="text-center align-middle">Ciclo Escolar</th>
+              <th scope="col" style="width: 5%; min-width: 50px;"></th>
+            </tr>
+          </thead>
+          <tbody>
+            <% for (let grupo of grupos) { %>
+              <tr>
+                  <th scope="row" class="text-center align-middle"><%= grupo.grupo_id %></th>
+                  <td class="text-center align-middle"><%= grupo.materia %></td>
+                  <td class="text-center align-middle"><%= grupo.nombre + ' ' + grupo.primer_apellido + ' ' + grupo.segundo_apellido %></td> 
+                  <td class="text-center align-middle"><%= grupo.numero %></td>
+                  <td class="text-center align-middle"><%= grupo.code %></td>
+                  <td class="text-center align-middle">
+                    <form action="/coordinador/grupos/eliminar/<%= grupo.grupo_id %>" method="POST">
+                      <button type="button" class="btn btn-sm p-0 d-flex align-items-center justify-content-center delete-btn"
+                        style="width: 1.5rem; height: 1.5rem; border-radius: 50%; background-color: #84251c; color: white; border: none;"
+                        data-bs-toggle="modal" data-bs-target="#deleteModal" data-grupo-id="<%= grupo.grupo_id %>"
+                        data-materia="<%= grupo.materia %>"
+                        data-ciclo="<%= grupo.code %>">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-x-lg" viewBox="0 0 16 16">
+                          <path d="M2.146 2.854a.5.5 0 1 1 .708-.708L8 7.293l5.146-5.147a.5.5 0 0 1 .708.708L8.707 8l5.147 5.146a.5.5 0 0 1-.708.708L8 8.707l-5.146 5.147a.5.5 0 0 1-.708-.708L7.293 8z"/>
+                      </svg>
+                      </button>
+                    </form>
+                </td>
+              </tr>
+          <% } %>
+          </tbody>
+        </table>
+      </div>
+      </main>
+    </div>
+  </div>
 
-      <!-- Modal de confirmación de eliminación -->
+  <!-- Modal de confirmación de eliminación -->
 <div class="modal fade" id="deleteModal" tabindex="-1" aria-labelledby="deleteModalLabel" aria-hidden="true">
   <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
     <div class="modal-content rounded-5" style="max-width: 95vw;">
@@ -44,19 +101,15 @@
           <table class="table table-bordered m-0">
             <thead class="table-light">
               <tr>
-                <th style="min-width: 80px;" class="text-center align-middle">ID Grupo</th>
-                <th style="min-width: 90px;" class="text-center align-middle">Materia</th>
-                <th style="min-width: 90px;" class="text-center align-middle">Profesor</th>
-                <th style="min-width: 120px;" class="text-center align-middle">Salón</th>
-                <th style="min-width: 100px;" class="text-center align-middle">Ciclo_Escolar</th>
+                <th style="min-width: 80px;" class="text-center align-middle">Grupo</th>
+                <th style="min-width: 100px;" class="text-center align-middle">Materia</th>
+                <th style="min-width: 80px;" class="text-center align-middle">Ciclo</th>
               </tr>
             </thead>
             <tbody>
               <tr>
                 <td id="modalGrupoId" class="text-center align-middle"></td>
                 <td id="modalMateria" class="text-center align-middle"></td>
-                <td id="modalProfesor" class="text-center align-middle"></td>
-                <td id="modalSalon" class="text-center align-middle"></td>
                 <td id="modalCiclo" class="text-center align-middle"></td>
               </tr>
             </tbody>
@@ -82,48 +135,61 @@
     </div>
   </div>
 </div>
+
+
+<!-- Modal para agregar un nuevo grupo -->
+<div class="modal fade" id="scheduleModal" tabindex="-1" aria-labelledby="scheduleModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-xl modal-dialog-centered modal-dialog-scrollable">
+    <div class="modal-content rounded-5" style="background-color: #f0f0f0; max-width: 95vw;">
       
-      <div class="table-responsive mx-5 mb-5 rounded-5 flex-grow-1" style="overflow: auto; background-color: white;">
-        <table class="table table-hover" style="min-width: 800px; width: 100%;">
-          <thead class="table-light">
-            <tr>
-              <th scope="col" style="width: 15%; min-width: 100px;" class="text-center align-middle">ID Grupo</th>
-              <th scope="col" style="width: 15%; min-width: 100px;" class="text-center align-middle">Materia</th>
-              <th scope="col" style="width: 15%; min-width: 100px;" class="text-center align-middle">Profesor</th>
-              <th scope="col" style="width: 35%; min-width: 150px;" class="text-center align-middle">Salon</th>
-              <th scope="col" style="width: 15%; min-width: 100px;" class="text-center align-middle">Ciclo Escolar</th>
-              <th scope="col" style="width: 5%; min-width: 50px;"></th>
-            </tr>
-          </thead>
-          <tbody>
-            <% for (let grupo of grupos) { %>
-              <tr>
-                  <th scope="row" class="text-center align-middle"><%= grupo.grupo_id %></th>
-                  <td class="text-center align-middle"><%= grupo.materia_id %></td>
-                  <td class="text-center align-middle"><%= grupo.profesor_id %></td> 
-                  <td class="text-center align-middle"><%= grupo.salon_id %></td>
-                  <td class="text-center align-middle"><%= grupo.ciclo_escolar_id %></td>
-                  <td class="text-center align-middle">
-                    <form action="/coordinador/grupos/eliminar/<%= grupo.grupo_id %>" method="POST">
-                      <button type="button" class="btn btn-sm p-0 d-flex align-items-center justify-content-center delete-btn"
-                        style="width: 1.5rem; height: 1.5rem; border-radius: 50%; background-color: #84251c; color: white; border: none;"
-                        data-bs-toggle="modal" data-bs-target="#deleteModal" data-grupo-id="<%= grupo.grupo_id %>"
-                        data-materia="<%= grupo.materia_id %>" data-profesor="<%= grupo.profesor_id %>" data-salon="<%= grupo.salon_id %>"
-                        data-ciclo="<%= grupo.ciclo_escolar_id %>">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-x-lg" viewBox="0 0 16 16">
-                          <path d="M2.146 2.854a.5.5 0 1 1 .708-.708L8 7.293l5.146-5.147a.5.5 0 0 1 .708.708L8.707 8l5.147 5.146a.5.5 0 0 1-.708.708L8 8.707l-5.146 5.147a.5.5 0 0 1-.708-.708L7.293 8z"/>
-                      </svg>
-                      </button>
-                    </form>
-                </td>
-              </tr>
-          <% } %>
-          </tbody>
-        </table>
+      <!-- Encabezado del modal -->
+      <div class="modal-header justify-content-center">
+        <h5 class="modal-title" id="scheduleModalLabel" style="color: #84251C;"><b>Estás modificando los detalles del profesor</b></h5>
       </div>
-      </main>
+      
+      <!-- Cuerpo del modal -->
+      <div class="modal-body px-4">
+        <div class="rounded-5 p-4" style="background-color: white;">
+
+          <form id="scheduleForm" method="POST" action="/coordinador/salones/registrar">
+            <h6 class="ms-1"><b>Materias</b></h6>
+            <div style="border-bottom: 3px solid #84251C; width: 10rem; margin-top: -5px; margin-bottom: 10px;"></div> 
+
+            <!-- Tabla para seleccionar horario del grupo -->
+            <h6 class="ms-1"><b>Horario</b></h6>
+            <div style="border-bottom: 3px solid #84251C; width: 10rem; margin-top: -5px; margin-bottom: 10px;"></div>
+            <div class="table-responsive">
+                <table id="schedule" class="table table-bordered">
+                  <thead class="table-light">
+                    <tr>
+                      <th class="text-center align-middle">Hora</th>
+                      <th class="text-center align-middle">Lunes</th>
+                      <th class="text-center align-middle">Martes</th>
+                      <th class="text-center align-middle">Miércoles</th>
+                      <th class="text-center align-middle">Jueves</th>
+                      <th class="text-center align-middle">Viernes</th>
+                    </tr>
+                  </thead>
+                  <tbody id="scheduleTable">
+                    <!-- La tabla se genera dinámicamente con JavaScript -->
+                  </tbody>
+                </table>
+                <input type="hidden" name="selectedMaterias" id="selectedMaterias">
+                <input type="hidden" name="selectedBlocks" id="selectedBlocks">
+            </div>
+          </form>  
+        </div>
+      </div>
+
+      <!-- Pie del modal con botones de acción -->
+      <div class="modal-footer justify-content-center" style="background-color: #f0f0f0;">
+        <button type="button" class="btn btn-secondary rounded-pill px-4 mx-4" style="background-color: white; border: 1px solid #84251C; color: #84251C;" data-bs-dismiss="modal">Cancelar</button>
+        <button type="submit" form="scheduleForm" class="btn btn-primary rounded-pill px-4 mx-4" style="background-color: #84251C; border: none;">Modificar</button>
+      </div>
     </div>
   </div>
+</div>
+
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
   <script src="/js/coordinador.js"></script>
 
@@ -135,12 +201,86 @@
 
       document.getElementById('modalGrupoId').textContent = grupoId;
       document.getElementById('modalMateria').textContent = button.getAttribute('data-materia');
-      document.getElementById('modalProfesor').textContent = button.getAttribute('data-profesor');
-      document.getElementById('modalSalon').textContent = button.getAttribute('data-salon');
       document.getElementById('modalCiclo').textContent = button.getAttribute('data-ciclo');
 
       document.getElementById('deleteGrupoForm').action = `/coordinador/grupos/eliminar/${grupoId}`;
     });
+
+  let selectedBlocks = [];
+
+  // Configuración del modal de horario
+  document.getElementById('scheduleModal').addEventListener('show.bs.modal', async function(event) {
+      const button = event.relatedTarget;
+      const profesorId = button.getAttribute('data-profesor-id');
+      
+      // Resetear selecciones
+      const scheduleTable = document.getElementById("scheduleTable");
+      scheduleTable.innerHTML = '';
+      selectedBlocks = [];
+      selectedMaterias = [];
+      document.getElementById('selectedBlocks').value = '[]';
+
+      try {
+
+          // Generar tabla de horarios
+          const days = ["Lunes", "Martes", "Miércoles", "Jueves", "Viernes"];
+          const startTime = 7;
+          const endTime = 19;
+
+          // Función para formatear horas
+          const formatTime = (num) => num.toString().padStart(2, '0');
+
+          for (let hour = startTime; hour < endTime; hour++) {
+              for (let minute of [0, 30]) {
+                  const row = document.createElement("tr");
+                  
+                  // Calcular hora final
+                  let endHour = hour;
+                  let endMinute = minute + 30;
+                  if (endMinute >= 60) {
+                      endHour += 1;
+                      endMinute %= 60;
+                  }
+
+                  // Celda de tiempo
+                  const timeCell = document.createElement("td");
+                  timeCell.textContent = `${formatTime(hour)}:${formatTime(minute)} - ${formatTime(endHour)}:${formatTime(endMinute)}`;
+                  timeCell.classList.add("text-center");
+                  row.appendChild(timeCell);
+
+                  // Celdas por día
+                  days.forEach((day, index) => {
+                      const blockNumber = index * 24 + (hour - startTime) * 2 + (minute === 30 ? 1 : 0) + 1;
+                      const cell = document.createElement("td");
+                      cell.dataset.value = blockNumber.toString();
+
+                      // Evento click
+                      cell.addEventListener("click", function() {
+                          this.classList.toggle("selected");
+                          const value = this.dataset.value;
+                          selectedBlocks = selectedBlocks.includes(value) 
+                              ? selectedBlocks.filter(num => num !== value) 
+                              : [...selectedBlocks, value];
+                          document.getElementById("selectedBlocks").value = JSON.stringify(selectedBlocks);
+                          console.log(selectedBlocks);
+                      });
+
+                      row.appendChild(cell);
+                  });
+                  
+                  scheduleTable.appendChild(row);
+              }
+          }
+
+      } catch (error) {
+          console.error("Error al cargar datos:", error);
+      }
+
+      // Actualizar formulario
+      document.getElementById('scheduleForm').action = `/coordinador/profesores/modificar/${profesorId}`;
+      document.getElementById('selectedBlocks').value = JSON.stringify(selectedBlocks);
+      document.getElementById('selectedMaterias').value = JSON.stringify(selectedMaterias);
+  });
   </script>
 </body>
 </html>

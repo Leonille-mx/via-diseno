@@ -46,17 +46,6 @@
               Sincronizar profesores
             </button>
           </form>
-
-
-        <!-- Botón para añadir profesor -->
-        <button class="btn btn-primary d-flex align-items-center gap-2 rounded-pill px-3 py-2" style="background-color: #84251C; border: none;"
-        data-bs-toggle="modal" 
-        data-bs-target="#registerProfesorModal">
-          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-plus-lg" viewBox="0 0 16 16">
-            <path fill-rule="evenodd" d="M8 2a.5.5 0 0 1 .5.5v5h5a.5.5 0 0 1 0 1h-5v5a.5.5 0 0 1-1 0v-5h-5a.5.5 0 0 1 0-1h5v-5A.5.5 0 0 1 8 2"/>
-          </svg>
-          Activar Profesor
-        </button>
       </div>
     </div>
 
@@ -68,9 +57,8 @@
               <th scope="col" style="width: 15%; min-width: 100px;" class="text-center align-middle">ID</th>
               <th scope="col" style="width: 20%; min-width: 100px;" class="text-center align-middle">Nombre</th>
               <th scope="col" style="width: 25%; min-width: 100px;" class="text-center align-middle">Primer Apellido</th>
-              <th scope="col" style="width: 25%; min-width: 100px;" class="text-center align-middle">Segundo Apellido</th>
-              <th scope="col" style="width: 5%; min-width: 50px;"></th>
-              <th scope="col" style="width: 5%; min-width: 50px;"></th>
+              <th scope="col" style="width: 28%; min-width: 100px;" class="text-center align-middle">Segundo Apellido</th>
+              <th scope="col" style="width: 7%; min-width: 50px;"></th>
             </tr>
           </thead>
           <tbody>
@@ -93,21 +81,6 @@
                     </svg>
                   </button>
                 </td>
-                <td class="text-center align-middle">
-                  <!-- Botón para abrir el modal de confirmación de eliminación -->
-                  <button class="btn btn-sm p-0 d-flex align-items-center justify-content-center" 
-                  style="width: 1.5rem; height: 1.5rem; border-radius: 50%; background-color: #84251c; color: white; border: none;"   
-                    data-bs-toggle="modal" 
-                    data-bs-target="#confirmDeleteModal"
-                    data-profesor-id="<%= profesor.ivd_id %>"
-                    data-profesor-nombre="<%= profesor.nombre %>"
-                    data-profesor-primer-apellido="<%= profesor.primer_apellido %>"
-                    data-profesor-segundo-apellido="<%= profesor.segundo_apellido %>">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-x-lg" viewBox="0 0 16 16">
-                      <path d="M2.146 2.854a.5.5 0 1 1 .708-.708L8 7.293l5.146-5.147a.5.5 0 0 1 .708.708L8.707 8l5.147 5.146a.5.5 0 0 1-.708.708L8 8.707l-5.146 5.147a.5.5 0 0 1-.708-.708L7.293 8z"/>
-                    </svg>
-                  </button>
-                </td>
               </tr>
             <% } %>
           </tbody>
@@ -116,100 +89,6 @@
     </main>
   </div>
 </div>
-
-<!-- Modal de confirmación de eliminación -->
-<div class="modal fade" id="confirmDeleteModal" tabindex="-1" aria-labelledby="confirmDeleteModalLabel" aria-hidden="true">
-  <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
-    <div class="modal-content rounded-5" style="max-width: 95vw;">
-      
-      <!-- Encabezado del modal -->
-      <div class="modal-header justify-content-center" style="background-color: #f0f0f0">
-        <h5 class="modal-title" id="confirmDeleteModalLabel" style="color: #84251C;"><b>¿Está seguro de desactivar el siguiente profesor?</b></h5>
-      </div>
-      
-      <!-- Cuerpo del modal con los detalles del profesor a eliminar -->
-      <div class="modal-body" style="max-height: 60vh; overflow-y: auto;">
-        <div class="table-responsive">
-          <table class="table table-bordered m-0">
-            <thead class="table-light">
-              <tr>
-                <th style="min-width: 80px;" class="text-center align-middle">ID</th>
-                <th style="min-width: 80px;" class="text-center align-middle">Nombre</th>
-                <th style="min-width: 90px;" class="text-center align-middle">Apellido</th>
-                <th style="min-width: 90px;" class="text-center align-middle">Apellido</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr>
-                <td id="modalProfesorID" class="text-center align-middle"></td>
-                <td id="modalNombre" class="text-center align-middle"></td>
-                <td id="modalPrimerApellido" class="text-center align-middle"></td>
-                <td id="modalSegundoApellido" class="text-center align-middle"></td>
-              </tr>
-            </tbody>
-          </table>
-        </div>
-      </div>
-      
-      <!-- Pie del modal con botones de acción -->
-      <div class="modal-footer justify-content-center" style="background-color: #f0f0f0">
-        <button type="button" class="btn btn-secondary rounded-pill px-4 mx-4" style="background-color: white; border: 1px solid #84251C; color: #84251C;" data-bs-dismiss="modal">Cancelar</button>
-        <form id="deleteForm" method="POST" action="">
-          <button type="submit" class="btn btn-danger rounded-pill px-4 mx-4" style="background-color: #84251C; border: none;">Eliminar</button>
-        </form>
-      </div>
-
-    </div>
-  </div>
-</div>
-
-<!-- Modal para registrar un nuevo profesor -->
-<div class="modal fade" id="registerProfesorModal" tabindex="-1" aria-labelledby="registerProfesorModalLabel" aria-hidden="true">
-  <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
-    <div class="modal-content rounded-5" style="max-width: 95vw; background-color: #f0f0f0;">
-      
-      <!-- Encabezado del modal -->
-      <div class="modal-header justify-content-center">
-        <h5 class="modal-title" id="registerProfesorModalLabel" style="color: #84251C;">
-          <b>Estás añadiendo un nuevo profesor</b>
-        </h5>
-      </div>
-      
-      <!-- Cuerpo del modal con el formulario de registro -->
-      <div class="modal-body">
-        <form class="rounded-5 mx-3 py-4" id="registerProfesorForm" method="POST" action="/coordinador/profesores/activar" style="background-color: white;">
-          <div class="mb-3">
-              <label for="profesorId" class="form-label ms-1">
-                  <b>Nombre del Profesor</b>
-              </label>
-              <div style="border-bottom: 3px solid #84251C; width: 10rem; margin-top: -5px; margin-bottom: 10px;"></div>
-              
-              <select class="form-select rounded-5 mx-auto" id="profesorId" name="profesorId" required style="background-color: #f0f0f0;">
-                  <option value="" disabled selected>Seleccione un Profesor</option>
-                  <% for (let p of profesoresInactivos) { %>
-                      <option value="<%= p.ivd_id %>">
-                          <%= p.nombre %> <%= p.primer_apellido %> <%= p.segundo_apellido %>
-                      </option>
-                  <% } %>
-              </select>
-          </div>
-      </form>
-      </div>
-
-      <!-- Pie del modal con los botones de acción -->
-      <div class="modal-footer justify-content-center" style="background-color: #f0f0f0;">
-        <button type="button" class="btn btn-secondary rounded-pill px-4 mx-4" style="background-color: white; border: 1px solid #84251C; color: #84251C;" data-bs-dismiss="modal">
-          Cancelar
-        </button>
-        <button type="submit" form="registerProfesorForm" class="btn btn-primary rounded-pill px-4 mx-4" style="background-color: #84251C; border: none;">
-          Registrar
-        </button>
-      </div>
-
-    </div>
-  </div>
-</div>
-
 
 
 <!-- Modal para modificar detalles de profesores -->
@@ -235,12 +114,11 @@
               <table class="table table-hover" style="min-width: 800px; width: 100%;">
                 <thead class="table-light">
                   <tr>
-                    <th scope="col" style="width: 30%; min-width: 100px;" class="text-center align-middle">Nombre</th>
-                    <th scope="col" style="width: 10%; min-width: 100px;" class="text-center align-middle">ID</th>
-                    <th scope="col" style="width: 14%; min-width: 100px;" class="text-center align-middle">Créditos</th>
-                    <th scope="col" style="width: 14%; min-width: 100px;" class="text-center align-middle">Horas profesor</th>
-                    <th scope="col" style="width: 13%; min-width: 150px;" class="text-center align-middle">Tipo de Salon</th>
-                    <th scope="col" style="width: 14%; min-width: 100px;" class="text-center align-middle">Obligatoria</th>
+                    <th scope="col" style="width: 31%; min-width: 100px;" class="text-center align-middle">Nombre</th>
+                    <th scope="col" style="width: 16%; min-width: 100px;" class="text-center align-middle">ID</th>
+                    <th scope="col" style="width: 16%; min-width: 100px;" class="text-center align-middle">Créditos</th>
+                    <th scope="col" style="width: 16%; min-width: 100px;" class="text-center align-middle">Horas profesor</th>
+                    <th scope="col" style="width: 16%; min-width: 150px;" class="text-center align-middle">Tipo de Salón</th>
                     <th scope="col" style="width: 5%; min-width: 50px;"></th>
                   </tr>
                 </thead>
@@ -252,11 +130,6 @@
                       <td class="text-center align-middle"><%= materia.creditos %></td>
                       <td class="text-center align-middle"><%= materia.horas_profesor %></td>
                       <td class="text-center align-middle"><%= materia.tipo_salon %></td>
-                      <% if (materia.obligatoria == true) { %>
-                        <td class="text-center align-middle">Si</td>
-                      <% } else { %>
-                        <td class="text-center align-middle">No</td>
-                      <% } %>
                       <td class="text-center align-middle">
                         <button type="button" class="btn btn-sm p-0 d-flex align-items-center justify-content-center materia-btn" 
                         style="width: 1.5rem; height: 1.5rem; border-radius: 50%; background-color: #84251c; color: white; border: none;"
@@ -323,24 +196,6 @@
 <% } %>
 
 <script>
-  document.getElementById('confirmDeleteModal').addEventListener('show.bs.modal', function(event) {
-    const button = event.relatedTarget;
-    const profesorId = button.getAttribute('data-profesor-id');
-    const profesorNombre = button.getAttribute('data-profesor-nombre');
-    const profesorPrimerApellido = button.getAttribute('data-profesor-primer-apellido');
-    const profesorSegundoApellido = button.getAttribute('data-profesor-segundo-apellido');
-
-    // Actualizar contenido del modal
-    document.getElementById('modalProfesorID').textContent = profesorId;
-    document.getElementById('modalNombre').textContent = profesorNombre;
-    document.getElementById('modalPrimerApellido').textContent = profesorPrimerApellido;
-    document.getElementById('modalSegundoApellido').textContent = profesorSegundoApellido;
-
-    // Actualizar acción del formulario
-    document.getElementById('deleteForm').action = `profesores/eliminar/${profesorId}`;
-  });
-
-
   let selectedBlocks = [];
   let selectedMaterias = [];
 

@@ -8,12 +8,12 @@
 
             <% if (msg) { %>
               <div class="modal fade" id="msgModal" tabindex="-1" aria-labelledby="msgModalLabel" aria-hidden="true">
-                <div class="modal-dialog modal-dialog-centered modal-md">
-                  <div class="modal-content align-items-center rounded-5 px-5">
+                <div class="modal-dialog modal-dialog-centered modal-sm">
+                  <div class="modal-content align-items-center rounded-5">
                     <div class="modal-header border border-0">
-                      <h5 class="modal-title ivd-text-red" id="msgModalLabel">Sincronizar Ciclo Escolar</h5>
+                      <h5 class="modal-title ivd-text-red" id="msgModalLabel">Sincronizar Materias</h5>
                     </div>
-                    <div class="modal-body bg-grey rounded-5 text-center">
+                    <div class="modal-body bg-grey rounded-5 text-center px-5">
                       <%- msg %>
                     </div>
                     <div class="modal-footer">
@@ -28,7 +28,7 @@
             
 <div class="d-grid gap-2 d-md-flex justify-content-md-end position-relative" style="margin-top: -40px;">
   <form action="/coordinador/ciclo-escolar/sincronizar" method="POST">
-      <button class="btn rounded-pill px-3 py-2 ivd-bg-red text-white d-flex align-items-center justify-content-end me-3 mt-2" 
+      <button class="btn rounded-pill px-3 py-2 ivd-bg-red text-white d-flex align-items-center justify-content-end me-3 mt-3" 
               type="submit">
               <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-arrow-clockwise" viewBox="0 0 16 16" style="margin-left: -2px">
                 <path fill-rule="evenodd" d="M8 3a5 5 0 1 0 4.546 2.914.5.5 0 0 1 .908-.417A6 6 0 1 1 8 2z"/>
@@ -36,6 +36,16 @@
               </svg>
           Sincronizar Ciclo Escolar
       </button>
+  </form>
+  <form action="/coordinador/dashboard/sincronizar-planes-de-estudio" method="POST">
+    <button type="submit" class="btn btn-primary d-flex align-items-center gap-2 rounded-pill px-3 py-2 me-5 mt-3 ivd-bg-red" 
+    style="border: none;">
+      <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-arrow-clockwise" viewBox="0 0 16 16">
+        <path fill-rule="evenodd" d="M8 3a5 5 0 1 0 4.546 2.914.5.5 0 0 1 .908-.417A6 6 0 1 1 8 2z"/>
+        <path d="M8 4.466V.534a.25.25 0 0 1 .41-.192l2.36 1.966c.12.1.12.284 0 .384L8.41 4.658A.25.25 0 0 1 8 4.466"/>
+      </svg>
+      Sincronizar Planes de estudio
+    </button>
   </form>
 </div>
         
