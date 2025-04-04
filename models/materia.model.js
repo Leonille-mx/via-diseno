@@ -47,6 +47,7 @@ module.exports = class Materia {
                             mA.facilities,
                         ]
                     );
+                    // Inserta los requisitios de la materia
                     for (const requisito of mA.requisites) {
                         await client.query(
                             `INSERT INTO materia_requisito 
@@ -58,6 +59,13 @@ module.exports = class Materia {
                             ]
                         );
                     }
+                    // Inserta el plan de estudio de la materia
+                    await client.query(`
+                        INSERT INTO plan_materia
+                        (plan_estudio_id, plan_estudio_version, materia_id)
+                        VALUES ($1, $2, $3)`
+                        , [mA.plans[0].id, mA.plans[0].version, mA.id]
+                    );
                     inserted++;
                 // Si existe la llave pero otros atributos son diferentes    
                 } else {
@@ -135,6 +143,38 @@ module.exports = class Materia {
                         );
                         changed = true;
                     }
+                    // Consulta del plan de estudio de la materia
+                    const planMateriaDB = await client.query(
+                        `SELECT plan_estudio_id, plan_estudio_version 
+                        FROM plan_materia 
+                        WHERE materia_id = $1`, [mA.id]
+                    );
+                    // Si existe los registros
+                    if (planMateriaDB.rows.length > 0) {
+                        const { plan_estudio_id, plan_estudio_version } = planMateriaDB.rows[0];
+
+                        if (Number(plan_estudio_id) !== Number(mA.plans[0].id) || 
+                            Number(plan_estudio_version) !== Number(mA.plans[0].version)) {
+                            await client.query(`
+                                UPDATE plan_materia 
+                                SET plan_estudio_id = $1, 
+                                    plan_estudio_version = $2
+                                WHERE materia_id = $3`
+                            , [mA.plans[0].id, mA.plans[0].version, mA.id]);
+                            changed = true;
+                        }
+                    // Si no existe
+                    } else {
+                        // Inserta el plan de estudio de la materia
+                        await client.query(`
+                            INSERT INTO plan_materia
+                            (plan_estudio_id, plan_estudio_version, materia_id)
+                            VALUES ($1, $2, $3)`
+                            , [mA.plans[0].id, mA.plans[0].version, mA.id]
+                        );
+                        changed = true;
+                    }
+
                     if(changed) {
                         updated++;
                     }
@@ -149,6 +189,7 @@ module.exports = class Materia {
                 await client.query("DELETE FROM materia WHERE materia_id = $1", [id]);
                 await client.query("DELETE FROM materia_requisito WHERE materia_id = $1", [id]);
                 await client.query("DELETE FROM materia_semestre WHERE materia_id = $1", [id]);
+                await client.query("DELETE FROM plan_materia WHERE materia_id = $1", [id]);
                 deleted++;
             }
             // Regresa el resultado para el mensaje
