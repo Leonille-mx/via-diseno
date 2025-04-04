@@ -14,11 +14,15 @@ router.post('/materias/sincronizar', isAuth, coordinador_controller.post_sincron
 router.post('/materia_semestre/eliminar/:materiaId/:semestreId', isAuth, coordinador_controller.post_eliminar_materias);
 
 router.get('/profesores', isAuth, coordinador_controller.get_profesores);
+
 router.post('/profesores/sincronizar', isAuth, coordinador_controller.post_sincronizar_profesores);
+
 router.get('/profesores/modificar/:id', isAuth, coordinador_controller.get_modificar_profesor);
+
 router.post('/profesores/modificar/:id', isAuth, coordinador_controller.post_modificar_profesor);
 
 router.get('/alumnos', isAuth, coordinador_controller.get_alumnos);
+
 router.post('/alumnos/sincronizar', isAuth, coordinador_controller.post_sincronizar_alumnos);
 
 router.get('/salones', isAuth, coordinador_controller.get_salones);
@@ -29,12 +33,16 @@ router.post('/salones/eliminar/:id', isAuth, coordinador_controller.post_elimina
 
 router.get('/grupos', isAuth, coordinador_controller.get_grupos);
 router.get('/grupos/generar', isAuth, coordinador_controller.get_generar_grupos);
+
 router.post('/grupos/eliminar/:id', isAuth, coordinador_controller.post_eliminar_grupo);
 
 router.get('/alumnos', isAuth, coordinador_controller.get_alumnos);
 
 router.get('/solicitudes-cambio', isAuth, coordinador_controller.get_solicitudes_cambio);
+
 router.post('/solicitudes-cambio/aprobar/:id', isAuth, coordinador_controller.post_aprobar_solicitud);
+
+router.post('/solicitudes-cambio/rechazar/:id', isAuth, coordinador_controller.post_rechazar_solicitud);
 
 router.get('/ayuda', isAuth, coordinador_controller.get_ayuda);
 

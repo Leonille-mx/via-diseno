@@ -12,13 +12,3 @@ exports.get_ayuda = (req, res, nxt) => {
     });
 
 };
-
-exports.post_confirmar = (req, res, nxt) => {
-    Alumno.delete(req.params.id)
-        .then(() => {
-            res.redirect('/alumno-regular/horario');
-        })
-        .catch((error) => {
-            console.log(error);
-        });
-  };

@@ -529,5 +529,16 @@ exports.post_aprobar_solicitud = async (req, res, nxt) => {
         console.log(error);
     });
 };
+
+exports.post_rechazar_solicitud = async (req, res, nxt) => {
+    Solicitud.rechazar(req.params.id)
+    .then (( ) => {
+        res.redirect('/coordinador/solicitudes-cambio')
+    })
+    .catch((error) => {
+        console.log(error);
+    });
+};
+    
     
 

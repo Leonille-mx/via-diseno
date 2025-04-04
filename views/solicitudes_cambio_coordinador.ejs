@@ -60,6 +60,7 @@
                 data-bs-toggle="modal" 
                 data-bs-target="#confirmAceptarModal"
                 data-solicitud-id="<%= solicitud.ivd_id %>">
+
                 Aceptar
               </button>
               <!-- Botón Rechazar -->
@@ -89,7 +90,7 @@
       <div class="modal-body  px-4">
         <div class="rounded-5 p-4" style="background-color: white;">
           <h5 class="modal-title text-center" id="scheduleModalLabel" style="color: #84251C;"><b>Usted está aprobando la solicitud solicitada. Una vez que haya 
-            ¿Deseas confirmar el horario?</b></h5>
+            ¿Deseas aprobar la solicitud y cambiar el estatus del alumno a irregular?</b></h5>
         </div>
       </div>
       
@@ -117,16 +118,18 @@
     <div class="modal-content rounded-5" style="background-color: #f0f0f0; max-width: 95vw;">
       <div class="modal-body  px-4">
         <div class="rounded-5 p-4" style="background-color: white;">
-          <h5 class="modal-title text-center" id="scheduleModalLabel" style="color: #84251C;"><b>Usted está rechazando la solicitud solicitada. Una vez que haya 
-            ¿Deseas confirmar el horario?</b></h5>
+          <h5 class="modal-title text-center" id="scheduleModalLabel" style="color: #84251C;"><b>Usted está rechazando la solicitud solicitada. Una vez que haya confirmado no podra regresar. 
+            ¿Deseas rechazar la solicitud?</b></h5>
         </div>
       </div>
 
       <div class="modal-footer justify-content-center" style="background-color: #f0f0f0; border-bottom-left-radius: 20px; border-bottom-right-radius: 20px; border-top: none; padding: 1.5rem;">
+        <form id="rechazarForm" method="POST" action="">
         <button type="submit" class="btn btn-primary rounded-pill px-4 py-2 mx-2" 
           style="background-color: #84251C; border: none; min-width: 120px;">
           Confirmar
         </button>
+        </form>
         <button type="button" class="btn btn-secondary rounded-pill px-4 py-2 mx-2" 
           style="background-color: white; border: 1px solid #84251C; color: #84251C; min-width: 120px;" 
           data-bs-dismiss="modal">
@@ -141,7 +144,7 @@
 <script src="/js/coordinador.js"></script>
 
 <script>
-  document.addEventListener("DOMContentLoaded", function() {
+ document.addEventListener("DOMContentLoaded", function() {
     // Esto es para que se despliegue hacia abajo cuando selecciono al alumno
     document.querySelectorAll(".toggle-descripcion").forEach(button => {
       button.addEventListener("click", function() {
@@ -157,17 +160,22 @@
         row.style.display = row.style.display === "none" ? "table-row" : "none";
       });
     });
-
-  
   });
 
-  // Para el modal de aceptar
+  // Para el modal de aceptar y rechazar
 document.getElementById('confirmAceptarModal').addEventListener('show.bs.modal', function(event) {
     const button = event.relatedTarget; 
     const solicitudId = button.getAttribute("data-solicitud-id");
     if (solicitudId) {
         document.getElementById('activateForm').action = `solicitudes-cambio/aprobar/${solicitudId}`;
-        document.getElementById('activateForm').action = `solicitudes-cambio/aprobar/${solicitudId}`;
+    }
+});
+
+document.getElementById('confirmRechazarModal').addEventListener('show.bs.modal', function(event) {
+    const button = event.relatedTarget; 
+    const solicitudId = button.getAttribute("data-solicitud-id");
+    if (solicitudId) {
+        document.getElementById('rechazarForm').action = `/coordinador/solicitudes-cambio/rechazar/${solicitudId}`;
     }
 });
 
