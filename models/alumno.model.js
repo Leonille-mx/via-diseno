@@ -61,11 +61,22 @@ module.exports = class Alumno {
         }
     } 
 
-    static async fetchAll() {
+    static async fetchAllRegulares() {
         const query = `
             SELECT *
             FROM alumno a, usuario u
-            WHERE a.ivd_id = u.ivd_id
+            WHERE a.ivd_id = u.ivd_id AND
+                  a.regular = true
+        `;
+        return await pool.query(query);
+    }
+
+    static async fetchAllIrregulares() {
+        const query = `
+            SELECT *
+            FROM alumno a, usuario u
+            WHERE a.ivd_id = u.ivd_id AND
+                  a.regular = false
         `;
         return await pool.query(query);
     }

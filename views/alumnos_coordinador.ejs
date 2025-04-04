@@ -1,10 +1,22 @@
 <%- include('includes/_nav_coordinador.ejs') %>
 <%- include('includes/_header_coordinador.ejs') %>
 
-<main class="bg-grey flex-grow-1 rounded-5 p-0 d-flex flex-column" style="height: 100vh;">
-  <div class="mb-4">
-    <h1 class="ms-3 mt-2">Alumnos</h1>
-    <div style="border-bottom: 3px solid #84251C; width: 15rem; margin-top: -10px;"></div>
+<main class="bg-grey flex-grow-1 rounded-5 p-0 d-flex flex-column alumno-scroll" style="height: 100vh;">
+  <div class="d-flex justify-content-between">
+    <div class="mb-4">
+      <h1 class="ms-3 mt-2">Alumnos</h1>
+      <div style="border-bottom: 3px solid #84251C; width: 13rem; margin-top: -10px;"></div>
+    </div>
+    <form action="/coordinador/alumnos/sincronizar" method="POST">
+      <button type="submit" class="btn btn-primary d-flex align-items-center gap-2 rounded-pill px-3 py-2 me-5 mt-3" 
+      style="background-color: #84251C; border: none;">
+        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-arrow-clockwise" viewBox="0 0 16 16">
+          <path fill-rule="evenodd" d="M8 3a5 5 0 1 0 4.546 2.914.5.5 0 0 1 .908-.417A6 6 0 1 1 8 2z"/>
+          <path d="M8 4.466V.534a.25.25 0 0 1 .41-.192l2.36 1.966c.12.1.12.284 0 .384L8.41 4.658A.25.25 0 0 1 8 4.466"/>
+        </svg>
+        Sincronizar Alumnos
+      </button>
+    </form>
   </div>
   <!-- Si el msg string no es null, muestra un mensaje del resultado de la operación -->
   <% if (msg) { %>
@@ -25,9 +37,10 @@
     </div>
   <% } %>
 
-  <div class="d-flex align-items-center justify-content-between mx-5 mb-3 gap-3 flex-wrap">
+  <div class="d-flex align-items-center justify-content-between me-5 mb-3 flex-wrap">
+    <h3 class="ms-5 mb-0 text-decoration-underline ivd-text-red">Alumno Regular</h3>
     <div class="d-flex align-items-center flex-grow-1" style="max-width: 200px;">
-      <input class="form-control me-2 rounded-pill" type="search" placeholder="Buscar alumno" aria-label="Search"
+      <input class="form-control rounded-pill" type="search" placeholder="Buscar alumno" aria-label="Search"
             style="background-image:url('/images/search.svg');
                     background-repeat:no-repeat;
                     background-position: 1rem center; 
@@ -36,38 +49,25 @@
                     width: 100%;
                     border: 1px solid #84251C;">
     </div>
-    <div class="d-flex gap-3">
-      <form action="/coordinador/alumnos/sincronizar" method="POST">
-        <button type="submit" class="btn btn-primary d-flex align-items-center gap-2 rounded-pill px-3 py-2" 
-        style="background-color: #84251C; border: none;">
-          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-arrow-clockwise" viewBox="0 0 16 16">
-            <path fill-rule="evenodd" d="M8 3a5 5 0 1 0 4.546 2.914.5.5 0 0 1 .908-.417A6 6 0 1 1 8 2z"/>
-            <path d="M8 4.466V.534a.25.25 0 0 1 .41-.192l2.36 1.966c.12.1.12.284 0 .384L8.41 4.658A.25.25 0 0 1 8 4.466"/>
-          </svg>
-          Sincronizar Alumnos
-        </button>
-      </form>
-    </div>
   </div>
-
-  <div class="table-responsive mx-5 mb-5 rounded-5 flex-grow-1" style="overflow: auto; background-color: white;">
+  <div class="table-responsive mx-5 mb-3 rounded-5 flex-grow-1" style="min-height: 45vh; overflow: auto;  background-color: white;">
     <table class="table table-hover" style="min-width: 800px; width: 100%;">
       <thead class="table-light">
         <tr>
-          <th scope="col" style="width: 15%; min-width: 100px;" class="text-center align-middle">Nombre</th>
-          <th scope="col" style="width: 15%; min-width: 100px;" class="text-center align-middle">Apellidos</th>
-          <th scope="col" style="width: 15%; min-width: 100px;" class="text-center align-middle">Estado</th>
-          <th scope="col" style="width: 15%; min-width: 100px;" class="text-center align-middle">Correo Institucional</th>
-          <th scope="col" style="width: 5%; min-width: 50px;"></th>
+          <th scope="col" style="width: 23.5%; min-width: 100px;" class="text-center align-middle">Matricula</th>
+          <th scope="col" style="width: 23.5%; min-width: 100px;" class="text-center align-middle">Nombre</th>
+          <th scope="col" style="width: 23.5%; min-width: 100px;" class="text-center align-middle">Apellidos</th>
+          <th scope="col" style="width: 23.5%; min-width: 100px;" class="text-center align-middle">Correo Institucional</th>
+          <th scope="col" style="width: 6%; min-width: 50px;"></th>
         </tr>
       </thead>
       <tbody>
-        <% for (let alumno of students) { %>
+        <% for (let alumnoRegular of alumnosRegulares) { %>
           <tr>
-            <td class="text-center align-middle"><%= alumno.nombre %></td>
-            <td class="text-center align-middle"><%= alumno.primer_apellido %> <%= alumno.segundo_apellido|| '' %></td>
-            <td class="text-center align-middle"><%= alumno.regular ? 'Regular' : 'Irregular' %></td>
-            <td class="text-center align-middle"><%= alumno.correo_institucional %></td>
+            <td class="text-center align-middle"><%= alumnoRegular.ivd_id %></td>
+            <td class="text-center align-middle"><%= alumnoRegular.nombre %></td>
+            <td class="text-center align-middle"><%= alumnoRegular.primer_apellido %> <%= alumnoRegular.segundo_apellido|| '' %></td>
+            <td class="text-center align-middle"><%= alumnoRegular.correo_institucional %></td>
             <td class="text-center align-middle">
               <button class="btn btn-sm p-0 d-flex align-items-center justify-content-center" 
                 style="width: 1.5rem; height: 1.5rem; border-radius: 50%; background-color: #84251c; color: white; border: none;">
@@ -75,8 +75,61 @@
                     <path d="M10.5 8a2.5 2.5 0 1 1-5 0 2.5 2.5 0 0 1 5 0"/>
                     <path d="M0 8s3-5.5 8-5.5S16 8 16 8s-3 5.5-8 5.5S0 8 0 8m8 3.5a3.5 3.5 0 1 0 0-7 3.5 3.5 0 0 0 0 7"/>
                   </svg>
-                </button>
-              </td>
+              </button>
+            </td>
+          </tr>
+        <% } %>
+      </tbody>
+    </table>
+  </div>
+  <div class="d-flex align-items-center justify-content-between me-5 mb-3 flex-wrap">
+    <h3 class="ms-5 text-decoration-underline ivd-text-red">Alumno Irregular</h3>
+    <div class="d-flex align-items-center flex-grow-1" style="max-width: 200px;">
+      <input class="form-control rounded-pill" type="search" placeholder="Buscar alumno" aria-label="Search"
+            style="background-image:url('/images/search.svg');
+                    background-repeat:no-repeat;
+                    background-position: 1rem center; 
+                    padding-left: 3rem; 
+                    font-size: 1rem;
+                    width: 100%;
+                    border: 1px solid #84251C;">
+    </div>
+  </div>
+  <div class="table-responsive mx-5 mb-5 rounded-5 flex-grow-1" style="min-height: 45vh; overflow: auto; background-color: white;">
+    <table class="table table-hover" style="min-width: 800px; width: 100%;">
+      <thead class="table-light">
+        <tr>
+          <th scope="col" style="width: 22.5%; min-width: 100px;" class="text-center align-middle">Matricula</th>
+          <th scope="col" style="width: 22.5%; min-width: 100px;" class="text-center align-middle">Nombre</th>
+          <th scope="col" style="width: 22.5%; min-width: 100px;" class="text-center align-middle">Apellidos</th>
+          <th scope="col" style="width: 22.5%; min-width: 100px;" class="text-center align-middle">Correo Institucional</th>
+          <th scope="col" style="width: 4%; min-width: 25px;"></th>
+          <th scope="col" style="width: 6%; min-width: 25px;"></th>
+        </tr>
+      </thead>
+      <tbody>
+        <% for (let alumnoIrregular of alumnosIrregulares) { %>
+          <tr>
+            <td class="text-center align-middle"><%= alumnoIrregular.ivd_id %></td>
+            <td class="text-center align-middle"><%= alumnoIrregular.nombre %></td>
+            <td class="text-center align-middle"><%= alumnoIrregular.primer_apellido %> <%= alumnoIrregular.segundo_apellido|| '' %></td>
+            <td class="text-center align-middle"><%= alumnoIrregular.correo_institucional %></td>
+            <td class="text-center align-middle">
+              <button class="btn btn-sm p-0 d-flex align-items-center justify-content-center" 
+                style="width: 1.5rem; height: 1.5rem; border-radius: 50%; background-color: #84251c; color: white; border: none;">
+                  <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-eye-fill" viewBox="0 0 16 16">
+                    <path d="M10.5 8a2.5 2.5 0 1 1-5 0 2.5 2.5 0 0 1 5 0"/>
+                    <path d="M0 8s3-5.5 8-5.5S16 8 16 8s-3 5.5-8 5.5S0 8 0 8m8 3.5a3.5 3.5 0 1 0 0-7 3.5 3.5 0 0 0 0 7"/>
+                  </svg>
+              </button>
+            </td>
+            <td class="text-center align-middle">
+              <button class="btn btn-sm p-0 d-flex align-items-center justify-content-center" 
+                style="width: 1.5rem; height: 1.5rem; border-radius: 50%; background-color: #84251c; color: white; border: none;">
+                  <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-pencil-fill" viewBox="0 0 16 16">
+                    <path d="M12.854.146a.5.5 0 0 0-.707 0L10.5 1.793 14.207 5.5l1.647-1.646a.5.5 0 0 0 0-.708zm.646 6.061L9.793 2.5 3.293 9H3.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.207zm-7.468 7.468A.5.5 0 0 1 6 13.5V13h-.5a.5.5 0 0 1-.5-.5V12h-.5a.5.5 0 0 1-.5-.5V11h-.5a.5.5 0 0 1-.5-.5V10h-.5a.5.5 0 0 1-.175-.032l-.179.178a.5.5 0 0 0-.11.168l-2 5a.5.5 0 0 0 .65.65l5-2a.5.5 0 0 0 .168-.11z"/>
+                  </svg>
+              </button>
             </td>
           </tr>
         <% } %>
