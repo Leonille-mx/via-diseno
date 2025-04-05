@@ -199,7 +199,7 @@
                                 <td>
                                   <%= bloque.dia %>
                                 </td>
-                                
+
                                 <td style="max-width: 300px; white-space: normal; word-break: break-word;">
                                   <%= bloque.profesor_nombre %>
                                 </td>
@@ -298,26 +298,23 @@
                     <div class="table-responsive">
                       <table class="table table-sm">
                         <tbody>
-                          <tr>
-                            <td>Grupo 1</td>
-                            <td>20 alumnos</td>
-                          </tr>
-                          <tr>
-                            <td>Grupo 2</td>
-                            <td>18 alumnos</td>
-                          </tr>
-                          <tr>
-                            <td>Grupo 3</td>
-                            <td>22 alumnos</td>
-                          </tr>
-                          <tr>
-                            <td>Grupo 4</td>
-                            <td>15 alumnos</td>
-                          </tr>
-                          <tr>
-                            <td>Grupo 5</td>
-                            <td>25 alumnos</td>
-                          </tr>
+                          <% if (solicitud_Cambio_Dashboard && solicitud_Cambio_Dashboard.length> 0) { %>
+                            <% solicitud_Cambio_Dashboard.forEach(solicitud=> { %>
+                              <tr>
+                                <td>
+                                  ID de Solicitud: <%= solicitud.solicitud_cambio_id %>
+                                </td>
+                                <td style="max-width: 300px; white-space: normal; word-break: break-word;">
+                                   <%= solicitud.nombre %>
+                                    <%= solicitud.primer_apellido %>
+                                </td>
+                              </tr>
+                              <% }); %>
+                                <% } else { %>
+                                  <tr>
+                                    <td colspan="2">No hay solicitudes de cambio disponibles</td>
+                                  </tr>
+                                  <% } %>
                         </tbody>
                       </table>
                     </div>
@@ -325,7 +322,7 @@
                 </div>
 
                 <div class="card-footer bg-transparent border-0 py-2 px-3">
-                  <small class="text-muted">Total: 36 solicitudes</small>
+                  <small class="text-muted">Total: <%= total_Solicitudes%> solicitudes</small>
                 </div>
               </div>
             </div>

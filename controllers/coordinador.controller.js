@@ -7,6 +7,7 @@ const CicloEscolar = require('../models/ciclo-escolar.model');
 const Grupos = require('../models/grupo.model');
 const Alumno = require('../models/alumno.model');
 const Usuario = require('../models/usuario.model.js');
+const Solicitud = require('../models/solicitudes-cambio.model.js');
 const { getAllProfessors, getAllCourses, getAllStudents, getCiclosEscolares} = require('../util/adminApiClient.js');
 
 
@@ -23,6 +24,8 @@ exports.get_dashboard = async (req, res) => {
         const salones_Dashboard = await Salon.salonesDashboard();
         const grafica_Alumnos = await Alumno.alumnosComparacion();
         const materias_Abiertas  = await Materia.numeroMaterias();
+        const solicitud_Cambio_Dashboard = await Solicitud.dasboard_Solicitud();
+        const total_Solicitudes = await Solicitud.numeroTotalSolicitudes();
 
         res.render('dashboard_coordinador', {
             msg: msg,
@@ -37,7 +40,9 @@ exports.get_dashboard = async (req, res) => {
             grupos_Dashboard: grupos_Dashboard,
             salones_Dashboard: salones_Dashboard,
             grafica_Alumnos: grafica_Alumnos,
-            materias_Abiertas: materias_Abiertas
+            materias_Abiertas: materias_Abiertas,
+            solicitud_Cambio_Dashboard: solicitud_Cambio_Dashboard,
+            total_Solicitudes: total_Solicitudes
             
         });
     } catch (error) {
