@@ -15,4 +15,17 @@ module.exports = class MateriaSemestre {
                            FROM materia m, materia_semestre ms
                            WHERE m.materia_id = ms.materia_id`);
     }
+
+    static async abrirMateriaEnSemestre(materia_id, semestre_id) {
+        const client = await pool.connect();
+        try {
+            await client.query(
+                `INSERT INTO materia_semestre (materia_id, semestre_id)
+                 VALUES ($1, $2)`,
+                [materia_id, semestre_id]
+            );
+        } finally {
+            client.release();
+        }
+    }
 }
