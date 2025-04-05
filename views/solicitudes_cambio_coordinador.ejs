@@ -23,8 +23,8 @@
     <table class="table table-hover" style="min-width: 800px; width: 100%;">
       <thead class="table-light">
         <tr>
-          <th scope="col" style="width: 15%; min-width: 100px;" class="text-center align-middle">Nombre</th>
           <th scope="col" style="width: 15%; min-width: 100px;" class="text-center align-middle">ID</th>
+          <th scope="col" style="width: 15%; min-width: 100px;" class="text-center align-middle">Nombre</th>
           <th scope="col" style="width: 20%; min-width: 100px;" class="text-center align-middle">Apellido</th>
           <th scope="col" style="width: 20%; min-width: 100px;" class="text-center align-middle">Correo</th>
           <th scope="col" style="width: 5%; min-width: 50px;"></th>
@@ -33,8 +33,8 @@
       <tbody>
         <% for (let solicitud of solicitudes) { %>
           <tr>
-            <th scope="row" class="text-center align-middle"><%= solicitud.nombre %></th>
-            <td class="text-center align-middle"><%= solicitud.ivd_id%></td>
+            <th scope="row" class="text-center align-middle"><%= solicitud.ivd_id%></th>
+            <td class="text-center align-middle"><%= solicitud.nombre%></td>
             <td class="text-center align-middle"><%= solicitud.primer_apellido %></td>
             <td class="text-center align-middle"><%= solicitud.correo_institucional %></td>
             <td class="text-center align-middle">
