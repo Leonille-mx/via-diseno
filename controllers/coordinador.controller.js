@@ -29,6 +29,7 @@ exports.get_dashboard = (req, res) => {
 exports.get_materias = async (req, res, nxt) => {
     try {
         const materiasSemestreDB = await MateriaSemestre.fetchMateriasSemestre();
+        const todasLasMateriasDB = await Materia.fetchAll(); 
         
         // Si hay query string, lo guarda en la variable msg
         const msg = req.query.msg || null;
@@ -50,6 +51,7 @@ exports.get_materias = async (req, res, nxt) => {
             isLoggedIn: req.session.isLoggedIn || false,
             matricula: req.session.matricula || '',
             materiasPorSemestre: materiasPorSemestre,
+            todasLasMaterias: todasLasMateriasDB.rows,
             msg,
         });
     } catch(error) {
@@ -81,6 +83,21 @@ exports.post_sincronizar_materias = async (req, res, nxt) => {
         // Redirige a la siguiente ruta con un mensaje de error en query string 
         // con la función para encodificarlo
         res.redirect(`/coordinador/materias?msg=${encodeURIComponent('La operación fue fracasada')}`);
+    }
+};
+
+exports.post_abrir_materia = async (req, res) => {
+    try {
+        const { semestre_id, materias } = req.body;
+
+        for (const materia_id of materias) {
+            await MateriaSemestre.abrirMateriaEnSemestre(materia_id, semestre_id);
+        }
+
+        res.redirect('/coordinador/materias?msg=Materias abiertas exitosamente');
+    } catch (error) {
+        console.error(error);
+        res.redirect('/coordinador/materias?msg=Error al abrir materias');
     }
 };
         

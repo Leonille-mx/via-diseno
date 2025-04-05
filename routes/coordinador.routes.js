@@ -10,6 +10,7 @@ router.get('/dashboard', isAuth, coordinador_controller.get_dashboard);
 router.get('/materias', isAuth, coordinador_controller.get_materias);
 
 router.post('/materias/sincronizar', isAuth, coordinador_controller.post_sincronizar_materias);
+router.post('/materias/abrir', isAuth, coordinador_controller.post_abrir_materia);
 
 router.get('/profesores', isAuth, coordinador_controller.get_profesores);
 router.post('/profesores/sincronizar', isAuth, coordinador_controller.post_sincronizar_profesores);
