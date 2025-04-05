@@ -13,6 +13,7 @@ module.exports = class MateriaSemestre {
                            horas_profesor, tipo_salon, 
                            semestre_id
                            FROM materia m, materia_semestre ms
-                           WHERE m.materia_id = ms.materia_id`);
+                           WHERE m.materia_id = ms.materia_id
+                           ORDER BY materia_id ASC`);
     }
 }
