@@ -188,6 +188,9 @@
                           <% if (grupos_Dashboard && grupos_Dashboard.length> 0) { %>
                             <% grupos_Dashboard.forEach(bloque=> { %>
                               <tr>
+                                <td style="max-width: 300px; white-space: normal; word-break: break-word;">
+                                  <%= bloque.materia_nombre %>
+                                </td>
                                 <td> [<%= bloque.hora_inicio %>
                                 </td>
                                 <td>
@@ -196,9 +199,7 @@
                                 <td>
                                   <%= bloque.dia %>
                                 </td>
-                                <td style="max-width: 300px; white-space: normal; word-break: break-word;">
-                                  <%= bloque.materia_nombre %>
-                                </td>
+                                
                                 <td style="max-width: 300px; white-space: normal; word-break: break-word;">
                                   <%= bloque.profesor_nombre %>
                                 </td>
