@@ -826,7 +826,7 @@
 <script>
     document.querySelectorAll('[data-bs-toggle="modal"][data-semestre]').forEach(btn => {
         btn.addEventListener('click', function() {
-            const semestreId = this.dataset.semestre.replace('s', ''); // Extract number
+            const semestreId = this.dataset.semestre;
             document.getElementById('modalSemestreId').value = semestreId;
         });
     });
@@ -835,28 +835,58 @@
     document.querySelectorAll('.abrir-materia-btn').forEach(btn => {
         btn.addEventListener('click', function() {
             const materiaId = this.dataset.materiaId;
-            selectedMaterias.add(materiaId);
-            this.classList.toggle('btn-primary');
-            this.classList.toggle('btn-success');
-            icon.innerHTML = `<path d="M12.736 3.97a.733.733 0 0 1 1.047 0c.286.289.29.756.01 1.05L7.88 12.01a.733.733 0 0 1-1.065.02L3.217 8.384a.757.757 0 0 1 0-1.06.733.733 0 0 1 1.047 0l3.052 3.093 5.4-6.425z"/>`;
+            const icon = this.querySelector('svg');
+            
+            if (selectedMaterias.has(materiaId)) {
+                selectedMaterias.delete(materiaId);
+                this.style.backgroundColor = '#84251c';
+                icon.innerHTML = `<path d="M8 4a.5.5 0 0 1 .5.5v3h3a.5.5 0 0 1 0 1h-3v3a.5.5 0 0 1-1 0v-3h-3a.5.5 0 0 1 0-1h3v-3A.5.5 0 0 1 8 4"/>`;
+            } else {
+                selectedMaterias.add(materiaId);
+                this.style.backgroundColor = '#28a745';
+                icon.innerHTML = `<path d="M12.736 3.97a.733.733 0 0 1 1.047 0c.286.289.29.756.01 1.05L7.88 12.01a.733.733 0 0 1-1.065.02L3.217 8.384a.757.757 0 0 1 0-1.06.733.733 0 0 1 1.047 0l3.052 3.093 5.4-6.425z"/>`;
+            }
         });
     });
     
-    document.getElementById('addMateriaForm').addEventListener('submit', function(e) {
-        e.preventDefault();
+    if (selectedMaterias.length === 0) {
+            alert('No se han seleccionado materias para abrir');
+            return;
+        }
         
-        const formData = new FormData(this);
-        const semestreId = formData.get('semestre_id');
-        
-        selectedMaterias.forEach(materiaId => {
-            const input = document.createElement('input');
-            input.type = 'hidden';
-            input.name = 'materias[]';
-            input.value = materiaId;
-            this.appendChild(input);
-        });
-        
-        this.submit();
+    document.getElementById('addMateriaForm').addEventListener('submit', async function(e) {
+        const selectedMaterias = Array.from(
+            document.querySelectorAll('.abrir-materia-btn[style*="background-color: rgb(40, 167, 69)"]')
+        ).map(btn => btn.dataset.materiaId);
+
+        const semestre_id = document.getElementById('modalSemestreId').value;
+
+        if (selectedMaterias.length === 0) {
+            alert('No se han seleccionado materias para abrir');
+            return;
+        }
+
+        try {
+            const response = await fetch('/coordinador/materias/abrir', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    semestre_id,
+                    materias: selectedMaterias
+                })
+            });
+
+            if (response.ok) {
+                window.location.href = '/coordinador/materias?msg=Materias abiertas exitosamente';
+            } else {
+                throw new Error('Error del servidor');
+            }
+        } catch (error) {
+            console.error('Error:', error);
+            window.location.href = '/coordinador/materias?msg=Error al abrir materias';
+        }
     });
 </script>
 </body>
