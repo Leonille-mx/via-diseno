@@ -90,7 +90,13 @@ exports.post_abrir_materia = async (req, res) => {
     try {
         const { semestre_id, materias } = req.body;
 
+        if (!Array.isArray(materias)) {
+            console.log(materias)
+            throw new Error('materias must be an array');
+        }
+
         for (const materia_id of materias) {
+            console.log(`Inserting materia_id=${materia_id}, semestre_id=${semestre_id}`);
             await MateriaSemestre.abrirMateriaEnSemestre(materia_id, semestre_id);
         }
 

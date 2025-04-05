@@ -765,6 +765,7 @@
         <div class="rounded-5 p-4" style="background-color: white;">
 
           <form id="scheduleForm" method="POST" action="/coordinador/materias/abrir">
+            <input type="hidden" id="modalSemestreId" name="semestre_id">
             <h6 class="ms-1"><b>Materias</b></h6>
             <div style="border-bottom: 3px solid #84251C; width: 10rem; margin-top: -5px; margin-bottom: 10px;"></div> 
             
@@ -845,37 +846,30 @@
                 selectedMaterias.add(materiaId);
                 this.style.backgroundColor = '#28a745';
                 icon.innerHTML = `<path d="M12.736 3.97a.733.733 0 0 1 1.047 0c.286.289.29.756.01 1.05L7.88 12.01a.733.733 0 0 1-1.065.02L3.217 8.384a.757.757 0 0 1 0-1.06.733.733 0 0 1 1.047 0l3.052 3.093 5.4-6.425z"/>`;
+                console.log("Current selected materias:", Array.from(selectedMaterias));
             }
         });
     });
     
-    if (selectedMaterias.length === 0) {
-            alert('No se han seleccionado materias para abrir');
-            return;
-        }
-        
-    document.getElementById('addMateriaForm').addEventListener('submit', async function(e) {
-        const selectedMaterias = Array.from(
-            document.querySelectorAll('.abrir-materia-btn[style*="background-color: rgb(40, 167, 69)"]')
-        ).map(btn => btn.dataset.materiaId);
+    document.getElementById('scheduleForm').addEventListener('submit', async function(e) {
+        e.preventDefault();
+        console.log("Form submitted"); // Debug
+    
+          semestreId = document.getElementById('modalSemestreId').value;
+          materias = Array.from(selectedMaterias);
 
-        const semestre_id = document.getElementById('modalSemestreId').value;
-
-        if (selectedMaterias.length === 0) {
+        console.log("Submitting:", { semestre_id: semestreId, materias });
+    
+        if (selectedMaterias.size === 0) {
             alert('No se han seleccionado materias para abrir');
             return;
         }
 
         try {
             const response = await fetch('/coordinador/materias/abrir', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({
-                    semestre_id,
-                    materias: selectedMaterias
-                })
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({semestre_id: semestreId, materias: materias})
             });
 
             if (response.ok) {
