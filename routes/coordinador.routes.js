@@ -27,6 +27,8 @@ router.get('/grupos', isAuth, coordinador_controller.get_grupos);
 router.post('/grupos', isAuth, coordinador_controller.post_grupos);
 router.get('/grupos/generar', isAuth, coordinador_controller.get_generar_grupos);
 router.post('/grupos/eliminar/:id', isAuth, coordinador_controller.post_eliminar_grupo);
+router.get('/grupos/modificar/:id', isAuth, coordinador_controller.get_modificar_grupo);
+router.post('/grupos/modificar/:id', isAuth, coordinador_controller.post_modificar_grupo);
 
 router.get('/alumnos', isAuth, coordinador_controller.get_alumnos);
 
