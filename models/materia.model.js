@@ -166,4 +166,15 @@ module.exports = class Materia {
     static fetchAll() {
         return pool.query('SELECT materia_id, nombre, creditos, horas_profesor, tipo_salon FROM Materia');
     }
+
+    static fetchMateriasNoAbiertas() {
+        return pool.query(
+            `SELECT materia_id, nombre, creditos, horas_profesor, tipo_salon
+            FROM materia
+            WHERE materia_id NOT IN (
+                SELECT materia_id
+                FROM materia_semestre
+            );`
+        );
+    }
 }

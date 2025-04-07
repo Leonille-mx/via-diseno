@@ -29,7 +29,8 @@ exports.get_dashboard = (req, res) => {
 exports.get_materias = async (req, res, nxt) => {
     try {
         const materiasSemestreDB = await MateriaSemestre.fetchMateriasSemestre();
-        const todasLasMateriasDB = await Materia.fetchAll(); 
+        const todasLasMateriasDB = await Materia.fetchMateriasNoAbiertas(); 
+        const materiasNoAbiertasDB = await Materia.fetchMateriasNoAbiertas(); 
         
         // Si hay query string, lo guarda en la variable msg
         const msg = req.query.msg || null;
@@ -52,6 +53,7 @@ exports.get_materias = async (req, res, nxt) => {
             matricula: req.session.matricula || '',
             materiasPorSemestre: materiasPorSemestre,
             todasLasMaterias: todasLasMateriasDB.rows,
+            materiasNoAbiertas: materiasNoAbiertasDB.rows,
             msg,
         });
     } catch(error) {
