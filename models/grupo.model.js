@@ -33,7 +33,14 @@ module.exports = class Grupo {
     }
 
     static fetchOne(id) {
-        return pool.query('SELECT * FROM grupo WHERE grupo_id = $1', [id]); 
+        return pool.query(`SELECT g.grupo_id, m.materia_id, m.nombre materia, p.nombre, p.primer_apellido, p.segundo_apellido, 
+                           p.ivd_id, s.numero, s.salon_id, c.code
+                           FROM grupo g, materia m, profesor p, salon s, ciclo_escolar c
+                           WHERE g.materia_id = m.materia_id
+                           AND g.profesor_id = p.ivd_id
+                           AND g.salon_id = s.salon_id
+                           AND g.ciclo_escolar_id = c.ciclo_escolar_id
+                           AND grupo_id = $1`, [id]); 
     }
 
     static fetch(id) {
@@ -56,6 +63,26 @@ module.exports = class Grupo {
 
     static updateHorario(id, bloque) {
         return pool.query('INSERT INTO grupo_bloque_tiempo VALUES ($1, $2)', [id, bloque]);
+    }
+
+    static getHorario(id) {
+        return pool.query(
+            'SELECT bloque_tiempo_id FROM grupo_bloque_tiempo WHERE grupo_id = $1',
+            [id]
+        )
+        .then(result => {
+            // Convertir explícitamente a array de strings
+            return result.rows.map(row => row.bloque_tiempo_id.toString());
+        })
+        .catch(error => {
+            console.error("Error en getBloquesByGrupoId:", error);
+            return []; // Retornar array vacío si hay error
+        });
+    }
+
+    static updateGrupo(id, materia, profesor, salon) {
+        return pool.query(`UPDATE grupo SET materia_id = $1, profesor_id = $2, salon_id = $3
+                           WHERE grupo_id = $4`, [materia, profesor, salon, id]);
     }
 
 };

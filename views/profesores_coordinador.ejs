@@ -1,180 +1,229 @@
 <%- include('includes/_nav_coordinador.ejs') %>
 <%- include('includes/_header_coordinador.ejs') %>
 
-    <main class="bg-grey flex-grow-1 rounded-5 p-0 d-flex flex-column" style="height: 100vh;">
-      
-      <!-- Título de la sección -->
-      <div class="mb-4">
-        <h1 class="ms-3 mt-2">Profesores Disponibles</h1>
-        <div style="border-bottom: 3px solid #84251C; width: 30rem; margin-top: -10px;"></div>
-      </div>
-        <!-- Si el msg string no es null, muestra un mensaje del resultado de la operación -->
-        <% if (msg) { %>
-          <div class="modal fade" id="msgModal" tabindex="-1" aria-labelledby="msgModalLabel" aria-hidden="true">
-            <div class="modal-dialog modal-dialog-centered modal-sm">
-              <div class="modal-content align-items-center rounded-5">
-                <div class="modal-header border border-0">
-                  <h5 class="modal-title ivd-text-red" id="msgModalLabel">Sincronizar Profesores</h5>
-                </div>
-                <div class="modal-body bg-grey rounded-5 text-center px-5">
-                  <%- msg %>
-                </div>
-                <div class="modal-footer">
-                  <button type="button" class="btn ivd-bg-red text-white rounded-5" data-bs-dismiss="modal">Aceptar</button>
-                </div>
-              </div>
-            </div>
+<main class="bg-grey flex-grow-1 rounded-5 p-0 d-flex flex-column" style="height: 100vh;">
+  <div class="mb-4">
+    <h1 class="ms-3 mt-2">Profesores Disponibles</h1>
+    <div style="border-bottom: 3px solid #84251C; width: 30rem; margin-top: -10px;"></div>
+  </div>
+
+  <% if (msg) { %>
+    <div class="modal fade" id="msgModal" tabindex="-1" aria-labelledby="msgModalLabel" aria-hidden="true">
+      <div class="modal-dialog modal-dialog-centered modal-sm">
+        <div class="modal-content align-items-center rounded-5">
+          <div class="modal-header border border-0">
+            <h5 class="modal-title ivd-text-red" id="msgModalLabel">Sincronizar Profesores</h5>
           </div>
-        <% } %>
-      <!-- Barra de búsqueda y botones para sincronizar y añadir profesor -->
-      <div class="d-flex align-items-center justify-content-between mx-5 mb-3 gap-3 flex-wrap">
-        
-        <!-- Campo de búsqueda con icono de lupa -->
-        <div class="d-flex align-items-center flex-grow-1" style="max-width: 200px;">
-          <input class="form-control me-2 rounded-pill" type="search" placeholder="Buscar profesor" aria-label="Search"
-          style="background-image:url('/images/search.svg'); background-repeat:no-repeat; background-position: 1rem center; padding-left: 3rem; font-size: 1rem; width: 100%; border: 1px solid #84251C;">
+          <div class="modal-body bg-grey rounded-5 text-center px-5">
+            <%- msg %>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn ivd-bg-red text-white rounded-5" data-bs-dismiss="modal">Aceptar</button>
+          </div>
         </div>
-        
-        <!-- Botón para sincronizar profesores -->
-        <div class="d-flex gap-3">
-          <form action="/coordinador/profesores/sincronizar" method="POST">
-            <button type="submit" class="btn btn-primary d-flex align-items-center gap-2 rounded-pill px-3 py-2" style="background-color: #84251C; border: none;">
-              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-arrow-repeat" viewBox="0 0 16 16">
-                <path d="M11.534 7h3.932a.25.25 0 0 1 .192.41l-1.966 2.36a.25.25 0 0 1-.384 0l-1.966-2.36a.25.25 0 0 1 .192-.41m-11 2h3.932a.25.25 0 0 0 .192-.41L2.692 6.23a.25.25 0 0 0-.384 0L.342 8.59A.25.25 0 0 0 .534 9"/>
-                <path fill-rule="evenodd" d="M8 3c-1.552 0-2.94.707-3.857 1.818a.5.5 0 1 1-.771-.636A6.002 6.002 0 0 1 13.917 7H12.9A5 5 0 0 0 8 3M3.1 9a5.002 5.002 0 0 0 8.757 2.182.5.5 0 1 1 .771.636A6.002 6.002 0 0 1 2.083 9z"/>
-              </svg>
-              Sincronizar profesores
-            </button>
-          </form>
       </div>
     </div>
+  <% } %>
 
-      <!-- Tabla de profesores -->
-      <div class="table-responsive mx-5 mb-5 rounded-5 flex-grow-1" style="overflow: auto; background-color: white;">
-        <table class="table table-hover" style="min-width: 800px; width: 100%;">
-          <thead class="table-light">
-            <tr>
-              <th scope="col" style="width: 15%; min-width: 100px;" class="text-center align-middle">ID</th>
-              <th scope="col" style="width: 20%; min-width: 100px;" class="text-center align-middle">Nombre</th>
-              <th scope="col" style="width: 25%; min-width: 100px;" class="text-center align-middle">Primer Apellido</th>
-              <th scope="col" style="width: 28%; min-width: 100px;" class="text-center align-middle">Segundo Apellido</th>
-              <th scope="col" style="width: 7%; min-width: 50px;"></th>
-            </tr>
-          </thead>
-          <tbody>
-            <% for (let profesor of profesores) { %>
-              <tr>
-                <th scope="row" class="text-center align-middle"><%= profesor.ivd_id %></th>
-                <td class="text-center align-middle"><%= profesor.nombre %></td>
-                <td class="text-center align-middle"><%= profesor.primer_apellido %></td>
-                <td class="text-center align-middle"><%= profesor.segundo_apellido %></td>
-                <td class="text-center align-middle">
-                  <!-- Botón para abrir el modal de detalles del profesor -->
-                  <button class="btn btn-sm p-0 d-flex align-items-center justify-content-center" 
-                  style="width: 1.5rem; height: 1.5rem; border-radius: 50%; background-color: #84251c; color: white; border: none;"
-                  data-bs-toggle="modal" 
-                  data-bs-target="#scheduleModal"
-                  data-profesor-id="<%= profesor.ivd_id %>">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-eye-fill" viewBox="0 0 16 16">
-                      <path d="M10.5 8a2.5 2.5 0 1 1-5 0 2.5 2.5 0 0 1 5 0"/>
-                      <path d="M0 8s3-5.5 8-5.5S16 8 16 8s-3 5.5-8 5.5S0 8 0 8m8 3.5a3.5 3.5 0 1 0 0-7 3.5 3.5 0 0 0 0 7"/>
-                    </svg>
-                  </button>
-                </td>
-              </tr>
-            <% } %>
-          </tbody>
-        </table>
+  <div class="d-flex align-items-center justify-content-between mx-5 mb-3 gap-3 flex-wrap">
+    <div class="d-flex align-items-center flex-grow-1" style="max-width: 200px;">
+      <input class="form-control me-2 rounded-pill" type="search" placeholder="Buscar profesor" aria-label="Search"
+      style="background-image:url('/images/search.svg'); background-repeat:no-repeat; background-position: 1rem center; padding-left: 3rem; font-size: 1rem; width: 100%; border: 1px solid #84251C;">
+    </div>
+    <div class="d-flex gap-3">
+      <form action="/coordinador/profesores/sincronizar" method="POST">
+        <button type="submit" class="btn btn-primary d-flex align-items-center gap-2 rounded-pill px-3 py-2" style="background-color: #84251C; border: none;">
+          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-arrow-repeat" viewBox="0 0 16 16">
+            <path d="M11.534 7h3.932a.25.25 0 0 1 .192.41l-1.966 2.36a.25.25 0 0 1-.384 0l-1.966-2.36a.25.25 0 0 1 .192-.41m-11 2h3.932a.25.25 0 0 0 .192-.41L2.692 6.23a.25.25 0 0 0-.384 0L.342 8.59A.25.25 0 0 0 .534 9"/>
+            <path fill-rule="evenodd" d="M8 3c-1.552 0-2.94.707-3.857 1.818a.5.5 0 1 1-.771-.636A6.002 6.002 0 0 1 13.917 7H12.9A5 5 0 0 0 8 3M3.1 9a5.002 5.002 0 0 0 8.757 2.182.5.5 0 1 1 .771.636A6.002 6.002 0 0 1 2.083 9z"/>
+          </svg>
+          Sincronizar profesores
+        </button>
+      </form>
+    </div>
+  </div>
+
+  <div class="table-responsive mx-5 mb-5 rounded-5 flex-grow-1" style="overflow: auto; background-color: white;">
+    <table class="table table-hover" style="min-width: 800px; width: 100%;">
+      <thead class="table-light">
+        <tr>
+          <th scope="col" style="width: 15%;" class="text-center align-middle">ID</th>
+          <th scope="col" style="width: 20%;" class="text-center align-middle">Nombre</th>
+          <th scope="col" style="width: 25%;" class="text-center align-middle">Primer Apellido</th>
+          <th scope="col" style="width: 28%;" class="text-center align-middle">Segundo Apellido</th>
+          <th scope="col" style="width: 7%;" class="text-center align-middle"></th>
+        </tr>
+      </thead>
+      <tbody>
+        <% for (let profesor of profesores) { %>
+          <tr>
+            <th scope="row" class="text-center align-middle"><%= profesor.ivd_id %></th>
+            <td class="text-center align-middle"><%= profesor.nombre %></td>
+            <td class="text-center align-middle"><%= profesor.primer_apellido %></td>
+            <td class="text-center align-middle"><%= profesor.segundo_apellido %></td>
+            <td class="text-center align-middle">
+              <button class="btn btn-sm p-0 d-flex align-items-center justify-content-center" 
+                style="width: 1.5rem; height: 1.5rem; border-radius: 50%; background-color: #84251c; color: white; border: none;"
+                data-bs-toggle="modal" 
+                data-bs-target="#viewModal"
+                data-profesor-id="<%= profesor.ivd_id %>">
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-eye-fill" viewBox="0 0 16 16">
+                  <path d="M10.5 8a2.5 2.5 0 1 1-5 0 2.5 2.5 0 0 1 5 0"/>
+                  <path d="M0 8s3-5.5 8-5.5S16 8 16 8s-3 5.5-8 5.5S0 8 0 8m8 3.5a3.5 3.5 0 1 0 0-7 3.5 3.5 0 0 0 0 7"/>
+                </svg>
+              </button>
+            </td>
+          </tr>
+        <% } %>
+      </tbody>
+    </table>
+  </div>
+</main>
+
+<div class="modal fade" id="viewModal" tabindex="-1" aria-labelledby="viewModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-xl modal-dialog-centered modal-dialog-scrollable">
+    <div class="modal-content rounded-5" style="background-color: #f0f0f0; max-width: 95vw;">
+      <div class="modal-header justify-content-center">
+        <h5 class="modal-title ivd-text-red" id="viewModalLabel"><b>Estás viendo los detalles del profesor</b></h5>
       </div>
-    </main>
+      <div class="modal-body px-4">
+        <div class="rounded-5 p-4" style="background-color: white;">
+          <h6 class="ms-1"><b>Materias Asignadas</b></h6>
+          <div style="border-bottom: 3px solid #84251C; width: 10rem; margin-top: -5px; margin-bottom: 10px;"></div>
+          <div class="table-responsive">
+            <table class="table table-hover">
+              <thead class="table-light">
+                <tr>
+                  <th class="text-center align-middle" style="width: 32%; min-width: 100px;">Nombre</th>
+                  <th class="text-center align-middle" style="width: 17%; min-width: 100px;">ID</th>
+                  <th class="text-center align-middle" style="width: 17%; min-width: 100px;">Créditos</th>
+                  <th class="text-center align-middle" style="width: 17%; min-width: 100px;">Horas Profesor</th>
+                  <th class="text-center align-middle" style="width: 17%; min-width: 100px;">Tipo de Salón</th>
+                </tr>
+              </thead>
+              <tbody id="viewMateriasBody"></tbody>
+            </table>
+          </div>
+
+          <h6 class="ms-1 mt-4"><b>Disponibilidad</b></h6>
+          <div style="border-bottom: 3px solid #84251C; width: 10rem; margin-top: -5px; margin-bottom: 10px;"></div>
+          <div class="table-responsive">
+            <table class="table table-bordered">
+              <thead class="table-light">
+                <tr>
+                  <th class="text-center align-middle">Hora</th>
+                  <th class="text-center align-middle">Lunes</th>
+                  <th class="text-center align-middle">Martes</th>
+                  <th class="text-center align-middle">Miércoles</th>
+                  <th class="text-center align-middle">Jueves</th>
+                  <th class="text-center align-middle">Viernes</th>
+                </tr>
+              </thead>
+              <tbody id="viewScheduleBody"></tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+      <div class="modal-footer justify-content-center" style="background-color: #f0f0f0;">
+        <button type="button" class="btn btn-secondary rounded-pill px-4 mx-4" 
+          style="background-color: white; border: 1px solid #84251C; color: #84251C;" 
+          data-bs-dismiss="modal">
+          Cerrar
+        </button>
+        <button type="button" class="btn btn-primary rounded-pill px-4 mx-4" 
+          style="background-color: #84251C; border: none;"
+          id="openEditModalBtn"
+          onclick="abrirEditModal()">
+          Modificar
+        </button>
+      </div>
+    </div>
   </div>
 </div>
 
-
-<!-- Modal para modificar detalles de profesores -->
-<div class="modal fade" id="scheduleModal" tabindex="-1" aria-labelledby="scheduleModalLabel" aria-hidden="true">
+<div class="modal fade" id="editModal" tabindex="-1" aria-labelledby="editModalLabel" aria-hidden="true">
   <div class="modal-dialog modal-xl modal-dialog-centered modal-dialog-scrollable">
     <div class="modal-content rounded-5" style="background-color: #f0f0f0; max-width: 95vw;">
-      
-      <!-- Encabezado del modal -->
       <div class="modal-header justify-content-center">
-        <h5 class="modal-title" id="scheduleModalLabel" style="color: #84251C;"><b>Estás modificando los detalles del profesor</b></h5>
+        <h5 class="modal-title ivd-text-red" id="editModalLabel"><b>Estás modificando los detalles del profesor</b></h5>
       </div>
-      
-      <!-- Cuerpo del modal -->
       <div class="modal-body px-4">
         <div class="rounded-5 p-4" style="background-color: white;">
-
-          <form id="scheduleForm" method="POST" action="/coordinador/profesores/modificar">
-            <h6 class="ms-1"><b>Materias</b></h6>
-            <div style="border-bottom: 3px solid #84251C; width: 10rem; margin-top: -5px; margin-bottom: 10px;"></div> 
-            
-            <!-- Tabla de materias -->
-            <div class="table-responsive" style="overflow: auto; background-color: white;">
-              <table class="table table-hover" style="min-width: 800px; width: 100%;">
+          <form id="scheduleForm" method="POST" action="">
+            <!-- Tabla de Materias Asignadas -->
+            <h6 class="ms-1"><b>Materias Asignadas</b></h6>
+            <div style="border-bottom: 3px solid #84251C; width: 11rem; margin-top: -5px; margin-bottom: 10px;"></div>
+            <div class="table-responsive">
+              <table class="table table-hover">
                 <thead class="table-light">
                   <tr>
-                    <th scope="col" style="width: 31%; min-width: 100px;" class="text-center align-middle">Nombre</th>
-                    <th scope="col" style="width: 16%; min-width: 100px;" class="text-center align-middle">ID</th>
-                    <th scope="col" style="width: 16%; min-width: 100px;" class="text-center align-middle">Créditos</th>
-                    <th scope="col" style="width: 16%; min-width: 100px;" class="text-center align-middle">Horas profesor</th>
-                    <th scope="col" style="width: 16%; min-width: 150px;" class="text-center align-middle">Tipo de Salón</th>
-                    <th scope="col" style="width: 5%; min-width: 50px;"></th>
+                    <th class="text-center align-middle" style="width: 31%; min-width: 100px;">Nombre</th>
+                    <th class="text-center align-middle" style="width: 16%; min-width: 100px;">ID</th>
+                    <th class="text-center align-middle" style="width: 16%; min-width: 100px;">Créditos</th>
+                    <th class="text-center align-middle" style="width: 16%; min-width: 100px;">Horas Profesor</th>
+                    <th class="text-center align-middle" style="width: 16%; min-width: 100px;">Tipo de Salón</th>
+                    <th class="text-center align-middle" style="width: 5%; min-width: 50px;"></th>
                   </tr>
                 </thead>
-                <tbody>
-                  <% for (let materia of materias) { %>
-                    <tr>
-                      <th scope="row" class="text-center align-middle"><%= materia.nombre %></th>
-                      <td class="text-center align-middle"><%= materia.materia_id %></td>
-                      <td class="text-center align-middle"><%= materia.creditos %></td>
-                      <td class="text-center align-middle"><%= materia.horas_profesor %></td>
-                      <td class="text-center align-middle"><%= materia.tipo_salon %></td>
-                      <td class="text-center align-middle">
-                        <button type="button" class="btn btn-sm p-0 d-flex align-items-center justify-content-center materia-btn" 
-                        style="width: 1.5rem; height: 1.5rem; border-radius: 50%; background-color: #84251c; color: white; border: none;"
-                        data-materia-id="<%= materia.materia_id %>">
-                          <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" class="bi bi-plus" viewBox="0 0 16 16">
-                            <path d="M8 4a.5.5 0 0 1 .5.5v3h3a.5.5 0 0 1 0 1h-3v3a.5.5 0 0 1-1 0v-3h-3a.5.5 0 0 1 0-1h3v-3A.5.5 0 0 1 8 4"/>
-                          </svg>
-                        </button>
-                      </td>
-                    </tr>
-                  <% } %>
+                <tbody id="assignedMateriasBody">
+                  <!-- Se poblará dinámicamente -->
                 </tbody>
               </table>
             </div>
-
-            <!-- Tabla para seleccionar disponibilidad del profesor -->
-            <h6 class="ms-1"><b>Disponibilidad</b></h6>
-            <div style="border-bottom: 3px solid #84251C; width: 10rem; margin-top: -5px; margin-bottom: 10px;"></div>
+            <!-- Tabla de Materias Disponibles -->
+            <h6 class="ms-1 mt-4"><b>Materias Disponibles</b></h6>
+            <div style="border-bottom: 3px solid #84251C; width: 11rem; margin-top: -5px; margin-bottom: 10px;"></div>
             <div class="table-responsive">
-                <table id="schedule" class="table table-bordered">
-                  <thead class="table-light">
-                    <tr>
-                      <th class="text-center align-middle">Hora</th>
-                      <th class="text-center align-middle">Lunes</th>
-                      <th class="text-center align-middle">Martes</th>
-                      <th class="text-center align-middle">Miércoles</th>
-                      <th class="text-center align-middle">Jueves</th>
-                      <th class="text-center align-middle">Viernes</th>
-                    </tr>
-                  </thead>
-                  <tbody id="scheduleTable">
-                    <!-- La tabla se genera dinámicamente con JavaScript -->
-                  </tbody>
-                </table>
-                <input type="hidden" name="selectedMaterias" id="selectedMaterias">
-                <input type="hidden" name="selectedBlocks" id="selectedBlocks">
+              <table class="table table-hover">
+                <thead class="table-light">
+                  <tr>
+                    <th class="text-center align-middle" style="width: 31%; min-width: 100px;">Nombre</th>
+                    <th class="text-center align-middle" style="width: 16%; min-width: 100px;">ID</th>
+                    <th class="text-center align-middle" style="width: 16%; min-width: 100px;">Créditos</th>
+                    <th class="text-center align-middle" style="width: 16%; min-width: 100px;">Horas Profesor</th>
+                    <th class="text-center align-middle" style="width: 16%; min-width: 100px;">Tipo de Salón</th>
+                    <th class="text-center align-middle" style="width: 5%; min-width: 50px;"></th>
+                  </tr>
+                </thead>
+                <tbody id="availableMateriasBody">
+                  <!-- Se poblará dinámicamente -->
+                </tbody>
+              </table>
             </div>
-          </form>  
+            
+            <!-- Sección de Disponibilidad (horario) -->
+            <h6 class="ms-1 mt-4"><b>Disponibilidad</b></h6>
+            <div style="border-bottom: 3px solid #84251C; width: 11rem; margin-top: -5px; margin-bottom: 10px;"></div>
+            <div class="table-responsive">
+              <table id="schedule" class="table table-bordered">
+                <thead class="table-light">
+                  <tr>
+                    <th class="text-center align-middle">Hora</th>
+                    <th class="text-center align-middle">Lunes</th>
+                    <th class="text-center align-middle">Martes</th>
+                    <th class="text-center align-middle">Miércoles</th>
+                    <th class="text-center align-middle">Jueves</th>
+                    <th class="text-center align-middle">Viernes</th>
+                  </tr>
+                </thead>
+                <tbody id="scheduleTable"></tbody>
+              </table>
+              <input type="hidden" name="selectedMaterias" id="selectedMaterias">
+              <input type="hidden" name="selectedBlocks" id="selectedBlocks">
+            </div>
+          </form>
         </div>
       </div>
-
-      <!-- Pie del modal con botones de acción -->
       <div class="modal-footer justify-content-center" style="background-color: #f0f0f0;">
-        <button type="button" class="btn btn-secondary rounded-pill px-4 mx-4" style="background-color: white; border: 1px solid #84251C; color: #84251C;" data-bs-dismiss="modal">Cancelar</button>
-        <button type="submit" form="scheduleForm" class="btn btn-primary rounded-pill px-4 mx-4" style="background-color: #84251C; border: none;">Modificar</button>
+        <button type="button" class="btn btn-secondary rounded-pill px-4 mx-4" 
+          style="background-color: white; border: 1px solid #84251C; color: #84251C;" 
+          data-bs-dismiss="modal">
+          Cancelar
+        </button>
+        <button type="submit" form="scheduleForm" class="btn btn-primary rounded-pill px-4 mx-4" 
+          style="background-color: #84251C; border: none;">
+          Guardar
+        </button>
       </div>
     </div>
   </div>
@@ -184,144 +233,276 @@
 <script src="/js/coordinador.js"></script>
 
 <% if (msg) { %>
-  <script>
-    // Solo cuando el html carga completamente
-    document.addEventListener('DOMContentLoaded', () => {
-      // Crea una instancia de nuevo modal
-      var myModal = new bootstrap.Modal(document.getElementById('msgModal'));
-      // Muestra el nuevo modal
-      myModal.show();
-    });
-  </script>
+<script>
+  document.addEventListener('DOMContentLoaded', () => {
+    new bootstrap.Modal(document.getElementById('msgModal')).show();
+  });
+</script>
 <% } %>
 
 <script>
-  let selectedBlocks = [];
-  let selectedMaterias = [];
+let currentProfessorId = null;
+let selectedBlocks = [];
+let selectedMaterias = [];
 
-  // Manejo de materias
-  document.querySelectorAll('.materia-btn').forEach(button => {
-      button.addEventListener('click', function() {
-          const materiaId = this.dataset.materiaId;
-          const icon = this.querySelector('svg');
+document.getElementById('viewModal').addEventListener('show.bs.modal', async (event) => {
+  const button = event.relatedTarget;
+  currentProfessorId = button.getAttribute('data-profesor-id');
+  document.getElementById('openEditModalBtn').dataset.bsTarget = `#editModal?profesorId=${currentProfessorId}`;
+
+  try {
+    const response = await fetch(`/coordinador/profesores/modificar/${currentProfessorId}`);
+    const data = await response.json();
+
+    const materiasBody = document.getElementById('viewMateriasBody');
+    materiasBody.innerHTML = '';
+    data.materiasInfo.rows.forEach(materia => {
+      materiasBody.innerHTML += `
+        <tr>
+          <td class="text-center align-middle">${materia.nombre}</td>
+          <td class="text-center align-middle">${materia.materia_id}</td>
+          <td class="text-center align-middle">${materia.creditos}</td>
+          <td class="text-center align-middle">${materia.horas_profesor}</td>
+          <td class="text-center align-middle">${materia.tipo_salon}</td>
+        </tr>`;
+    });
+
+    const scheduleBody = document.getElementById('viewScheduleBody');
+    scheduleBody.innerHTML = '';
+    const days = ["Lunes", "Martes", "Miércoles", "Jueves", "Viernes"];
+    const startTime = 7;
+    const endTime = 19;
+
+    for (let hour = startTime; hour < endTime; hour++) {
+      for (let minute of [0, 30]) {
+        const row = document.createElement('tr');
+        const endHour = minute === 30 ? hour + 1 : hour;
+        const endMinute = (minute + 30) % 60;
+        
+        row.innerHTML = `
+          <td class="text-center align-middle">
+            ${hour.toString().padStart(2, '0')}:${minute.toString().padStart(2, '0')} - 
+            ${endHour.toString().padStart(2, '0')}:${endMinute.toString().padStart(2, '0')}
+          </td>`;
+        
+        days.forEach((_, index) => {
+          const blockNumber = index * 24 + (hour - startTime) * 2 + (minute === 30 ? 1 : 0) + 1;
+          const isSelected = data.bloques?.includes(blockNumber.toString());
           
-          // Toggle selección
-          if (this.classList.contains('selected')) {
-              icon.innerHTML = `<path d="M8 4a.5.5 0 0 1 .5.5v3h3a.5.5 0 0 1 0 1h-3v3a.5.5 0 0 1-1 0v-3h-3a.5.5 0 0 1 0-1h3v-3A.5.5 0 0 1 8 4"/>`;
-              selectedMaterias = selectedMaterias.filter(id => id !== materiaId);
-          } else {
-              icon.innerHTML = `<path d="M12.736 3.97a.733.733 0 0 1 1.047 0c.286.289.29.756.01 1.05L7.88 12.01a.733.733 0 0 1-1.065.02L3.217 8.384a.757.757 0 0 1 0-1.06.733.733 0 0 1 1.047 0l3.052 3.093 5.4-6.425z"/>`;
-              selectedMaterias.push(materiaId);
+          row.innerHTML += `
+            <td class="text-center align-middle ${isSelected ? 'selected' : ''}">
+            </td>`;
+        });
+        
+        scheduleBody.appendChild(row);
+      }
+    }
+  } catch (error) {
+    console.error('Error:', error);
+  }
+});
+
+document.getElementById('editModal').addEventListener('show.bs.modal', async (event) => {
+  if (!currentProfessorId) return;
+ 
+  // Reiniciar arrays y tablas
+  selectedMaterias = [];
+  document.getElementById('assignedMateriasBody').innerHTML = '';
+  document.getElementById('availableMateriasBody').innerHTML = '';
+  document.getElementById('scheduleTable').innerHTML = '';
+  document.getElementById('selectedMaterias').value = '[]';
+  document.getElementById('selectedBlocks').value = '[]';
+
+  try {
+    // Se obtiene la información del profesor, incluyendo materias asignadas y bloques
+    const response = await fetch(`/coordinador/profesores/modificar/${currentProfessorId}`);
+    const data = await response.json();
+    var allMaterias = data.allMaterias.rows;
+
+    // data.materias es un array con los IDs de las materias asignadas
+    // data.materiasInfo.rows contiene la información completa de las materias asignadas
+    const assignedIds = data.materias; // array de strings o números
+    const assignedMaterias = data.materiasInfo.rows;
+
+    // Usando allMaterias (que ya tienes en la vista), calcular las materias disponibles:
+    const availableMaterias = allMaterias.filter(materia => !assignedIds.includes(materia.materia_id.toString()));
+
+    // Función para crear una fila de tabla de materia
+    function createMateriaRow(materia, btnClass, btnContent) {
+      const tr = document.createElement('tr');
+      tr.dataset.materiaId = materia.materia_id;
+      tr.innerHTML = `
+        <td class="text-center align-middle">${materia.nombre}</td>
+        <td class="text-center align-middle">${materia.materia_id}</td>
+        <td class="text-center align-middle">${materia.creditos}</td>
+        <td class="text-center align-middle">${materia.horas_profesor}</td>
+        <td class="text-center align-middle">${materia.tipo_salon}</td>
+        <td class="text-center align-middle">
+          <button type="button" class="btn btn-sm p-0 d-flex align-items-center justify-content-center ${btnClass}" 
+          style="width: 1.5rem; height: 1.5rem; border-radius: 50%; background-color: #84251c; color: white; border: none;"
+          data-materia-id="${materia.materia_id}">
+            ${btnContent}
+          </button>
+        </td>
+      `;
+      return tr;
+    }
+
+    // Poblar tabla de materias asignadas
+    assignedMaterias.forEach(materia => {
+      const row = createMateriaRow(materia, 'btn-danger remove-assigned', `
+      <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-x-lg" viewBox="0 0 16 16">
+        <path d="M2.146 2.854a.5.5 0 1 1 .708-.708L8 7.293l5.146-5.147a.5.5 0 0 1 .708.708L8.707 8l5.147 5.146a.5.5 0 0 1-.708.708L8 8.707l-5.146 5.147a.5.5 0 0 1-.708-.708L7.293 8z"/>
+      </svg>`);
+      document.getElementById('assignedMateriasBody').appendChild(row);
+      // Agregar a selectedMaterias
+      selectedMaterias.push(materia.materia_id.toString());
+    });
+
+    // Poblar tabla de materias disponibles
+    availableMaterias.forEach(materia => {
+      const row = createMateriaRow(materia, 'btn-success add-available', `
+      <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" class="bi bi-plus" viewBox="0 0 16 16">
+        <path d="M8 4a.5.5 0 0 1 .5.5v3h3a.5.5 0 0 1 0 1h-3v3a.5.5 0 0 1-1 0v-3h-3a.5.5 0 0 1 0-1h3v-3A.5.5 0 0 1 8 4"/>
+      </svg>`);
+      document.getElementById('availableMateriasBody').appendChild(row);
+    });
+
+    // Actualizar el input oculto
+    document.getElementById('selectedMaterias').value = JSON.stringify(selectedMaterias);
+
+    // (Continúa con la generación de la tabla de horarios como lo tienes actualmente)
+    const scheduleTable = document.getElementById("scheduleTable");
+    const days = ["Lunes", "Martes", "Miércoles", "Jueves", "Viernes"];
+    const startTime = 7;
+    const endTime = 19;
+
+    for (let hour = startTime; hour < endTime; hour++) {
+      for (let minute of [0, 30]) {
+        const row = document.createElement("tr");
+        const endHour = minute === 30 ? hour + 1 : hour;
+        const endMinute = (minute + 30) % 60;
+        
+        row.innerHTML = 
+          `<td class="text-center align-middle">
+             ${hour.toString().padStart(2, '0')}:${minute.toString().padStart(2, '0')} - 
+             ${endHour.toString().padStart(2, '0')}:${endMinute.toString().padStart(2, '0')}
+           </td>`;
+        
+        days.forEach((_, index) => {
+          const blockNumber = index * 24 + (hour - startTime) * 2 + (minute === 30 ? 1 : 0) + 1;
+          const cell = document.createElement("td");
+          cell.dataset.value = blockNumber.toString();
+          
+          if (data.bloques.includes(blockNumber.toString())) {
+            cell.classList.add("selected");
+            if (!selectedBlocks.includes(blockNumber.toString())) {
+              selectedBlocks.push(blockNumber.toString());
+            }
           }
-          
-          this.classList.toggle('selected');
-          document.getElementById('selectedMaterias').value = JSON.stringify(selectedMaterias);
-          console.log(selectedMaterias);
-      });
-  });
 
-  // Configuración del modal de horario
-  document.getElementById('scheduleModal').addEventListener('show.bs.modal', async function(event) {
-      const button = event.relatedTarget;
-      const profesorId = button.getAttribute('data-profesor-id');
-      
-      // Resetear selecciones
-      const scheduleTable = document.getElementById("scheduleTable");
-      scheduleTable.innerHTML = '';
-      selectedBlocks = [];
-      selectedMaterias = [];
-      document.getElementById('selectedBlocks').value = '[]';
-      document.getElementById('selectedMaterias').value = '[]';
-
-      try {
-         // Resetear materias no confirmadas
-          document.querySelectorAll('.materia-btn').forEach(button => {
-              button.classList.remove('selected');
-              const icon = button.querySelector('svg');
-              icon.innerHTML = `<path d="M8 4a.5.5 0 0 1 .5.5v3h3a.5.5 0 0 1 0 1h-3v3a.5.5 0 0 1-1 0v-3h-3a.5.5 0 0 1 0-1h3v-3A.5.5 0 0 1 8 4"/>`;
+          cell.addEventListener("click", function() {
+            this.classList.toggle("selected");
+            const value = this.dataset.value;
+            if (selectedBlocks.includes(value)) {
+              selectedBlocks = selectedBlocks.filter(num => num !== value);
+            } else {
+              selectedBlocks.push(value);
+            }
+            document.getElementById("selectedBlocks").value = JSON.stringify(selectedBlocks);
           });
 
-          // Obtener datos existentes
-          const response = await fetch(`/coordinador/profesores/modificar/${profesorId}`);
-          const data = await response.json();
-          
-          // Cargar materias
-          if (data.materias) {
-              selectedMaterias = data.materias;
-              document.querySelectorAll('.materia-btn').forEach(button => {
-                  const materiaId = button.dataset.materiaId;
-                  if (data.materias.includes(materiaId)) {
-                      button.querySelector('svg').innerHTML = `<path d="M12.736 3.97a.733.733 0 0 1 1.047 0c.286.289.29.756.01 1.05L7.88 12.01a.733.733 0 0 1-1.065.02L3.217 8.384a.757.757 0 0 1 0-1.06.733.733 0 0 1 1.047 0l3.052 3.093 5.4-6.425z"/>`;
-                      button.classList.add('selected');
-                  }
-              });
-          }
-
-          // Generar tabla de horarios
-          const days = ["Lunes", "Martes", "Miércoles", "Jueves", "Viernes"];
-          const startTime = 7;
-          const endTime = 19;
-
-          // Función para formatear horas
-          const formatTime = (num) => num.toString().padStart(2, '0');
-
-          for (let hour = startTime; hour < endTime; hour++) {
-              for (let minute of [0, 30]) {
-                  const row = document.createElement("tr");
-                  
-                  // Calcular hora final
-                  let endHour = hour;
-                  let endMinute = minute + 30;
-                  if (endMinute >= 60) {
-                      endHour += 1;
-                      endMinute %= 60;
-                  }
-
-                  // Celda de tiempo
-                  const timeCell = document.createElement("td");
-                  timeCell.textContent = `${formatTime(hour)}:${formatTime(minute)} - ${formatTime(endHour)}:${formatTime(endMinute)}`;
-                  timeCell.classList.add("text-center");
-                  row.appendChild(timeCell);
-
-                  // Celdas por día
-                  days.forEach((day, index) => {
-                      const blockNumber = index * 24 + (hour - startTime) * 2 + (minute === 30 ? 1 : 0) + 1;
-                      const cell = document.createElement("td");
-                      cell.dataset.value = blockNumber.toString();
-                      
-                      // Preselección
-                      if (data.bloques && data.bloques.includes(blockNumber.toString())) {
-                          cell.classList.add("selected");
-                          selectedBlocks.push(blockNumber.toString());
-                      }
-
-                      // Evento click
-                      cell.addEventListener("click", function() {
-                          this.classList.toggle("selected");
-                          const value = this.dataset.value;
-                          selectedBlocks = selectedBlocks.includes(value) 
-                              ? selectedBlocks.filter(num => num !== value) 
-                              : [...selectedBlocks, value];
-                          document.getElementById("selectedBlocks").value = JSON.stringify(selectedBlocks);
-                          console.log(selectedBlocks);
-                      });
-
-                      row.appendChild(cell);
-                  });
-                  
-                  scheduleTable.appendChild(row);
-              }
-          }
-
-      } catch (error) {
-          console.error("Error al cargar datos:", error);
+          row.appendChild(cell);
+        });
+        
+        scheduleTable.appendChild(row);
       }
+    }
 
-      // Actualizar formulario
-      document.getElementById('scheduleForm').action = `/coordinador/profesores/modificar/${profesorId}`;
-      document.getElementById('selectedBlocks').value = JSON.stringify(selectedBlocks);
-      document.getElementById('selectedMaterias').value = JSON.stringify(selectedMaterias);
+    document.getElementById("selectedBlocks").value = JSON.stringify(selectedBlocks);
+    // Actualizar la acción del formulario
+    document.getElementById('scheduleForm').action = `/coordinador/profesores/modificar/${currentProfessorId}`;
+
+  } catch (error) {
+    console.error('Error:', error);
+  }
+});
+
+// Eventos delegados para asignar y quitar materias
+document.getElementById('assignedMateriasBody').addEventListener('click', function(e) {
+  const btn = e.target.closest('.remove-assigned');
+  if (btn) {
+    const materiaId = btn.dataset.materiaId;
+    // Mover la fila a la tabla de disponibles
+    const row = btn.closest('tr');
+    row.parentNode.removeChild(row);
+    // Cambiar el botón para que ahora asigne
+    const newBtn = row.querySelector('button');
+    newBtn.classList.remove('btn-danger', 'remove-assigned');
+    newBtn.classList.add('btn-success', 'add-available');
+    newBtn.innerHTML = `
+      <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" class="bi bi-plus" viewBox="0 0 16 16">
+        <path d="M8 4a.5.5 0 0 1 .5.5v3h3a.5.5 0 0 1 0 1h-3v3a.5.5 0 0 1-1 0v-3h-3a.5.5 0 0 1 0-1h3v-3A.5.5 0 0 1 8 4"/>
+      </svg>`;
+    document.getElementById('availableMateriasBody').appendChild(row);
+    // Actualizar el array
+    selectedMaterias = selectedMaterias.filter(id => id !== materiaId);
+    document.getElementById('selectedMaterias').value = JSON.stringify(selectedMaterias);
+  }
+});
+
+document.getElementById('availableMateriasBody').addEventListener('click', function(e) {
+  const btn = e.target.closest('.add-available');
+  if (btn) {
+    const materiaId = btn.dataset.materiaId;
+    // Mover la fila a la tabla de asignadas
+    const row = btn.closest('tr');
+    row.parentNode.removeChild(row);
+    // Cambiar el botón para que ahora quite la asignación
+    const newBtn = row.querySelector('button');
+    newBtn.classList.remove('btn-success', 'add-available');
+    newBtn.classList.add('btn-danger', 'remove-assigned');
+    newBtn.innerHTML = `
+      <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-x-lg" viewBox="0 0 16 16">
+        <path d="M2.146 2.854a.5.5 0 1 1 .708-.708L8 7.293l5.146-5.147a.5.5 0 0 1 .708.708L8.707 8l5.147 5.146a.5.5 0 0 1-.708.708L8 8.707l-5.146 5.147a.5.5 0 0 1-.708-.708L7.293 8z"/>
+      </svg>`;
+    document.getElementById('assignedMateriasBody').appendChild(row);
+    // Actualizar el array
+    selectedMaterias.push(materiaId);
+    document.getElementById('selectedMaterias').value = JSON.stringify(selectedMaterias);
+  }
+});
+
+  function abrirEditModal() {
+    // Cerrar el modal actual
+    const viewModal = bootstrap.Modal.getInstance(document.getElementById('viewModal'));
+    viewModal.hide();
+    
+    // Abrir el nuevo modal después de un pequeño retraso
+    setTimeout(() => {
+      const editModal = new bootstrap.Modal(document.getElementById('editModal'));
+      editModal.show();
+    }, 100);
+  }
+
+document.querySelectorAll('.materia-btn').forEach(button => {
+  button.addEventListener('click', function() {
+    const materiaId = this.dataset.materiaId;
+    const icon = this.querySelector('svg');
+    
+    if (this.classList.contains('selected')) {
+      icon.innerHTML = `<path d="M8 4a.5.5 0 0 1 .5.5v3h3a.5.5 0 0 1 0 1h-3v3a.5.5 0 0 1-1 0v-3h-3a.5.5 0 0 1 0-1h3v-3A.5.5 0 0 1 8 4"/>`;
+      selectedMaterias = selectedMaterias.filter(id => id !== materiaId);
+    } else {
+      icon.innerHTML = `<path d="M12.736 3.97a.733.733 0 0 1 1.047 0c.286.289.29.756.01 1.05L7.88 12.01a.733.733 0 0 1-1.065.02L3.217 8.384a.757.757 0 0 1 0-1.06.733.733 0 0 1 1.047 0l3.052 3.093 5.4-6.425z"/>`;
+      selectedMaterias.push(materiaId);
+    }
+    
+    this.classList.toggle('selected');
+    document.getElementById('selectedMaterias').value = JSON.stringify(selectedMaterias);
   });
+});
 </script>
+
 </body>
-</html>  
+</html>

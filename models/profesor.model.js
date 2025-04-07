@@ -128,6 +128,13 @@ module.exports = class Profesor {
         .then(result => result.rows.map(row => row.materia_id.toString()));
     }
 
+    static getCoursesInfo(id) {
+        return pool.query(`SELECT m.materia_id, nombre, creditos, horas_profesor, tipo_salon
+                           FROM materia m, profesor_materia pm
+                           WHERE m.materia_id = pm.materia_id
+                           AND profesor_id = $1`, [id])
+    }
+
     static asignCourses(id, materia) {
         return pool.query('INSERT INTO profesor_materia VALUES($1, $2)', [id, materia]);
     }

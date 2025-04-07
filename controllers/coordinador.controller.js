@@ -130,12 +130,16 @@ exports.post_sincronizar_profesores = async (req, res, nxt) => {
 exports.get_modificar_profesor = (req, res, next) => {    
     Promise.all([
         Profesor.getSchedule(req.params.id),
-        Profesor.getCourses(req.params.id)
+        Profesor.getCourses(req.params.id),
+        Profesor.getCoursesInfo(req.params.id),
+        MateriaSemestre.fetchMateriasSemestre()
     ])
-    .then(([bloques, materias]) => {
+    .then(([bloques, materias, materiasInfo, materiasDisp]) => {
         res.json({ 
             bloques: bloques,
-            materias: materias 
+            materias: materias,
+            materiasInfo: materiasInfo,
+            allMaterias: materiasDisp
         });
     })
     .catch((error) => {
@@ -263,6 +267,47 @@ exports.post_grupos = async (req, res, next) => {
         res.status(500).send('Error al registrar el grupo'); 
     }
 };
+
+exports.get_modificar_grupo = (req, res, next) => {    
+    Promise.all([
+        Grupos.getHorario(req.params.id),
+        Grupos.fetchOne(req.params.id)
+    ])
+    .then(([bloques, grupo]) => {
+        res.json({ 
+            bloques: bloques,
+            grupo: grupo 
+        });
+    })
+    .catch((error) => {
+        console.error("Error al obtener datos:", error);
+        res.status(500).json({ 
+            error: "Error al obtener datos del grupo",
+            details: error.message
+        });
+    });
+};
+
+exports.post_modificar_grupo = async (req, res, next) => {
+    try {
+        const selectedBlocks = JSON.parse(req.body.selectedBlocks);
+
+        await Grupos.deleteHorario(req.params.id);
+        await Grupos.updateGrupo(req.params.id, req.body.materia, req.body.profesor, req.body.salon);
+
+        // Actualizar horarios
+        const actualizarHorarioPromises = selectedBlocks.map(bloque => 
+            Grupos.updateHorario(req.params.id, bloque)
+        );
+        await Promise.all(actualizarHorarioPromises);
+
+        res.redirect('/coordinador/grupos');
+    } catch (error) {
+        console.error(error);
+        res.status(500).send('Error al modificar detalles del grupo');
+    }
+};
+
 
 exports.get_alumnos = async (req, res, nxt) => {
     try {
