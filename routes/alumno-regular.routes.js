@@ -7,6 +7,10 @@ const regular_controller = require('../controllers/alumno-regular.controller');
 
 router.get('/horario', isAuth, regular_controller.get_prevista_de_horario);
 
+router.get('/horario/confirmar/:id', isAuth, regular_controller.get_prevista_de_horario);
+
+router.get('/horario/solitud/:id', isAuth, regular_controller.get_prevista_de_horario);
+
 router.get('/ayuda', isAuth, regular_controller.get_ayuda);
 
 module.exports = router;

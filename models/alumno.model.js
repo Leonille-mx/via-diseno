@@ -139,5 +139,7 @@ module.exports = class Alumno {
         return pool.query('UPDATE usuario SET inscripcion_completada = true WHERE ivd_id = $1', [id]);
     }
 
-    
+    static solicitud(id) {
+        return pool.query('UPDATE usuario SET inscripcion_completada = true WHERE ivd_id = $1', [id]);
+    }
 }
