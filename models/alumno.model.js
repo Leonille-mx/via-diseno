@@ -1,6 +1,5 @@
 const pool = require('../util/database')
 
-
 module.exports = class Alumno {
     constructor(mi_ivd_id, mi_semestre, mi_regular, mi_inscripcion_completa, mi_plan_estudio_id, usuarioData = null) {
         this.ivd_id = mi_ivd_id;
@@ -61,15 +60,81 @@ module.exports = class Alumno {
         }
     } 
 
-    static async fetchAll() {
+    static async fetchAllRegulares() {
         const query = `
             SELECT *
             FROM alumno a, usuario u
-            WHERE a.ivd_id = u.ivd_id
+            WHERE a.ivd_id = u.ivd_id AND
+                  a.regular = true
         `;
         return await pool.query(query);
     }
 
+    static async fetchAllIrregulares() {
+        const query = `
+            SELECT *
+            FROM alumno a, usuario u
+            WHERE a.ivd_id = u.ivd_id AND
+                  a.regular = false
+        `;
+        return await pool.query(query);
+    }
+    static async fetchAllResultadoAlumnoRegular(id) {
+        return pool.query(`
+            SELECT r.grupo_id AS grupo_id,
+
+                   (SELECT b.hora_inicio
+                    FROM grupo_bloque_tiempo gb
+                    JOIN bloque_tiempo b
+                        ON b.bloque_tiempo_id = gb.bloque_tiempo_id
+                    WHERE gb.grupo_id = r.grupo_id
+                    GROUP BY b.hora_inicio, b.dia, gb.bloque_tiempo_id
+                    ORDER BY gb.bloque_tiempo_id ASC
+                    LIMIT 1) AS hora_inicio,
+
+                    (SELECT b.hora_fin
+                    FROM grupo_bloque_tiempo gb
+                    JOIN bloque_tiempo b
+                        ON b.bloque_tiempo_id = gb.bloque_tiempo_id
+                    WHERE gb.grupo_id = r.grupo_id
+                    GROUP BY b.hora_fin, b.dia, gb.bloque_tiempo_id
+                    ORDER BY gb.bloque_tiempo_id DESC
+                    LIMIT 1) AS hora_fin,
+
+                   m.nombre AS materia_nombre,
+                   s.numero AS salon_numero,
+                   p.nombre AS profesor_nombre,
+                   p.primer_apellido AS profesor_primer_apellido,
+                   p.segundo_apellido AS profesor_segundo_apellido,
+                   r.obligatorio AS obligatorio,
+
+                   (SELECT ARRAY_AGG(dia ORDER BY min_bloque_tiempo_id)
+					  FROM (
+					    SELECT b.dia, MIN(gb.bloque_tiempo_id) AS min_bloque_tiempo_id
+					    FROM grupo_bloque_tiempo gb
+					    JOIN bloque_tiempo b ON b.bloque_tiempo_id = gb.bloque_tiempo_id
+					    WHERE gb.grupo_id = r.grupo_id
+					    GROUP BY b.dia
+					  ) sub
+					) AS dias
+
+
+
+            FROM resultado_inscripcion r
+            JOIN grupo g ON r.grupo_id = g.grupo_id
+            JOIN materia m ON g.materia_id = m.materia_id
+            JOIN profesor p ON g.profesor_id = p.ivd_id
+            JOIN salon s ON g.salon_id = s.salon_id
+            JOIN grupo_bloque_tiempo gb ON g.grupo_id = gb.grupo_id
+            WHERE r.alumno_id = $1
+            GROUP BY r.grupo_id, m.nombre, s.numero, p.nombre, 
+                p.primer_apellido, p.segundo_apellido, r.obligatorio
+            ORDER BY (SELECT MIN(gb.bloque_tiempo_id)
+					  FROM grupo_bloque_tiempo gb
+				      WHERE gb.grupo_id = r.grupo_id
+			) ASC;`
+            , [id]);
+    }
     static confirmar(id) {
         return pool.query('UPDATE usuario SET inscripcion_completada = true WHERE ivd_id = $1', [id]);
     }

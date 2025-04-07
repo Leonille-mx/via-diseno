@@ -1,24 +1,23 @@
-exports.get_horario = (req, res, nxt) => {
-    res.render('horario_alumno_regular', {
-        isLoggedIn: req.session.isLoggedIn || false,
-        matricula: req.session.matricula || '',
-    });
+const Alumno = require('../models/alumno.model');
+const ResultadoInscripcion = require('../models/resultado_inscripcion.model');
+
+exports.get_prevista_de_horario = async (req, res, nxt) => {
+    try {
+        const materias_resultado = await Alumno.fetchAllResultadoAlumnoRegular(req.session.matricula);
+        console.log(materias_resultado.rows);
+        res.render('horario_alumno_regular', {
+            isLoggedIn: req.session.isLoggedIn || false,
+            matricula: req.session.matricula || '',
+            materias_resultado: materias_resultado.rows,
+        });
+    } catch (error){
+        console.log(error);
+    }
 };
 
 exports.get_ayuda = (req, res, nxt) => {
-    res.render('ayuda_alumno_regular', {
+    res.render('ayuda_alumno_irregular', {
         isLoggedIn: req.session.isLoggedIn || false,
         matricula: req.session.matricula || '',
     });
-
 };
-
-exports.post_confirmar = (req, res, nxt) => {
-    Alumno.delete(req.params.id)
-        .then(() => {
-            res.redirect('/alumno-regular/horario');
-        })
-        .catch((error) => {
-            console.log(error);
-        });
-  };
