@@ -212,8 +212,5 @@ module.exports = class Materia {
      static async numeroMaterias() {
         const result = await pool.query('SELECT COUNT(*) FROM public.materia_semestre');
         return parseInt(result.rows[0].count);
-    };
-
-
-    
+    }; 
 }

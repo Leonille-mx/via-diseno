@@ -290,4 +290,11 @@ module.exports = class Alumno {
 			) ASC;`
             , [semestre, id]);
     }
+    static confirmar(id) {
+        return pool.query('UPDATE usuario SET inscripcion_completada = true WHERE ivd_id = $1', [id]);
+    }
+    static rechazar(id) {
+        return pool.query('UPDATE usuario SET inscripcion_completada = true WHERE ivd_id = $1', [id]);
+    }
+    
 }

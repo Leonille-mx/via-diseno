@@ -18,4 +18,31 @@ module.exports = class MateriaSemestre {
             ORDER BY materia_id ASC`
         );
     }
+    static eliminar(idMateria, idSemestre) {
+        return pool.query('BEGIN') 
+            .then(() => pool.query(
+                `DELETE FROM resultado_inscripcion 
+                 WHERE grupo_id IN (SELECT grupo_id FROM grupo WHERE materia_id = $1)`,
+                [idMateria]
+            ))
+            .then(() => pool.query(
+                `DELETE FROM grupo_bloque_tiempo 
+                 WHERE grupo_id IN (SELECT grupo_id FROM grupo WHERE materia_id = $1)`,
+                [idMateria]
+            ))
+            .then(() => pool.query(
+                'DELETE FROM grupo WHERE materia_id = $1',
+                [idMateria]
+            ))
+            .then(() => pool.query(
+                'DELETE FROM materia_semestre WHERE materia_id = $1 AND semestre_id = $2',
+                [idMateria, idSemestre]
+            ))
+            .then(() => pool.query('COMMIT')) 
+            .catch(err => {
+                return pool.query('ROLLBACK') 
+                    .then(() => { throw err; });
+            });
+    }
+    
 }

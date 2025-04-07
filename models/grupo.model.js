@@ -94,24 +94,22 @@ module.exports = class Grupo {
     static async grupoDashboard() {
         const result = await pool.query(
             ` SELECT 
-            g.grupo_id,
-            bt.dia,
-            bt.hora_inicio,
-            bt.hora_fin,
-            m.nombre AS materia_nombre,
-            p.nombre || ' ' || p.primer_apellido AS profesor_nombre
-        FROM 
-            grupo_bloque_tiempo gbt
-        JOIN 
-            bloque_tiempo bt ON gbt.bloque_tiempo_id = bt.bloque_tiempo_id
-        JOIN 
-            grupo g ON gbt.grupo_id = g.grupo_id
-        JOIN 
-            materia m ON g.materia_id = m.materia_id
-        JOIN 
-            profesor p ON g.profesor_id = p.ivd_id
-        ORDER BY 
-            g.grupo_id, bt.dia, bt.hora_inicio`
+    g.grupo_id,
+    bt.dia,
+    MIN(bt.hora_inicio) AS hora_inicio,
+    MAX(bt.hora_fin) AS hora_fin,
+    MIN(m.nombre) AS materia_nombre,
+    MIN(p.nombre || ' ' || p.primer_apellido) AS profesor_nombre
+FROM 
+    grupo_bloque_tiempo gbt
+    JOIN bloque_tiempo bt ON gbt.bloque_tiempo_id = bt.bloque_tiempo_id
+    JOIN grupo g ON gbt.grupo_id = g.grupo_id
+    JOIN materia m ON g.materia_id = m.materia_id
+    JOIN profesor p ON g.profesor_id = p.ivd_id
+GROUP BY 
+    g.grupo_id, bt.dia
+ORDER BY 
+    g.grupo_id, bt.dia;`
             );
         return result.rows;
     };
