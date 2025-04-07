@@ -10,4 +10,5 @@ exports.get_ayuda = (req, res, nxt) => {
         isLoggedIn: req.session.isLoggedIn || false,
         matricula: req.session.matricula || '',
     });
+
 };

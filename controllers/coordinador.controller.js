@@ -111,7 +111,18 @@ exports.post_sincronizar_materias = async (req, res, nxt) => {
         res.redirect(`/coordinador/materias?msg=${encodeURIComponent('La operación fue fracasada')}`);
     }
 };
-        
+exports.post_eliminar_materias = (req, res, next) => {
+    const { materiaId, semestreId } = req.params; 
+    MateriaSemestre.eliminar(materiaId, semestreId) 
+        .then(() => {
+            res.redirect('/coordinador/materias');
+        })
+        .catch((error) => {
+            console.log(error);
+            res.status(500).send("Error al eliminar la materia");
+        });
+};
+
 exports.get_profesores = async (req, res, nxt) => {
     try {
       const profesoresDB = await Profesor.fetchAll(); 
@@ -131,6 +142,8 @@ exports.get_profesores = async (req, res, nxt) => {
       res.status(500).send('Hubo un problema al obtener los profesores.');
     }
   };
+
+
 
 exports.post_sincronizar_profesores = async (req, res, nxt) => {
     try {
@@ -589,3 +602,46 @@ exports.post_sincronizar_planes_de_estudio = async (req, res) => {
         res.redirect(`/coordinador/dashboard?msg=${encodeURIComponent('La operación fue fracasada')}`);
     }
 }
+
+exports.get_solicitudes_cambio = async (req, res, next) => {
+    try {
+        const solicitudesActivas = await Solicitud.fetchActivos();
+        const msg = req.query.msg || null;
+
+        res.render('solicitudes_cambio_coordinador', {
+            isLoggedIn: req.session.isLoggedIn || false,
+            matricula: req.session.matricula || '',
+            solicitudes: solicitudesActivas.rows, 
+            msg  
+        });
+    } catch (error) {
+        console.error('Error al obtener solicitudes:', error);
+        res.status(500).render('error', {
+            message: 'Hubo un problema al obtener las solicitudes de cambio',
+            error
+        });
+    }
+};
+
+exports.post_aprobar_solicitud = async (req, res, nxt) => {
+    Solicitud.aprobar(req.params.id)
+    .then (( ) => {
+        res.redirect('/coordinador/solicitudes-cambio')
+    })
+    .catch((error) => {
+        console.log(error);
+    });
+};
+
+exports.post_rechazar_solicitud = async (req, res, nxt) => {
+    Solicitud.rechazar(req.params.id)
+    .then (( ) => {
+        res.redirect('/coordinador/solicitudes-cambio')
+    })
+    .catch((error) => {
+        console.log(error);
+    });
+};
+    
+    
+
