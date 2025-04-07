@@ -10,21 +10,50 @@ const Usuario = require('../models/usuario.model.js');
 const generarGrupos = require('../models/generarGrupos.model.js');
 const Carrera = require('../models/carrera.model.js');
 const Historial_Academico = require('../models/historial_academico.model.js');
+const Solicitud = require('../models/solicitudes-cambio.model.js');
 const { getAllProfessors, getAllCourses, getAllStudents, getCiclosEscolares, getAllDegree, getAllAcademyHistory} = require('../util/adminApiClient.js');
 
-exports.get_dashboard = (req, res) => {
+
+exports.get_dashboard = async (req, res) => {
     try {
-        const msg = req.query.msg || null;  
+        const msg = req.query.msg || null; 
+        //Consulta el total de profesores activos de la Base de Datos
+        const profesoresTotales = await Profesor.numeroProfesores();
+        const alumnosNoInscritos = await Alumno.totalNoInscritos();
+        const alumnosInscritos = await Alumno.numero_TotalAlumnoInscritos();
+        const salon_Totales = await Salon.numero_TotalSalones();
+        const grupos_Totales = await Grupos.numeroTotalGrupos();
+        const grupos_Dashboard = await Grupos.grupoDashboard();
+        const salones_Dashboard = await Salon.salonesDashboard();
+        const grafica_Alumnos = await Alumno.alumnosComparacion();
+        const materias_Abiertas  = await Materia.numeroMaterias();
+        const solicitud_Cambio_Dashboard = await Solicitud.dasboard_Solicitud();
+        const total_Solicitudes = await Solicitud.numeroTotalSolicitudes();
+
         res.render('dashboard_coordinador', {
             msg: msg,
             isLoggedIn: req.session.isLoggedIn || false,
             matricula: req.session.matricula || '',
+            //Total de profesores para mostrar en el dashboard
+            profesoresTotales: profesoresTotales,
+            alumnosNoInscritos: alumnosNoInscritos,
+            alumnosInscritos: alumnosInscritos,
+            salon_Totales: salon_Totales,
+            grupos_Totales: grupos_Totales,
+            grupos_Dashboard: grupos_Dashboard,
+            salones_Dashboard: salones_Dashboard,
+            grafica_Alumnos: grafica_Alumnos,
+            materias_Abiertas: materias_Abiertas,
+            solicitud_Cambio_Dashboard: solicitud_Cambio_Dashboard,
+            total_Solicitudes: total_Solicitudes
+            
         });
     } catch (error) {
         console.error("Dashboard error:", error);
         res.status(500).send("Error loading dashboard");
     }
 };
+
 
 exports.get_materias = async (req, res, nxt) => {
     try {

@@ -142,4 +142,17 @@ module.exports = class Profesor {
     static unassignCourses(id) {
         return pool.query('DELETE FROM profesor_materia WHERE profesor_id = $1', [id]);
     }
+    
+    // Método para cambiar el atributo activo a true 
+    static async activar(id) {
+        return pool.query('UPDATE profesor SET activo = true WHERE ivd_id = $1 RETURNING *', [id]);
+    }
+
+    // Método para obtener número total de profesores activos
+    static async numeroProfesores() {
+        const result = await pool.query('SELECT count(*) FROM public.profesor WHERE activo = true');
+        return parseInt(result.rows[0].count);
+    };
+
+
 }

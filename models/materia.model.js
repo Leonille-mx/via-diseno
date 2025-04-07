@@ -207,4 +207,13 @@ module.exports = class Materia {
     static fetchAll() {
         return pool.query('SELECT materia_id, nombre, creditos, horas_profesor, tipo_salon FROM Materia');
     }
+
+     // Método para obtener número total de materias abiertas
+     static async numeroMaterias() {
+        const result = await pool.query('SELECT COUNT(*) FROM public.materia_semestre');
+        return parseInt(result.rows[0].count);
+    };
+
+
+    
 }
