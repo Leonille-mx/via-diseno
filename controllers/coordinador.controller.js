@@ -130,12 +130,14 @@ exports.post_sincronizar_profesores = async (req, res, nxt) => {
 exports.get_modificar_profesor = (req, res, next) => {    
     Promise.all([
         Profesor.getSchedule(req.params.id),
-        Profesor.getCourses(req.params.id)
+        Profesor.getCourses(req.params.id),
+        Profesor.getCoursesInfo(req.params.id)
     ])
-    .then(([bloques, materias]) => {
+    .then(([bloques, materias, materiasInfo]) => {
         res.json({ 
             bloques: bloques,
-            materias: materias 
+            materias: materias,
+            materiasInfo: materiasInfo 
         });
     })
     .catch((error) => {

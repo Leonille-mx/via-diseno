@@ -94,11 +94,11 @@
             <table class="table table-hover">
               <thead class="table-light">
                 <tr>
-                  <th class="text-center align-middle">Nombre</th>
-                  <th class="text-center align-middle">ID</th>
-                  <th class="text-center align-middle">Créditos</th>
-                  <th class="text-center align-middle">Horas Profesor</th>
-                  <th class="text-center align-middle">Tipo de Salón</th>
+                  <th class="text-center align-middle" style="width: 32%; min-width: 100px;">Nombre</th>
+                  <th class="text-center align-middle" style="width: 17%; min-width: 100px;">ID</th>
+                  <th class="text-center align-middle" style="width: 17%; min-width: 100px;">Créditos</th>
+                  <th class="text-center align-middle" style="width: 17%; min-width: 100px;">Horas Profesor</th>
+                  <th class="text-center align-middle" style="width: 17%; min-width: 100px;">Tipo de Salón</th>
                 </tr>
               </thead>
               <tbody id="viewMateriasBody"></tbody>
@@ -251,7 +251,7 @@ document.getElementById('viewModal').addEventListener('show.bs.modal', async (ev
 
     const materiasBody = document.getElementById('viewMateriasBody');
     materiasBody.innerHTML = '';
-    data.materias.forEach(materia => {
+    data.materiasInfo.rows.forEach(materia => {
       materiasBody.innerHTML += `
         <tr>
           <td class="text-center align-middle">${materia.nombre}</td>
