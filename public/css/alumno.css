@@ -23,6 +23,7 @@ html {
     width: fit-content;
 }
 
+
 @media (min-width: 992px) {
     .logo-size {
         width: 70px;
