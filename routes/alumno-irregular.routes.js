@@ -9,6 +9,10 @@ router.get('/modificar-horario', isAuth, irregular_controller.get_modificar_hora
 
 router.get('/modificar-horario/materias-disponibles/:semestre', isAuth, irregular_controller.get_materias_disponibles);
 
+router.post('/modificar-horario/eliminar-resultado', isAuth, irregular_controller.post_eliminar_materia_del_resultado);
+
+router.post('/modificar-horario/agregar-resultado', isAuth, irregular_controller.post_agregar_materia_del_resultado);
+
 router.get('/prevista-horario', isAuth, irregular_controller.get_prevista_horario);
 
 router.get('/resultado-de-horario', isAuth, irregular_controller.get_resultado_de_horario);

@@ -83,7 +83,9 @@ module.exports = class Alumno {
 
     static async fetchAllResultadoAlumnoIrregular(id) {
         return pool.query(`
-            SELECT (SELECT b.hora_inicio
+            SELECT r.grupo_id AS grupo_id,
+
+                   (SELECT b.hora_inicio
                     FROM grupo_bloque_tiempo gb
                     JOIN bloque_tiempo b
                         ON b.bloque_tiempo_id = gb.bloque_tiempo_id
@@ -137,7 +139,9 @@ module.exports = class Alumno {
     }
     static async fetchAllMateriasDisponiblesDelAlumno(id) {
         return pool.query(`
-            SELECT g.grupo_id, (SELECT b.hora_inicio
+            SELECT g.grupo_id AS grupo_id, 
+            
+                   (SELECT b.hora_inicio
                     FROM grupo_bloque_tiempo gb
                     JOIN bloque_tiempo b
                         ON b.bloque_tiempo_id = gb.bloque_tiempo_id
@@ -200,7 +204,9 @@ module.exports = class Alumno {
 
     static async fetchAllMateriasDisponiblesDelAlumnoPorSemestre(semestre, id) {
         return pool.query(`
-            SELECT g.grupo_id, (SELECT b.hora_inicio
+            SELECT g.grupo_id AS grupo_id, 
+            
+                   (SELECT b.hora_inicio
                     FROM grupo_bloque_tiempo gb
                     JOIN bloque_tiempo b
                         ON b.bloque_tiempo_id = gb.bloque_tiempo_id
