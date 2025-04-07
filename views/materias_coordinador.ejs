@@ -766,12 +766,13 @@
 
           <form id="scheduleForm" method="POST" action="/coordinador/materias/abrir">
             <input type="hidden" id="modalSemestreId" name="semestre_id">
-            <h6 class="ms-1"><b>Materias</b></h6>
+
+            <h6 class="ms-1"><b>Materias Seleccionadas</b></h6>
             <div style="border-bottom: 3px solid #84251C; width: 10rem; margin-top: -5px; margin-bottom: 10px;"></div> 
             
-            <!-- Tabla de materias -->
+            <!-- Tabla de materias seleccionadas -->
             <div class="table-responsive" style="overflow: auto; background-color: white;">
-              <table class="table table-hover" style="min-width: 800px; width: 100%;">
+              <table class="table table-hover" id="selectedMateriasTabla" style="min-width: 800px; width: 100%;">
                 <thead class="table-light">
                   <tr>
                     <th scope="col" style="width: 31%; min-width: 100px;" class="text-center align-middle">Nombre</th>
@@ -781,8 +782,27 @@
                   </tr>
                 </thead>
                 <tbody>
-                  <% for (let materia of materiasNoAbiertas) { %>
+                  
+                </tbody>
+              </table>
+            </div>
+
+            <h6 class="ms-1"><b>Materias</b></h6>
+            <div style="border-bottom: 3px solid #84251C; width: 10rem; margin-top: -5px; margin-bottom: 10px;"></div> 
+            
+            <!-- Tabla de materias -->
+            <div class="table-responsive" style="overflow: auto; background-color: white;">
+              <table class="table table-hover" id="materiasTabla" style="min-width: 800px; width: 100%;">
+                <thead class="table-light">
                   <tr>
+                    <th scope="col" style="width: 31%; min-width: 100px;" class="text-center align-middle">Nombre</th>
+                    <th scope="col" style="width: 16%; min-width: 100px;" class="text-center align-middle">ID</th>
+                    <th scope="col" style="width: 16%; min-width: 150px;" class="text-center align-middle">Tipo de Salón</th>
+                    <th scope="col" style="width: 5%; min-width: 50px;"></th>
+                  </tr>
+                </thead>
+                <tbody>  <% for (let materia of materiasNoAbiertas) { %>
+                  <tr data-materia-id="<%= materia.materia_id %>">
                     <th scope="row" class="text-center align-middle"><%= materia.nombre %></th>
                     <td class="text-center align-middle"><%= materia.materia_id %></td>
                     <td class="text-center align-middle"><%= materia.tipo_salon %></td>
@@ -800,6 +820,9 @@
                 </tbody>
               </table>
             </div>
+          </form>
+        </div>
+      </div>
       <!-- Pie del modal con botones de acción -->
       <div class="modal-footer justify-content-center" style="background-color: #f0f0f0;">
         <button type="button" class="btn btn-secondary rounded-pill px-4 mx-4" style="background-color: white; border: 1px solid #84251C; color: #84251C;" data-bs-dismiss="modal">Cancelar</button>
@@ -824,64 +847,87 @@
       });
     </script>
   <% } %>
-<script>
+
+  <script>
+    const selectedMaterias = new Set();
+
     document.querySelectorAll('[data-bs-toggle="modal"][data-semestre]').forEach(btn => {
         btn.addEventListener('click', function() {
             const semestreId = this.dataset.semestre;
             document.getElementById('modalSemestreId').value = semestreId;
         });
     });
-
-    const selectedMaterias = new Set();
+  
+    function moverFila(materiaId, haciaSeleccionadas) {
+      const tablaOrigen = haciaSeleccionadas ? document.querySelector('#materiasTabla tbody') : document.querySelector('#selectedMateriasTabla tbody');
+      const tablaDestino = haciaSeleccionadas ? document.querySelector('#selectedMateriasTabla tbody') : document.querySelector('#materiasTabla tbody');
+      
+      const fila = tablaOrigen.querySelector(`tr[data-materia-id="${materiaId}"]`);
+      if (!fila) return;
+  
+      // Cambiar el botón
+      const btn = fila.querySelector('.abrir-materia-btn');
+      const icon = btn.querySelector('svg');
+      if (haciaSeleccionadas) {
+        btn.style.backgroundColor = '#28a745'; // verde
+        icon.innerHTML = `<path d="M12.736 3.97a.733.733 0 0 1 1.047 0c.286.289.29.756.01 1.05L7.88 12.01a.733.733 0 0 1-1.065.02L3.217 8.384a.757.757 0 0 1 0-1.06.733.733 0 0 1 1.047 0l3.052 3.093 5.4-6.425z"/>`;
+      } else {
+        btn.style.backgroundColor = '#84251c'; // rojo
+        icon.innerHTML = `<path d="M8 4a.5.5 0 0 1 .5.5v3h3a.5.5 0 0 1 0 1h-3v3a.5.5 0 0 1-1 0v-3h-3a.5.5 0 0 1 0-1h3v-3A.5.5 0 0 1 8 4"/>`;
+      }
+  
+      tablaDestino.appendChild(fila);
+    }
+  
     document.querySelectorAll('.abrir-materia-btn').forEach(btn => {
-        btn.addEventListener('click', function() {
-            const materiaId = this.dataset.materiaId;
-            const icon = this.querySelector('svg');
-            
-            if (selectedMaterias.has(materiaId)) {
-                selectedMaterias.delete(materiaId);
-                this.style.backgroundColor = '#84251c';
-                icon.innerHTML = `<path d="M8 4a.5.5 0 0 1 .5.5v3h3a.5.5 0 0 1 0 1h-3v3a.5.5 0 0 1-1 0v-3h-3a.5.5 0 0 1 0-1h3v-3A.5.5 0 0 1 8 4"/>`;
-            } else {
-                selectedMaterias.add(materiaId);
-                this.style.backgroundColor = '#28a745';
-                icon.innerHTML = `<path d="M12.736 3.97a.733.733 0 0 1 1.047 0c.286.289.29.756.01 1.05L7.88 12.01a.733.733 0 0 1-1.065.02L3.217 8.384a.757.757 0 0 1 0-1.06.733.733 0 0 1 1.047 0l3.052 3.093 5.4-6.425z"/>`;
-                console.log("Current selected materias:", Array.from(selectedMaterias));
-            }
+      btn.addEventListener('click', function () {
+        const materiaId = this.dataset.materiaId;
+  
+        if (selectedMaterias.has(materiaId)) {
+          selectedMaterias.delete(materiaId);
+          moverFila(materiaId, false);
+        } else {
+          selectedMaterias.add(materiaId);
+          moverFila(materiaId, true);
+        }
+      });
+    });
+  
+    // Agregar identificador de fila en la tabla EJS
+    document.querySelectorAll('#materiasTabla tbody tr').forEach(tr => {
+      const materiaId = tr.querySelector('.abrir-materia-btn').dataset.materiaId;
+      tr.setAttribute('data-materia-id', materiaId);
+    });
+  
+    document.getElementById('scheduleForm').addEventListener('submit', async function (e) {
+      e.preventDefault();
+  
+      const semestreId = document.getElementById('modalSemestreId').value;
+      const materias = Array.from(selectedMaterias);
+  
+      if (materias.length === 0) {
+        alert('No se han seleccionado materias para abrir');
+        return;
+      }
+  
+      try {
+        const response = await fetch('/coordinador/materias/abrir', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ semestre_id: semestreId, materias })
         });
-    });
-    
-    document.getElementById('scheduleForm').addEventListener('submit', async function(e) {
-        e.preventDefault();
-        console.log("Form submitted"); // Debug
-    
-          semestreId = document.getElementById('modalSemestreId').value;
-          materias = Array.from(selectedMaterias);
-
-        console.log("Submitting:", { semestre_id: semestreId, materias });
-    
-        if (selectedMaterias.size === 0) {
-            alert('No se han seleccionado materias para abrir');
-            return;
+  
+        if (response.ok) {
+          window.location.href = '/coordinador/materias?msg=Materias abiertas exitosamente';
+        } else {
+          throw new Error('Error del servidor');
         }
-
-        try {
-            const response = await fetch('/coordinador/materias/abrir', {
-              method: 'POST',
-              headers: { 'Content-Type': 'application/json' },
-              body: JSON.stringify({semestre_id: semestreId, materias: materias})
-            });
-
-            if (response.ok) {
-                window.location.href = '/coordinador/materias?msg=Materias abiertas exitosamente';
-            } else {
-                throw new Error('Error del servidor');
-            }
-        } catch (error) {
-            console.error('Error:', error);
-            window.location.href = '/coordinador/materias?msg=Error al abrir materias';
-        }
+      } catch (error) {
+        console.error('Error:', error);
+        window.location.href = '/coordinador/materias?msg=Error al abrir materias';
+      }
     });
-</script>
+  </script>
+  
 </body>
 </html>
