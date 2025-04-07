@@ -4,7 +4,6 @@ const ResultadoInscripcion = require('../models/resultado_inscripcion.model');
 exports.get_prevista_de_horario = async (req, res, nxt) => {
     try {
         const materias_resultado = await Alumno.fetchAllResultadoAlumnoRegular(req.session.matricula);
-        console.log(materias_resultado.rows);
         res.render('horario_alumno_regular', {
             isLoggedIn: req.session.isLoggedIn || false,
             matricula: req.session.matricula || '',
@@ -19,5 +18,15 @@ exports.get_ayuda = (req, res, nxt) => {
     res.render('ayuda_alumno_irregular', {
         isLoggedIn: req.session.isLoggedIn || false,
         matricula: req.session.matricula || '',
+    });
+};
+
+exports.post_confirmar_horario= async (req, res, nxt) => {
+    Alumno.confirmar(req.session.matricula)
+    .then (( ) => {
+        res.redirect('/alumno-regular/horario');
+    })
+    .catch((error) => {
+        console.log(error);
     });
 };

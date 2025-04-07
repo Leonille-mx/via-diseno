@@ -136,10 +136,10 @@ module.exports = class Alumno {
             , [id]);
     }
     static confirmar(id) {
-        return pool.query('UPDATE usuario SET inscripcion_completada = true WHERE ivd_id = $1', [id]);
+        return pool.query('UPDATE alumno SET inscripcion_completada = true WHERE ivd_id = $1', [id]);
     }
 
     static solicitud(id) {
-        return pool.query('UPDATE usuario SET inscripcion_completada = true WHERE ivd_id = $1', [id]);
+        return pool.query('UPDATE alumno SET inscripcion_completada = true WHERE ivd_id = $1', [id]);
     }
 }
