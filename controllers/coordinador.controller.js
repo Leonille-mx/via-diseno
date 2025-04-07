@@ -131,13 +131,15 @@ exports.get_modificar_profesor = (req, res, next) => {
     Promise.all([
         Profesor.getSchedule(req.params.id),
         Profesor.getCourses(req.params.id),
-        Profesor.getCoursesInfo(req.params.id)
+        Profesor.getCoursesInfo(req.params.id),
+        MateriaSemestre.fetchMateriasSemestre()
     ])
-    .then(([bloques, materias, materiasInfo]) => {
+    .then(([bloques, materias, materiasInfo, materiasDisp]) => {
         res.json({ 
             bloques: bloques,
             materias: materias,
-            materiasInfo: materiasInfo 
+            materiasInfo: materiasInfo,
+            allMaterias: materiasDisp
         });
     })
     .catch((error) => {

@@ -149,46 +149,51 @@
       </div>
       <div class="modal-body px-4">
         <div class="rounded-5 p-4" style="background-color: white;">
-          <form id="scheduleForm" method="POST" action="/coordinador/profesores/modificar">
-            <h6 class="ms-1"><b>Materias</b></h6>
-            <div style="border-bottom: 3px solid #84251C; width: 10rem; margin-top: -5px; margin-bottom: 10px;"></div>
+          <form id="scheduleForm" method="POST" action="">
+            <!-- Tabla de Materias Asignadas -->
+            <h6 class="ms-1"><b>Materias Asignadas</b></h6>
+            <div style="border-bottom: 3px solid #84251C; width: 11rem; margin-top: -5px; margin-bottom: 10px;"></div>
             <div class="table-responsive">
-              <table class="table table-hover" style="min-width: 800px; width: 100%;">
+              <table class="table table-hover">
                 <thead class="table-light">
                   <tr>
-                    <th scope="col" style="width: 31%; min-width: 100px;" class="text-center align-middle">Nombre</th>
-                    <th scope="col" style="width: 16%; min-width: 100px;" class="text-center align-middle">ID</th>
-                    <th scope="col" style="width: 16%; min-width: 100px;" class="text-center align-middle">Créditos</th>
-                    <th scope="col" style="width: 16%; min-width: 100px;" class="text-center align-middle">Horas profesor</th>
-                    <th scope="col" style="width: 16%; min-width: 100px;" class="text-center align-middle">Tipo de Salón</th>
-                    <th scope="col" style="width: 5%; min-width: 100px;" class="text-center align-middle"></th>
+                    <th class="text-center align-middle" style="width: 31%; min-width: 100px;">Nombre</th>
+                    <th class="text-center align-middle" style="width: 16%; min-width: 100px;">ID</th>
+                    <th class="text-center align-middle" style="width: 16%; min-width: 100px;">Créditos</th>
+                    <th class="text-center align-middle" style="width: 16%; min-width: 100px;">Horas Profesor</th>
+                    <th class="text-center align-middle" style="width: 16%; min-width: 100px;">Tipo de Salón</th>
+                    <th class="text-center align-middle" style="width: 5%; min-width: 50px;"></th>
                   </tr>
                 </thead>
-                <tbody>
-                  <% for (let materia of materias) { %>
-                    <tr>
-                      <td class="text-center align-middle"><%= materia.nombre %></td>
-                      <td class="text-center align-middle"><%= materia.materia_id %></td>
-                      <td class="text-center align-middle"><%= materia.creditos %></td>
-                      <td class="text-center align-middle"><%= materia.horas_profesor %></td>
-                      <td class="text-center align-middle"><%= materia.tipo_salon %></td>
-                      <td class="text-center align-middle">
-                        <button type="button" class="btn btn-sm p-0 d-flex align-items-center justify-content-center materia-btn" 
-                          style="width: 1.5rem; height: 1.5rem; border-radius: 50%; background-color: #84251c; color: white; border: none;"
-                          data-materia-id="<%= materia.materia_id %>">
-                          <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" class="bi bi-plus" viewBox="0 0 16 16">
-                            <path d="M8 4a.5.5 0 0 1 .5.5v3h3a.5.5 0 0 1 0 1h-3v3a.5.5 0 0 1-1 0v-3h-3a.5.5 0 0 1 0-1h3v-3A.5.5 0 0 1 8 4"/>
-                          </svg>
-                        </button>
-                      </td>
-                    </tr>
-                  <% } %>
+                <tbody id="assignedMateriasBody">
+                  <!-- Se poblará dinámicamente -->
                 </tbody>
               </table>
             </div>
-
+            <!-- Tabla de Materias Disponibles -->
+            <h6 class="ms-1 mt-4"><b>Materias Disponibles</b></h6>
+            <div style="border-bottom: 3px solid #84251C; width: 11rem; margin-top: -5px; margin-bottom: 10px;"></div>
+            <div class="table-responsive">
+              <table class="table table-hover">
+                <thead class="table-light">
+                  <tr>
+                    <th class="text-center align-middle" style="width: 31%; min-width: 100px;">Nombre</th>
+                    <th class="text-center align-middle" style="width: 16%; min-width: 100px;">ID</th>
+                    <th class="text-center align-middle" style="width: 16%; min-width: 100px;">Créditos</th>
+                    <th class="text-center align-middle" style="width: 16%; min-width: 100px;">Horas Profesor</th>
+                    <th class="text-center align-middle" style="width: 16%; min-width: 100px;">Tipo de Salón</th>
+                    <th class="text-center align-middle" style="width: 5%; min-width: 50px;"></th>
+                  </tr>
+                </thead>
+                <tbody id="availableMateriasBody">
+                  <!-- Se poblará dinámicamente -->
+                </tbody>
+              </table>
+            </div>
+            
+            <!-- Sección de Disponibilidad (horario) -->
             <h6 class="ms-1 mt-4"><b>Disponibilidad</b></h6>
-            <div style="border-bottom: 3px solid #84251C; width: 10rem; margin-top: -5px; margin-bottom: 10px;"></div>
+            <div style="border-bottom: 3px solid #84251C; width: 11rem; margin-top: -5px; margin-bottom: 10px;"></div>
             <div class="table-responsive">
               <table id="schedule" class="table table-bordered">
                 <thead class="table-light">
@@ -299,26 +304,74 @@ document.getElementById('viewModal').addEventListener('show.bs.modal', async (ev
 
 document.getElementById('editModal').addEventListener('show.bs.modal', async (event) => {
   if (!currentProfessorId) return;
-  
-  selectedBlocks = [];
+ 
+  // Reiniciar arrays y tablas
   selectedMaterias = [];
+  document.getElementById('assignedMateriasBody').innerHTML = '';
+  document.getElementById('availableMateriasBody').innerHTML = '';
   document.getElementById('scheduleTable').innerHTML = '';
-  document.getElementById('selectedBlocks').value = '[]';
   document.getElementById('selectedMaterias').value = '[]';
+  document.getElementById('selectedBlocks').value = '[]';
 
   try {
+    // Se obtiene la información del profesor, incluyendo materias asignadas y bloques
     const response = await fetch(`/coordinador/profesores/modificar/${currentProfessorId}`);
     const data = await response.json();
+    var allMaterias = data.allMaterias.rows;
 
-    document.querySelectorAll('.materia-btn').forEach(button => {
-      const materiaId = button.dataset.materiaId;
-      if (data.materias.includes(materiaId)) {
-        button.querySelector('svg').innerHTML = `<path d="M12.736 3.97a.733.733 0 0 1 1.047 0c.286.289.29.756.01 1.05L7.88 12.01a.733.733 0 0 1-1.065.02L3.217 8.384a.757.757 0 0 1 0-1.06.733.733 0 0 1 1.047 0l3.052 3.093 5.4-6.425z"/>`;
-        button.classList.add('selected');
-        selectedMaterias.push(materiaId);
-      }
+    // data.materias es un array con los IDs de las materias asignadas
+    // data.materiasInfo.rows contiene la información completa de las materias asignadas
+    const assignedIds = data.materias; // array de strings o números
+    const assignedMaterias = data.materiasInfo.rows;
+
+    // Usando allMaterias (que ya tienes en la vista), calcular las materias disponibles:
+    const availableMaterias = allMaterias.filter(materia => !assignedIds.includes(materia.materia_id.toString()));
+
+    // Función para crear una fila de tabla de materia
+    function createMateriaRow(materia, btnClass, btnContent) {
+      const tr = document.createElement('tr');
+      tr.dataset.materiaId = materia.materia_id;
+      tr.innerHTML = `
+        <td class="text-center align-middle">${materia.nombre}</td>
+        <td class="text-center align-middle">${materia.materia_id}</td>
+        <td class="text-center align-middle">${materia.creditos}</td>
+        <td class="text-center align-middle">${materia.horas_profesor}</td>
+        <td class="text-center align-middle">${materia.tipo_salon}</td>
+        <td class="text-center align-middle">
+          <button type="button" class="btn btn-sm p-0 d-flex align-items-center justify-content-center ${btnClass}" 
+          style="width: 1.5rem; height: 1.5rem; border-radius: 50%; background-color: #84251c; color: white; border: none;"
+          data-materia-id="${materia.materia_id}">
+            ${btnContent}
+          </button>
+        </td>
+      `;
+      return tr;
+    }
+
+    // Poblar tabla de materias asignadas
+    assignedMaterias.forEach(materia => {
+      const row = createMateriaRow(materia, 'btn-danger remove-assigned', `
+      <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-x-lg" viewBox="0 0 16 16">
+        <path d="M2.146 2.854a.5.5 0 1 1 .708-.708L8 7.293l5.146-5.147a.5.5 0 0 1 .708.708L8.707 8l5.147 5.146a.5.5 0 0 1-.708.708L8 8.707l-5.146 5.147a.5.5 0 0 1-.708-.708L7.293 8z"/>
+      </svg>`);
+      document.getElementById('assignedMateriasBody').appendChild(row);
+      // Agregar a selectedMaterias
+      selectedMaterias.push(materia.materia_id.toString());
     });
 
+    // Poblar tabla de materias disponibles
+    availableMaterias.forEach(materia => {
+      const row = createMateriaRow(materia, 'btn-success add-available', `
+      <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" class="bi bi-plus" viewBox="0 0 16 16">
+        <path d="M8 4a.5.5 0 0 1 .5.5v3h3a.5.5 0 0 1 0 1h-3v3a.5.5 0 0 1-1 0v-3h-3a.5.5 0 0 1 0-1h3v-3A.5.5 0 0 1 8 4"/>
+      </svg>`);
+      document.getElementById('availableMateriasBody').appendChild(row);
+    });
+
+    // Actualizar el input oculto
+    document.getElementById('selectedMaterias').value = JSON.stringify(selectedMaterias);
+
+    // (Continúa con la generación de la tabla de horarios como lo tienes actualmente)
     const scheduleTable = document.getElementById("scheduleTable");
     const days = ["Lunes", "Martes", "Miércoles", "Jueves", "Viernes"];
     const startTime = 7;
@@ -330,11 +383,11 @@ document.getElementById('editModal').addEventListener('show.bs.modal', async (ev
         const endHour = minute === 30 ? hour + 1 : hour;
         const endMinute = (minute + 30) % 60;
         
-        row.innerHTML = `
-          <td class="text-center align-middle">
-            ${hour.toString().padStart(2, '0')}:${minute.toString().padStart(2, '0')} - 
-            ${endHour.toString().padStart(2, '0')}:${endMinute.toString().padStart(2, '0')}
-          </td>`;
+        row.innerHTML = 
+          `<td class="text-center align-middle">
+             ${hour.toString().padStart(2, '0')}:${minute.toString().padStart(2, '0')} - 
+             ${endHour.toString().padStart(2, '0')}:${endMinute.toString().padStart(2, '0')}
+           </td>`;
         
         days.forEach((_, index) => {
           const blockNumber = index * 24 + (hour - startTime) * 2 + (minute === 30 ? 1 : 0) + 1;
@@ -343,15 +396,19 @@ document.getElementById('editModal').addEventListener('show.bs.modal', async (ev
           
           if (data.bloques.includes(blockNumber.toString())) {
             cell.classList.add("selected");
-            selectedBlocks.push(blockNumber.toString());
+            if (!selectedBlocks.includes(blockNumber.toString())) {
+              selectedBlocks.push(blockNumber.toString());
+            }
           }
 
           cell.addEventListener("click", function() {
             this.classList.toggle("selected");
             const value = this.dataset.value;
-            selectedBlocks = selectedBlocks.includes(value) 
-              ? selectedBlocks.filter(num => num !== value) 
-              : [...selectedBlocks, value];
+            if (selectedBlocks.includes(value)) {
+              selectedBlocks = selectedBlocks.filter(num => num !== value);
+            } else {
+              selectedBlocks.push(value);
+            }
             document.getElementById("selectedBlocks").value = JSON.stringify(selectedBlocks);
           });
 
@@ -362,12 +419,57 @@ document.getElementById('editModal').addEventListener('show.bs.modal', async (ev
       }
     }
 
-    document.getElementById('selectedBlocks').value = JSON.stringify(selectedBlocks);
-    document.getElementById('selectedMaterias').value = JSON.stringify(selectedMaterias);
+    document.getElementById("selectedBlocks").value = JSON.stringify(selectedBlocks);
+    // Actualizar la acción del formulario
     document.getElementById('scheduleForm').action = `/coordinador/profesores/modificar/${currentProfessorId}`;
 
   } catch (error) {
     console.error('Error:', error);
+  }
+});
+
+// Eventos delegados para asignar y quitar materias
+document.getElementById('assignedMateriasBody').addEventListener('click', function(e) {
+  const btn = e.target.closest('.remove-assigned');
+  if (btn) {
+    const materiaId = btn.dataset.materiaId;
+    // Mover la fila a la tabla de disponibles
+    const row = btn.closest('tr');
+    row.parentNode.removeChild(row);
+    // Cambiar el botón para que ahora asigne
+    const newBtn = row.querySelector('button');
+    newBtn.classList.remove('btn-danger', 'remove-assigned');
+    newBtn.classList.add('btn-success', 'add-available');
+    newBtn.innerHTML = `
+      <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" class="bi bi-plus" viewBox="0 0 16 16">
+        <path d="M8 4a.5.5 0 0 1 .5.5v3h3a.5.5 0 0 1 0 1h-3v3a.5.5 0 0 1-1 0v-3h-3a.5.5 0 0 1 0-1h3v-3A.5.5 0 0 1 8 4"/>
+      </svg>`;
+    document.getElementById('availableMateriasBody').appendChild(row);
+    // Actualizar el array
+    selectedMaterias = selectedMaterias.filter(id => id !== materiaId);
+    document.getElementById('selectedMaterias').value = JSON.stringify(selectedMaterias);
+  }
+});
+
+document.getElementById('availableMateriasBody').addEventListener('click', function(e) {
+  const btn = e.target.closest('.add-available');
+  if (btn) {
+    const materiaId = btn.dataset.materiaId;
+    // Mover la fila a la tabla de asignadas
+    const row = btn.closest('tr');
+    row.parentNode.removeChild(row);
+    // Cambiar el botón para que ahora quite la asignación
+    const newBtn = row.querySelector('button');
+    newBtn.classList.remove('btn-success', 'add-available');
+    newBtn.classList.add('btn-danger', 'remove-assigned');
+    newBtn.innerHTML = `
+      <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-x-lg" viewBox="0 0 16 16">
+        <path d="M2.146 2.854a.5.5 0 1 1 .708-.708L8 7.293l5.146-5.147a.5.5 0 0 1 .708.708L8.707 8l5.147 5.146a.5.5 0 0 1-.708.708L8 8.707l-5.146 5.147a.5.5 0 0 1-.708-.708L7.293 8z"/>
+      </svg>`;
+    document.getElementById('assignedMateriasBody').appendChild(row);
+    // Actualizar el array
+    selectedMaterias.push(materiaId);
+    document.getElementById('selectedMaterias').value = JSON.stringify(selectedMaterias);
   }
 });
 
