@@ -340,10 +340,12 @@ exports.post_modificar_grupo = async (req, res, next) => {
 
 exports.get_alumnos = async (req, res, nxt) => {
     try {
-        const studentsDB = await Alumno.fetchAll(); 
+        const alumnosRegularesDB = await Alumno.fetchAllRegulares(); 
+        const alumnosIrregularesDB = await Alumno.fetchAllIrregulares();
         const msg = req.query.msg || null;
         res.render('alumnos_coordinador', {
-            students: studentsDB.rows,
+            alumnosRegulares: alumnosRegularesDB.rows,
+            alumnosIrregulares: alumnosIrregularesDB.rows,
             msg,
             isLoggedIn: req.session.isLoggedIn || false,
             matricula: req.session.matricula || '',

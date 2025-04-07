@@ -8,11 +8,14 @@ module.exports = class MateriaSemestre {
     }
 
     static async fetchMateriasSemestre() {
-        return pool.query(`SELECT 
-                           m.materia_id, nombre, creditos, 
-                           horas_profesor, tipo_salon, 
-                           semestre_id
-                           FROM materia m, materia_semestre ms
-                           WHERE m.materia_id = ms.materia_id`);
+        return pool.query(`
+            SELECT 
+            m.materia_id, nombre, creditos, 
+            horas_profesor, tipo_salon, 
+            semestre_id
+            FROM materia m, materia_semestre ms
+            WHERE m.materia_id = ms.materia_id
+            ORDER BY materia_id ASC`
+        );
     }
 }

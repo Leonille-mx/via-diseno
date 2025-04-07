@@ -5,7 +5,7 @@
   <div class="d-flex justify-content-between">
     <div class="mb-4">
       <h1 class="ms-3 mt-2">Materias Abiertas</h1>
-      <div style="border-bottom: 3px solid #84251C; width: 30rem; margin-top: -10px;"></div>
+      <div style="border-bottom: 3px solid #84251C; width: 23rem; margin-top: -10px;"></div>
     </div>
     <form action="/coordinador/materias/sincronizar" method="POST">
       <button type="submit" class="btn btn-primary d-flex align-items-center gap-2 rounded-pill px-3 py-2 me-5 mt-3 ivd-text-red border ivd-border-red" 
@@ -43,26 +43,16 @@
       <div class="d-flex justify-content-between">
         <h3 class="ms-5 text-decoration-underline ivd-text-red">1er Semestre</h3>
         <div class="d-flex align-items-center justify-content-end mx-5 mb-3 gap-3 flex-wrap">
-          <div class="d-flex align-items-center flex-grow-1" style="max-width: 200px;">
-            <input class="form-control me-2 rounded-pill" type="search" placeholder="Buscar salón" aria-label="Search"
-                  style="background-image:url('/images/search.svg');
-                          background-repeat:no-repeat;
-                          background-position: 1rem center; 
-                          padding-left: 3rem; 
-                          font-size: 1rem;
-                          width: 100%;
-                          border: 1px solid #84251C;">
-          </div>
-            <button class="btn btn-primary d-flex align-items-center gap-2 rounded-pill px-3 py-2" 
-            style="background-color: #84251C; border: none;">
-              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-plus-lg" viewBox="0 0 16 16">
-                <path fill-rule="evenodd" d="M8 2a.5.5 0 0 1 .5.5v5h5a.5.5 0 0 1 0 1h-5v5a.5.5 0 0 1-1 0v-5h-5a.5.5 0 0 1 0-1h5v-5A.5.5 0 0 1 8 2"/>
-              </svg>
-              Abrir Materia
-            </button>
+          <button class="btn btn-primary d-flex align-items-center gap-2 rounded-pill px-3 py-2" 
+          style="background-color: #84251C; border: none;">
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-plus-lg" viewBox="0 0 16 16">
+              <path fill-rule="evenodd" d="M8 2a.5.5 0 0 1 .5.5v5h5a.5.5 0 0 1 0 1h-5v5a.5.5 0 0 1-1 0v-5h-5a.5.5 0 0 1 0-1h5v-5A.5.5 0 0 1 8 2"/>
+            </svg>
+            Abrir Materia
+          </button>
         </div>
       </div>    
-      <div class="table-responsive mx-5 mb-5 rounded-5 flex-grow-1" style="max-height: 200px; overflow: auto; background-color: white;">
+      <div class="table-responsive mx-5 mb-5 rounded-5 flex-grow-1" style="max-height: 300px; overflow: auto; background-color: white;">
         <table class="table table-hover" style="min-width: 800px; width: 100%;">
           <thead class="table-light">
             <tr>
@@ -83,13 +73,6 @@
                   <td class="text-center align-middle"><%= materia.creditos %></td>
                   <td class="text-center align-middle"><%= materia.horas_profesor %></td>
                   <td class="text-center align-middle"><%= materia.tipo_salon %></td>
-                  <td class="text-center align-middle">
-                    <% if (materia.obligatoria === true) { %>
-                      <%= "Sí" %>
-                    <% } else if (materia.obligatoria === false) { %>
-                      <%= "No" %>
-                    <% } %>
-                  </td>
                   <td class="text-center align-middle">
                     <button class="btn btn-sm p-0 d-flex align-items-center justify-content-center" 
                     style="
@@ -117,27 +100,17 @@
       <div class="d-flex justify-content-between">
         <h3 class="ms-5 text-decoration-underline ivd-text-red">2do Semestre</h3>
         <div class="d-flex align-items-center justify-content-end mx-5 mb-3 gap-3 flex-wrap">
-          <div class="d-flex align-items-center flex-grow-1" style="max-width: 200px;">
-            <input class="form-control me-2 rounded-pill" type="search" placeholder="Buscar salón" aria-label="Search"
-                  style="background-image:url('/images/search.svg');
-                          background-repeat:no-repeat;
-                          background-position: 1rem center; 
-                          padding-left: 3rem; 
-                          font-size: 1rem;
-                          width: 100%;
-                          border: 1px solid #84251C;">
-          </div>
-            <button class="btn btn-primary d-flex align-items-center gap-2 rounded-pill px-3 py-2" 
-            style="background-color: #84251C; border: none;">
-              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-plus-lg" viewBox="0 0 16 16">
-                <path fill-rule="evenodd" d="M8 2a.5.5 0 0 1 .5.5v5h5a.5.5 0 0 1 0 1h-5v5a.5.5 0 0 1-1 0v-5h-5a.5.5 0 0 1 0-1h5v-5A.5.5 0 0 1 8 2"/>
-              </svg>
-              Abrir Materia
-            </button>
+          <button class="btn btn-primary d-flex align-items-center gap-2 rounded-pill px-3 py-2" 
+          style="background-color: #84251C; border: none;">
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-plus-lg" viewBox="0 0 16 16">
+              <path fill-rule="evenodd" d="M8 2a.5.5 0 0 1 .5.5v5h5a.5.5 0 0 1 0 1h-5v5a.5.5 0 0 1-1 0v-5h-5a.5.5 0 0 1 0-1h5v-5A.5.5 0 0 1 8 2"/>
+            </svg>
+            Abrir Materia
+          </button>
         </div>
       </div>  
     
-      <div class="table-responsive mx-5 mb-5 rounded-5 flex-grow-1" style="max-height: 200px; overflow: auto; background-color: white;">
+      <div class="table-responsive mx-5 mb-5 rounded-5 flex-grow-1" style="max-height: 300px; overflow: auto; background-color: white;">
         <table class="table table-hover" style="min-width: 800px; width: 100%;">
           <thead class="table-light">
             <tr>
@@ -146,7 +119,6 @@
               <th scope="col" style="width: 15%; min-width: 100px;" class="text-center align-middle">Créditos</th>
               <th scope="col" style="width: 15%; min-width: 100px;" class="text-center align-middle">Horas profesor</th>
               <th scope="col" style="width: 35%; min-width: 150px;" class="text-center align-middle">Tipo de Salon</th>
-              <th scope="col" style="width: 15%; min-width: 100px;" class="text-center align-middle">Obligatoria</th>
               <th scope="col" style="width: 5%; min-width: 50px;"></th>
             </tr>
           </thead>
@@ -159,13 +131,6 @@
                   <td class="text-center align-middle"><%= materia.creditos %></td>
                   <td class="text-center align-middle"><%= materia.horas_profesor %></td>
                   <td class="text-center align-middle"><%= materia.tipo_salon %></td>
-                  <td class="text-center align-middle">
-                    <% if (materia.obligatoria === true) { %>
-                      <%= "Sí" %>
-                    <% } else if (materia.obligatoria === false) { %>
-                      <%= "No" %>
-                    <% } %>
-                  </td>
                   <td class="text-center align-middle">
                     <button class="btn btn-sm p-0 d-flex align-items-center justify-content-center" 
                     style="
@@ -192,27 +157,17 @@
       <div class="d-flex justify-content-between">
         <h3 class="ms-5 text-decoration-underline ivd-text-red">3ro Semestre</h3>
         <div class="d-flex align-items-center justify-content-end mx-5 mb-3 gap-3 flex-wrap">
-          <div class="d-flex align-items-center flex-grow-1" style="max-width: 200px;">
-            <input class="form-control me-2 rounded-pill" type="search" placeholder="Buscar salón" aria-label="Search"
-                  style="background-image:url('/images/search.svg');
-                          background-repeat:no-repeat;
-                          background-position: 1rem center; 
-                          padding-left: 3rem; 
-                          font-size: 1rem;
-                          width: 100%;
-                          border: 1px solid #84251C;">
-          </div>
-            <button class="btn btn-primary d-flex align-items-center gap-2 rounded-pill px-3 py-2" 
-            style="background-color: #84251C; border: none;">
-              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-plus-lg" viewBox="0 0 16 16">
-                <path fill-rule="evenodd" d="M8 2a.5.5 0 0 1 .5.5v5h5a.5.5 0 0 1 0 1h-5v5a.5.5 0 0 1-1 0v-5h-5a.5.5 0 0 1 0-1h5v-5A.5.5 0 0 1 8 2"/>
-              </svg>
-              Abrir Materia
-            </button>
+          <button class="btn btn-primary d-flex align-items-center gap-2 rounded-pill px-3 py-2" 
+          style="background-color: #84251C; border: none;">
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-plus-lg" viewBox="0 0 16 16">
+              <path fill-rule="evenodd" d="M8 2a.5.5 0 0 1 .5.5v5h5a.5.5 0 0 1 0 1h-5v5a.5.5 0 0 1-1 0v-5h-5a.5.5 0 0 1 0-1h5v-5A.5.5 0 0 1 8 2"/>
+            </svg>
+            Abrir Materia
+          </button>
         </div>
       </div>  
     
-      <div class="table-responsive mx-5 mb-5 rounded-5 flex-grow-1" style="max-height: 200px; overflow: auto; background-color: white;">
+      <div class="table-responsive mx-5 mb-5 rounded-5 flex-grow-1" style="max-height: 300px; overflow: auto; background-color: white;">
         <table class="table table-hover" style="min-width: 800px; width: 100%;">
           <thead class="table-light">
             <tr>
@@ -221,7 +176,6 @@
               <th scope="col" style="width: 15%; min-width: 100px;" class="text-center align-middle">Créditos</th>
               <th scope="col" style="width: 15%; min-width: 100px;" class="text-center align-middle">Horas profesor</th>
               <th scope="col" style="width: 35%; min-width: 150px;" class="text-center align-middle">Tipo de Salon</th>
-              <th scope="col" style="width: 15%; min-width: 100px;" class="text-center align-middle">Obligatoria</th>
               <th scope="col" style="width: 5%; min-width: 50px;"></th>
             </tr>
           </thead>
@@ -234,13 +188,6 @@
                   <td class="text-center align-middle"><%= materia.creditos %></td>
                   <td class="text-center align-middle"><%= materia.horas_profesor %></td>
                   <td class="text-center align-middle"><%= materia.tipo_salon %></td>
-                  <td class="text-center align-middle">
-                    <% if (materia.obligatoria === true) { %>
-                      <%= "Sí" %>
-                    <% } else if (materia.obligatoria === false) { %>
-                      <%= "No" %>
-                    <% } %>
-                  </td>
                   <td class="text-center align-middle">
                     <button class="btn btn-sm p-0 d-flex align-items-center justify-content-center" 
                     style="
@@ -268,27 +215,17 @@
       <div class="d-flex justify-content-between">
         <h3 class="ms-5 text-decoration-underline ivd-text-red">4to Semestre</h3>
         <div class="d-flex align-items-center justify-content-end mx-5 mb-3 gap-3 flex-wrap">
-          <div class="d-flex align-items-center flex-grow-1" style="max-width: 200px;">
-            <input class="form-control me-2 rounded-pill" type="search" placeholder="Buscar salón" aria-label="Search"
-                  style="background-image:url('/images/search.svg');
-                          background-repeat:no-repeat;
-                          background-position: 1rem center; 
-                          padding-left: 3rem; 
-                          font-size: 1rem;
-                          width: 100%;
-                          border: 1px solid #84251C;">
-          </div>
-            <button class="btn btn-primary d-flex align-items-center gap-2 rounded-pill px-3 py-2" 
-            style="background-color: #84251C; border: none;">
-              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-plus-lg" viewBox="0 0 16 16">
-                <path fill-rule="evenodd" d="M8 2a.5.5 0 0 1 .5.5v5h5a.5.5 0 0 1 0 1h-5v5a.5.5 0 0 1-1 0v-5h-5a.5.5 0 0 1 0-1h5v-5A.5.5 0 0 1 8 2"/>
-              </svg>
-              Abrir Materia
-            </button>
+          <button class="btn btn-primary d-flex align-items-center gap-2 rounded-pill px-3 py-2" 
+          style="background-color: #84251C; border: none;">
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-plus-lg" viewBox="0 0 16 16">
+              <path fill-rule="evenodd" d="M8 2a.5.5 0 0 1 .5.5v5h5a.5.5 0 0 1 0 1h-5v5a.5.5 0 0 1-1 0v-5h-5a.5.5 0 0 1 0-1h5v-5A.5.5 0 0 1 8 2"/>
+            </svg>
+            Abrir Materia
+          </button>
         </div>
       </div>  
     
-      <div class="table-responsive mx-5 mb-5 rounded-5 flex-grow-1" style="max-height: 200px; overflow: auto; background-color: white;">
+      <div class="table-responsive mx-5 mb-5 rounded-5 flex-grow-1" style="max-height: 300px; overflow: auto; background-color: white;">
         <table class="table table-hover" style="min-width: 800px; width: 100%;">
           <thead class="table-light">
             <tr>
@@ -297,7 +234,6 @@
               <th scope="col" style="width: 15%; min-width: 100px;" class="text-center align-middle">Créditos</th>
               <th scope="col" style="width: 15%; min-width: 100px;" class="text-center align-middle">Horas profesor</th>
               <th scope="col" style="width: 35%; min-width: 150px;" class="text-center align-middle">Tipo de Salon</th>
-              <th scope="col" style="width: 15%; min-width: 100px;" class="text-center align-middle">Obligatoria</th>
               <th scope="col" style="width: 5%; min-width: 50px;"></th>
             </tr>
           </thead>
@@ -310,13 +246,6 @@
                   <td class="text-center align-middle"><%= materia.creditos %></td>
                   <td class="text-center align-middle"><%= materia.horas_profesor %></td>
                   <td class="text-center align-middle"><%= materia.tipo_salon %></td>
-                  <td class="text-center align-middle">
-                    <% if (materia.obligatoria === true) { %>
-                      <%= "Sí" %>
-                    <% } else if (materia.obligatoria === false) { %>
-                      <%= "No" %>
-                    <% } %>
-                  </td>
                   <td class="text-center align-middle">
                     <button class="btn btn-sm p-0 d-flex align-items-center justify-content-center" 
                     style="
@@ -344,27 +273,17 @@
       <div class="d-flex justify-content-between">
         <h3 class="ms-5 text-decoration-underline ivd-text-red">5to Semestre</h3>
         <div class="d-flex align-items-center justify-content-end mx-5 mb-3 gap-3 flex-wrap">
-          <div class="d-flex align-items-center flex-grow-1" style="max-width: 200px;">
-            <input class="form-control me-2 rounded-pill" type="search" placeholder="Buscar salón" aria-label="Search"
-                  style="background-image:url('/images/search.svg');
-                          background-repeat:no-repeat;
-                          background-position: 1rem center; 
-                          padding-left: 3rem; 
-                          font-size: 1rem;
-                          width: 100%;
-                          border: 1px solid #84251C;">
-          </div>
-            <button class="btn btn-primary d-flex align-items-center gap-2 rounded-pill px-3 py-2" 
-            style="background-color: #84251C; border: none;">
-              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-plus-lg" viewBox="0 0 16 16">
-                <path fill-rule="evenodd" d="M8 2a.5.5 0 0 1 .5.5v5h5a.5.5 0 0 1 0 1h-5v5a.5.5 0 0 1-1 0v-5h-5a.5.5 0 0 1 0-1h5v-5A.5.5 0 0 1 8 2"/>
-              </svg>
-              Abrir Materia
-            </button>
+          <button class="btn btn-primary d-flex align-items-center gap-2 rounded-pill px-3 py-2" 
+          style="background-color: #84251C; border: none;">
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-plus-lg" viewBox="0 0 16 16">
+              <path fill-rule="evenodd" d="M8 2a.5.5 0 0 1 .5.5v5h5a.5.5 0 0 1 0 1h-5v5a.5.5 0 0 1-1 0v-5h-5a.5.5 0 0 1 0-1h5v-5A.5.5 0 0 1 8 2"/>
+            </svg>
+            Abrir Materia
+          </button>
         </div>
       </div>  
     
-      <div class="table-responsive mx-5 mb-5 rounded-5 flex-grow-1" style="max-height: 200px; overflow: auto; background-color: white;">
+      <div class="table-responsive mx-5 mb-5 rounded-5 flex-grow-1" style="max-height: 300px; overflow: auto; background-color: white;">
         <table class="table table-hover" style="min-width: 800px; width: 100%;">
           <thead class="table-light">
             <tr>
@@ -373,7 +292,6 @@
               <th scope="col" style="width: 15%; min-width: 100px;" class="text-center align-middle">Créditos</th>
               <th scope="col" style="width: 15%; min-width: 100px;" class="text-center align-middle">Horas profesor</th>
               <th scope="col" style="width: 35%; min-width: 150px;" class="text-center align-middle">Tipo de Salon</th>
-              <th scope="col" style="width: 15%; min-width: 100px;" class="text-center align-middle">Obligatoria</th>
               <th scope="col" style="width: 5%; min-width: 50px;"></th>
             </tr>
           </thead>
@@ -386,13 +304,6 @@
                   <td class="text-center align-middle"><%= materia.creditos %></td>
                   <td class="text-center align-middle"><%= materia.horas_profesor %></td>
                   <td class="text-center align-middle"><%= materia.tipo_salon %></td>
-                  <td class="text-center align-middle">
-                    <% if (materia.obligatoria === true) { %>
-                      <%= "Sí" %>
-                    <% } else if (materia.obligatoria === false) { %>
-                      <%= "No" %>
-                    <% } %>
-                  </td>
                   <td class="text-center align-middle">
                     <button class="btn btn-sm p-0 d-flex align-items-center justify-content-center" 
                     style="
@@ -419,27 +330,17 @@
       <div class="d-flex justify-content-between">
         <h3 class="ms-5 text-decoration-underline ivd-text-red">6to Semestre</h3>
         <div class="d-flex align-items-center justify-content-end mx-5 mb-3 gap-3 flex-wrap">
-          <div class="d-flex align-items-center flex-grow-1" style="max-width: 200px;">
-            <input class="form-control me-2 rounded-pill" type="search" placeholder="Buscar salón" aria-label="Search"
-                  style="background-image:url('/images/search.svg');
-                          background-repeat:no-repeat;
-                          background-position: 1rem center; 
-                          padding-left: 3rem; 
-                          font-size: 1rem;
-                          width: 100%;
-                          border: 1px solid #84251C;">
-          </div>
-            <button class="btn btn-primary d-flex align-items-center gap-2 rounded-pill px-3 py-2" 
-            style="background-color: #84251C; border: none;">
-              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-plus-lg" viewBox="0 0 16 16">
-                <path fill-rule="evenodd" d="M8 2a.5.5 0 0 1 .5.5v5h5a.5.5 0 0 1 0 1h-5v5a.5.5 0 0 1-1 0v-5h-5a.5.5 0 0 1 0-1h5v-5A.5.5 0 0 1 8 2"/>
-              </svg>
-              Abrir Materia
-            </button>
+          <button class="btn btn-primary d-flex align-items-center gap-2 rounded-pill px-3 py-2" 
+          style="background-color: #84251C; border: none;">
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-plus-lg" viewBox="0 0 16 16">
+              <path fill-rule="evenodd" d="M8 2a.5.5 0 0 1 .5.5v5h5a.5.5 0 0 1 0 1h-5v5a.5.5 0 0 1-1 0v-5h-5a.5.5 0 0 1 0-1h5v-5A.5.5 0 0 1 8 2"/>
+            </svg>
+            Abrir Materia
+          </button>
         </div>
       </div>  
     
-      <div class="table-responsive mx-5 mb-5 rounded-5 flex-grow-1" style="max-height: 200px; overflow: auto; background-color: white;">
+      <div class="table-responsive mx-5 mb-5 rounded-5 flex-grow-1" style="max-height: 300px; overflow: auto; background-color: white;">
         <table class="table table-hover" style="min-width: 800px; width: 100%;">
           <thead class="table-light">
             <tr>
@@ -448,7 +349,6 @@
               <th scope="col" style="width: 15%; min-width: 100px;" class="text-center align-middle">Créditos</th>
               <th scope="col" style="width: 15%; min-width: 100px;" class="text-center align-middle">Horas profesor</th>
               <th scope="col" style="width: 35%; min-width: 150px;" class="text-center align-middle">Tipo de Salon</th>
-              <th scope="col" style="width: 15%; min-width: 100px;" class="text-center align-middle">Obligatoria</th>
               <th scope="col" style="width: 5%; min-width: 50px;"></th>
             </tr>
           </thead>
@@ -461,13 +361,6 @@
                   <td class="text-center align-middle"><%= materia.creditos %></td>
                   <td class="text-center align-middle"><%= materia.horas_profesor %></td>
                   <td class="text-center align-middle"><%= materia.tipo_salon %></td>
-                  <td class="text-center align-middle">
-                    <% if (materia.obligatoria === true) { %>
-                      <%= "Sí" %>
-                    <% } else if (materia.obligatoria === false) { %>
-                      <%= "No" %>
-                    <% } %>
-                  </td>
                   <td class="text-center align-middle">
                     <button class="btn btn-sm p-0 d-flex align-items-center justify-content-center" 
                     style="
@@ -495,27 +388,17 @@
       <div class="d-flex justify-content-between">
         <h3 class="ms-5 text-decoration-underline ivd-text-red">7mo Semestre</h3>
         <div class="d-flex align-items-center justify-content-end mx-5 mb-3 gap-3 flex-wrap">
-          <div class="d-flex align-items-center flex-grow-1" style="max-width: 200px;">
-            <input class="form-control me-2 rounded-pill" type="search" placeholder="Buscar salón" aria-label="Search"
-                  style="background-image:url('/images/search.svg');
-                          background-repeat:no-repeat;
-                          background-position: 1rem center; 
-                          padding-left: 3rem; 
-                          font-size: 1rem;
-                          width: 100%;
-                          border: 1px solid #84251C;">
-          </div>
-            <button class="btn btn-primary d-flex align-items-center gap-2 rounded-pill px-3 py-2" 
-            style="background-color: #84251C; border: none;">
-              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-plus-lg" viewBox="0 0 16 16">
-                <path fill-rule="evenodd" d="M8 2a.5.5 0 0 1 .5.5v5h5a.5.5 0 0 1 0 1h-5v5a.5.5 0 0 1-1 0v-5h-5a.5.5 0 0 1 0-1h5v-5A.5.5 0 0 1 8 2"/>
-              </svg>
-              Abrir Materia
-            </button>
+          <button class="btn btn-primary d-flex align-items-center gap-2 rounded-pill px-3 py-2" 
+          style="background-color: #84251C; border: none;">
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-plus-lg" viewBox="0 0 16 16">
+              <path fill-rule="evenodd" d="M8 2a.5.5 0 0 1 .5.5v5h5a.5.5 0 0 1 0 1h-5v5a.5.5 0 0 1-1 0v-5h-5a.5.5 0 0 1 0-1h5v-5A.5.5 0 0 1 8 2"/>
+            </svg>
+            Abrir Materia
+          </button>
         </div>
       </div>  
     
-      <div class="table-responsive mx-5 mb-5 rounded-5 flex-grow-1" style="max-height: 200px; overflow: auto; background-color: white;">
+      <div class="table-responsive mx-5 mb-5 rounded-5 flex-grow-1" style="max-height: 300px; overflow: auto; background-color: white;">
         <table class="table table-hover" style="min-width: 800px; width: 100%;">
           <thead class="table-light">
             <tr>
@@ -524,7 +407,6 @@
               <th scope="col" style="width: 15%; min-width: 100px;" class="text-center align-middle">Créditos</th>
               <th scope="col" style="width: 15%; min-width: 100px;" class="text-center align-middle">Horas profesor</th>
               <th scope="col" style="width: 35%; min-width: 150px;" class="text-center align-middle">Tipo de Salon</th>
-              <th scope="col" style="width: 15%; min-width: 100px;" class="text-center align-middle">Obligatoria</th>
               <th scope="col" style="width: 5%; min-width: 50px;"></th>
             </tr>
           </thead>
@@ -537,13 +419,6 @@
                   <td class="text-center align-middle"><%= materia.creditos %></td>
                   <td class="text-center align-middle"><%= materia.horas_profesor %></td>
                   <td class="text-center align-middle"><%= materia.tipo_salon %></td>
-                  <td class="text-center align-middle">
-                    <% if (materia.obligatoria === true) { %>
-                      <%= "Sí" %>
-                    <% } else if (materia.obligatoria === false) { %>
-                      <%= "No" %>
-                    <% } %>
-                  </td>
                   <td class="text-center align-middle">
                     <button class="btn btn-sm p-0 d-flex align-items-center justify-content-center" 
                     style="
@@ -571,27 +446,17 @@
       <div class="d-flex justify-content-between">
         <h3 class="ms-5 text-decoration-underline ivd-text-red">8vo Semestre</h3>
         <div class="d-flex align-items-center justify-content-end mx-5 mb-3 gap-3 flex-wrap">
-          <div class="d-flex align-items-center flex-grow-1" style="max-width: 200px;">
-            <input class="form-control me-2 rounded-pill" type="search" placeholder="Buscar salón" aria-label="Search"
-                  style="background-image:url('/images/search.svg');
-                          background-repeat:no-repeat;
-                          background-position: 1rem center; 
-                          padding-left: 3rem; 
-                          font-size: 1rem;
-                          width: 100%;
-                          border: 1px solid #84251C;">
-          </div>
-            <button class="btn btn-primary d-flex align-items-center gap-2 rounded-pill px-3 py-2" 
-            style="background-color: #84251C; border: none;">
-              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-plus-lg" viewBox="0 0 16 16">
-                <path fill-rule="evenodd" d="M8 2a.5.5 0 0 1 .5.5v5h5a.5.5 0 0 1 0 1h-5v5a.5.5 0 0 1-1 0v-5h-5a.5.5 0 0 1 0-1h5v-5A.5.5 0 0 1 8 2"/>
-              </svg>
-              Abrir Materia
-            </button>
+          <button class="btn btn-primary d-flex align-items-center gap-2 rounded-pill px-3 py-2" 
+          style="background-color: #84251C; border: none;">
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-plus-lg" viewBox="0 0 16 16">
+              <path fill-rule="evenodd" d="M8 2a.5.5 0 0 1 .5.5v5h5a.5.5 0 0 1 0 1h-5v5a.5.5 0 0 1-1 0v-5h-5a.5.5 0 0 1 0-1h5v-5A.5.5 0 0 1 8 2"/>
+            </svg>
+            Abrir Materia
+          </button>
         </div>
       </div>  
     
-      <div class="table-responsive mx-5 mb-5 rounded-5 flex-grow-1" style="max-height: 200px; overflow: auto; background-color: white;">
+      <div class="table-responsive mx-5 mb-5 rounded-5 flex-grow-1" style="max-height: 300px; overflow: auto; background-color: white;">
         <table class="table table-hover" style="min-width: 800px; width: 100%;">
           <thead class="table-light">
             <tr>
@@ -600,7 +465,6 @@
               <th scope="col" style="width: 15%; min-width: 100px;" class="text-center align-middle">Créditos</th>
               <th scope="col" style="width: 15%; min-width: 100px;" class="text-center align-middle">Horas profesor</th>
               <th scope="col" style="width: 35%; min-width: 150px;" class="text-center align-middle">Tipo de Salon</th>
-              <th scope="col" style="width: 15%; min-width: 100px;" class="text-center align-middle">Obligatoria</th>
               <th scope="col" style="width: 5%; min-width: 50px;"></th>
             </tr>
           </thead>
@@ -613,13 +477,6 @@
                   <td class="text-center align-middle"><%= materia.creditos %></td>
                   <td class="text-center align-middle"><%= materia.horas_profesor %></td>
                   <td class="text-center align-middle"><%= materia.tipo_salon %></td>
-                  <td class="text-center align-middle">
-                    <% if (materia.obligatoria === true) { %>
-                      <%= "Sí" %>
-                    <% } else if (materia.obligatoria === false) { %>
-                      <%= "No" %>
-                    <% } %>
-                  </td>
                   <td class="text-center align-middle">
                     <button class="btn btn-sm p-0 d-flex align-items-center justify-content-center" 
                     style="
@@ -647,27 +504,17 @@
       <div class="d-flex justify-content-between">
         <h3 class="ms-5 text-decoration-underline ivd-text-red">9no Semestre</h3>
         <div class="d-flex align-items-center justify-content-end mx-5 mb-3 gap-3 flex-wrap">
-          <div class="d-flex align-items-center flex-grow-1" style="max-width: 200px;">
-            <input class="form-control me-2 rounded-pill" type="search" placeholder="Buscar salón" aria-label="Search"
-                  style="background-image:url('/images/search.svg');
-                          background-repeat:no-repeat;
-                          background-position: 1rem center; 
-                          padding-left: 3rem; 
-                          font-size: 1rem;
-                          width: 100%;
-                          border: 1px solid #84251C;">
-          </div>
-            <button class="btn btn-primary d-flex align-items-center gap-2 rounded-pill px-3 py-2" 
-            style="background-color: #84251C; border: none;">
-              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-plus-lg" viewBox="0 0 16 16">
-                <path fill-rule="evenodd" d="M8 2a.5.5 0 0 1 .5.5v5h5a.5.5 0 0 1 0 1h-5v5a.5.5 0 0 1-1 0v-5h-5a.5.5 0 0 1 0-1h5v-5A.5.5 0 0 1 8 2"/>
-              </svg>
-              Abrir Materia
-            </button>
+          <button class="btn btn-primary d-flex align-items-center gap-2 rounded-pill px-3 py-2" 
+          style="background-color: #84251C; border: none;">
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-plus-lg" viewBox="0 0 16 16">
+              <path fill-rule="evenodd" d="M8 2a.5.5 0 0 1 .5.5v5h5a.5.5 0 0 1 0 1h-5v5a.5.5 0 0 1-1 0v-5h-5a.5.5 0 0 1 0-1h5v-5A.5.5 0 0 1 8 2"/>
+            </svg>
+            Abrir Materia
+          </button>
         </div>
       </div>  
     
-      <div class="table-responsive mx-5 mb-5 rounded-5 flex-grow-1" style="max-height: 200px; overflow: auto; background-color: white;">
+      <div class="table-responsive mx-5 mb-5 rounded-5 flex-grow-1" style="max-height: 300px; overflow: auto; background-color: white;">
         <table class="table table-hover" style="min-width: 800px; width: 100%;">
           <thead class="table-light">
             <tr>
@@ -676,7 +523,6 @@
               <th scope="col" style="width: 15%; min-width: 100px;" class="text-center align-middle">Créditos</th>
               <th scope="col" style="width: 15%; min-width: 100px;" class="text-center align-middle">Horas profesor</th>
               <th scope="col" style="width: 35%; min-width: 150px;" class="text-center align-middle">Tipo de Salon</th>
-              <th scope="col" style="width: 15%; min-width: 100px;" class="text-center align-middle">Obligatoria</th>
               <th scope="col" style="width: 5%; min-width: 50px;"></th>
             </tr>
           </thead>
@@ -689,13 +535,6 @@
                   <td class="text-center align-middle"><%= materia.creditos %></td>
                   <td class="text-center align-middle"><%= materia.horas_profesor %></td>
                   <td class="text-center align-middle"><%= materia.tipo_salon %></td>
-                  <td class="text-center align-middle">
-                    <% if (materia.obligatoria === true) { %>
-                      <%= "Sí" %>
-                    <% } else if (materia.obligatoria === false) { %>
-                      <%= "No" %>
-                    <% } %>
-                  </td>
                   <td class="text-center align-middle">
                     <button class="btn btn-sm p-0 d-flex align-items-center justify-content-center" 
                     style="

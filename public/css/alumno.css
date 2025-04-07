@@ -49,6 +49,22 @@ html {
     overflow-x: hidden; /* Prevents horizontal scrolling */
 }
 
+.alumno-scroll-gris::-webkit-scrollbar {
+    height: 10px;
+    width: 6px;
+}
+  
+.alumno-scroll-gris::-webkit-scrollbar-thumb {
+    background-color: lightgray;
+    border-radius: 10px;
+    border: 2px solid lightgray;
+}
+
+.alumno-scroll-gris {
+    overflow-y: auto; /* Enables vertical scrolling */
+    overflow-x: hidden; /* Prevents horizontal scrolling */
+}
+
 @media (min-width: 992px) {
     .logo-size {
         width: 70px;
