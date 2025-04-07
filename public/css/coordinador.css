@@ -352,6 +352,22 @@ thead th {
   overflow-x: hidden; /* Prevents horizontal scrolling */
 }
 
+.dashboard-scroll::-webkit-scrollbar {
+  height: 8px;
+  width: 6px;
+}
+
+.dashboard-scroll::-webkit-scrollbar-thumb {
+  background-color: lightgrey;
+  border-radius: 10px;
+  border: 2px solid lightgrey;
+}
+
+.dashboard-scroll {
+  overflow-y: auto; 
+  overflow-x: auto; 
+}
+
 input.form-control,
 textarea.form-control,
 select.form-select {
