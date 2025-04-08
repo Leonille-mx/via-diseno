@@ -484,6 +484,7 @@ exports.get_generar_grupos = async (req, res, next) => {
 
         // Borrar datos de grupos anteriores
         await generarGrupos.deleteAllGruposBloqueTiempo();
+        await generarGrupos.deleteResultadoInscripcion();
         await generarGrupos.deleteAllGrupos();
 
         // Pre-fetch de datos:
@@ -526,7 +527,7 @@ exports.get_generar_grupos = async (req, res, next) => {
             if (i === materias.length) return true; // Si todas las materias ya han sido asignadas
 
             const materia = materias[i]; // Materia que se asignará
-            const bloquesNecesarios = materia.horas_profesor * 2; // Bloques de tiempo requeridos
+            const bloquesNecesarios = Math.ceil(materia.horas_profesor / 18) * 2; // Bloques de tiempo requeridos
 
             // Filtrar profesores disponibles para la materia
             let profesoresDisponibles = profesorMaterias[materia.materia_id] || [];

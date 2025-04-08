@@ -140,10 +140,17 @@ module.exports = class generarGrupos {
         return pool.query(`DELETE FROM grupo WHERE grupo_id = $1`, [grupo_id]);
     }
 
+    // Elimina los grupos asignados a los alumnos
+    static async deleteResultadoInscripcion() {
+        return pool.query(`DELETE FROM resultado_inscripcion`);
+    }
+
+    // Elimina todos los horarios asignados a los grupos
     static async deleteAllGruposBloqueTiempo() {
         return pool.query(`DELETE FROM grupo_bloque_tiempo`);
     }
 
+    // Elimina todos los grupos
     static async deleteAllGrupos() {
         return pool.query(`DELETE FROM grupo`);
     }
