@@ -10,6 +10,10 @@ app.set('views', 'views');
 
 const session = require('express-session');
 
+if (process.env.NODE_ENV === 'production') {
+    app.set('trust proxy', 1);
+  }
+
 app.use(session({
     secret: 'secret_key', 
     resave: false, //La sesión no se guardará en cada petición, sino sólo se guardará si algo cambió 

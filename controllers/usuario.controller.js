@@ -8,5 +8,11 @@ exports.get_login = (req, res, nxt) => {
 exports.post_login = (req, res, nxt) => {
     req.session.matricula = req.body.matricula;
     req.session.isLoggedIn = true;
-    res.redirect('/coordinador/dashboard');
+    req.session.save(err => {
+        if (err) {
+            console.log(err);
+            return res.redirect('/usuario/iniciar-sesion');
+        }
+        res.redirect('/coordinador/dashboard');
+    });
 };
