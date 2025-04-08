@@ -89,21 +89,22 @@ module.exports = class generarGrupos {
     // - Dos grupos con el mismo profesor no pueden tener bloques en común.
     // - Dos grupos en el mismo salón no pueden tener bloques en común.
     // - Dos grupos del mismo semestre (ciclo escolar) no pueden tener bloques en común.
-    static validarRestricciones(asignacion, profesor, salon, gruposAsignados, semestre_id) {
+    static validarRestricciones(asignacion, profesor, salon, gruposAsignados, semestres) {
         for (let grupo of gruposAsignados) {
             // Verificar conflicto de profesor
             if (grupo.profesor_id === profesor) {
                 if (grupo.bloques.some(b => asignacion.includes(b))) return false;
             }
             // Verificar conflicto de salón
-            if (grupo.salon_id === salon.salon_id) {
+            if (grupo.salon_id === salon) {
                 if (grupo.bloques.some(b => asignacion.includes(b))) return false;
             }
-            // Verificar conflicto en el mismo semestre
-            if (grupo.semestre_id === semestre_id) {
+            // Verificar conflicto en los semestres involucrados
+            if (grupo.semestres.some(s => semestres.includes(s))) {
                 if (grupo.bloques.some(b => asignacion.includes(b))) return false;
             }
         }
+        // Además, se valida que la sesión sea correcta en cada día
         return generarGrupos.validarSesion(asignacion, 24);
     }
 

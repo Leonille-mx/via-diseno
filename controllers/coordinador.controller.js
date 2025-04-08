@@ -174,7 +174,7 @@ exports.get_modificar_profesor = (req, res, next) => {
         Profesor.getSchedule(req.params.id),
         Profesor.getCourses(req.params.id),
         Profesor.getCoursesInfo(req.params.id),
-        MateriaSemestre.fetchMateriasSemestre()
+        MateriaSemestre.fetchMateriasSemestreOnce()
     ])
     .then(([bloques, materias, materiasInfo, materiasDisp]) => {
         res.json({ 
@@ -498,7 +498,25 @@ exports.get_generar_grupos = async (req, res, next) => {
             generarGrupos.getSalonesDisponibles()
         ]);
 
-        const materias = materiasAbiertas.rows;
+        // Manejar materias abiertas más de una vez para distintos semestres
+        const materiasAgrupadas = materiasAbiertas.rows.reduce((acc, materia) => {
+            if (!acc[materia.materia_id]) {
+              // Se crea el objeto para la materia, iniciando con un array de semestres
+              acc[materia.materia_id] = { 
+                ...materia, 
+                semestres: [materia.semestre_id] 
+              };
+            } else {
+              // Si ya existe, se agrega el semestre a la lista (evitando duplicados si fuera necesario)
+              if (!acc[materia.materia_id].semestres.includes(materia.semestre_id)) {
+                acc[materia.materia_id].semestres.push(materia.semestre_id);
+              }
+            }
+            return acc;
+        }, {});
+          
+        // Convertir el objeto en un arreglo para facilitar el recorrido en el backtracking
+        const materias = Object.values(materiasAgrupadas);
         const salones = salonesDisponibles.rows;
 
         let gruposAsignados = []; // Almacenará los grupos asignados para validar restricciones
@@ -547,7 +565,7 @@ exports.get_generar_grupos = async (req, res, next) => {
                                 profesor_id: profesor,
                                 salon_id: salon.salon_id,
                                 bloques: combinacion,
-                                semestre_id: materia.semestre_id
+                                semestres: materia.semestres
                             });
 
                             // Intentar asignar la siguiente materia
@@ -576,6 +594,7 @@ exports.get_generar_grupos = async (req, res, next) => {
         console.error("Error en la generación de grupos:", error);    
     }
 };
+
 exports.post_sincronizar_planes_de_estudio = async (req, res) => {
     try {
         // Trae carreras de la API
