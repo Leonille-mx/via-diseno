@@ -58,6 +58,9 @@ exports.get_dashboard = async (req, res) => {
 exports.get_materias = async (req, res, nxt) => {
     try {
         const materiasSemestreDB = await MateriaSemestre.fetchMateriasSemestre();
+        const todasLasMateriasDB = await Materia.fetchAll(); 
+        const materiasNoAbiertasDB = await Materia.fetchMateriasNoAbiertas(); 
+        
         // Si hay query string, lo guarda en la variable msg
         const msg = req.query.msg || null;
         const allMaterias = materiasSemestreDB.rows;
@@ -74,10 +77,22 @@ exports.get_materias = async (req, res, nxt) => {
             // Regresa el acumulador para la siguiente iteración
             return accumulator;
         }, {});
+
+        const materiasNoAbiertasPorSemestre = {};
+        const totalSemestres = 9;
+        for (let i = 1; i <= totalSemestres; i++) {
+            const semestreId = `s${i}`;
+            const res = await MateriaSemestre.fetchMateriasNoAbiertasPorSemestre(semestreId);
+            materiasNoAbiertasPorSemestre[semestreId] = res.rows;
+        }
+
         res.render('materias_coordinador', {
             isLoggedIn: req.session.isLoggedIn || false,
             matricula: req.session.matricula || '',
             materiasPorSemestre: materiasPorSemestre,
+            todasLasMaterias: todasLasMateriasDB.rows,
+            materiasNoAbiertas: materiasNoAbiertasDB.rows,
+            materiasNoAbiertasPorSemestre,
             msg,
         });
     } catch(error) {
@@ -111,6 +126,28 @@ exports.post_sincronizar_materias = async (req, res, nxt) => {
         res.redirect(`/coordinador/materias?msg=${encodeURIComponent('La operación fue fracasada')}`);
     }
 };
+
+exports.post_abrir_materia = async (req, res) => {
+    try {
+        const { semestre_id, materias } = req.body;
+
+        if (!Array.isArray(materias)) {
+            console.log(materias)
+            throw new Error('materias must be an array');
+        }
+
+        for (const materia_id of materias) {
+            console.log(`Inserting materia_id=${materia_id}, semestre_id=${semestre_id}`);
+            await MateriaSemestre.abrirMateriaEnSemestre(materia_id, semestre_id);
+        }
+
+        res.redirect('/coordinador/materias?msg=Materias abiertas exitosamente');
+    } catch (error) {
+        console.error(error);
+        res.redirect('/coordinador/materias?msg=Error al abrir materias');
+    }
+};
+
 exports.post_eliminar_materias = (req, res, next) => {
     const { materiaId, semestreId } = req.params; 
     MateriaSemestre.eliminar(materiaId, semestreId) 

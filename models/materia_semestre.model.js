@@ -45,4 +45,29 @@ module.exports = class MateriaSemestre {
             });
     }
     
+    static async abrirMateriaEnSemestre(materia_id, semestre_id) {
+        const client = await pool.connect();
+        try {
+            await client.query(
+                `INSERT INTO materia_semestre (materia_id, semestre_id)
+                 VALUES ($1, $2)`,
+                [materia_id, semestre_id]
+            );
+        } finally {
+            client.release();
+        }
+    }
+
+    static async fetchMateriasNoAbiertasPorSemestre(semestre_id) {
+        return pool.query(
+            `SELECT m.materia_id, m.nombre, m.creditos, m.horas_profesor, m.tipo_salon
+             FROM materia m
+             WHERE NOT EXISTS (
+                 SELECT 1 FROM materia_semestre ms
+                 WHERE ms.materia_id = m.materia_id
+                 AND ms.semestre_id = $1
+             );`,
+            [semestre_id]
+        );
+    }
 }
