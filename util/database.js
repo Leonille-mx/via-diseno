@@ -4,13 +4,25 @@ const dotenv = require("dotenv");
 // Load environment variables from a .env file
 dotenv.config();
 
-const pool = new Pool({
-    host: process.env.DB_HOST,
-    user: process.env.DB_USER,
-    database: process.env.DB_NAME,
-    password: process.env.DB_PASSWORD,
-    port: process.env.DB_PORT,
-});
+const isProduction = process.env.NODE_ENV === 'production';
+
+const pool = new Pool(
+  isProduction
+    ? { // Producción remota
+        connectionString: process.env.DATABASE_URL,
+        ssl: {
+          rejectUnauthorized: false,
+        },
+      }
+    : { // Producción local
+        host: process.env.DB_HOST,
+        user: process.env.DB_USER,
+        database: process.env.DB_NAME,
+        password: process.env.DB_PASSWORD,
+        port: process.env.DB_PORT,
+      }
+);
+
 
 pool.connect()
     .then(client => {
