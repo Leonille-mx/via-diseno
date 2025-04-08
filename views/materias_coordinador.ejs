@@ -801,7 +801,7 @@
                     <th scope="col" style="width: 5%; min-width: 50px;"></th>
                   </tr>
                 </thead>
-                <tbody>  <% for (let materia of materiasNoAbiertas) { %>
+                <tbody>  <% for (let materia of todasLasMaterias) { %>
                   <tr data-materia-id="<%= materia.materia_id %>">
                     <th scope="row" class="text-center align-middle"><%= materia.nombre %></th>
                     <td class="text-center align-middle"><%= materia.materia_id %></td>
@@ -865,14 +865,13 @@
       const fila = tablaOrigen.querySelector(`tr[data-materia-id="${materiaId}"]`);
       if (!fila) return;
   
-      // Cambiar el botón
       const btn = fila.querySelector('.abrir-materia-btn');
       const icon = btn.querySelector('svg');
       if (haciaSeleccionadas) {
-        btn.style.backgroundColor = '#28a745'; // verde
+        btn.style.backgroundColor = '#28a745';
         icon.innerHTML = `<path d="M12.736 3.97a.733.733 0 0 1 1.047 0c.286.289.29.756.01 1.05L7.88 12.01a.733.733 0 0 1-1.065.02L3.217 8.384a.757.757 0 0 1 0-1.06.733.733 0 0 1 1.047 0l3.052 3.093 5.4-6.425z"/>`;
       } else {
-        btn.style.backgroundColor = '#84251c'; // rojo
+        btn.style.backgroundColor = '#84251c';
         icon.innerHTML = `<path d="M8 4a.5.5 0 0 1 .5.5v3h3a.5.5 0 0 1 0 1h-3v3a.5.5 0 0 1-1 0v-3h-3a.5.5 0 0 1 0-1h3v-3A.5.5 0 0 1 8 4"/>`;
       }
   
@@ -893,7 +892,6 @@
       });
     });
   
-    // Agregar identificador de fila en la tabla EJS
     document.querySelectorAll('#materiasTabla tbody tr').forEach(tr => {
       const materiaId = tr.querySelector('.abrir-materia-btn').dataset.materiaId;
       tr.setAttribute('data-materia-id', materiaId);

@@ -29,7 +29,7 @@ exports.get_dashboard = (req, res) => {
 exports.get_materias = async (req, res, nxt) => {
     try {
         const materiasSemestreDB = await MateriaSemestre.fetchMateriasSemestre();
-        const todasLasMateriasDB = await Materia.fetchMateriasNoAbiertas(); 
+        const todasLasMateriasDB = await Materia.fetchAll(); 
         const materiasNoAbiertasDB = await Materia.fetchMateriasNoAbiertas(); 
         
         // Si hay query string, lo guarda en la variable msg
