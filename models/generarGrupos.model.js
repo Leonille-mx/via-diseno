@@ -89,21 +89,22 @@ module.exports = class generarGrupos {
     // - Dos grupos con el mismo profesor no pueden tener bloques en común.
     // - Dos grupos en el mismo salón no pueden tener bloques en común.
     // - Dos grupos del mismo semestre (ciclo escolar) no pueden tener bloques en común.
-    static validarRestricciones(asignacion, profesor, salon, gruposAsignados, semestre_id) {
+    static validarRestricciones(asignacion, profesor, salon, gruposAsignados, semestres) {
         for (let grupo of gruposAsignados) {
             // Verificar conflicto de profesor
             if (grupo.profesor_id === profesor) {
                 if (grupo.bloques.some(b => asignacion.includes(b))) return false;
             }
             // Verificar conflicto de salón
-            if (grupo.salon_id === salon.salon_id) {
+            if (grupo.salon_id === salon) {
                 if (grupo.bloques.some(b => asignacion.includes(b))) return false;
             }
-            // Verificar conflicto en el mismo semestre
-            if (grupo.semestre_id === semestre_id) {
+            // Verificar conflicto en los semestres involucrados
+            if (grupo.semestres.some(s => semestres.includes(s))) {
                 if (grupo.bloques.some(b => asignacion.includes(b))) return false;
             }
         }
+        // Además, se valida que la sesión sea correcta en cada día
         return generarGrupos.validarSesion(asignacion, 24);
     }
 
@@ -139,10 +140,17 @@ module.exports = class generarGrupos {
         return pool.query(`DELETE FROM grupo WHERE grupo_id = $1`, [grupo_id]);
     }
 
+    // Elimina los grupos asignados a los alumnos
+    static async deleteResultadoInscripcion() {
+        return pool.query(`DELETE FROM resultado_inscripcion`);
+    }
+
+    // Elimina todos los horarios asignados a los grupos
     static async deleteAllGruposBloqueTiempo() {
         return pool.query(`DELETE FROM grupo_bloque_tiempo`);
     }
 
+    // Elimina todos los grupos
     static async deleteAllGrupos() {
         return pool.query(`DELETE FROM grupo`);
     }

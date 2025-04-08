@@ -18,6 +18,18 @@ module.exports = class MateriaSemestre {
             ORDER BY materia_id ASC`
         );
     }
+
+    static async fetchMateriasSemestreOnce() {
+        return pool.query(`
+            SELECT DISTINCT
+            m.materia_id, nombre, creditos, 
+            horas_profesor, tipo_salon
+            FROM materia m, materia_semestre ms
+            WHERE m.materia_id = ms.materia_id
+            ORDER BY materia_id ASC`
+        );
+    }    
+
     static eliminar(idMateria, idSemestre) {
         return pool.query('BEGIN') 
             .then(() => pool.query(
