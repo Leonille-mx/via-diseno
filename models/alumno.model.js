@@ -139,7 +139,16 @@ module.exports = class Alumno {
         return pool.query('UPDATE alumno SET inscripcion_completada = true WHERE ivd_id = $1', [id]);
     }
 
-    static solicitud(id) {
-        return pool.query('UPDATE alumno SET inscripcion_completada = true WHERE ivd_id = $1', [id]);
+    static solicitudCambio(ivd_id, descripcion) {
+        return pool.query('SELECT MAX(solicitud_cambio_id) as max_id FROM solicitud_cambio')
+            .then(maxIdResult => {
+                const nextId = (maxIdResult.rows[0].max_id || 0) + 1;             
+                return pool.query(
+                    `INSERT INTO solicitud_cambio 
+                    (solicitud_cambio_id, ivd_id, descripcion, aprobada, created_at) 
+                    VALUES ($1, $2, $3, $4, $5)`,
+                    [nextId, ivd_id, descripcion, false, new Date()]
+                );
+            });
     }
 }

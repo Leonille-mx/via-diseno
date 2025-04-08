@@ -112,38 +112,34 @@
   </div>
 </div>
 
-<!-- Modal de confirmación para Pedir cambio -->
 <div class="modal fade" id="registerSolicitudModal" tabindex="-1" aria-labelledby="registerSolicitudModalLabel" aria-hidden="true">
   <div class="modal-dialog modal-dialog-centered">
     <div class="modal-content rounded-5" style="background-color: #f0f0f0; max-width: 95vw;">
-      
-      <!-- Cuerpo del modal -->
-      <div class="modal-body  px-4">
-        <div class="rounded-5 p-4" style="background-color: white;">
-          <h5 class="modal-title text-center" id="registerSolicitudModalLabel" style="color: #84251C; margin-bottom: 20px;">
-            <b>Usted esta solicitando un cambio de estatus ¿Esta seguro?</b>
-          </h5>
-          <div class="mb-3">
-            <textarea maxlength="60" class="form-control rounded-5 mx-auto" id="nota" name="nota" rows="2" 
-              placeholder="Escriba sus razones" style="background-color: #f0f0f0; resize: none;"></textarea>
+      <form id="solicitudForm" method="POST" action="/alumno-regular/horario/solitud">
+        <div class="modal-body px-4">
+          <div class="rounded-5 p-4" style="background-color: white;">
+            <h5 class="modal-title text-center" id="registerSolicitudModalLabel" style="color: #84251C; margin-bottom: 20px;">
+              <b>Usted está solicitando un cambio de estatus ¿Está seguro?</b>
+            </h5>
+            <div class="mb-3">
+              <textarea maxlength="60" class="form-control rounded-5 mx-auto" id="nota" name="descripcion" rows="2" 
+                placeholder="Escriba sus razones" style="background-color: #f0f0f0; resize: none;" required></textarea>
+            </div>
           </div>
         </div>
-      </div>
-      
-      <!-- Pie del modal con botones de acción -->
-      <div class="modal-footer justify-content-center" style="background-color: #f0f0f0; border-bottom-left-radius: 20px; border-bottom-right-radius: 20px; border-top: none; padding: 1.5rem;">
-        <form id="endForm" method="POST" action="">
+        <div class="modal-footer justify-content-center">
+          <input type="hidden" name="ivd_id" id="hiddenIvdId">
           <button type="submit" class="btn btn-primary rounded-pill px-4 py-2 mx-2" 
             style="background-color: #84251C; border: none; min-width: 120px;">
             Confirmar
           </button>
-        </form>
-        <button type="button" class="btn btn-secondary rounded-pill px-4 py-2 mx-2" 
-          style="background-color: white; border: 1px solid #84251C; color: #84251C; min-width: 120px;" 
-          data-bs-dismiss="modal">
-          Cancelar
-        </button>
-      </div>
+          <button type="button" class="btn btn-secondary rounded-pill px-4 py-2 mx-2" 
+            style="background-color: white; border: 1px solid #84251C; color: #84251C; min-width: 120px;" 
+            data-bs-dismiss="modal">
+            Cancelar
+          </button>
+        </div>
+      </form>      
     </div>
   </div>
 </div>
@@ -151,11 +147,10 @@
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
   <script src="/js/alumno.js"></script>
   <script>
+    //Esto es para mostrar la clase segun los dias
     document.addEventListener('DOMContentLoaded', function() {
       const dayButtons = document.querySelectorAll('.day-btn');
       const classCards = document.querySelectorAll('.class-card');
-      
-      // Función para mostrar solo las clases del día seleccionado
       function filterClassesByDay(day) {
         classCards.forEach(card => {
           const cardDays = card.getAttribute('data-days');
@@ -165,8 +160,6 @@
             card.style.display = 'none';
           }
         });
-        
-        // Actualizar la apariencia de los botones
         dayButtons.forEach(btn => {
           if (btn.getAttribute('data-day') === day) {
             btn.classList.remove('btn-outline-danger');
@@ -176,23 +169,29 @@
             btn.classList.remove('btn-danger', 'text-white');
           }
         });
-      }
-      
-      // Agregar evento click a cada botón de día
+      }      
       dayButtons.forEach(button => {
         button.addEventListener('click', function() {
           const selectedDay = this.getAttribute('data-day');
           filterClassesByDay(selectedDay);
         });
-      });
-      
+      });  
       filterClassesByDay('LU'); 
     });
-
+    //Confirmar horario
     document.getElementById('registerInscripcionModal').addEventListener('show.bs.modal', function(event) {
       document.getElementById('AceptarForm').action = `/alumno-regular/horario/confirmar`;
     });
+    //Hacer solicitud de cambio
+    document.addEventListener('DOMContentLoaded', function() {
+      const solicitudModal = document.getElementById('registerSolicitudModal');
+      const form = document.getElementById('solicitudForm');
+      solicitudModal.addEventListener('show.bs.modal', function(event) {
+        const button = event.relatedTarget;
+        const ivdId = button.getAttribute('data-ivd-id');
+        document.getElementById('hiddenIvdId').value = ivdId;
+      });
+});
     </script>
 </body>
 </html>
-

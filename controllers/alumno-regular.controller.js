@@ -14,6 +14,19 @@ exports.get_prevista_de_horario = async (req, res, nxt) => {
     }
 };
 
+exports.get_horario_final = async (req, res, nxt) => {
+    try {
+        const materias_resultado = await Alumno.fetchAllResultadoAlumnoRegular(req.session.matricula);
+        res.render('horario_alumno_regular_final', {
+            isLoggedIn: req.session.isLoggedIn || false,
+            matricula: req.session.matricula || '',
+            materias_resultado: materias_resultado.rows,
+        });
+    } catch (error){
+        console.log(error);
+    }
+};
+
 exports.get_ayuda = (req, res, nxt) => {
     res.render('ayuda_alumno_irregular', {
         isLoggedIn: req.session.isLoggedIn || false,
@@ -24,7 +37,18 @@ exports.get_ayuda = (req, res, nxt) => {
 exports.post_confirmar_horario= async (req, res, nxt) => {
     Alumno.confirmar(req.session.matricula)
     .then (( ) => {
-        res.redirect('/alumno-regular/horario');
+        res.redirect('/alumno-regular/horario-final');
+    })
+    .catch((error) => {
+        console.log(error);
+    });
+};
+
+exports.post_solicitud_cambio = async (req, res, nxt) => {
+    const { descripcion } = req.body;  
+    Alumno.solicitudCambio(req.session.matricula, descripcion)
+    .then(() => {
+        res.redirect('/alumno-regular/horario-final');
     })
     .catch((error) => {
         console.log(error);
