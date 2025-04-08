@@ -48,12 +48,24 @@ exports.get_materias = async (req, res, nxt) => {
             // Regresa el acumulador para la siguiente iteración
             return accumulator;
         }, {});
+
+        
+        
+        const materiasNoAbiertasPorSemestre = {};
+        const totalSemestres = 9;
+        for (let i = 1; i <= totalSemestres; i++) {
+            const semestreId = `s${i}`;
+            const res = await MateriaSemestre.fetchMateriasNoAbiertasPorSemestre(semestreId);
+            materiasNoAbiertasPorSemestre[semestreId] = res.rows;
+        }
+
         res.render('materias_coordinador', {
             isLoggedIn: req.session.isLoggedIn || false,
             matricula: req.session.matricula || '',
             materiasPorSemestre: materiasPorSemestre,
             todasLasMaterias: todasLasMateriasDB.rows,
             materiasNoAbiertas: materiasNoAbiertasDB.rows,
+            materiasNoAbiertasPorSemestre,
             msg,
         });
     } catch(error) {
