@@ -20,7 +20,7 @@
   
   <!-- Tabla de profesores -->
   <div class="table-responsive mx-5 mb-5 rounded-5 flex-grow-1" style="overflow: auto; background-color: white;">
-    <table class="table table-hover" style="min-width: 800px; width: 100%;">
+    <table class="table" style="min-width: 800px; width: 100%;">
       <thead class="table-light">
         <tr>
           <th scope="col" style="width: 15%; min-width: 100px;" class="text-center align-middle">ID</th>
@@ -55,21 +55,24 @@
               </div>
               <div class="d-flex justify-content-center gap-5 mt-3"> 
               <!-- Botón Rechazar -->
-               <button type="button" class="btn btn-secondary rounded-pill px-4 mx-4" 
-               style="background-color: white; border: 1px solid #84251C; color: #84251C;" 
-               data-bs-toggle="modal"
-               data-bs-target="#confirmRechazarModal"
-               data-solicitud-id="<%= solicitud.ivd_id %>"> 
-              Rechazar
-              </button>
-                <!-- Botón Aceptar con modal -->
-              <button type="button" class="btn btn-primary d-flex align-items-center gap-2 rounded-pill px-3 py-2" 
-              style="background-color: #84251C; border: none;"
-              data-bs-toggle="modal" 
-              data-bs-target="#confirmAceptarModal"
-              data-solicitud-id="<%= solicitud.ivd_id %>">
-              Aceptar
-              </button>
+                <button type="button" 
+                class="btn rounded-pill px-4 py-2 mx-2"
+                style="background-color: white; border: 1px solid #84251C; color: #84251C; min-width: 120px;" 
+                data-bs-toggle="modal"
+                data-bs-target="#confirmRechazarModal"
+                data-solicitud-id="<%= solicitud.ivd_id %>"> 
+                Rechazar
+                </button>
+
+                <!-- Botón Aceptar -->
+                <button type="button" 
+                class="btn rounded-pill px-4 py-2 mx-2"
+                style="background-color: #84251C; color: white; border: none; min-width: 120px;" 
+                data-bs-toggle="modal" 
+                data-bs-target="#confirmAceptarModal"
+                data-solicitud-id="<%= solicitud.ivd_id %>">
+                Aceptar
+                </button>
           </div>
         </div>
             </td>
@@ -118,7 +121,8 @@
     <div class="modal-content rounded-5" style="background-color: #f0f0f0; max-width: 95vw;">
       <div class="modal-body  px-4">
         <div class="rounded-5 p-4" style="background-color: white;">
-          <h5 class="modal-title text-center" id="scheduleModalLabel" style="color: #84251C;"><b>Usted está rechazando la solicitud solicitada. Una vez que haya confirmado no podra regresar. 
+          <h5 class="modal-title text-center" id="scheduleModalLabel" style="color: #84251C;"><b>Usted está rechazando la solicitud de cambio de 
+            estatus. Una vez que haya confirmado no podra regresar. 
             ¿Deseas rechazar la solicitud?</b></h5>
         </div>
       </div>
@@ -161,7 +165,6 @@
       });
     });
   });
-
   // Para el modal de aceptar y rechazar
 document.getElementById('confirmAceptarModal').addEventListener('show.bs.modal', function(event) {
     const button = event.relatedTarget; 
