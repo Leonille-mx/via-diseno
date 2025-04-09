@@ -88,24 +88,25 @@
       <!-- Cuerpo del modal -->
       <div class="modal-body  px-4">
         <div class="rounded-5 p-4" style="background-color: white;">
-          <h5 class="modal-title text-center" id="scheduleModalLabel" style="color: #84251C;"><b>Usted está aprobando la solicitud solicitada. Una vez que haya 
+          <h5 class="modal-title text-center" id="scheduleModalLabel" style="color: #84251C;"><b>Usted está aprobando una solicitud de cambio de estatus. 
+            Una vez que la haya aprobado no podra regresar.
             ¿Deseas aprobar la solicitud y cambiar el estatus del alumno a irregular?</b></h5>
         </div>
       </div>
       
       <!-- Pie del modal con botones de acción -->
       <div class="modal-footer justify-content-center" style="background-color: #f0f0f0; border-bottom-left-radius: 20px; border-bottom-right-radius: 20px; border-top: none; padding: 1.5rem;">
+        <button type="button" class="btn btn-secondary rounded-pill px-4 py-2 mx-2" 
+          style="background-color: white; border: 1px solid #84251C; color: #84251C; min-width: 120px;" 
+          data-bs-dismiss="modal">
+          Cancelar
+        </button>
         <form id="activateForm" method="POST" action="">
           <button type="submit" class="btn btn-primary rounded-pill px-4 py-2 mx-2" 
             style="background-color: #84251C; border: none; min-width: 120px;">
             Confirmar
           </button>
         </form>
-        <button type="button" class="btn btn-secondary rounded-pill px-4 py-2 mx-2" 
-          style="background-color: white; border: 1px solid #84251C; color: #84251C; min-width: 120px;" 
-          data-bs-dismiss="modal">
-          Cancelar
-        </button>
       </div>
     </div>
   </div>
@@ -123,17 +124,17 @@
       </div>
 
       <div class="modal-footer justify-content-center" style="background-color: #f0f0f0; border-bottom-left-radius: 20px; border-bottom-right-radius: 20px; border-top: none; padding: 1.5rem;">
-        <form id="rechazarForm" method="POST" action="">
-        <button type="submit" class="btn btn-primary rounded-pill px-4 py-2 mx-2" 
-          style="background-color: #84251C; border: none; min-width: 120px;">
-          Confirmar
-        </button>
-        </form>
         <button type="button" class="btn btn-secondary rounded-pill px-4 py-2 mx-2" 
           style="background-color: white; border: 1px solid #84251C; color: #84251C; min-width: 120px;" 
           data-bs-dismiss="modal">
           Cancelar
         </button>
+        <form id="rechazarForm" method="POST" action="">
+          <button type="submit" class="btn btn-primary rounded-pill px-4 py-2 mx-2" 
+            style="background-color: #84251C; border: none; min-width: 120px;">
+            Confirmar
+          </button>
+        </form>
       </div>
     </div>
   </div>
