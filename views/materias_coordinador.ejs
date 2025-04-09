@@ -945,6 +945,17 @@
         window.location.href = '/coordinador/materias?msg=Error al abrir materias';
       }
     });
+
+    const modal = document.getElementById('abrirMateriaModal');
+
+    modal.addEventListener('hidden.bs.modal', () => {
+      selectedMaterias.forEach(materiaId => {
+        moverFila(materiaId, false);
+      });
+
+      selectedMaterias.clear();
+    });
+
   </script>
   
 </body>
