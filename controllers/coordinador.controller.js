@@ -423,11 +423,11 @@ exports.post_sincronizar_alumnos = async (req, res, nxt) => {
                 const historialApi = historial.data;
                 await Historial_Academico.sincronizarHistorialAcademico(student.ivd_id, historialApi);
             } catch (error) {
-                console.error(`Saltando la sincronización del historial del estudiante ${student.ivd_id}:`, error.message);
                 alumnos_sin_historial.push(student.ivd_id);
                 continue;
             }
         }
+        console.log("Alumnos sin historial: " + alumnos_sin_historial);
         const msg = `La operación fue exitosa!<br>
                     Insertado: ${resultadoUsuario.inserted}<br>
                     Actualizado: ${resultadoUsuario.updated + resultadoAlumno.updated}<br>

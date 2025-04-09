@@ -70,10 +70,11 @@
           <thead class="table-light">
             <tr>
               <th scope="col" style="width: 15%; min-width: 100px;" class="text-center align-middle">ID</th>
-              <th scope="col" style="width: 15%; min-width: 100px;" class="text-center align-middle">Nombre</th>
+              <th scope="col" style="width: 35%; min-width: 150px;" class="text-center align-middle">Nombre</th>
               <th scope="col" style="width: 15%; min-width: 100px;" class="text-center align-middle">Créditos</th>
+              <th scope="col" style="width: 15%; min-width: 100px;" class="text-center align-middle">Semestre</th>
               <th scope="col" style="width: 15%; min-width: 100px;" class="text-center align-middle">Horas profesor</th>
-              <th scope="col" style="width: 35%; min-width: 150px;" class="text-center align-middle">Tipo de Salon</th>
+              <th scope="col" style="width: 15%; min-width: 100px;" class="text-center align-middle">Tipo de Salon</th>
               <th scope="col" style="width: 5%; min-width: 50px;"></th>
             </tr>
           </thead>
@@ -84,6 +85,7 @@
                   <th scope="row" class="text-center align-middle"><%= materia.materia_id %></th>
                   <td class="text-center align-middle"><%= materia.nombre %></td>
                   <td class="text-center align-middle"><%= materia.creditos %></td>
+                  <td class="text-center align-middle"><%= materia.semestre_plan %></td>
                   <td class="text-center align-middle"><%= materia.horas_profesor %></td>
                   <td class="text-center align-middle"><%= materia.tipo_salon %></td>
                   <td class="text-center align-middle">
@@ -92,6 +94,7 @@
                     data-bs-toggle="modal" 
                     data-bs-target="#eliminarMateriaModal"
                     data-materia-id="<%= materia.materia_id %>"
+                    data-semestre-plan="<%= materia.semestre_plan %>"
                     data-semestre-id="<%= materia.semestre_id %>"
                     data-materia-nombre="<%= materia.nombre %>"
                     data-materia-creditos="<%= materia.creditos %>"
@@ -141,10 +144,11 @@
           <thead class="table-light">
             <tr>
               <th scope="col" style="width: 15%; min-width: 100px;" class="text-center align-middle">ID</th>
-              <th scope="col" style="width: 15%; min-width: 100px;" class="text-center align-middle">Nombre</th>
+              <th scope="col" style="width: 35%; min-width: 150px;" class="text-center align-middle">Nombre</th>
               <th scope="col" style="width: 15%; min-width: 100px;" class="text-center align-middle">Créditos</th>
+              <th scope="col" style="width: 15%; min-width: 100px;" class="text-center align-middle">Semestre</th>
               <th scope="col" style="width: 15%; min-width: 100px;" class="text-center align-middle">Horas profesor</th>
-              <th scope="col" style="width: 35%; min-width: 150px;" class="text-center align-middle">Tipo de Salon</th>
+              <th scope="col" style="width: 15%; min-width: 100px;" class="text-center align-middle">Tipo de Salon</th>
               <th scope="col" style="width: 5%; min-width: 50px;"></th>
             </tr>
           </thead>
@@ -155,6 +159,7 @@
                   <th scope="row" class="text-center align-middle"><%= materia.materia_id %></th>
                   <td class="text-center align-middle"><%= materia.nombre %></td>
                   <td class="text-center align-middle"><%= materia.creditos %></td>
+                  <td class="text-center align-middle"><%= materia.semestre_plan %></td>
                   <td class="text-center align-middle"><%= materia.horas_profesor %></td>
                   <td class="text-center align-middle"><%= materia.tipo_salon %></td>
                   <td class="text-center align-middle">
@@ -163,6 +168,7 @@
                     data-bs-toggle="modal" 
                     data-bs-target="#eliminarMateriaModal"
                     data-materia-id="<%= materia.materia_id %>"
+                    data-semestre-plan="<%= materia.semestre_plan %>"
                     data-semestre-id="<%= materia.semestre_id %>"
                     data-materia-nombre="<%= materia.nombre %>"
                     data-materia-creditos="<%= materia.creditos %>"
@@ -211,10 +217,11 @@
           <thead class="table-light">
             <tr>
               <th scope="col" style="width: 15%; min-width: 100px;" class="text-center align-middle">ID</th>
-              <th scope="col" style="width: 15%; min-width: 100px;" class="text-center align-middle">Nombre</th>
+              <th scope="col" style="width: 35%; min-width: 150px;" class="text-center align-middle">Nombre</th>
               <th scope="col" style="width: 15%; min-width: 100px;" class="text-center align-middle">Créditos</th>
+              <th scope="col" style="width: 15%; min-width: 100px;" class="text-center align-middle">Semestre</th>
               <th scope="col" style="width: 15%; min-width: 100px;" class="text-center align-middle">Horas profesor</th>
-              <th scope="col" style="width: 35%; min-width: 150px;" class="text-center align-middle">Tipo de Salon</th>
+              <th scope="col" style="width: 15%; min-width: 100px;" class="text-center align-middle">Tipo de Salon</th>
               <th scope="col" style="width: 5%; min-width: 50px;"></th>
             </tr>
           </thead>
@@ -225,6 +232,7 @@
                   <th scope="row" class="text-center align-middle"><%= materia.materia_id %></th>
                   <td class="text-center align-middle"><%= materia.nombre %></td>
                   <td class="text-center align-middle"><%= materia.creditos %></td>
+                  <td class="text-center align-middle"><%= materia.semestre_plan %></td>
                   <td class="text-center align-middle"><%= materia.horas_profesor %></td>
                   <td class="text-center align-middle"><%= materia.tipo_salon %></td>
                   <td class="text-center align-middle">
@@ -233,6 +241,7 @@
                     data-bs-toggle="modal" 
                     data-bs-target="#eliminarMateriaModal"
                     data-materia-id="<%= materia.materia_id %>"
+                    data-semestre-plan="<%= materia.semestre_plan %>"
                     data-semestre-id="<%= materia.semestre_id %>"
                     data-materia-nombre="<%= materia.nombre %>"
                     data-materia-creditos="<%= materia.creditos %>"
@@ -282,10 +291,11 @@
           <thead class="table-light">
             <tr>
               <th scope="col" style="width: 15%; min-width: 100px;" class="text-center align-middle">ID</th>
-              <th scope="col" style="width: 15%; min-width: 100px;" class="text-center align-middle">Nombre</th>
+              <th scope="col" style="width: 35%; min-width: 150px;" class="text-center align-middle">Nombre</th>
               <th scope="col" style="width: 15%; min-width: 100px;" class="text-center align-middle">Créditos</th>
+              <th scope="col" style="width: 15%; min-width: 100px;" class="text-center align-middle">Semestre</th>
               <th scope="col" style="width: 15%; min-width: 100px;" class="text-center align-middle">Horas profesor</th>
-              <th scope="col" style="width: 35%; min-width: 150px;" class="text-center align-middle">Tipo de Salon</th>
+              <th scope="col" style="width: 15%; min-width: 100px;" class="text-center align-middle">Tipo de Salon</th>
               <th scope="col" style="width: 5%; min-width: 50px;"></th>
             </tr>
           </thead>
@@ -296,6 +306,7 @@
                   <th scope="row" class="text-center align-middle"><%= materia.materia_id %></th>
                   <td class="text-center align-middle"><%= materia.nombre %></td>
                   <td class="text-center align-middle"><%= materia.creditos %></td>
+                  <td class="text-center align-middle"><%= materia.semestre_plan %></td>
                   <td class="text-center align-middle"><%= materia.horas_profesor %></td>
                   <td class="text-center align-middle"><%= materia.tipo_salon %></td>
                   <td class="text-center align-middle">
@@ -304,6 +315,7 @@
                     data-bs-toggle="modal" 
                     data-bs-target="#eliminarMateriaModal"
                     data-materia-id="<%= materia.materia_id %>"
+                    data-semestre-plan="<%= materia.semestre_plan %>"
                     data-semestre-id="<%= materia.semestre_id %>"
                     data-materia-nombre="<%= materia.nombre %>"
                     data-materia-creditos="<%= materia.creditos %>"
@@ -353,10 +365,11 @@
           <thead class="table-light">
             <tr>
               <th scope="col" style="width: 15%; min-width: 100px;" class="text-center align-middle">ID</th>
-              <th scope="col" style="width: 15%; min-width: 100px;" class="text-center align-middle">Nombre</th>
+              <th scope="col" style="width: 35%; min-width: 150px;" class="text-center align-middle">Nombre</th>
               <th scope="col" style="width: 15%; min-width: 100px;" class="text-center align-middle">Créditos</th>
+              <th scope="col" style="width: 15%; min-width: 100px;" class="text-center align-middle">Semestre</th>
               <th scope="col" style="width: 15%; min-width: 100px;" class="text-center align-middle">Horas profesor</th>
-              <th scope="col" style="width: 35%; min-width: 150px;" class="text-center align-middle">Tipo de Salon</th>
+              <th scope="col" style="width: 15%; min-width: 100px;" class="text-center align-middle">Tipo de Salon</th>
               <th scope="col" style="width: 5%; min-width: 50px;"></th>
             </tr>
           </thead>
@@ -367,6 +380,7 @@
                   <th scope="row" class="text-center align-middle"><%= materia.materia_id %></th>
                   <td class="text-center align-middle"><%= materia.nombre %></td>
                   <td class="text-center align-middle"><%= materia.creditos %></td>
+                  <td class="text-center align-middle"><%= materia.semestre_plan %></td>
                   <td class="text-center align-middle"><%= materia.horas_profesor %></td>
                   <td class="text-center align-middle"><%= materia.tipo_salon %></td>
                   <td class="text-center align-middle">
@@ -375,6 +389,7 @@
                     data-bs-toggle="modal" 
                     data-bs-target="#eliminarMateriaModal"
                     data-materia-id="<%= materia.materia_id %>"
+                    data-semestre-plan="<%= materia.semestre_plan %>"
                     data-semestre-id="<%= materia.semestre_id %>"
                     data-materia-nombre="<%= materia.nombre %>"
                     data-materia-creditos="<%= materia.creditos %>"
@@ -423,10 +438,11 @@
           <thead class="table-light">
             <tr>
               <th scope="col" style="width: 15%; min-width: 100px;" class="text-center align-middle">ID</th>
-              <th scope="col" style="width: 15%; min-width: 100px;" class="text-center align-middle">Nombre</th>
+              <th scope="col" style="width: 35%; min-width: 150px;" class="text-center align-middle">Nombre</th>
               <th scope="col" style="width: 15%; min-width: 100px;" class="text-center align-middle">Créditos</th>
+              <th scope="col" style="width: 15%; min-width: 100px;" class="text-center align-middle">Semestre</th>
               <th scope="col" style="width: 15%; min-width: 100px;" class="text-center align-middle">Horas profesor</th>
-              <th scope="col" style="width: 35%; min-width: 150px;" class="text-center align-middle">Tipo de Salon</th>
+              <th scope="col" style="width: 15%; min-width: 100px;" class="text-center align-middle">Tipo de Salon</th>
               <th scope="col" style="width: 5%; min-width: 50px;"></th>
             </tr>
           </thead>
@@ -437,6 +453,7 @@
                   <th scope="row" class="text-center align-middle"><%= materia.materia_id %></th>
                   <td class="text-center align-middle"><%= materia.nombre %></td>
                   <td class="text-center align-middle"><%= materia.creditos %></td>
+                  <td class="text-center align-middle"><%= materia.semestre_plan %></td>
                   <td class="text-center align-middle"><%= materia.horas_profesor %></td>
                   <td class="text-center align-middle"><%= materia.tipo_salon %></td>
                   <td class="text-center align-middle">
@@ -445,6 +462,7 @@
                     data-bs-toggle="modal" 
                     data-bs-target="#eliminarMateriaModal"
                     data-materia-id="<%= materia.materia_id %>"
+                    data-semestre-plan="<%= materia.semestre_plan %>"
                     data-semestre-id="<%= materia.semestre_id %>"
                     data-materia-nombre="<%= materia.nombre %>"
                     data-materia-creditos="<%= materia.creditos %>"
@@ -494,10 +512,11 @@
           <thead class="table-light">
             <tr>
               <th scope="col" style="width: 15%; min-width: 100px;" class="text-center align-middle">ID</th>
-              <th scope="col" style="width: 15%; min-width: 100px;" class="text-center align-middle">Nombre</th>
+              <th scope="col" style="width: 35%; min-width: 150px;" class="text-center align-middle">Nombre</th>
               <th scope="col" style="width: 15%; min-width: 100px;" class="text-center align-middle">Créditos</th>
+              <th scope="col" style="width: 15%; min-width: 100px;" class="text-center align-middle">Semestre</th>
               <th scope="col" style="width: 15%; min-width: 100px;" class="text-center align-middle">Horas profesor</th>
-              <th scope="col" style="width: 35%; min-width: 150px;" class="text-center align-middle">Tipo de Salon</th>
+              <th scope="col" style="width: 15%; min-width: 100px;" class="text-center align-middle">Tipo de Salon</th>
               <th scope="col" style="width: 5%; min-width: 50px;"></th>
             </tr>
           </thead>
@@ -508,6 +527,7 @@
                   <th scope="row" class="text-center align-middle"><%= materia.materia_id %></th>
                   <td class="text-center align-middle"><%= materia.nombre %></td>
                   <td class="text-center align-middle"><%= materia.creditos %></td>
+                  <td class="text-center align-middle"><%= materia.semestre_plan %></td>
                   <td class="text-center align-middle"><%= materia.horas_profesor %></td>
                   <td class="text-center align-middle"><%= materia.tipo_salon %></td>
                   <td class="text-center align-middle">
@@ -516,6 +536,7 @@
                     data-bs-toggle="modal" 
                     data-bs-target="#eliminarMateriaModal"
                     data-materia-id="<%= materia.materia_id %>"
+                    data-semestre-plan="<%= materia.semestre_plan %>"
                     data-semestre-id="<%= materia.semestre_id %>"
                     data-materia-nombre="<%= materia.nombre %>"
                     data-materia-creditos="<%= materia.creditos %>"
@@ -565,10 +586,11 @@
           <thead class="table-light">
             <tr>
               <th scope="col" style="width: 15%; min-width: 100px;" class="text-center align-middle">ID</th>
-              <th scope="col" style="width: 15%; min-width: 100px;" class="text-center align-middle">Nombre</th>
+              <th scope="col" style="width: 35%; min-width: 150px;" class="text-center align-middle">Nombre</th>
               <th scope="col" style="width: 15%; min-width: 100px;" class="text-center align-middle">Créditos</th>
+              <th scope="col" style="width: 15%; min-width: 100px;" class="text-center align-middle">Semestre</th>
               <th scope="col" style="width: 15%; min-width: 100px;" class="text-center align-middle">Horas profesor</th>
-              <th scope="col" style="width: 35%; min-width: 150px;" class="text-center align-middle">Tipo de Salon</th>
+              <th scope="col" style="width: 15%; min-width: 100px;" class="text-center align-middle">Tipo de Salon</th>
               <th scope="col" style="width: 5%; min-width: 50px;"></th>
             </tr>
           </thead>
@@ -579,6 +601,7 @@
                   <th scope="row" class="text-center align-middle"><%= materia.materia_id %></th>
                   <td class="text-center align-middle"><%= materia.nombre %></td>
                   <td class="text-center align-middle"><%= materia.creditos %></td>
+                  <td class="text-center align-middle"><%= materia.semestre_plan %></td>
                   <td class="text-center align-middle"><%= materia.horas_profesor %></td>
                   <td class="text-center align-middle"><%= materia.tipo_salon %></td>
                   <td class="text-center align-middle">
@@ -587,6 +610,7 @@
                     data-bs-toggle="modal" 
                     data-bs-target="#eliminarMateriaModal"
                     data-materia-id="<%= materia.materia_id %>"
+                    data-semestre-plan="<%= materia.semestre_plan %>"
                     data-semestre-id="<%= materia.semestre_id %>"
                     data-materia-nombre="<%= materia.nombre %>"
                     data-materia-creditos="<%= materia.creditos %>"
@@ -636,10 +660,11 @@
           <thead class="table-light">
             <tr>
               <th scope="col" style="width: 15%; min-width: 100px;" class="text-center align-middle">ID</th>
-              <th scope="col" style="width: 15%; min-width: 100px;" class="text-center align-middle">Nombre</th>
+              <th scope="col" style="width: 35%; min-width: 150px;" class="text-center align-middle">Nombre</th>
               <th scope="col" style="width: 15%; min-width: 100px;" class="text-center align-middle">Créditos</th>
+              <th scope="col" style="width: 15%; min-width: 100px;" class="text-center align-middle">Semestre</th>
               <th scope="col" style="width: 15%; min-width: 100px;" class="text-center align-middle">Horas profesor</th>
-              <th scope="col" style="width: 35%; min-width: 150px;" class="text-center align-middle">Tipo de Salon</th>
+              <th scope="col" style="width: 15%; min-width: 100px;" class="text-center align-middle">Tipo de Salon</th>
               <th scope="col" style="width: 5%; min-width: 50px;"></th>
             </tr>
           </thead>
@@ -650,6 +675,7 @@
                   <th scope="row" class="text-center align-middle"><%= materia.materia_id %></th>
                   <td class="text-center align-middle"><%= materia.nombre %></td>
                   <td class="text-center align-middle"><%= materia.creditos %></td>
+                  <td class="text-center align-middle"><%= materia.semestre_plan %></td>
                   <td class="text-center align-middle"><%= materia.horas_profesor %></td>
                   <td class="text-center align-middle"><%= materia.tipo_salon %></td>
                   <td class="text-center align-middle">
@@ -658,6 +684,7 @@
                     data-bs-toggle="modal" 
                     data-bs-target="#eliminarMateriaModal"
                     data-materia-id="<%= materia.materia_id %>"
+                    data-semestre-plan="<%= materia.semestre_plan %>"
                     data-semestre-id="<%= materia.semestre_id %>"
                     data-materia-nombre="<%= materia.nombre %>"
                     data-materia-creditos="<%= materia.creditos %>"
@@ -783,6 +810,7 @@
                 <th style="min-width: 80px;" class="text-center align-middle">ID</th>
                 <th style="min-width: 80px;" class="text-center align-middle">Nombre</th>
                 <th style="min-width: 90px;" class="text-center align-middle">Creditos</th>
+                <th style="min-width: 90px;" class="text-center align-middle">Semestre</th>
                 <th style="min-width: 90px;" class="text-center align-middle">Tipo de salon</th>
               </tr>
             </thead>
@@ -791,6 +819,7 @@
                 <td id="modalMateriaID" class="text-center align-middle"></td>
                 <td id="modalNombre" class="text-center align-middle"></td>
                 <td id="modalCreditos" class="text-center align-middle"></td>
+                <td id="modalSemestrePlan" class="text-center align-middle"></td>
                 <td id="modalTipoSalon" class="text-center align-middle"></td>
               </tr>
             </tbody>
@@ -830,6 +859,7 @@
     const materiaId = button.getAttribute('data-materia-id');
     const materiaNombre = button.getAttribute('data-materia-nombre');
     const materiaCreditos = button.getAttribute('data-materia-creditos');
+    const materiaSemestrePlan = button.getAttribute('data-semestre-plan');
     const materiaTipoSalon = button.getAttribute('data-materia-tipo-salon');
     const semestreID = button.getAttribute('data-semestre-id');  
 
@@ -837,6 +867,7 @@
     document.getElementById('modalMateriaID').textContent = materiaId;
     document.getElementById('modalNombre').textContent = materiaNombre;
     document.getElementById('modalCreditos').textContent = materiaCreditos;
+    document.getElementById('modalSemestrePlan').textContent = materiaSemestrePlan;
     document.getElementById('modalTipoSalon').textContent = materiaTipoSalon;
 
     // Actualizar acción del formulario

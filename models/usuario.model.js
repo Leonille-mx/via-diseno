@@ -35,10 +35,10 @@ module.exports = class Usuario {
                     );
                     inserted++;
                 } else if (
-                    userDB.nombre !== uA.name ||
-                    userDB.primer_apellido !== uA.first_surname ||
-                    userDB.segundo_apellido !== uA.second_surname ||
-                    userDB.correo_institucional !== uA.email
+                    (userDB.nombre || "").trim() !== (uA.name || "").trim() ||
+                    (userDB.primer_apellido || "").trim() !== (uA.first_surname || "").trim() ||
+                    (userDB.segundo_apellido || "").trim() !== (uA.second_surname || "").trim() ||
+                    (userDB.correo_institucional || "").trim() !== (uA.email || "").trim()
                 ) {
                     await client.query(
                         `UPDATE usuario SET contrasena = NULL, nombre = $1, primer_apellido = $2, segundo_apellido = $3, correo_institucional = $4, role_id = $5 WHERE ivd_id = $6`,

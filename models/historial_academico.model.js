@@ -20,7 +20,7 @@ module.exports = class Historial_Academico {
                     `INSERT INTO historial_academico (
                     ivd_id, materia_id, ciclo_escolar_id, aprobado)
                     VALUES ($1, $2, $3, $4)`,
-                    [ivd_id, registro.course_id, 2, registro.grade_final ? registro.grade_final >= 6 : false]
+                    [ivd_id, registro.sep_id, 2, registro.grade_final ? registro.grade_final >= 6 : false]
                 );
             }
         } catch (error) {
