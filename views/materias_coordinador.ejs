@@ -685,7 +685,7 @@
       
       <!-- Encabezado del modal -->
       <div class="modal-header justify-content-center">
-        <h5 class="modal-title" id="scheduleModalLabel" style="color: #84251C;"><b>Estás Abriendo una Materia</b></h5>
+        <h5 class="modal-title" id="scheduleModalLabel" style="color: #84251C;"><b>Estás Abriendo una Materia para el <span id="semestreTxtModal"></span></b></h5>
       </div>
       
       <!-- Cuerpo del modal -->
@@ -848,10 +848,25 @@
   <script>
     const selectedMaterias = new Set();
 
+    const semestreNombres = {
+      s1: '1er Semestre',
+      s2: '2do Semestre',
+      s3: '3er Semestre',
+      s4: '4to Semestre',
+      s5: '5to Semestre',
+      s6: '6to Semestre',
+      s7: '7mo Semestre',
+      s8: '8vo Semestre',
+      s9: '9no Semestre'
+    };
+
     document.querySelectorAll('[data-bs-toggle="modal"][data-semestre]').forEach(btn => {
         btn.addEventListener('click', function() {
             const semestreId = this.dataset.semestre;
             document.getElementById('modalSemestreId').value = semestreId;
+
+            const semestreTxt = semestreNombres[semestreId] || semestreId;
+            document.getElementById('semestreTxtModal').textContent = semestreTxt;
 
             document.querySelectorAll('#materiasTabla tbody .materia-row').forEach(row => {
               row.style.display = 'none';
