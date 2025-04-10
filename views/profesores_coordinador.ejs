@@ -94,11 +94,12 @@
             <table class="table table-hover">
               <thead class="table-light">
                 <tr>
-                  <th class="text-center align-middle" style="width: 32%; min-width: 100px;">Nombre</th>
-                  <th class="text-center align-middle" style="width: 17%; min-width: 100px;">ID</th>
-                  <th class="text-center align-middle" style="width: 17%; min-width: 100px;">Créditos</th>
-                  <th class="text-center align-middle" style="width: 17%; min-width: 100px;">Horas Profesor</th>
-                  <th class="text-center align-middle" style="width: 17%; min-width: 100px;">Tipo de Salón</th>
+                  <th class="text-center align-middle" style="width: 9%; min-width: 100px;">ID</th>
+                  <th class="text-center align-middle" style="width: 30%; min-width: 100px;">Nombre</th>
+                  <th class="text-center align-middle" style="width: 30%; min-width: 100px;">Carrera</th>
+                  <th class="text-center align-middle" style="width: 9%; min-width: 100px;">Semestre</th>
+                  <th class="text-center align-middle" style="width: 9%; min-width: 100px;">Créditos</th>
+                  <th class="text-center align-middle" style="width: 13%; min-width: 100px;">Horas Profesor</th>
                 </tr>
               </thead>
               <tbody id="viewMateriasBody"></tbody>
@@ -157,11 +158,12 @@
               <table class="table table-hover">
                 <thead class="table-light">
                   <tr>
-                    <th class="text-center align-middle" style="width: 31%; min-width: 100px;">Nombre</th>
-                    <th class="text-center align-middle" style="width: 16%; min-width: 100px;">ID</th>
-                    <th class="text-center align-middle" style="width: 16%; min-width: 100px;">Créditos</th>
-                    <th class="text-center align-middle" style="width: 16%; min-width: 100px;">Horas Profesor</th>
-                    <th class="text-center align-middle" style="width: 16%; min-width: 100px;">Tipo de Salón</th>
+                    <th class="text-center align-middle" style="width: 9%; min-width: 100px;">ID</th>
+                    <th class="text-center align-middle" style="width: 28%; min-width: 100px;">Nombre</th>
+                    <th class="text-center align-middle" style="width: 28%; min-width: 100px;">Carrera</th>
+                    <th class="text-center align-middle" style="width: 9%; min-width: 100px;">Semestre</th>
+                    <th class="text-center align-middle" style="width: 9%; min-width: 100px;">Créditos</th>
+                    <th class="text-center align-middle" style="width: 12%; min-width: 100px;">Horas Profesor</th>
                     <th class="text-center align-middle" style="width: 5%; min-width: 50px;"></th>
                   </tr>
                 </thead>
@@ -171,17 +173,26 @@
               </table>
             </div>
             <!-- Tabla de Materias Disponibles -->
-            <h6 class="ms-1 mt-4"><b>Materias Disponibles</b></h6>
-            <div style="border-bottom: 3px solid #84251C; width: 11rem; margin-top: -5px; margin-bottom: 10px;"></div>
-            <div class="table-responsive">
+            <div class="d-flex align-items-center justify-content-between gap-3 flex-wrap">
+              <div>
+                <h6 class="ms-1 mt-4"><b>Materias Disponibles</b></h6>
+                <div style="border-bottom: 3px solid #84251C; width: 11rem; margin-top: -5px; margin-bottom: 10px;"></div>
+              </div>
+              <div class="d-flex align-items-center flex-grow-1" style="max-width: 200px;">
+                <input id="buscarMateria" class="form-control me-2 rounded-pill" type="search" placeholder="Buscar materia" aria-label="Search"
+                style="background-image:url('/images/search.svg'); background-repeat:no-repeat; background-position: 1rem center; padding-left: 3rem; font-size: 1rem; width: 100%; border: 1px solid #84251C;">
+              </div>
+            </div>
+            <div class="table-responsive" style="max-height: 250px;">
               <table class="table table-hover">
                 <thead class="table-light">
                   <tr>
-                    <th class="text-center align-middle" style="width: 31%; min-width: 100px;">Nombre</th>
-                    <th class="text-center align-middle" style="width: 16%; min-width: 100px;">ID</th>
-                    <th class="text-center align-middle" style="width: 16%; min-width: 100px;">Créditos</th>
-                    <th class="text-center align-middle" style="width: 16%; min-width: 100px;">Horas Profesor</th>
-                    <th class="text-center align-middle" style="width: 16%; min-width: 100px;">Tipo de Salón</th>
+                    <th class="text-center align-middle" style="width: 9%; min-width: 100px;">ID</th>
+                    <th class="text-center align-middle" style="width: 28%; min-width: 100px;">Nombre</th>
+                    <th class="text-center align-middle" style="width: 28%; min-width: 100px;">Carrera</th>
+                    <th class="text-center align-middle" style="width: 9%; min-width: 100px;">Semestre</th>
+                    <th class="text-center align-middle" style="width: 9%; min-width: 100px;">Créditos</th>
+                    <th class="text-center align-middle" style="width: 12%; min-width: 100px;">Horas Profesor</th>
                     <th class="text-center align-middle" style="width: 5%; min-width: 50px;"></th>
                   </tr>
                 </thead>
@@ -259,11 +270,12 @@ document.getElementById('viewModal').addEventListener('show.bs.modal', async (ev
     data.materiasInfo.rows.forEach(materia => {
       materiasBody.innerHTML += `
         <tr>
+          <td class="text-center align-middle">${materia.sep_id}</td>
           <td class="text-center align-middle">${materia.nombre}</td>
-          <td class="text-center align-middle">${materia.materia_id}</td>
+          <td class="text-center align-middle">${materia.carrera}</td>
+          <td class="text-center align-middle">${materia.semestre_plan}</td>
           <td class="text-center align-middle">${materia.creditos}</td>
           <td class="text-center align-middle">${materia.horas_profesor}</td>
-          <td class="text-center align-middle">${materia.tipo_salon}</td>
         </tr>`;
     });
 
@@ -332,11 +344,12 @@ document.getElementById('editModal').addEventListener('show.bs.modal', async (ev
       const tr = document.createElement('tr');
       tr.dataset.materiaId = materia.materia_id;
       tr.innerHTML = `
+        <td class="text-center align-middle">${materia.sep_id}</td>
         <td class="text-center align-middle">${materia.nombre}</td>
-        <td class="text-center align-middle">${materia.materia_id}</td>
+        <td class="text-center align-middle">${materia.carrera}</td>
+        <td class="text-center align-middle">${materia.semestre_plan}</td>
         <td class="text-center align-middle">${materia.creditos}</td>
         <td class="text-center align-middle">${materia.horas_profesor}</td>
-        <td class="text-center align-middle">${materia.tipo_salon}</td>
         <td class="text-center align-middle">
           <button type="button" class="btn btn-sm p-0 d-flex align-items-center justify-content-center ${btnClass}" 
           style="width: 1.5rem; height: 1.5rem; border-radius: 50%; background-color: #84251c; color: white; border: none;"
@@ -500,6 +513,29 @@ document.querySelectorAll('.materia-btn').forEach(button => {
     
     this.classList.toggle('selected');
     document.getElementById('selectedMaterias').value = JSON.stringify(selectedMaterias);
+  });
+});
+
+// Selecciona el input del buscador y el cuerpo de la tabla
+const searchInput = document.getElementById('buscarMateria');
+const availableMateriasBody = document.getElementById('availableMateriasBody');
+
+// Escucha el evento de keyup (cuando el usuario escribe)
+searchInput.addEventListener('keyup', function() {
+  const searchValue = this.value.toLowerCase().trim();
+  // Obtiene todas las filas de la tabla
+  const rows = availableMateriasBody.querySelectorAll('tr');
+  
+  rows.forEach(row => {
+    // Filtramos el contenido de búsqueda basándonos en todo el texto de la fila. 
+    const rowText = row.textContent.toLowerCase();
+    
+    // Si el término buscado se encuentra en el texto de la fila, se muestra, de lo contrario se oculta
+    if (rowText.includes(searchValue)) {
+      row.style.display = '';
+    } else {
+      row.style.display = 'none';
+    }
   });
 });
 </script>

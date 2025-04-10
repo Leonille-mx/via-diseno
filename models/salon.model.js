@@ -29,7 +29,7 @@ module.exports = class Salon {
 
     // Método para devolver los objetos del almacenamiento persistente
     static fetchAll() {
-        return pool.query('SELECT * FROM salon s, campus c WHERE s.campus_id = c.campus_id');
+        return pool.query('SELECT * FROM salon s, campus c WHERE s.campus_id = c.campus_id ORDER BY salon_id');
     }
 
     // Método para eliminar un objeto del almacenamiento persistente

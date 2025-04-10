@@ -480,6 +480,9 @@ exports.get_cicloescolar = (req, res, next) => {
 exports.post_eliminar_grupo = (req, res, nxt) => {
     Grupos.deleteHorario(req.params.id)
     .then(() => {
+        return Grupos.deleteInscripcion(req.params.id);
+    })
+    .then(() => {
         return Grupos.delete(req.params.id);
     })
     .then(() => {
@@ -564,7 +567,7 @@ exports.get_generar_grupos = async (req, res, next) => {
             if (i === materias.length) return true; // Si todas las materias ya han sido asignadas
 
             const materia = materias[i]; // Materia que se asignará
-            const bloquesNecesarios = Math.ceil(materia.horas_profesor / 18) * 2; // Bloques de tiempo requeridos
+            const bloquesNecesarios = materia.horas_profesor * 2; // Bloques de tiempo requeridos
 
             // Filtrar profesores disponibles para la materia
             let profesoresDisponibles = profesorMaterias[materia.materia_id] || [];
