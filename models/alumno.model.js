@@ -117,9 +117,6 @@ module.exports = class Alumno {
 					    GROUP BY b.dia
 					  ) sub
 					) AS dias
-
-
-
             FROM resultado_inscripcion r
             JOIN grupo g ON r.grupo_id = g.grupo_id
             JOIN materia m ON g.materia_id = m.materia_id
@@ -151,4 +148,17 @@ module.exports = class Alumno {
                 );
             });
     }
+
+    static async verificarInscripcionCompletada(matricula) {
+        try {
+          const resultado = await pool.query(
+            'SELECT inscripcion_completada FROM alumno WHERE ivd_id = $1', 
+            [matricula]
+          );
+          return resultado.rows[0]?.inscripcion_completada || false;
+        } catch (error) {
+          console.error("Error al verificar inscripción:", error);
+          return false;
+        }
+      }
 }

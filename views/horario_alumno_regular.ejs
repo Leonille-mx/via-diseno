@@ -16,16 +16,11 @@
         <div class="p-3 flex-grow-1 ms-3 d-flex flex-column" style="width: 33.33%;">
           <!-- Botones de los días -->
            <div class="d-flex justify-content-center gap-4 mt-3 mb-3">
-            <button type="button" class="btn btn-outline-danger rounded-circle text-black fw-bold d-flex align-items-center justify-content-center day-btn" data-day="LU" style="width: 50px; height: 50px;">
-              LU</button>
-            <button type="button" class="btn btn-outline-danger rounded-circle text-black fw-bold d-flex align-items-center justify-content-center day-btn" data-day="MA" style="width: 50px; height: 50px;">
-              MA</button>
-            <button type="button" class="btn btn-outline-danger rounded-circle text-black fw-bold d-flex align-items-center justify-content-center day-btn" data-day="MI" style="width: 50px; height: 50px;">
-              MI</button>
-            <button type="button" class="btn btn-outline-danger rounded-circle text-black fw-bold d-flex align-items-center justify-content-center day-btn" data-day="JU" style="width: 50px; height: 50px;">
-              JU</button>
-            <button type="button" class="btn btn-outline-danger rounded-circle text-black fw-bold d-flex align-items-center justify-content-center day-btn" data-day="VI" style="width: 50px; height: 50px;">
-              VI</button>
+            <button type="button" class="btn btn-circle-custom day-btn" data-day="LU">LU</button>
+            <button type="button" class="btn btn-circle-custom day-btn" data-day="MA">MA</button>
+            <button type="button" class="btn btn-circle-custom day-btn" data-day="MI">MI</button>
+            <button type="button" class="btn btn-circle-custom day-btn" data-day="JU">JU</button>
+            <button type="button" class="btn btn-circle-custom day-btn" data-day="VI">VI</button>
             </div>
           <!-- Clases -->
           <div id="classes-container" class="flex-grow-1 overflow-y-auto" style="max-height: calc(100vh - 300px);">
@@ -54,13 +49,14 @@
           <div class="d-flex justify-content-center mt-3 mb-3">
             <div style="border-bottom: 3px solid #84251C; width: 20rem;"></div>
           </div>
-
+          <% if (!inscripcion_completada) { %>
           <!-- Botones -->
           <div class="d-flex align-items-center justify-content-between mx-5 mb-3 gap-1 flex-wrap">
             <div class="d-flex">
               <button 
               type="button" 
-              class="btn btn-outline-danger d-flex align-items-center gap-2 rounded-pill px-3 py-2"
+              class="btn rounded-pill px-4 py-2 mx-2"
+              style="background-color: white; border: 1px solid #84251C; color: #84251C; min-width: 120px;" 
               data-bs-toggle="modal" 
               data-bs-target="#registerSolicitudModal">
               Pedir cambio
@@ -68,8 +64,8 @@
             </div>
             <div class="d-flex">
               <button type="submit" 
-              class="btn btn-primary d-flex align-items-center gap-2 rounded-pill px-3 py-2" 
-              style="background-color: #84251C; border: none;"
+              class="btn rounded-pill px-4 py-2 mx-2"
+              style="background-color: #84251C; color: white; border: none; min-width: 120px;"
               data-bs-toggle="modal"
               data-bs-target="#registerInscripcionModal"
               >
@@ -77,6 +73,7 @@
               </button>
             </div>
           </div>
+          <% } %>
         </div>
       </div>
     </main>
@@ -144,45 +141,45 @@
   </div>
 </div>
 
-  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
-  <script src="/js/alumno.js"></script>
-  <script>
-    //Esto es para mostrar la clase segun los dias
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+<script src="/js/alumno.js"></script>
+<script>
     document.addEventListener('DOMContentLoaded', function() {
       const dayButtons = document.querySelectorAll('.day-btn');
-      const classCards = document.querySelectorAll('.class-card');
+      const classCards = document.querySelectorAll('.class-card');   
       function filterClassesByDay(day) {
         classCards.forEach(card => {
-          const cardDays = card.getAttribute('data-days');
-          if (cardDays.includes(day)) {
-            card.style.display = 'block';
-          } else {
-            card.style.display = 'none';
-          }
+          card.style.display = card.getAttribute('data-days').includes(day) ? 'block' : 'none';
         });
+        //Hover cuando se selecciona
         dayButtons.forEach(btn => {
           if (btn.getAttribute('data-day') === day) {
-            btn.classList.remove('btn-outline-danger');
-            btn.classList.add('btn-danger', 'text-white');
+            btn.style.backgroundColor = '#84251C';
+            btn.style.color = 'white';
+            btn.style.borderColor = '#84251C';
           } else {
-            btn.classList.add('btn-outline-danger');
-            btn.classList.remove('btn-danger', 'text-white');
+            btn.style.backgroundColor = 'white';
+            btn.style.color = 'black';
+            btn.style.borderColor = '#84251C';
           }
         });
-      }      
+      }
       dayButtons.forEach(button => {
         button.addEventListener('click', function() {
-          const selectedDay = this.getAttribute('data-day');
-          filterClassesByDay(selectedDay);
-        });
-      });  
-      filterClassesByDay('LU'); 
+          filterClassesByDay(this.getAttribute('data-day')); });
+        button.addEventListener('mouseover', function() { });
+        button.addEventListener('mouseout', function() { });
+      });
+      //Muestra siempre el lunes
+      filterClassesByDay('LU');
     });
-    //Confirmar horario
+
+    // Confirmar horario
     document.getElementById('registerInscripcionModal').addEventListener('show.bs.modal', function(event) {
       document.getElementById('AceptarForm').action = `/alumno-regular/horario/confirmar`;
     });
-    //Hacer solicitud de cambio
+
+    // Solicitud de cambio
     document.addEventListener('DOMContentLoaded', function() {
       const solicitudModal = document.getElementById('registerSolicitudModal');
       const form = document.getElementById('solicitudForm');
@@ -191,7 +188,7 @@
         const ivdId = button.getAttribute('data-ivd-id');
         document.getElementById('hiddenIvdId').value = ivdId;
       });
-});
-    </script>
+    });
+</script>
 </body>
 </html>

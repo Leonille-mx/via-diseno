@@ -24,6 +24,25 @@ html {
 }
 
 
+.btn-circle-custom {
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    padding: 0;
+    background: white;
+    border: 1px solid #84251C;
+    color: black; /* Texto negro */
+    font-weight: bold;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.3s;
+  }
+  .btn-circle-custom:hover {
+    background: #84251C !important;
+    color: white !important;
+  }
+  
 @media (min-width: 992px) {
     .logo-size {
         width: 70px;
