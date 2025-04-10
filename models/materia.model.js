@@ -1,8 +1,9 @@
 const pool = require('../util/database');
 
 module.exports = class Materia {
-    constructor(mi_id, mi_nombre, mi_creditos, mi_semestre_plan, mi_horas_profesor, mi_tipo_salon) {
-        this.id = mi_id;
+    constructor(mi_materia_id, mi_sep_id, mi_nombre, mi_creditos, mi_semestre_plan, mi_horas_profesor, mi_tipo_salon) {
+        this.materia_id = mi_materia_id;
+        this.sep_id = mi_sep_id;
         this.nombre = mi_nombre;
         this.creditos = mi_creditos;
         this.semestre_plan = mi_semestre_plan;
@@ -32,15 +33,16 @@ module.exports = class Materia {
                 // el mapa de los registros de nuestra base de datos
                 // Si se encuentra, regresa la llave(materia_id)
                 // Si no se encuentra, la variable materiaDB va a ser undefined
-                const materiaDB = materiasMap.get(mA.sep_id);
+                const materiaDB = materiasMap.get(mA.id);
                 // Si no se encuentra
                 if (!materiaDB) {
                     // Inserta los nuevos registros en nuestra base de datos
                     await client.query(
                         `INSERT INTO materia 
-                        (materia_id, nombre, creditos, semestre_plan, horas_profesor, tipo_salon) 
-                        VALUES ($1, $2, $3, $4, $5, $6)`,
+                        (materia_id, sep_id, nombre, creditos, semestre_plan, horas_profesor, tipo_salon) 
+                        VALUES ($1, $2, $3, $4, $5, $6, $7)`,
                         [
+                            mA.id,
                             mA.sep_id, 
                             mA.name,
                             mA.credits,
@@ -56,8 +58,8 @@ module.exports = class Materia {
                             (materia_id, requisito_id)
                             VALUES ($1, $2)`,
                             [
-                                mA.sep_id,
-                                requisito.requisite_course.sep_id,
+                                mA.id,
+                                requisito.requisite_course_id,
                             ]
                         );
                     }
@@ -66,7 +68,7 @@ module.exports = class Materia {
                         INSERT INTO plan_materia
                         (plan_estudio_id, plan_estudio_version, materia_id)
                         VALUES ($1, $2, $3)`
-                        , [mA.plans[0].id, mA.plans[0].version, mA.sep_id]
+                        , [mA.plans[0].id, mA.plans[0].version, mA.id]
                     );
                     inserted++;
                 // Si existe la llave pero otros atributos son diferentes    
@@ -76,19 +78,19 @@ module.exports = class Materia {
                     const requisitosDB = await client.query(
                         `SELECT requisito_id 
                         FROM materia_requisito 
-                        WHERE materia_id = $1`, [mA.sep_id]
+                        WHERE materia_id = $1`, [mA.id]
                     );
 
                     // Crea un set de los requisito_id de los registros de nuestra base de datos
                     const requisitosDBSet = new Set(requisitosDB.rows.map(requisito => requisito.requisito_id));
-                    // Crea un set de los sep_id del requisito del otro sistema
-                    const requisitosApiSet = new Set(mA.requisites.map(requisito => requisito.requisite_course.sep_id));
+                    // Crea un set de los requisite_course_id del otro sistema
+                    const requisitosApiSet = new Set(mA.requisites.map(requisito => requisito.requisite_course_id));
 
                     // Inserta los nuevos requisite_course_id a nuestra base de datos
                     // si no existen
                     for (const requisitoApi of mA.requisites) {
                         // Si el requisite_course_id del id actual no existe en el requisitosDBSet
-                        if (!requisitosDBSet.has(requisitoApi.requisite_course.sep_id)) {
+                        if (!requisitosDBSet.has(requisitoApi.requisite_course_id)) {
                             // Inserta los nuevos requisite_course_id a la tabla
                             await client.query(
                                 `INSERT INTO materia_requisito
@@ -96,8 +98,8 @@ module.exports = class Materia {
                                 VALUES
                                 ($1, $2)`, 
                                 [
-                                    mA.sep_id, 
-                                    requisitoApi.requisite_course.sep_id
+                                    mA.id, 
+                                    requisitoApi.requisite_course_id
                                 ]
                             );
                             changed = true;
@@ -112,7 +114,7 @@ module.exports = class Materia {
                                 FROM materia_requisito
                                 WHERE materia_id = $1 AND requisito_id = $2`,
                                 [
-                                    mA.sep_id,
+                                    mA.id,
                                     requisitoDB
                                 ]
                             );
@@ -121,6 +123,8 @@ module.exports = class Materia {
                     }
 
                     if (
+                        // Normaliza el sep id (trim strings) para una mejor comparasión
+                        (materiaDB.sep_id || "").trim() !== (mA.sep_id || "").trim() ||
                         // Normaliza el nombre (trim strings) para una mejor comparasión
                         (materiaDB.nombre || "").trim() !== (mA.name || "").trim() ||
                         // Conviértelos a números para una mejor comparasión
@@ -135,16 +139,17 @@ module.exports = class Materia {
                         // Actualiza los registros de nuestra base de datos
                         await client.query(
                             `UPDATE materia 
-                            SET nombre = $1, creditos = $2, semestre_plan = $3, 
-                            horas_profesor = $4, tipo_salon = $5 
-                            WHERE materia_id = $6`,
+                            SET sep_id = $1, nombre = $2, creditos = $3, semestre_plan = $4, 
+                            horas_profesor = $5, tipo_salon = $6 
+                            WHERE materia_id = $7`,
                             [
+                                mA.sep_id,
                                 mA.name, 
                                 mA.credits, 
                                 mA.plans_courses[0].semester,
                                 mA.hours_professor, 
                                 mA.facilities, 
-                                mA.sep_id,
+                                mA.id,
                             ]
                         );
                         changed = true;
@@ -153,7 +158,7 @@ module.exports = class Materia {
                     const planMateriaDB = await client.query(
                         `SELECT plan_estudio_id, plan_estudio_version 
                         FROM plan_materia 
-                        WHERE materia_id = $1`, [mA.sep_id]
+                        WHERE materia_id = $1`, [mA.id]
                     );
                     // Si existe los registros
                     if (planMateriaDB.rows.length > 0) {
@@ -166,7 +171,7 @@ module.exports = class Materia {
                                 SET plan_estudio_id = $1, 
                                     plan_estudio_version = $2
                                 WHERE materia_id = $3`
-                            , [mA.plans[0].id, mA.plans[0].version, mA.sep_id]);
+                            , [mA.plans[0].id, mA.plans[0].version, mA.id]);
                             changed = true;
                         }
                     // Si no existe
@@ -176,7 +181,7 @@ module.exports = class Materia {
                             INSERT INTO plan_materia
                             (plan_estudio_id, plan_estudio_version, materia_id)
                             VALUES ($1, $2, $3)`
-                            , [mA.plans[0].id, mA.plans[0].version, mA.sep_id]
+                            , [mA.plans[0].id, mA.plans[0].version, mA.id]
                         );
                         changed = true;
                     }
@@ -187,7 +192,7 @@ module.exports = class Materia {
                 }
                 
                 // Elimina el id del mapa para los registros ya revisados
-                materiasMap.delete(mA.sep_id);
+                materiasMap.delete(mA.id);
             }
     
             // Elimina cualquier datos que existan en el otro sistema de nuestra base de datos
@@ -211,7 +216,7 @@ module.exports = class Materia {
     }
     // Trae los registros
     static fetchAll() {
-        return pool.query('SELECT materia_id, nombre, creditos, semestre_plan, horas_profesor, tipo_salon FROM Materia');
+        return pool.query('SELECT sep_id, nombre, creditos, semestre_plan, horas_profesor, tipo_salon FROM Materia');
     }
     static fetchMateriasNoAbiertas() {
         return pool.query(
