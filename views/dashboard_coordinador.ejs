@@ -212,11 +212,16 @@
                     <div class="table-responsive">
                       <table class="table table-sm">
                         <thead>
-                          <th scope="col" style="width: 15%; min-width: 100px;" class="text-center align-middle">Nombre</th>
-                          <th scope="col" style="width: 15%; min-width: 100px;" class="text-center align-middle">Hora Inicio</th>
-                          <th scope="col" style="width: 15%; min-width: 100px;" class="text-center align-middle">Hora Fin</th>
-                          <th scope="col" style="width: 15%; min-width: 100px;" class="text-center align-middle">Dia</th>
-                          <th scope="col" style="width: 15%; min-width: 100px;" class="text-center align-middle">Profesor</th>
+                          <th scope="col" style="width: 15%; min-width: 100px;" class="text-center align-middle">Nombre
+                          </th>
+                          <th scope="col" style="width: 15%; min-width: 100px;" class="text-center align-middle">Hora
+                            Inicio</th>
+                          <th scope="col" style="width: 15%; min-width: 100px;" class="text-center align-middle">Hora
+                            Fin</th>
+                          <th scope="col" style="width: 15%; min-width: 100px;" class="text-center align-middle">Dia
+                          </th>
+                          <th scope="col" style="width: 15%; min-width: 100px;" class="text-center align-middle">
+                            Profesor</th>
                         </thead>
                         <tbody>
                           <% if (grupos_Dashboard && grupos_Dashboard.length> 0) { %>
@@ -280,8 +285,10 @@
                     <div class="table-responsive">
                       <table class="table table-sm">
                         <thead>
-                          <th scope="col" style="width: 15%; min-width: 100px;" class="text-center align-middle">Numero</th>
-                          <th scope="col" style="width: 15%; min-width: 100px;" class="text-center align-middle">Capacidad</th>
+                          <th scope="col" style="width: 15%; min-width: 100px;" class="text-center align-middle">Numero
+                          </th>
+                          <th scope="col" style="width: 15%; min-width: 100px;" class="text-center align-middle">
+                            Capacidad</th>
                         </thead>
                         <tbody>
                           <% if (salones_Dashboard && salones_Dashboard.length> 0) { %>
@@ -345,6 +352,12 @@
                                 <td style="max-width: 300px; white-space: normal; word-break: break-word;">
                                   <%= solicitud.nombre %>
                                     <%= solicitud.primer_apellido %>
+                                </td>
+                                <td style="max-width: 300px; white-space: normal; word-break: break-word;">
+                                  <%= new Date(solicitud.created_at).toLocaleString('es-ES', { year: 'numeric' ,
+                                    month: '2-digit' , day: '2-digit' , hour: '2-digit' , minute: '2-digit' , hour12:
+                                    false }).replace(',', '' ) %>
+                                </td> %>
                                 </td>
                               </tr>
                               <% }); %>
