@@ -845,7 +845,7 @@
 
             document.querySelector('#selectedMateriasTabla tbody').innerHTML = '';
 
-            const materiasAbiertas = JSON.stringify(materiasPorSemestre);
+            const materiasAbiertas = <%- JSON.stringify(materiasPorSemestre) %>;
             if (materiasAbiertas[semestreId]) {
               materiasAbiertas[semestreId].forEach(m => {
                 selectedMaterias.add(m.materia_id.toString());
@@ -882,7 +882,7 @@
       let fila = tablaOrigen.querySelector(`tr[data-materia-id="${materiaId}"]`);
 
       if (!fila && !haciaSeleccionadas) {
-        const materiasAbiertas = JSON.stringify(materiasPorSemestre);
+        const materiasAbiertas = <%- JSON.stringify(materiasPorSemestre) %>;
         const semestreId = document.getElementById('modalSemestreId').value;
 
         const materia = materiasAbiertas[semestreId]?.find(m => m.materia_id.toString() === materiaId);
