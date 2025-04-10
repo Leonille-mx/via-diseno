@@ -75,14 +75,14 @@ module.exports = class MateriaSemestre {
 
     static async fetchMateriasNoAbiertasPorSemestre(semestre_id) {
         return pool.query(
-            `SELECT m.materia_id, m.nombre, m.creditos, m.horas_profesor, m.tipo_salon
+            `SELECT m.materia_id, m.sep_id, m.semestre_plan, m.nombre, m.creditos, m.horas_profesor, m.tipo_salon
              FROM materia m
              WHERE NOT EXISTS (
                  SELECT 1 FROM materia_semestre ms
                  WHERE ms.materia_id = m.materia_id
                  AND ms.semestre_id = $1
              )
-             ORDER BY m.materia_id;`,
+             ORDER BY m.sep_id;`,
             [semestre_id]
         );
     }

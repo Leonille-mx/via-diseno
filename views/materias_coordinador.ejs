@@ -650,7 +650,8 @@
                 <thead class="table-light">
                   <tr>
                     <th scope="col" style="width: 31%; min-width: 100px;" class="text-center align-middle">Nombre</th>
-                    <th scope="col" style="width: 16%; min-width: 100px;" class="text-center align-middle">ID</th>
+                    <th scope="col" class="text-center align-middle">Sep ID</th>
+                    <th scope="col" class="text-center align-middle">Semestre Plan</th>
                     <th scope="col" style="width: 16%; min-width: 150px;" class="text-center align-middle">Tipo de Salón</th>
                     <th scope="col" style="width: 5%; min-width: 50px;"></th>
                   </tr>
@@ -670,7 +671,8 @@
                 <thead class="table-light">
                   <tr>
                     <th scope="col" style="width: 31%; min-width: 100px;" class="text-center align-middle">Nombre</th>
-                    <th scope="col" style="width: 16%; min-width: 100px;" class="text-center align-middle">ID</th>
+                    <th scope="col" class="text-center align-middle">Sep ID</th>
+                    <th scope="col" class="text-center align-middle">Semestre Plan</th>
                     <th scope="col" style="width: 16%; min-width: 150px;" class="text-center align-middle">Tipo de Salón</th>
                     <th scope="col" style="width: 5%; min-width: 50px;"></th>
                   </tr>
@@ -681,7 +683,8 @@
                     <% materias.forEach(materia => { %>
                       <tr class="materia-row" data-semestre="<%= semestreId %>" style="display: none;" data-materia-id="<%= materia.materia_id %>">
                         <th scope="row" class="text-center align-middle"><%= materia.nombre %></th>
-                        <td class="text-center align-middle"><%= materia.materia_id %></td>
+                        <td class="text-center align-middle"><%= materia.sep_id %></td>
+                        <td class="text-center align-middle"><%= materia.semestre_plan %></td>
                         <td class="text-center align-middle"><%= materia.tipo_salon %></td>
                         <td class="text-center align-middle">
                           <button type="button" class="btn btn-sm p-0 d-flex align-items-center justify-content-center abrir-materia-btn" 
@@ -845,7 +848,8 @@
 
                 tr.innerHTML = `
                   <td class="text-center align-middle">${m.nombre}</td>
-                  <td class="text-center align-middle">${m.materia_id}</td>
+                  <td class="text-center align-middle">${m.sep_id}</td>
+                  <td class="text-center align-middle">${m.semestre_plan}</td>
                   <td class="text-center align-middle">${m.tipo_salon}</td>
                   <td class="text-center align-middle">
                     <button class="btn btn-sm p-0 d-flex align-items-center justify-content-center abrir-materia-btn" 
@@ -884,7 +888,8 @@
 
         fila.innerHTML = `
           <th scope="row" class="text-center align-middle">${materia.nombre}</th>
-          <td class="text-center align-middle">${materia.materia_id}</td>
+          <td class="text-center align-middle">${m.sep_id}</td>
+          <td class="text-center align-middle">${m.semestre_plan}</td>
           <td class="text-center align-middle">${materia.tipo_salon}</td>
           <td class="text-center align-middle">
             <button type="button" class="btn btn-sm p-0 d-flex align-items-center justify-content-center abrir-materia-btn" 
