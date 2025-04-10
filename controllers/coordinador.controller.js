@@ -131,16 +131,14 @@ exports.post_sincronizar_materias = async (req, res, nxt) => {
 
 exports.post_abrir_materia = async (req, res) => {
     try {
-        const { semestre_id, materias } = req.body;
+        const { semestre_id, materiasInsertar, materiasEliminar } = req.body;
 
-        if (!Array.isArray(materias)) {
-            console.log(materias)
-            throw new Error('materias must be an array');
+        for (let materiaId of materiasInsertar) {
+            await MateriaSemestre.abrirMateriaEnSemestre(materiaId, semestre_id);
         }
 
-        for (const materia_id of materias) {
-            console.log(`Inserting materia_id=${materia_id}, semestre_id=${semestre_id}`);
-            await MateriaSemestre.abrirMateriaEnSemestre(materia_id, semestre_id);
+        for (let materiaId of materiasEliminar) {
+            await MateriaSemestre.eliminar(materiaId, semestre_id);
         }
 
         res.redirect('/coordinador/materias?msg=Materias abiertas exitosamente');

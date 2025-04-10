@@ -81,7 +81,8 @@ module.exports = class MateriaSemestre {
                  SELECT 1 FROM materia_semestre ms
                  WHERE ms.materia_id = m.materia_id
                  AND ms.semestre_id = $1
-             );`,
+             )
+             ORDER BY m.materia_id;`,
             [semestre_id]
         );
     }
