@@ -778,6 +778,8 @@
             yaAbiertas.clear();
             document.getElementById('modalSemestreId').value = semestreId;
 
+            document.querySelector('#materiasTabla tbody').innerHTML = materiasTablaOriginal;
+
             const semestreTxt = semestreNombres[semestreId] || semestreId;
             document.getElementById('semestreTxtModal').textContent = semestreTxt;
 
@@ -790,7 +792,6 @@
             });
 
             document.querySelector('#selectedMateriasTabla tbody').innerHTML = '';
-            selectedMaterias.clear();
 
             const materiasAbiertas = <%- JSON.stringify(materiasPorSemestre) %>;
             if (materiasAbiertas[semestreId]) {
@@ -926,6 +927,12 @@
         console.error('Error:', error);
         window.location.href = '/coordinador/materias?msg=Error al abrir materias';
       }
+    });
+
+    let materiasTablaOriginal;
+
+    document.addEventListener('DOMContentLoaded', () => {
+      materiasTablaOriginal = document.querySelector('#materiasTabla tbody').innerHTML;
     });
 
     const modal = document.getElementById('abrirMateriaModal');
