@@ -1,9 +1,194 @@
 <%- include('includes/_nav_alumno.ejs') %>
 
-    <main class="bg-grey mx-4 mb-3 p-4" style="height: 85%; border-radius: 1.5rem;">
-      <h1>Horario</h1>
-      <p>Aquí ponemos todo lo de horario</p>
+    <main class="container-fluid bg-grey flex-grow-1 rounded-5 p-0 d-flex flex-column mx-2 my-2 pb-3">
+      <div class="d-flex h-100">
+        <!-- Columna de la izquierda -->
+        <div class="p-3 flex-grow-1" style="width: 66.66%;">
+          <div class="mb-4">
+            <h1 class="ms-3 mt-2">Horario</h1>
+            <h2 class="ms-3 mt-2" style="color:#84251C;">Semestre Ago-Dic 2025</h2>
+            <div class="bg-white rounded-5 p-3 flex-grow-1 ms-3" style="height:500px">
+              <!-- Contenido del horario principal -->
+            </div>
+          </div> 
+        </div>
+        <!-- Columna de la derecha -->
+        <div class="p-3 flex-grow-1 ms-3 d-flex flex-column" style="width: 33.33%;">
+          <!-- Botones de los días -->
+           <div class="d-flex justify-content-center gap-4 mt-3 mb-3">
+            <button type="button" class="btn btn-circle-custom day-btn" data-day="LU">LU</button>
+            <button type="button" class="btn btn-circle-custom day-btn" data-day="MA">MA</button>
+            <button type="button" class="btn btn-circle-custom day-btn" data-day="MI">MI</button>
+            <button type="button" class="btn btn-circle-custom day-btn" data-day="JU">JU</button>
+            <button type="button" class="btn btn-circle-custom day-btn" data-day="VI">VI</button>
+            </div>
+          <!-- Clases -->
+          <div id="classes-container" class="flex-grow-1 overflow-y-auto" style="max-height: calc(100vh - 300px);">
+            <% for (let materia_resultado of materias_resultado) { %>
+              <div class="bg-white rounded-5 p-3 mb-3 class-card" data-days="<%= materia_resultado.dias.map(dia => dia.substring(0,2).toUpperCase()).join(',') %>">
+                <div class="d-flex m-0 align-items-center justify-content-center" style="width: 100%; padding-left: 10%;">
+                      <p class="m-0 me-3"><%= materia_resultado.hora_inicio %> - <%= materia_resultado.hora_fin %></p>
+                      <p class="m-0" style="color: #84251C;">(<%= materia_resultado.dias.join(', ') %>)</p>
+                    </div>
+                <div class="d-flex justify-content-center my-3">
+                  <div style="border-bottom: 3px solid #84251C; width: 100%;"></div>
+                </div>
+                <h5 class="fw-semibold text-center"><%= materia_resultado.materia_nombre %></h5>
+                <p class="text-center mb-3">
+                  Salón: 
+                  <%= materia_resultado.salon_numero %> |   
+                  <%= materia_resultado.profesor_nombre %> 
+                  <%= materia_resultado.profesor_primer_apellido %>
+                  <%= materia_resultado.profesor_segundo_apellido %>
+                </p>
+              </div>
+              <% } %>
+            </div>
+
+          <!-- División -->
+          <div class="d-flex justify-content-center mt-3 mb-3">
+            <div style="border-bottom: 3px solid #84251C; width: 20rem;"></div>
+          </div>
+          <% if (!inscripcion_completada) { %>
+          <!-- Botones -->
+          <div class="d-flex align-items-center justify-content-between mx-5 mb-3 gap-1 flex-wrap">
+            <div class="d-flex">
+              <button 
+              type="button" 
+              class="btn rounded-pill px-4 py-2 mx-2"
+              style="background-color: white; border: 1px solid #84251C; color: #84251C; min-width: 120px;" 
+              data-bs-toggle="modal" 
+              data-bs-target="#registerSolicitudModal">
+              Pedir cambio
+              </button>
+            </div>
+            <div class="d-flex">
+              <button type="submit" 
+              class="btn rounded-pill px-4 py-2 mx-2"
+              style="background-color: #84251C; color: white; border: none; min-width: 120px;"
+              data-bs-toggle="modal"
+              data-bs-target="#registerInscripcionModal"
+              >
+              Confirmar
+              </button>
+            </div>
+          </div>
+          <% } %>
+        </div>
+      </div>
     </main>
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+
+<!-- Modal de confirmación para Aceptar -->
+<div class="modal fade" id="registerInscripcionModal" tabindex="-1" aria-labelledby="registerInscripcionModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content rounded-5" style="background-color: #f0f0f0; max-width: 95vw;">
+      
+      <!-- Cuerpo del modal -->
+      <div class="modal-body  px-4">
+        <div class="rounded-5 p-4" style="background-color: white;">
+          <h5 class="modal-title text-center" id="registerInscripcionModalLabel" style="color: #84251C;"><b>Usted esta cerrando su proceso de admision. 
+            ¿Esta seguro?</b></h5>
+        </div>
+      </div>
+      
+      <!-- Pie del modal con botones de acción -->
+      <div class="modal-footer justify-content-center" style="background-color: #f0f0f0; border-bottom-left-radius: 20px; border-bottom-right-radius: 20px; border-top: none; padding: 1.5rem;">
+        <form id="AceptarForm" method="POST" action="">
+          <button type="submit" class="btn btn-primary rounded-pill px-4 py-2 mx-2" 
+            style="background-color: #84251C; border: none; min-width: 120px;">
+            Confirmar
+          </button>
+        </form>
+        <button type="button" class="btn btn-secondary rounded-pill px-4 py-2 mx-2" 
+          style="background-color: white; border: 1px solid #84251C; color: #84251C; min-width: 120px;" 
+          data-bs-dismiss="modal">
+          Cancelar
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="modal fade" id="registerSolicitudModal" tabindex="-1" aria-labelledby="registerSolicitudModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content rounded-5" style="background-color: #f0f0f0; max-width: 95vw;">
+      <form id="solicitudForm" method="POST" action="/alumno-regular/horario/solitud">
+        <div class="modal-body px-4">
+          <div class="rounded-5 p-4" style="background-color: white;">
+            <h5 class="modal-title text-center" id="registerSolicitudModalLabel" style="color: #84251C; margin-bottom: 20px;">
+              <b>Usted está solicitando un cambio de estatus ¿Está seguro?</b>
+            </h5>
+            <div class="mb-3">
+              <textarea maxlength="60" class="form-control rounded-5 mx-auto" id="nota" name="descripcion" rows="2" 
+                placeholder="Escriba sus razones" style="background-color: #f0f0f0; resize: none;" required></textarea>
+            </div>
+          </div>
+        </div>
+        <div class="modal-footer justify-content-center">
+          <input type="hidden" name="ivd_id" id="hiddenIvdId">
+          <button type="submit" class="btn btn-primary rounded-pill px-4 py-2 mx-2" 
+            style="background-color: #84251C; border: none; min-width: 120px;">
+            Confirmar
+          </button>
+          <button type="button" class="btn btn-secondary rounded-pill px-4 py-2 mx-2" 
+            style="background-color: white; border: 1px solid #84251C; color: #84251C; min-width: 120px;" 
+            data-bs-dismiss="modal">
+            Cancelar
+          </button>
+        </div>
+      </form>      
+    </div>
+  </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+<script src="/js/alumno.js"></script>
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+      const dayButtons = document.querySelectorAll('.day-btn');
+      const classCards = document.querySelectorAll('.class-card');   
+      function filterClassesByDay(day) {
+        classCards.forEach(card => {
+          card.style.display = card.getAttribute('data-days').includes(day) ? 'block' : 'none';
+        });
+        //Hover cuando se selecciona
+        dayButtons.forEach(btn => {
+          if (btn.getAttribute('data-day') === day) {
+            btn.style.backgroundColor = '#84251C';
+            btn.style.color = 'white';
+            btn.style.borderColor = '#84251C';
+          } else {
+            btn.style.backgroundColor = 'white';
+            btn.style.color = 'black';
+            btn.style.borderColor = '#84251C';
+          }
+        });
+      }
+      dayButtons.forEach(button => {
+        button.addEventListener('click', function() {
+          filterClassesByDay(this.getAttribute('data-day')); });
+        button.addEventListener('mouseover', function() { });
+        button.addEventListener('mouseout', function() { });
+      });
+      //Muestra siempre el lunes
+      filterClassesByDay('LU');
+    });
+
+    // Confirmar horario
+    document.getElementById('registerInscripcionModal').addEventListener('show.bs.modal', function(event) {
+      document.getElementById('AceptarForm').action = `/alumno-regular/horario/confirmar`;
+    });
+
+    // Solicitud de cambio
+    document.addEventListener('DOMContentLoaded', function() {
+      const solicitudModal = document.getElementById('registerSolicitudModal');
+      const form = document.getElementById('solicitudForm');
+      solicitudModal.addEventListener('show.bs.modal', function(event) {
+        const button = event.relatedTarget;
+        const ivdId = button.getAttribute('data-ivd-id');
+        document.getElementById('hiddenIvdId').value = ivdId;
+      });
+    });
+</script>
 </body>
 </html>
