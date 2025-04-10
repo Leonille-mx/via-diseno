@@ -212,15 +212,15 @@
                     <div class="table-responsive">
                       <table class="table table-sm">
                         <thead>
-                          <th scope="col" style="width: 15%; min-width: 100px;" class="text-center align-middle">Nombre
+                          <th scope="col" style="width: 20%; min-width: 100px;" class="align-middle">Nombre
                           </th>
-                          <th scope="col" style="width: 15%; min-width: 100px;" class="text-center align-middle">Hora
+                          <th scope="col" style="width: 15%; min-width: 100px;" class="align-middle">Hora
                             Inicio</th>
-                          <th scope="col" style="width: 15%; min-width: 100px;" class="text-center align-middle">Hora
+                          <th scope="col" style="width: 15%; min-width: 100px;" class="align-middle">Hora
                             Fin</th>
-                          <th scope="col" style="width: 15%; min-width: 100px;" class="text-center align-middle">Dia
+                          <th scope="col" style="width: 15%; min-width: 100px;" class="align-middle">Dia
                           </th>
-                          <th scope="col" style="width: 15%; min-width: 100px;" class="text-center align-middle">
+                          <th scope="col" style="width: 15%; min-width: 100px;" class="align-middle">
                             Profesor</th>
                         </thead>
                         <tbody>
@@ -285,9 +285,9 @@
                     <div class="table-responsive">
                       <table class="table table-sm">
                         <thead>
-                          <th scope="col" style="width: 15%; min-width: 100px;" class="text-center align-middle">Numero
+                          <th scope="col" style="width: 15%; min-width: 100px;" class="align-middle">Numero
                           </th>
-                          <th scope="col" style="width: 15%; min-width: 100px;" class="text-center align-middle">
+                          <th scope="col" style="width: 15%; min-width: 100px;" class="align-middle">
                             Capacidad</th>
                         </thead>
                         <tbody>
@@ -338,16 +338,27 @@
                   <div class="border-bottom border-3 mt-2" style="border-color: #84251c98 !important;"></div>
                 </div>
 
-                <div class="card-body p-0 overflow-auto" style="max-height: 150px;">
+                <div class="card-body dashboard-scroll p-0" style="max-height: 150px;">
                   <div class="px-3 pt-2">
                     <div class="table-responsive">
                       <table class="table table-sm">
+                        <thead>
+                          <th scope="col" style="width: 15%; min-width: 100px;" class="align-middle">
+                            ID
+                          </th>
+                          <th scope="col" style="width: 15%; min-width: 100px;" class="align-middle">
+                            Nombre
+                          </th>
+                          <th scope="col" style="width: 15%; min-width: 100px;" class="align-middle">
+                            Fecha
+                          </th>
+                        </thead>
                         <tbody>
                           <% if (solicitud_Cambio_Dashboard && solicitud_Cambio_Dashboard.length> 0) { %>
                             <% solicitud_Cambio_Dashboard.forEach(solicitud=> { %>
                               <tr>
                                 <td>
-                                  ID de Solicitud: <%= solicitud.solicitud_cambio_id %>
+                                  <%= solicitud.solicitud_cambio_id %>
                                 </td>
                                 <td style="max-width: 300px; white-space: normal; word-break: break-word;">
                                   <%= solicitud.nombre %>
