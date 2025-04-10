@@ -22,11 +22,14 @@ module.exports = class MateriaSemestre {
     static async fetchMateriasSemestreOnce() {
         return pool.query(`
             SELECT DISTINCT
-            m.materia_id, nombre, creditos, 
-            horas_profesor, tipo_salon
-            FROM materia m, materia_semestre ms
+            m.materia_id, sep_id, m.nombre, creditos, horas_profesor, tipo_salon, semestre_plan, c.nombre AS carrera
+            FROM materia m, materia_semestre ms, plan_materia plm, plan_estudio pe, carrera c
             WHERE m.materia_id = ms.materia_id
-            ORDER BY materia_id ASC`
+            AND m.materia_id = plm.materia_id
+            AND plm.plan_estudio_id = pe.plan_estudio_id
+            AND plm.plan_estudio_version = pe.version
+            AND pe.carrera_id = c.carrera_id
+            ORDER BY semestre_plan`
         );
     }    
 

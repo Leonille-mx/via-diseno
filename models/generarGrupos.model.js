@@ -114,11 +114,15 @@ module.exports = class generarGrupos {
         const resultMax = await pool.query(`SELECT COALESCE(MAX(grupo_id), 0) AS max_id FROM grupo`);
         const newId = resultMax.rows[0].max_id + 1;
         
+        // Obtener el ciclo escolar sincronizado más reciente
+        const cicloMax = await pool.query(`SELECT ciclo_escolar_id FROM ciclo_escolar ORDER BY fecha_fin DESC LIMIT 1;`)
+        const ciclo = cicloMax.rows[0].ciclo_escolar_id;
+
         // Insertar el grupo con el nuevo id
         return pool.query(
             `INSERT INTO grupo (grupo_id, materia_id, profesor_id, salon_id, ciclo_escolar_id)
             VALUES ($1, $2, $3, $4, $5) RETURNING grupo_id`,
-            [newId, grupo.materia_id, grupo.profesor_id, grupo.salon_id, 6]
+            [newId, grupo.materia_id, grupo.profesor_id, grupo.salon_id, ciclo]
         );
     }
 

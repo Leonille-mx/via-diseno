@@ -89,11 +89,11 @@ module.exports = class Profesor {
 
     // Método para devolver los objetos del almacenamiento persistente
     static fetchAll() {
-        return pool.query('SELECT ivd_id, nombre, primer_apellido, segundo_apellido, activo FROM profesor');
+        return pool.query('SELECT ivd_id, nombre, primer_apellido, segundo_apellido, activo FROM profesor ORDER BY ivd_id');
     }
     // Método para devolver los objetos que estan activos
     static async fetchActivos() {
-        return pool.query('SELECT ivd_id, nombre, primer_apellido, segundo_apellido FROM profesor WHERE activo = true');
+        return pool.query('SELECT ivd_id, nombre, primer_apellido, segundo_apellido FROM profesor WHERE activo = true ORDER BY ivd_id');
     }
 
 
@@ -129,10 +129,15 @@ module.exports = class Profesor {
     }
 
     static getCoursesInfo(id) {
-        return pool.query(`SELECT m.materia_id, nombre, creditos, horas_profesor, tipo_salon
-                           FROM materia m, profesor_materia pm
+        return pool.query(`SELECT m.materia_id, sep_id, m.nombre, creditos, horas_profesor, tipo_salon, semestre_plan, c.nombre AS carrera
+                           FROM materia m, profesor_materia pm, plan_materia plm, plan_estudio pe, carrera c
                            WHERE m.materia_id = pm.materia_id
-                           AND profesor_id = $1`, [id])
+                           AND m.materia_id = plm.materia_id
+                           AND plm.plan_estudio_id = pe.plan_estudio_id
+                           AND plm.plan_estudio_version = pe.version
+                           AND pe.carrera_id = c.carrera_id
+                           AND profesor_id = $1
+                           ORDER BY semestre_plan`, [id]);
     }
 
     static asignCourses(id, materia) {

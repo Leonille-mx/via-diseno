@@ -54,6 +54,10 @@ module.exports = class Grupo {
         );
     }
 
+    static deleteInscripcion(grupo_id) {
+        return pool.query(`DELETE FROM resultado_inscripcion WHERE grupo_id = $1`, [grupo_id]);
+    }
+
     static deleteHorario(grupo_id) {
         return pool.query(
             'DELETE FROM grupo_bloque_tiempo WHERE grupo_id = $1',
