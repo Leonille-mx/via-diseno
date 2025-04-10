@@ -77,12 +77,15 @@ module.exports = class Solicitud {
   static async dasboard_Solicitud() {
     const result = await pool.query(`SELECT 
             sc.solicitud_cambio_id,
+			sc.created_at,
             u.nombre, 
             u.primer_apellido
         FROM 
             solicitud_cambio sc
         JOIN 
-            usuario u ON sc.ivd_id = u.ivd_id`);
+            usuario u ON sc.ivd_id = u.ivd_id
+		ORDER BY
+			sc.created_at DESC	`);
     return result.rows;
   }
 
