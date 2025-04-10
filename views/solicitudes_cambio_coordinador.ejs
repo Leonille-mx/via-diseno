@@ -5,7 +5,7 @@
   
   <!-- Título de la sección -->
   <div class="mb-4">
-    <h1 class="ms-3 mt-2">Solicitud de cambio</h1>
+    <h1 class="ms-3 mt-2">Solicitudes de cambio</h1>
     <div style="border-bottom: 3px solid #84251C; width: 30rem; margin-top: -10px;"></div>
   </div>
   
@@ -87,13 +87,19 @@
 <div class="modal fade" id="confirmAceptarModal" tabindex="-1" aria-labelledby="confirmAceptarModalLabel" aria-hidden="true">
   <div class="modal-dialog modal-dialog-centered">
     <div class="modal-content rounded-5" style="background-color: #f0f0f0; max-width: 95vw;">
-      
+      <!-- Encabezado del modal -->
+      <div class="modal-header justify-content-center rounded-5 border-0" style="background-color: #f0f0f0">
+        <h5 class="modal-title" id="eliminarMateriaModalLabel" style="color: #84251C;"><b>Solicitud de Cambio</b></h5>
+      </div>
       <!-- Cuerpo del modal -->
-      <div class="modal-body  px-4">
+      <div class="modal-body px-5 py-0">
         <div class="rounded-5 p-4" style="background-color: white;">
-          <h5 class="modal-title text-center" id="scheduleModalLabel" style="color: #84251C;"><b>Usted está aprobando una solicitud de cambio de estatus. 
-            Una vez que la haya aprobado no podra regresar.
-            ¿Deseas aprobar la solicitud y cambiar el estatus del alumno a irregular?</b></h5>
+          <p class="modal-title text-center" id="scheduleModalLabel" style="color: #84251C; font-size: 1.1rem;">
+            Usted está <strong>aceptando</strong> una solicitud de cambio de estatus. 
+            Una vez que la haya aceptado <strong>no podrá regresar</strong>.
+            ¿Deseas <strong>aceptar</strong> la solicitud y <strong>cambiar</strong> 
+            el estatus del alumno regular a <strong>irregular</strong>?
+          </p>
         </div>
       </div>
       
@@ -119,11 +125,17 @@
 <div class="modal fade" id="confirmRechazarModal" tabindex="-1" aria-labelledby="confirmRechazarModalLabel" aria-hidden="true">
   <div class="modal-dialog modal-dialog-centered">
     <div class="modal-content rounded-5" style="background-color: #f0f0f0; max-width: 95vw;">
-      <div class="modal-body  px-4">
+      <!-- Encabezado del modal -->
+      <div class="modal-header justify-content-center rounded-5 border-0" style="background-color: #f0f0f0">
+        <h5 class="modal-title" id="eliminarMateriaModalLabel" style="color: #84251C;"><b>Solicitud de Cambio</b></h5>
+      </div>
+      <div class="modal-body  px-5 py-0">
         <div class="rounded-5 p-4" style="background-color: white;">
-          <h5 class="modal-title text-center" id="scheduleModalLabel" style="color: #84251C;"><b>Usted está rechazando la solicitud de cambio de 
-            estatus. Una vez que haya confirmado no podra regresar. 
-            ¿Deseas rechazar la solicitud?</b></h5>
+          <p class="modal-title text-center" id="scheduleModalLabel" style="color: #84251C; font-size: 1.1rem;">
+            Usted está <strong>rechazando</strong> la solicitud de cambio de 
+            estatus. Una vez que haya confirmado <strong>no podrá regresar</strong>. 
+            ¿Deseas <strong>rechazar</strong> la solicitud?
+          </p>
         </div>
       </div>
 

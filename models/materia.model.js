@@ -1,10 +1,12 @@
 const pool = require('../util/database');
 
 module.exports = class Materia {
-    constructor(mi_id, mi_nombre, mi_creditos, mi_horas_profesor, mi_tipo_salon) {
-        this.id = mi_id;
+    constructor(mi_materia_id, mi_sep_id, mi_nombre, mi_creditos, mi_semestre_plan, mi_horas_profesor, mi_tipo_salon) {
+        this.materia_id = mi_materia_id;
+        this.sep_id = mi_sep_id;
         this.nombre = mi_nombre;
         this.creditos = mi_creditos;
+        this.semestre_plan = mi_semestre_plan;
         this.horas_profesor = mi_horas_profesor;
         this.tipo_salon = mi_tipo_salon;
     }
@@ -37,12 +39,14 @@ module.exports = class Materia {
                     // Inserta los nuevos registros en nuestra base de datos
                     await client.query(
                         `INSERT INTO materia 
-                        (materia_id, nombre, creditos, horas_profesor, tipo_salon) 
-                        VALUES ($1, $2, $3, $4, $5, $6)`,
+                        (materia_id, sep_id, nombre, creditos, semestre_plan, horas_profesor, tipo_salon) 
+                        VALUES ($1, $2, $3, $4, $5, $6, $7)`,
                         [
-                            mA.id, 
+                            mA.id,
+                            mA.sep_id, 
                             mA.name,
                             mA.credits,
+                            mA.plans_courses[0].semester,
                             mA.hours_professor,
                             mA.facilities,
                         ]
@@ -95,7 +99,7 @@ module.exports = class Materia {
                                 ($1, $2)`, 
                                 [
                                     mA.id, 
-                                    requisitoApi.requisite_course_id,
+                                    requisitoApi.requisite_course_id
                                 ]
                             );
                             changed = true;
@@ -119,10 +123,14 @@ module.exports = class Materia {
                     }
 
                     if (
+                        // Normaliza el sep id (trim strings) para una mejor comparasión
+                        (materiaDB.sep_id || "").trim() !== (mA.sep_id || "").trim() ||
                         // Normaliza el nombre (trim strings) para una mejor comparasión
                         (materiaDB.nombre || "").trim() !== (mA.name || "").trim() ||
                         // Conviértelos a números para una mejor comparasión
                         Number(materiaDB.creditos) !== Number(mA.credits) ||
+                        // Conviértelos a números para una mejor comparasión
+                        Number(materiaDB.semestre_plan) !== Number(mA.plans_courses[0].semester,) ||
                         // Conviértelos a números para una mejor comparasión
                         Number(materiaDB.horas_profesor) !== Number(mA.hours_professor) ||
                         // Normaliza el tipo de salon (trim strings) para una mejor comparasión
@@ -131,11 +139,14 @@ module.exports = class Materia {
                         // Actualiza los registros de nuestra base de datos
                         await client.query(
                             `UPDATE materia 
-                            SET nombre = $1, creditos = $2, horas_profesor = $3, 
-                            tipo_salon = $4 WHERE materia_id = $5`,
+                            SET sep_id = $1, nombre = $2, creditos = $3, semestre_plan = $4, 
+                            horas_profesor = $5, tipo_salon = $6 
+                            WHERE materia_id = $7`,
                             [
+                                mA.sep_id,
                                 mA.name, 
                                 mA.credits, 
+                                mA.plans_courses[0].semester,
                                 mA.hours_professor, 
                                 mA.facilities, 
                                 mA.id,
@@ -205,11 +216,11 @@ module.exports = class Materia {
     }
     // Trae los registros
     static fetchAll() {
-        return pool.query('SELECT materia_id, nombre, creditos, horas_profesor, tipo_salon FROM Materia');
+        return pool.query('SELECT sep_id, nombre, creditos, semestre_plan, horas_profesor, tipo_salon FROM Materia');
     }
     static fetchMateriasNoAbiertas() {
         return pool.query(
-            `SELECT materia_id, nombre, creditos, horas_profesor, tipo_salon
+            `SELECT materia_id, nombre, creditos, semestre_plan, horas_profesor, tipo_salon
             FROM materia
             WHERE materia_id NOT IN (
                 SELECT materia_id

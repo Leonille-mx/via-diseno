@@ -5,27 +5,41 @@
       <div class="mb-4">
         <h1 class="ms-3 mt-2">Dashboard</h1>
         <div style="border-bottom: 3px solid #84251C; width: 15rem; margin-top: -10px;"></div>
-
-        <% if (msg) { %>
-          <div class="modal fade" id="msgModal" tabindex="-1" aria-labelledby="msgModalLabel" aria-hidden="true">
-            <div class="modal-dialog modal-dialog-centered modal-md">
-              <div class="modal-content align-items-center rounded-5 px-5">
-                <div class="modal-header border border-0">
-                  <h5 class="modal-title ivd-text-red" id="msgModalLabel">Sincronizar Ciclo Escolar</h5>
-                </div>
-                <div class="modal-body bg-grey rounded-5 text-center">
-                  <%- msg %>
-                </div>
-                <div class="modal-footer">
-                  <button type="button" class="btn ivd-bg-red text-white rounded-5"
-                    data-bs-dismiss="modal">Aceptar</button>
+          <% if (msg1) { %>
+            <div class="modal fade" id="msgModal" tabindex="-1" aria-labelledby="msgModalLabel" aria-hidden="true">
+              <div class="modal-dialog modal-dialog-centered modal-sm">
+                <div class="modal-content align-items-center rounded-5">
+                  <div class="modal-header border border-0">
+                    <h5 class="modal-title ivd-text-red" id="msgModalLabel">Sincronizar Ciclos Escolares</h5>
+                  </div>
+                  <div class="modal-body bg-grey rounded-5 text-center px-5">
+                    <%- msg1 %>
+                  </div>
+                  <div class="modal-footer">
+                    <button type="button" class="btn ivd-bg-red text-white rounded-5" data-bs-dismiss="modal">Aceptar</button>
+                  </div>
                 </div>
               </div>
             </div>
-          </div>
           <% } %>
-
-
+  
+          <% if (msg2) { %>
+            <div class="modal fade" id="msgModal" tabindex="-1" aria-labelledby="msgModalLabel" aria-hidden="true">
+              <div class="modal-dialog modal-dialog-centered modal-sm">
+                <div class="modal-content align-items-center rounded-5">
+                  <div class="modal-header border border-0">
+                    <h5 class="modal-title ivd-text-red" id="msgModalLabel">Sincronizar Planes de Estudio</h5>
+                  </div>
+                  <div class="modal-body bg-grey rounded-5 text-center px-5">
+                    <%- msg2 %>
+                  </div>
+                  <div class="modal-footer">
+                    <button type="button" class="btn ivd-bg-red text-white rounded-5" data-bs-dismiss="modal">Aceptar</button>
+                  </div>
+                </div>
+              </div>
+            </div>
+          <% } %>
 
             <div class="d-grid gap-2 d-md-flex justify-content-md-end position-relative" style="margin-top: -40px;">
               <form action="/coordinador/ciclo-escolar/sincronizar" method="POST">
@@ -38,7 +52,7 @@
                     <path
                       d="M8 4.466V.534a.25.25 0 0 1 .41-.192l2.36 1.966c.12.1.12.284 0 .384L8.41 4.658A.25.25 0 0 1 8 4.466" />
                   </svg>
-                  Sincronizar Ciclo Escolar
+                  Sincronizar Ciclos Escolares
                 </button>
               </form>
               <form action="/coordinador/dashboard/sincronizar-planes-de-estudio" method="POST">

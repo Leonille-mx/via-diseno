@@ -16,7 +16,8 @@ const { getAllProfessors, getAllCourses, getAllStudents, getCiclosEscolares, get
 
 exports.get_dashboard = async (req, res) => {
     try {
-        const msg = req.query.msg || null; 
+        const msg1 = req.query.msg1 || null; 
+        const msg2 = req.query.msg2 || null; 
         //Consulta el total de profesores activos de la Base de Datos
         const profesoresTotales = await Profesor.numeroProfesores();
         const alumnosNoInscritos = await Alumno.totalNoInscritos();
@@ -31,7 +32,8 @@ exports.get_dashboard = async (req, res) => {
         const total_Solicitudes = await Solicitud.numeroTotalSolicitudes();
 
         res.render('dashboard_coordinador', {
-            msg: msg,
+            msg1: msg1,
+            msg2: msg2,
             isLoggedIn: req.session.isLoggedIn || false,
             matricula: req.session.matricula || '',
             //Total de profesores para mostrar en el dashboard
@@ -423,11 +425,11 @@ exports.post_sincronizar_alumnos = async (req, res, nxt) => {
                 const historialApi = historial.data;
                 await Historial_Academico.sincronizarHistorialAcademico(student.ivd_id, historialApi);
             } catch (error) {
-                console.error(`Saltando la sincronización del historial del estudiante ${student.ivd_id}:`, error.message);
                 alumnos_sin_historial.push(student.ivd_id);
                 continue;
             }
         }
+        console.log("Alumnos sin historial: " + alumnos_sin_historial);
         const msg = `La operación fue exitosa!<br>
                     Insertado: ${resultadoUsuario.inserted}<br>
                     Actualizado: ${resultadoUsuario.updated + resultadoAlumno.updated}<br>
@@ -508,11 +510,11 @@ exports.postSincronizarCicloEscolar = async (req, res) => {
         ).join('<br>');
         }
     
-        res.redirect(`/coordinador/dashboard?msg=${encodeURIComponent(msg)}`);
+        res.redirect(`/coordinador/dashboard?msg1=${encodeURIComponent(msg)}`);
         
     } catch (error) {   
         console.error("Error en sincronización:", error);
-        res.redirect(`/coordinador/dashboard?msg=${encodeURIComponent('Error: ' + error.message)}`);
+        res.redirect(`/coordinador/dashboard?msg1=${encodeURIComponent('Error: ' + error.message)}`);
     }        
 };
 
@@ -651,12 +653,12 @@ exports.post_sincronizar_planes_de_estudio = async (req, res) => {
 
         // Redirige a la siguiente ruta con el mensaje en query string 
         // con la función para encodificarlo
-        res.redirect(`/coordinador/dashboard?msg=${encodeURIComponent(msg)}`);
+        res.redirect(`/coordinador/dashboard?msg2=${encodeURIComponent(msg)}`);
     } catch (error) {
         console.error(error);
         // Redirige a la siguiente ruta con un mensaje de error en query string 
         // con la función para encodificarlo
-        res.redirect(`/coordinador/dashboard?msg=${encodeURIComponent('La operación fue fracasada')}`);
+        res.redirect(`/coordinador/dashboard?msg2=${encodeURIComponent('La operación fue fracasada')}`);
     }
 }
 

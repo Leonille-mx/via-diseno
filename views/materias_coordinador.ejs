@@ -70,10 +70,11 @@
           <thead class="table-light">
             <tr>
               <th scope="col" style="width: 15%; min-width: 100px;" class="text-center align-middle">ID</th>
-              <th scope="col" style="width: 15%; min-width: 100px;" class="text-center align-middle">Nombre</th>
+              <th scope="col" style="width: 35%; min-width: 150px;" class="text-center align-middle">Nombre</th>
               <th scope="col" style="width: 15%; min-width: 100px;" class="text-center align-middle">Créditos</th>
+              <th scope="col" style="width: 15%; min-width: 100px;" class="text-center align-middle">Semestre</th>
               <th scope="col" style="width: 15%; min-width: 100px;" class="text-center align-middle">Horas profesor</th>
-              <th scope="col" style="width: 35%; min-width: 150px;" class="text-center align-middle">Tipo de Salon</th>
+              <th scope="col" style="width: 15%; min-width: 100px;" class="text-center align-middle">Tipo de Salon</th>
               <th scope="col" style="width: 5%; min-width: 50px;"></th>
             </tr>
           </thead>
@@ -81,9 +82,10 @@
             <% if (materias['s1']) { %>
               <% for (let materia of materias['s1']) { %>
                 <tr>
-                  <th scope="row" class="text-center align-middle"><%= materia.materia_id %></th>
+                  <th scope="row" class="text-center align-middle"><%= materia.sep_id %></th>
                   <td class="text-center align-middle"><%= materia.nombre %></td>
                   <td class="text-center align-middle"><%= materia.creditos %></td>
+                  <td class="text-center align-middle"><%= materia.semestre_plan %></td>
                   <td class="text-center align-middle"><%= materia.horas_profesor %></td>
                   <td class="text-center align-middle"><%= materia.tipo_salon %></td>
                   <td class="text-center align-middle">
@@ -92,6 +94,8 @@
                     data-bs-toggle="modal" 
                     data-bs-target="#eliminarMateriaModal"
                     data-materia-id="<%= materia.materia_id %>"
+                    data-sep-id="<%= materia.sep_id %>"
+                    data-semestre-plan="<%= materia.semestre_plan %>"
                     data-semestre-id="<%= materia.semestre_id %>"
                     data-materia-nombre="<%= materia.nombre %>"
                     data-materia-creditos="<%= materia.creditos %>"
@@ -141,10 +145,11 @@
           <thead class="table-light">
             <tr>
               <th scope="col" style="width: 15%; min-width: 100px;" class="text-center align-middle">ID</th>
-              <th scope="col" style="width: 15%; min-width: 100px;" class="text-center align-middle">Nombre</th>
+              <th scope="col" style="width: 35%; min-width: 150px;" class="text-center align-middle">Nombre</th>
               <th scope="col" style="width: 15%; min-width: 100px;" class="text-center align-middle">Créditos</th>
+              <th scope="col" style="width: 15%; min-width: 100px;" class="text-center align-middle">Semestre</th>
               <th scope="col" style="width: 15%; min-width: 100px;" class="text-center align-middle">Horas profesor</th>
-              <th scope="col" style="width: 35%; min-width: 150px;" class="text-center align-middle">Tipo de Salon</th>
+              <th scope="col" style="width: 15%; min-width: 100px;" class="text-center align-middle">Tipo de Salon</th>
               <th scope="col" style="width: 5%; min-width: 50px;"></th>
             </tr>
           </thead>
@@ -152,9 +157,10 @@
             <% if (materias['s2']) { %>
               <% for (let materia of materias['s2']) { %>
                 <tr>
-                  <th scope="row" class="text-center align-middle"><%= materia.materia_id %></th>
+                  <th scope="row" class="text-center align-middle"><%= materia.sep_id %></th>
                   <td class="text-center align-middle"><%= materia.nombre %></td>
                   <td class="text-center align-middle"><%= materia.creditos %></td>
+                  <td class="text-center align-middle"><%= materia.semestre_plan %></td>
                   <td class="text-center align-middle"><%= materia.horas_profesor %></td>
                   <td class="text-center align-middle"><%= materia.tipo_salon %></td>
                   <td class="text-center align-middle">
@@ -163,6 +169,8 @@
                     data-bs-toggle="modal" 
                     data-bs-target="#eliminarMateriaModal"
                     data-materia-id="<%= materia.materia_id %>"
+                    data-sep-id="<%= materia.sep_id %>"
+                    data-semestre-plan="<%= materia.semestre_plan %>"
                     data-semestre-id="<%= materia.semestre_id %>"
                     data-materia-nombre="<%= materia.nombre %>"
                     data-materia-creditos="<%= materia.creditos %>"
@@ -211,10 +219,11 @@
           <thead class="table-light">
             <tr>
               <th scope="col" style="width: 15%; min-width: 100px;" class="text-center align-middle">ID</th>
-              <th scope="col" style="width: 15%; min-width: 100px;" class="text-center align-middle">Nombre</th>
+              <th scope="col" style="width: 35%; min-width: 150px;" class="text-center align-middle">Nombre</th>
               <th scope="col" style="width: 15%; min-width: 100px;" class="text-center align-middle">Créditos</th>
+              <th scope="col" style="width: 15%; min-width: 100px;" class="text-center align-middle">Semestre</th>
               <th scope="col" style="width: 15%; min-width: 100px;" class="text-center align-middle">Horas profesor</th>
-              <th scope="col" style="width: 35%; min-width: 150px;" class="text-center align-middle">Tipo de Salon</th>
+              <th scope="col" style="width: 15%; min-width: 100px;" class="text-center align-middle">Tipo de Salon</th>
               <th scope="col" style="width: 5%; min-width: 50px;"></th>
             </tr>
           </thead>
@@ -222,9 +231,10 @@
             <% if (materias['s3']) { %>
               <% for (let materia of materias['s3']) { %>
                 <tr>
-                  <th scope="row" class="text-center align-middle"><%= materia.materia_id %></th>
+                  <th scope="row" class="text-center align-middle"><%= materia.sep_id %></th>
                   <td class="text-center align-middle"><%= materia.nombre %></td>
                   <td class="text-center align-middle"><%= materia.creditos %></td>
+                  <td class="text-center align-middle"><%= materia.semestre_plan %></td>
                   <td class="text-center align-middle"><%= materia.horas_profesor %></td>
                   <td class="text-center align-middle"><%= materia.tipo_salon %></td>
                   <td class="text-center align-middle">
@@ -233,6 +243,8 @@
                     data-bs-toggle="modal" 
                     data-bs-target="#eliminarMateriaModal"
                     data-materia-id="<%= materia.materia_id %>"
+                    data-sep-id="<%= materia.sep_id %>"
+                    data-semestre-plan="<%= materia.semestre_plan %>"
                     data-semestre-id="<%= materia.semestre_id %>"
                     data-materia-nombre="<%= materia.nombre %>"
                     data-materia-creditos="<%= materia.creditos %>"
@@ -282,10 +294,11 @@
           <thead class="table-light">
             <tr>
               <th scope="col" style="width: 15%; min-width: 100px;" class="text-center align-middle">ID</th>
-              <th scope="col" style="width: 15%; min-width: 100px;" class="text-center align-middle">Nombre</th>
+              <th scope="col" style="width: 35%; min-width: 150px;" class="text-center align-middle">Nombre</th>
               <th scope="col" style="width: 15%; min-width: 100px;" class="text-center align-middle">Créditos</th>
+              <th scope="col" style="width: 15%; min-width: 100px;" class="text-center align-middle">Semestre</th>
               <th scope="col" style="width: 15%; min-width: 100px;" class="text-center align-middle">Horas profesor</th>
-              <th scope="col" style="width: 35%; min-width: 150px;" class="text-center align-middle">Tipo de Salon</th>
+              <th scope="col" style="width: 15%; min-width: 100px;" class="text-center align-middle">Tipo de Salon</th>
               <th scope="col" style="width: 5%; min-width: 50px;"></th>
             </tr>
           </thead>
@@ -293,9 +306,10 @@
             <% if (materias['s4']) { %>
               <% for (let materia of materias['s4']) { %>
                 <tr>
-                  <th scope="row" class="text-center align-middle"><%= materia.materia_id %></th>
+                  <th scope="row" class="text-center align-middle"><%= materia.sep_id %></th>
                   <td class="text-center align-middle"><%= materia.nombre %></td>
                   <td class="text-center align-middle"><%= materia.creditos %></td>
+                  <td class="text-center align-middle"><%= materia.semestre_plan %></td>
                   <td class="text-center align-middle"><%= materia.horas_profesor %></td>
                   <td class="text-center align-middle"><%= materia.tipo_salon %></td>
                   <td class="text-center align-middle">
@@ -304,6 +318,8 @@
                     data-bs-toggle="modal" 
                     data-bs-target="#eliminarMateriaModal"
                     data-materia-id="<%= materia.materia_id %>"
+                    data-sep-id="<%= materia.sep_id %>"
+                    data-semestre-plan="<%= materia.semestre_plan %>"
                     data-semestre-id="<%= materia.semestre_id %>"
                     data-materia-nombre="<%= materia.nombre %>"
                     data-materia-creditos="<%= materia.creditos %>"
@@ -353,10 +369,11 @@
           <thead class="table-light">
             <tr>
               <th scope="col" style="width: 15%; min-width: 100px;" class="text-center align-middle">ID</th>
-              <th scope="col" style="width: 15%; min-width: 100px;" class="text-center align-middle">Nombre</th>
+              <th scope="col" style="width: 35%; min-width: 150px;" class="text-center align-middle">Nombre</th>
               <th scope="col" style="width: 15%; min-width: 100px;" class="text-center align-middle">Créditos</th>
+              <th scope="col" style="width: 15%; min-width: 100px;" class="text-center align-middle">Semestre</th>
               <th scope="col" style="width: 15%; min-width: 100px;" class="text-center align-middle">Horas profesor</th>
-              <th scope="col" style="width: 35%; min-width: 150px;" class="text-center align-middle">Tipo de Salon</th>
+              <th scope="col" style="width: 15%; min-width: 100px;" class="text-center align-middle">Tipo de Salon</th>
               <th scope="col" style="width: 5%; min-width: 50px;"></th>
             </tr>
           </thead>
@@ -364,9 +381,10 @@
             <% if (materias['s5']) { %>
               <% for (let materia of materias['s5']) { %>
                 <tr>
-                  <th scope="row" class="text-center align-middle"><%= materia.materia_id %></th>
+                  <th scope="row" class="text-center align-middle"><%= materia.sep_id %></th>
                   <td class="text-center align-middle"><%= materia.nombre %></td>
                   <td class="text-center align-middle"><%= materia.creditos %></td>
+                  <td class="text-center align-middle"><%= materia.semestre_plan %></td>
                   <td class="text-center align-middle"><%= materia.horas_profesor %></td>
                   <td class="text-center align-middle"><%= materia.tipo_salon %></td>
                   <td class="text-center align-middle">
@@ -375,6 +393,8 @@
                     data-bs-toggle="modal" 
                     data-bs-target="#eliminarMateriaModal"
                     data-materia-id="<%= materia.materia_id %>"
+                    data-sep-id="<%= materia.sep_id %>"
+                    data-semestre-plan="<%= materia.semestre_plan %>"
                     data-semestre-id="<%= materia.semestre_id %>"
                     data-materia-nombre="<%= materia.nombre %>"
                     data-materia-creditos="<%= materia.creditos %>"
@@ -423,10 +443,11 @@
           <thead class="table-light">
             <tr>
               <th scope="col" style="width: 15%; min-width: 100px;" class="text-center align-middle">ID</th>
-              <th scope="col" style="width: 15%; min-width: 100px;" class="text-center align-middle">Nombre</th>
+              <th scope="col" style="width: 35%; min-width: 150px;" class="text-center align-middle">Nombre</th>
               <th scope="col" style="width: 15%; min-width: 100px;" class="text-center align-middle">Créditos</th>
+              <th scope="col" style="width: 15%; min-width: 100px;" class="text-center align-middle">Semestre</th>
               <th scope="col" style="width: 15%; min-width: 100px;" class="text-center align-middle">Horas profesor</th>
-              <th scope="col" style="width: 35%; min-width: 150px;" class="text-center align-middle">Tipo de Salon</th>
+              <th scope="col" style="width: 15%; min-width: 100px;" class="text-center align-middle">Tipo de Salon</th>
               <th scope="col" style="width: 5%; min-width: 50px;"></th>
             </tr>
           </thead>
@@ -434,9 +455,10 @@
             <% if (materias['s6']) { %>
               <% for (let materia of materias['s6']) { %>
                 <tr>
-                  <th scope="row" class="text-center align-middle"><%= materia.materia_id %></th>
+                  <th scope="row" class="text-center align-middle"><%= materia.sep_id %></th>
                   <td class="text-center align-middle"><%= materia.nombre %></td>
                   <td class="text-center align-middle"><%= materia.creditos %></td>
+                  <td class="text-center align-middle"><%= materia.semestre_plan %></td>
                   <td class="text-center align-middle"><%= materia.horas_profesor %></td>
                   <td class="text-center align-middle"><%= materia.tipo_salon %></td>
                   <td class="text-center align-middle">
@@ -445,6 +467,8 @@
                     data-bs-toggle="modal" 
                     data-bs-target="#eliminarMateriaModal"
                     data-materia-id="<%= materia.materia_id %>"
+                    data-sep-id="<%= materia.sep_id %>"
+                    data-semestre-plan="<%= materia.semestre_plan %>"
                     data-semestre-id="<%= materia.semestre_id %>"
                     data-materia-nombre="<%= materia.nombre %>"
                     data-materia-creditos="<%= materia.creditos %>"
@@ -494,10 +518,11 @@
           <thead class="table-light">
             <tr>
               <th scope="col" style="width: 15%; min-width: 100px;" class="text-center align-middle">ID</th>
-              <th scope="col" style="width: 15%; min-width: 100px;" class="text-center align-middle">Nombre</th>
+              <th scope="col" style="width: 35%; min-width: 150px;" class="text-center align-middle">Nombre</th>
               <th scope="col" style="width: 15%; min-width: 100px;" class="text-center align-middle">Créditos</th>
+              <th scope="col" style="width: 15%; min-width: 100px;" class="text-center align-middle">Semestre</th>
               <th scope="col" style="width: 15%; min-width: 100px;" class="text-center align-middle">Horas profesor</th>
-              <th scope="col" style="width: 35%; min-width: 150px;" class="text-center align-middle">Tipo de Salon</th>
+              <th scope="col" style="width: 15%; min-width: 100px;" class="text-center align-middle">Tipo de Salon</th>
               <th scope="col" style="width: 5%; min-width: 50px;"></th>
             </tr>
           </thead>
@@ -505,9 +530,10 @@
             <% if (materias['s7']) { %>
               <% for (let materia of materias['s7']) { %>
                 <tr>
-                  <th scope="row" class="text-center align-middle"><%= materia.materia_id %></th>
+                  <th scope="row" class="text-center align-middle"><%= materia.sep_id %></th>
                   <td class="text-center align-middle"><%= materia.nombre %></td>
                   <td class="text-center align-middle"><%= materia.creditos %></td>
+                  <td class="text-center align-middle"><%= materia.semestre_plan %></td>
                   <td class="text-center align-middle"><%= materia.horas_profesor %></td>
                   <td class="text-center align-middle"><%= materia.tipo_salon %></td>
                   <td class="text-center align-middle">
@@ -516,6 +542,8 @@
                     data-bs-toggle="modal" 
                     data-bs-target="#eliminarMateriaModal"
                     data-materia-id="<%= materia.materia_id %>"
+                    data-sep-id="<%= materia.sep_id %>"
+                    data-semestre-plan="<%= materia.semestre_plan %>"
                     data-semestre-id="<%= materia.semestre_id %>"
                     data-materia-nombre="<%= materia.nombre %>"
                     data-materia-creditos="<%= materia.creditos %>"
@@ -565,10 +593,11 @@
           <thead class="table-light">
             <tr>
               <th scope="col" style="width: 15%; min-width: 100px;" class="text-center align-middle">ID</th>
-              <th scope="col" style="width: 15%; min-width: 100px;" class="text-center align-middle">Nombre</th>
+              <th scope="col" style="width: 35%; min-width: 150px;" class="text-center align-middle">Nombre</th>
               <th scope="col" style="width: 15%; min-width: 100px;" class="text-center align-middle">Créditos</th>
+              <th scope="col" style="width: 15%; min-width: 100px;" class="text-center align-middle">Semestre</th>
               <th scope="col" style="width: 15%; min-width: 100px;" class="text-center align-middle">Horas profesor</th>
-              <th scope="col" style="width: 35%; min-width: 150px;" class="text-center align-middle">Tipo de Salon</th>
+              <th scope="col" style="width: 15%; min-width: 100px;" class="text-center align-middle">Tipo de Salon</th>
               <th scope="col" style="width: 5%; min-width: 50px;"></th>
             </tr>
           </thead>
@@ -576,9 +605,10 @@
             <% if (materias['s8']) { %>
               <% for (let materia of materias['s8']) { %>
                 <tr>
-                  <th scope="row" class="text-center align-middle"><%= materia.materia_id %></th>
+                  <th scope="row" class="text-center align-middle"><%= materia.sep_id %></th>
                   <td class="text-center align-middle"><%= materia.nombre %></td>
                   <td class="text-center align-middle"><%= materia.creditos %></td>
+                  <td class="text-center align-middle"><%= materia.semestre_plan %></td>
                   <td class="text-center align-middle"><%= materia.horas_profesor %></td>
                   <td class="text-center align-middle"><%= materia.tipo_salon %></td>
                   <td class="text-center align-middle">
@@ -587,6 +617,8 @@
                     data-bs-toggle="modal" 
                     data-bs-target="#eliminarMateriaModal"
                     data-materia-id="<%= materia.materia_id %>"
+                    data-sep-id="<%= materia.sep_id %>"
+                    data-semestre-plan="<%= materia.semestre_plan %>"
                     data-semestre-id="<%= materia.semestre_id %>"
                     data-materia-nombre="<%= materia.nombre %>"
                     data-materia-creditos="<%= materia.creditos %>"
@@ -636,10 +668,11 @@
           <thead class="table-light">
             <tr>
               <th scope="col" style="width: 15%; min-width: 100px;" class="text-center align-middle">ID</th>
-              <th scope="col" style="width: 15%; min-width: 100px;" class="text-center align-middle">Nombre</th>
+              <th scope="col" style="width: 35%; min-width: 150px;" class="text-center align-middle">Nombre</th>
               <th scope="col" style="width: 15%; min-width: 100px;" class="text-center align-middle">Créditos</th>
+              <th scope="col" style="width: 15%; min-width: 100px;" class="text-center align-middle">Semestre</th>
               <th scope="col" style="width: 15%; min-width: 100px;" class="text-center align-middle">Horas profesor</th>
-              <th scope="col" style="width: 35%; min-width: 150px;" class="text-center align-middle">Tipo de Salon</th>
+              <th scope="col" style="width: 15%; min-width: 100px;" class="text-center align-middle">Tipo de Salon</th>
               <th scope="col" style="width: 5%; min-width: 50px;"></th>
             </tr>
           </thead>
@@ -647,9 +680,10 @@
             <% if (materias['s9']) { %>
               <% for (let materia of materias['s9']) { %>
                 <tr>
-                  <th scope="row" class="text-center align-middle"><%= materia.materia_id %></th>
+                  <th scope="row" class="text-center align-middle"><%= materia.sep_id %></th>
                   <td class="text-center align-middle"><%= materia.nombre %></td>
                   <td class="text-center align-middle"><%= materia.creditos %></td>
+                  <td class="text-center align-middle"><%= materia.semestre_plan %></td>
                   <td class="text-center align-middle"><%= materia.horas_profesor %></td>
                   <td class="text-center align-middle"><%= materia.tipo_salon %></td>
                   <td class="text-center align-middle">
@@ -658,6 +692,8 @@
                     data-bs-toggle="modal" 
                     data-bs-target="#eliminarMateriaModal"
                     data-materia-id="<%= materia.materia_id %>"
+                    data-sep-id="<%= materia.sep_id %>"
+                    data-semestre-plan="<%= materia.semestre_plan %>"
                     data-semestre-id="<%= materia.semestre_id %>"
                     data-materia-nombre="<%= materia.nombre %>"
                     data-materia-creditos="<%= materia.creditos %>"
@@ -766,7 +802,7 @@
 
 <!-- Modal de confirmación para eliminar materia-->
 <div class="modal fade" id="eliminarMateriaModal" tabindex="-1" aria-labelledby="eliminarMateriaModalLabel" aria-hidden="true">
-  <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
+  <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable modal-lg">
     <div class="modal-content rounded-5" style="max-width: 95vw;">
       
       <!-- Encabezado del modal -->
@@ -780,17 +816,19 @@
           <table class="table table-bordered m-0">
             <thead class="table-light">
               <tr>
-                <th style="min-width: 80px;" class="text-center align-middle">ID</th>
-                <th style="min-width: 80px;" class="text-center align-middle">Nombre</th>
-                <th style="min-width: 90px;" class="text-center align-middle">Creditos</th>
+                <th style="min-width: 90px;" class="text-center align-middle">ID</th>
+                <th style="min-width: 100px;" class="text-center align-middle">Nombre</th>
+                <th style="min-width: 40px;" class="text-center align-middle">Creditos</th>
+                <th style="min-width: 40px;" class="text-center align-middle">Semestre</th>
                 <th style="min-width: 90px;" class="text-center align-middle">Tipo de salon</th>
               </tr>
             </thead>
             <tbody>
               <tr>
-                <td id="modalMateriaID" class="text-center align-middle"></td>
+                <td id="modalSepID" class="text-center align-middle"></td>
                 <td id="modalNombre" class="text-center align-middle"></td>
                 <td id="modalCreditos" class="text-center align-middle"></td>
+                <td id="modalSemestrePlan" class="text-center align-middle"></td>
                 <td id="modalTipoSalon" class="text-center align-middle"></td>
               </tr>
             </tbody>
@@ -828,15 +866,18 @@
     document.getElementById('eliminarMateriaModal').addEventListener('show.bs.modal', function(event) {
     const button = event.relatedTarget;
     const materiaId = button.getAttribute('data-materia-id');
+    const sepId = button.getAttribute('data-sep-id');
     const materiaNombre = button.getAttribute('data-materia-nombre');
     const materiaCreditos = button.getAttribute('data-materia-creditos');
+    const materiaSemestrePlan = button.getAttribute('data-semestre-plan');
     const materiaTipoSalon = button.getAttribute('data-materia-tipo-salon');
     const semestreID = button.getAttribute('data-semestre-id');  
 
     // Actualizar contenido del modal
-    document.getElementById('modalMateriaID').textContent = materiaId;
+    document.getElementById('modalSepID').textContent = sepId;
     document.getElementById('modalNombre').textContent = materiaNombre;
     document.getElementById('modalCreditos').textContent = materiaCreditos;
+    document.getElementById('modalSemestrePlan').textContent = materiaSemestrePlan;
     document.getElementById('modalTipoSalon').textContent = materiaTipoSalon;
 
     // Actualizar acción del formulario
