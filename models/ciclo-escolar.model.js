@@ -117,6 +117,8 @@ module.exports = class cicloescolar {
             deleted++;
           }
 
+          await client.query('COMMIT');
+
           return {
             inserted,
             updated,
