@@ -289,7 +289,10 @@ exports.post_salones = (req, res, nxt) => {
 };
 
 exports.post_eliminar_salon = (req, res, nxt) => {
-    Salon.delete(req.params.id)
+    Salon.deleteGrupoSalon(req.params.id)
+        .then(() => {
+            return  Salon.delete(req.params.id);
+        })
         .then(() => {
             res.redirect('/coordinador/salones');
         })

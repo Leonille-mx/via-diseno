@@ -37,6 +37,46 @@ module.exports = class Salon {
         return pool.query('DELETE FROM salon WHERE salon_id = $1', [id]);
     }
 
+    static deleteInscripcion(grupo_id) {
+        return pool.query(`DELETE FROM resultado_inscripcion WHERE grupo_id = $1`, [grupo_id]);
+    }
+
+    static deleteHorario(grupo_id) {
+        return pool.query(
+            'DELETE FROM grupo_bloque_tiempo WHERE grupo_id = $1',
+            [grupo_id]
+        );
+    }
+
+    static async deleteGrupoSalon(id) {
+        const client = await pool.connect();
+        try {
+            await client.query('BEGIN'); // Iniciar transacción
+    
+            // Obtener todos los grupo_id asociados al salon_id
+            const grupos = await client.query(
+                'SELECT grupo_id FROM grupo WHERE salon_id = $1', 
+                [id]
+            );
+            
+            // Eliminar registros relacionados para cada grupo_id
+            for (const grupo of grupos.rows) {
+                await this.deleteInscripcion(grupo.grupo_id);
+                await this.deleteHorario(grupo.grupo_id);
+            }
+    
+            // Eliminar los grupos
+            await client.query('DELETE FROM grupo WHERE salon_id = $1', [id]);
+            
+            await client.query('COMMIT'); // Confirmar transacción
+        } catch (error) {
+            await client.query('ROLLBACK'); // Revertir en caso de error
+            throw error;
+        } finally {
+            client.release();
+        }
+    }
+
     // Método para obtener número total de salones registrados
     static async numero_TotalSalones() {
         const result = await pool.query('SELECT count(*) FROM public.salon');
