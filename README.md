@@ -21,6 +21,10 @@ Desarrollar una aplicación web para la gestión académica que optimice la asig
 
 https://ivd-inscripciones-leonille-97f95df993b3.herokuapp.com/
 
+## Seguimiento del proyecto
+
+https://docs.google.com/spreadsheets/d/1Fib8faZjx522FQlI_W3W4vgm4ZM67pedN08Zc_zrdX4/edit?gid=1161341563#gid=1161341563
+
 ## Enlace del video - Avance 2
 
 https://youtu.be/B23o9NN3A2w
