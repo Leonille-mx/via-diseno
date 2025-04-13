@@ -84,6 +84,34 @@ html {
     background: #84251C !important;
     color: white !important;
   }
+ 
+  /* Asegura que la tabla ocupe todo el espacio */
+  .custom-table {
+    width: 100%;
+    table-layout: fixed;
+  }
+  
+  /* Establece un alto fijo para las celdas */
+  .custom-table td {
+    height: 50px; /* Ajusta este valor según necesites */
+    padding: 8px;
+    vertical-align: middle;
+  }
+  
+  /* Celda de hora */
+  .hour-cell {
+    width: 80px; /* Ancho fijo para la columna de horas */
+  }
+  
+  /* Celdas vacías */
+  .empty-slot {
+    background-color: #f8f9fa;
+  }
+  
+  /* Asegura que las celdas con rowspan mantengan el tamaño */
+  .custom-table td[rowspan] {
+    height: auto;
+  }
   
 @media (min-width: 992px) {
     .logo-size {

@@ -7,8 +7,100 @@
           <div class="mb-4">
             <h1 class="ms-3 mt-2">Horario</h1>
             <h2 class="ms-3 mt-2" style="color:#84251C;">Semestre Ago-Dic 2025</h2>
-            <div class="bg-white rounded-5 p-3 flex-grow-1 ms-3" style="height:500px">
+            <div class="bg-white rounded-5 p-3 flex-grow-1 ms-3" style="height:500px; overflow-y: auto;">
               <!-- Contenido del horario principal -->
+              <table class="table custom-table p-3 table-striped table-bordered table-hover">
+                <thead class="table-danger">
+                  <tr class="text-center">
+                    <!-- Titulo de columnas -->
+                    <th class="hour-col">Hora</th>
+                    <th>Lunes</th>
+                    <th>Martes</th>
+                    <th>Miércoles</th>
+                    <th>Jueves</th>
+                    <th>Viernes</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <%
+                  <!-- Colores de bloques -->
+                  const colores = ['bg-primary-subtle', 'bg-success-subtle ','bg-warning-subtle ','bg-danger-subtle','bg-info-subtle','bg-secondary-subtle','bg-light'];
+                  const materiasColor = {};
+                  let colorIndex = 0;
+                  
+                  <!-- Inicializa estructura de horario -->
+                  const horario = { 
+                    Lunes: {}, Martes: {}, Miércoles: {}, Jueves: {}, Viernes: {} 
+                  };
+                  
+                  <!--  Procesa las materia de resultado para construir el horario-->
+                  if (typeof materias_resultado !== 'undefined' && Array.isArray(materias_resultado)) {
+                    materias_resultado.forEach(materia => {
+                      // Asignar color único por materia
+                      if (!materiasColor[materia.materia_nombre]) {
+                        materiasColor[materia.materia_nombre] = colores[colorIndex % colores.length];
+                        colorIndex++;
+                      }
+                      
+                      <!-- Procesa el dia de la materia -->
+                      materia.dias.forEach(dia => {
+                        const diaNombre = dia.charAt(0).toUpperCase() + dia.slice(1).toLowerCase();
+                        
+                        <!-- Bloques de 30 min -->
+                        const [hi, mi] = materia.hora_inicio.split(':').map(Number);
+                        const [hf, mf] = materia.hora_fin.split(':').map(Number);
+                        
+                        const inicioBloque = hi * 2 + (mi >= 30 ? 1 : 0);
+                        const finBloque = hf * 2 + (mf >= 30 ? 1 : 0);
+                        
+                        <!-- Si el dia es valido -->
+                        if (horario[diaNombre]) {
+                          horario[diaNombre][inicioBloque] = {
+                            rowspan: finBloque - inicioBloque,
+                            nombre: materia.materia_nombre,
+                            color: materiasColor[materia.materia_nombre],
+                            salon: materia.salon_numero,
+                            profesor: `${materia.profesor_nombre} ${materia.profesor_primer_apellido}`,
+                            hora: `${materia.hora_inicio} - ${materia.hora_fin}`
+                          };
+                          
+                          <!-- Bloques intermedios como ocupados -->
+                          for (let b = inicioBloque + 1; b < finBloque; b++) {
+                            horario[diaNombre][b] = 'ocupar';
+                          }
+                        }
+                      });
+                    });
+                  }
+                  
+                  <!-- Filas de la tabla -->
+                  for (let bloque = 14; bloque <= 32; bloque++) {
+                    const hora = Math.floor(bloque / 2);
+                    const minutos = bloque % 2 === 0 ? '00' : '30';
+                    const horaFormato = `${hora}:${minutos}`;
+                  %>
+                    <tr>
+                      <th class="hour-cell text-center align-middle"><%= horaFormato %></th>
+                      <% ['Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes'].forEach(dia => { %>
+                        <% if (horario[dia][bloque] === 'ocupar') return; %>
+                        <% if (horario[dia][bloque]) { 
+                          const clase = horario[dia][bloque];
+                        %>
+                          <td class="text-black text-center align-middle <%= clase.color %>" 
+                              rowspan="<%= clase.rowspan %>"
+                              data-bs-toggle="tooltip" 
+                              data-bs-placement="top" 
+                              title="<%= clase.hora %> | Salon: <%= clase.salon %> | Prof: <%= clase.profesor %>">
+                            <%= clase.nombre %>
+                          </td>
+                        <% } else { %>
+                          <td class="empty-slot"></td>
+                        <% } %>
+                      <% }) %>
+                    </tr>
+                  <% } %>
+                </tbody>
+              </table>
             </div>
           </div> 
         </div>
@@ -189,6 +281,9 @@
         document.getElementById('hiddenIvdId').value = ivdId;
       });
     });
+
 </script>
 </body>
 </html>
+
+
