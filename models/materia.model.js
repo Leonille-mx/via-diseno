@@ -166,7 +166,18 @@ module.exports = class Materia {
     static fetchAll() {
         return pool.query('SELECT materia_id, nombre, creditos, horas_profesor, tipo_salon FROM Materia');
     }
+    
+    // Método para obtener número total de materias obligatorias
+    static async numero_TotalObligatorias() {
+        const result = await pool.query('SELECT COUNT(*) FROM public.resultado_inscripcion WHERE obligatorio = true;');
+        return parseInt(result.rows[0].count); 
+};
 
+    // Método para obtener número total de materias obligatorias
+    static async totalInscritas() {
+        const result = await pool.query('SELECT count(*) FROM public.resultado_inscripcion');
+        return parseInt(result.rows[0].count);
+    };
 
     
 }

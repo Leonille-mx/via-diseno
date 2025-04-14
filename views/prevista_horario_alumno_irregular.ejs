@@ -6,10 +6,10 @@
         <div class="card rounded-5 ivd-bg-red bg-gradient text-white h-100">
           <div class="card-body px-0 text-start">
             <div class="d-flex align-items-center justify-content-between">
-              <p class="card-title ms-3">Clases Añadidas</p>
+              <p class="card-title ms-3">Clases Inscritas</p>
             </div>
             <div style="border-bottom: 3px solid #ffffff; width: 100%; margin-top: -7px;"></div>
-            <p class="card-text text-start ms-4" style="margin-top: 10px; font-size: 2rem;">2</p>
+            <p class="card-text text-start ms-4" style="margin-top: 10px; font-size: 2rem;"> <%= materias_inscritas %> </p>
           </div>
         </div>
       </div>
@@ -21,7 +21,7 @@
               <p class="card-title ms-3">Clases Obligatorias</p>
             </div>
             <div style="border-bottom: 3px solid #84251c98; width: 100%; margin-top: -7px;"></div>
-            <p class="card-text text-start ms-4" style="margin-top: 10px; font-size: 2rem;">1</p>
+            <p class="card-text text-start ms-4" style="margin-top: 10px; font-size: 2rem;"> <%= obligatoriasTotales  %> </p>
           </div>
         </div>
       </div>
@@ -74,12 +74,102 @@
         <div class="card-header bg-transparent border-0 p-0">
           <div class="px-3 pt-3">
             <div class="d-flex align-items-center justify-content-center">
-              <p class="card-title m-0 w-100 text-center">[HORARIO ALUMNO]</p>
+              <table class="table custom-table p-3 table-striped table-bordered table-hover">
+                <thead class="table-danger">
+                  <tr class="text-center">
+                    <!-- Titulo de columnas -->
+                    <th class="hour-col">Hora</th>
+                    <th>Lunes</th>
+                    <th>Martes</th>
+                    <th>Miércoles</th>
+                    <th>Jueves</th>
+                    <th>Viernes</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <%
+                  <!-- Colores de bloques -->
+                  const colores = ['bg-primary-subtle', 'bg-success-subtle ','bg-warning-subtle ','bg-danger-subtle','bg-info-subtle','bg-secondary-subtle','bg-light'];
+                  const materiasColor = {};
+                  let colorIndex = 0;
+                  
+                  <!-- Inicializa estructura de horario -->
+                  const horario = { 
+                    Lunes: {}, Martes: {}, Miércoles: {}, Jueves: {}, Viernes: {} 
+                  };
+                  
+                  <!--  Procesa las materia de resultado para construir el horario-->
+                  if (typeof materias_resultado !== 'undefined' && Array.isArray(materias_resultado)) {
+                    materias_resultado.forEach(materia => {
+                      // Asignar color único por materia
+                      if (!materiasColor[materia.materia_nombre]) {
+                        materiasColor[materia.materia_nombre] = colores[colorIndex % colores.length];
+                        colorIndex++;
+                      }
+                      
+                      <!-- Procesa el dia de la materia -->
+                      materia.dias.forEach(dia => {
+                        const diaNombre = dia.charAt(0).toUpperCase() + dia.slice(1).toLowerCase();
+                        
+                        <!-- Bloques de 30 min -->
+                        const [hi, mi] = materia.hora_inicio.split(':').map(Number);
+                        const [hf, mf] = materia.hora_fin.split(':').map(Number);
+                        
+                        const inicioBloque = hi * 2 + (mi >= 30 ? 1 : 0);
+                        const finBloque = hf * 2 + (mf >= 30 ? 1 : 0);
+                        
+                        <!-- Si el dia es valido -->
+                        if (horario[diaNombre]) {
+                          horario[diaNombre][inicioBloque] = {
+                            rowspan: finBloque - inicioBloque,
+                            nombre: materia.materia_nombre,
+                            color: materiasColor[materia.materia_nombre],
+                            salon: materia.salon_numero,
+                            profesor: `${materia.profesor_nombre} ${materia.profesor_primer_apellido}`,
+                            hora: `${materia.hora_inicio} - ${materia.hora_fin}`
+                          };
+                          
+                          <!-- Bloques intermedios como ocupados -->
+                          for (let b = inicioBloque + 1; b < finBloque; b++) {
+                            horario[diaNombre][b] = 'ocupar';
+                          }
+                        }
+                      });
+                    });
+                  }
+                  
+                  <!-- Filas de la tabla -->
+                  for (let bloque = 14; bloque <= 32; bloque++) {
+                    const hora = Math.floor(bloque / 2);
+                    const minutos = bloque % 2 === 0 ? '00' : '30';
+                    const horaFormato = `${hora}:${minutos}`;
+                  %>
+                    <tr>
+                      <th class="hour-cell text-center align-middle"><%= horaFormato %></th>
+                      <% ['Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes'].forEach(dia => { %>
+                        <% if (horario[dia][bloque] === 'ocupar') return; %>
+                        <% if (horario[dia][bloque]) { 
+                          const clase = horario[dia][bloque];
+                        %>
+                          <td class="text-black text-center align-middle <%= clase.color %>" 
+                              rowspan="<%= clase.rowspan %>"
+                              data-bs-toggle="tooltip" 
+                              data-bs-placement="top" 
+                              title="<%= clase.hora %> | Salon: <%= clase.salon %> | Prof: <%= clase.profesor %>">
+                            <%= clase.nombre %>
+                          </td>
+                        <% } else { %>
+                          <td class="empty-slot"></td>
+                        <% } %>
+                      <% }) %>
+                    </tr>
+                  <% } %>
+                </tbody>
+              </table>
             </div>
           </div>
         </div>
         <div class="card-body">
-          <canvas id="NA" height="300"></canvas>
           <div class="card-footer d-flex justify-content-center" style="background-color: #f0f0f0; border-bottom-left-radius: 1.5rem; border-bottom-right-radius: 1.5rem;">
             <button type="button" class="btn btn-secondary rounded-pill px-4 mx-4" onclick="window.location.href='/alumno-irregular/ayuda';"
                           style="background-color: white; border: 1px solid #84251C; color: #84251C;">Modificar
