@@ -185,17 +185,17 @@
       
       <!-- Pie del modal con botones de acción -->
       <div class="modal-footer justify-content-center" style="background-color: #f0f0f0; border-bottom-left-radius: 20px; border-bottom-right-radius: 20px; border-top: none; padding: 1.5rem;">
+        <button type="button" class="btn btn-secondary rounded-pill px-4 py-2 mx-2" 
+          style="background-color: white; border: 1px solid #84251C; color: #84251C; min-width: 120px;" 
+          data-bs-dismiss="modal">
+          Cancelar
+        </button>
         <form id="AceptarForm" method="POST" action="">
           <button type="submit" class="btn btn-primary rounded-pill px-4 py-2 mx-2" 
             style="background-color: #84251C; border: none; min-width: 120px;">
             Confirmar
           </button>
         </form>
-        <button type="button" class="btn btn-secondary rounded-pill px-4 py-2 mx-2" 
-          style="background-color: white; border: 1px solid #84251C; color: #84251C; min-width: 120px;" 
-          data-bs-dismiss="modal">
-          Cancelar
-        </button>
       </div>
     </div>
   </div>
@@ -218,14 +218,14 @@
         </div>
         <div class="modal-footer justify-content-center">
           <input type="hidden" name="ivd_id" id="hiddenIvdId">
-          <button type="submit" class="btn btn-primary rounded-pill px-4 py-2 mx-2" 
-            style="background-color: #84251C; border: none; min-width: 120px;">
-            Confirmar
-          </button>
           <button type="button" class="btn btn-secondary rounded-pill px-4 py-2 mx-2" 
             style="background-color: white; border: 1px solid #84251C; color: #84251C; min-width: 120px;" 
             data-bs-dismiss="modal">
             Cancelar
+          </button>
+          <button type="submit" class="btn btn-primary rounded-pill px-4 py-2 mx-2" 
+            style="background-color: #84251C; border: none; min-width: 120px;">
+            Confirmar
           </button>
         </div>
       </form>      
