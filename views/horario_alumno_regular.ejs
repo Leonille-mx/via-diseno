@@ -5,7 +5,11 @@
         <!-- Columna de la izquierda -->
         <div class="p-3 flex-grow-1" style="width: 66.66%;">
           <div class="mb-4">
-            <h1 class="ms-3 mt-2">Horario</h1>
+            <% if (!inscripcion_completada) { %>
+              <h1 class="ms-3 mt-2">Horario</h1>
+            <% } else { %>
+                <h1 class="ms-3 mt-2">Resultado de inscripción</h1>
+            <% } %>
             <h2 class="ms-3 mt-2" style="color:#84251C;">Semestre Ago-Dic 2025</h2>
             <div class="bg-white rounded-5 p-3 flex-grow-1 ms-3" style="height:500px; overflow-y: auto;">
               <!-- Contenido del horario principal -->
