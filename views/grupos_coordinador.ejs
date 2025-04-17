@@ -56,7 +56,11 @@
             <th scope="row" class="text-center align-middle"><%= grupo.grupo_id %></th>
             <td class="text-center align-middle"><%= grupo.materia %></td>
             <td class="text-center align-middle"><%= grupo.nombre + ' ' + grupo.primer_apellido + ' ' + grupo.segundo_apellido %></td>
-            <td class="text-center align-middle"><%= grupo.numero %></td>
+            <% if (grupo.numero === 9999) { %>
+              <td class="text-center align-middle">No Asignado</td>
+            <% } else { %>
+              <td class="text-center align-middle"><%= grupo.numero %></td>
+            <% } %>
             <td class="text-center align-middle"><%= grupo.code %></td>
             <td class="text-center align-middle">
               <!-- Botón para abrir el modal de consulta (solo lectura) -->
@@ -173,7 +177,9 @@
               <select class="form-select rounded-5 mx-auto" id="salon" name="salon" required style="background-color: #f0f0f0;">
                 <option value="">Seleccione un salón</option>
                 <% for (let salon of salones) { %>
-                  <option value="<%= salon.salon_id %>"><%= salon.numero %></option>
+                  <% if (salon.salon_id !== 9999) { %>
+                    <option value="<%= salon.salon_id %>"><%= salon.numero %></option>
+                    <% } %>
                 <% } %>
               </select>
             </div>
@@ -315,7 +321,9 @@
               <select class="form-select rounded-5" id="editSalon" name="salon" required style="background-color: #f0f0f0;">
                 <option value="">Seleccione un salón</option>
                 <% salones.forEach(salon => { %>
+                  <% if (salon.salon_id !== 9999) { %>
                   <option value="<%= salon.salon_id %>"><%= salon.numero %></option>
+                  <% } %>
                 <% }) %>
               </select>
             </div>
@@ -442,7 +450,7 @@
           <td class="text-center align-middle">${grupoInfo.grupo_id}</td>
           <td class="text-center align-middle">${grupoInfo.materia}</td>
           <td class="text-center align-middle">${grupoInfo.nombre + ' ' + grupoInfo.primer_apellido + ' ' + grupoInfo.segundo_apellido}</td>
-          <td class="text-center align-middle">${grupoInfo.numero}</td>
+          <td class="text-center align-middle">${grupoInfo.numero === 9999 ? 'No Asignado' : grupoInfo.numero}</td>
           <td class="text-center align-middle">${grupoInfo.code}</td>
         </tr>
       `;
