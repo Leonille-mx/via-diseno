@@ -46,30 +46,32 @@
               
               <!-- Iteración sobre los datos de los salones -->
               <% for (let salon of salones) { %>
-              <tr>
-                <th scope="row" class="text-center align-middle"><%= salon.numero %></th>
-                <td class="text-center align-middle"><%= salon.capacidad %></td>
-                <td class="text-center align-middle"><%= salon.tipo %></td>
-                <td class="text-center align-middle"><%= salon.nota %></td>
-                <td class="text-center align-middle"><%= salon.nombre %></td>
-                <td class="text-center align-middle">
-                  <!-- Botón para abrir el modal de confirmación de eliminación -->
-                  <button class="btn btn-sm p-0 d-flex align-items-center justify-content-center" 
-                  style=" width: 1.5rem; height: 1.5rem; border-radius: 50%; background-color: #84251c; color: white; border: none;"   
-                    data-bs-toggle="modal" 
-                    data-bs-target="#confirmDeleteModal"
-                    data-salon-id="<%= salon.salon_id %>"
-                    data-salon-numero="<%= salon.numero%>"
-                    data-capacidad="<%= salon.capacidad %>"
-                    data-tipo="<%= salon.tipo %>"
-                    data-nota="<%= salon.nota %>"
-                    data-campus="<%= salon.nombre %>">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-x-lg" viewBox="0 0 16 16">
-                      <path d="M2.146 2.854a.5.5 0 1 1 .708-.708L8 7.293l5.146-5.147a.5.5 0 0 1 .708.708L8.707 8l5.147 5.146a.5.5 0 0 1-.708.708L8 8.707l-5.146 5.147a.5.5 0 0 1-.708-.708L7.293 8z"/>
-                    </svg>
-                  </button>
-                </td>
-              </tr>
+                <% if (salon.salon_id !== 9999) { %>
+                  <tr>
+                    <th scope="row" class="text-center align-middle"><%= salon.numero %></th>
+                    <td class="text-center align-middle"><%= salon.capacidad %></td>
+                    <td class="text-center align-middle"><%= salon.tipo %></td>
+                    <td class="text-center align-middle"><%= salon.nota %></td>
+                    <td class="text-center align-middle"><%= salon.nombre %></td>
+                    <td class="text-center align-middle">
+                      <!-- Botón para abrir el modal de confirmación de eliminación -->
+                      <button class="btn btn-sm p-0 d-flex align-items-center justify-content-center" 
+                      style=" width: 1.5rem; height: 1.5rem; border-radius: 50%; background-color: #84251c; color: white; border: none;"   
+                        data-bs-toggle="modal" 
+                        data-bs-target="#confirmDeleteModal"
+                        data-salon-id="<%= salon.salon_id %>"
+                        data-salon-numero="<%= salon.numero%>"
+                        data-capacidad="<%= salon.capacidad %>"
+                        data-tipo="<%= salon.tipo %>"
+                        data-nota="<%= salon.nota %>"
+                        data-campus="<%= salon.nombre %>">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-x-lg" viewBox="0 0 16 16">
+                          <path d="M2.146 2.854a.5.5 0 1 1 .708-.708L8 7.293l5.146-5.147a.5.5 0 0 1 .708.708L8.707 8l5.147 5.146a.5.5 0 0 1-.708.708L8 8.707l-5.146 5.147a.5.5 0 0 1-.708-.708L7.293 8z"/>
+                        </svg>
+                      </button>
+                    </td>
+                  </tr>
+                <% } %>
               <% } %>
 
             </tbody>
