@@ -1,3 +1,4 @@
+const pool = require('../util/database.js');
 const Salon = require('../models/salon.model');
 const Campus = require('../models/campus.model');
 const Materia = require('../models/materia.model');
@@ -519,103 +520,117 @@ exports.postSincronizarCicloEscolar = async (req, res) => {
 };
 
 exports.get_generar_grupos = async (req, res, next) => {
+
+    const client = await pool.connect();
+
     try {
+        await client.query('BEGIN');
 
         // Borrar datos de grupos anteriores
-        await generarGrupos.deleteAllGruposBloqueTiempo();
-        await generarGrupos.deleteResultadoInscripcion();
-        await generarGrupos.deleteAllGrupos();
+        await Promise.all([
+            generarGrupos.deleteAllGruposBloqueTiempo(client),
+            generarGrupos.deleteResultadoInscripcion(client),
+            generarGrupos.deleteAllGrupos(client)
+        ]);
 
         // Pre-fetch de datos:
         // 1. Materias abiertas
         // 2. Relación materia-profesor
         // 3. Disponibilidad de todos los profesores
-        // 4. Salones disponibles
-        const [materiasAbiertas, profesorMaterias, profesorHorarios, salonesDisponibles] = await Promise.all([
-            generarGrupos.getMateriasAbiertas(),
-            generarGrupos.getProfesorMaterias(),
-            generarGrupos.getProfesorHorarios(),
-            generarGrupos.getSalonesDisponibles()
+        const [materiasAbiertas, profesorMaterias, profesorHorarios] = await Promise.all([
+            generarGrupos.getMateriasAbiertas(client),
+            generarGrupos.getProfesorMaterias(client),
+            generarGrupos.getProfesorHorarios(client)
         ]);
 
         // Manejar materias abiertas más de una vez para distintos semestres
         const materiasAgrupadas = materiasAbiertas.rows.reduce((acc, materia) => {
             if (!acc[materia.materia_id]) {
-              // Se crea el objeto para la materia, iniciando con un array de semestres
-              acc[materia.materia_id] = { 
-                ...materia, 
-                semestres: [materia.semestre_id] 
-              };
-            } else {
-              // Si ya existe, se agrega el semestre a la lista (evitando duplicados si fuera necesario)
-              if (!acc[materia.materia_id].semestres.includes(materia.semestre_id)) {
+                // Se crea el objeto para la materia, iniciando con un array de semestres
+                acc[materia.materia_id] = { 
+                    ...materia, 
+                    semestres: [materia.semestre_id] 
+                };
+            } else if (!acc[materia.materia_id].semestres.includes(materia.semestre_id)) {
+                // Si ya existe, se agrega el semestre a la lista (evitando duplicados si fuera necesario)
                 acc[materia.materia_id].semestres.push(materia.semestre_id);
-              }
             }
             return acc;
         }, {});
-          
+
         // Convertir el objeto en un arreglo para facilitar el recorrido en el backtracking
-        const materias = Object.values(materiasAgrupadas);
-        const salones = salonesDisponibles.rows;
+        let materias = Object.values(materiasAgrupadas);
+
+        // Aplicar heurística MRV (Minimum Remaining Values) para ordenar materias
+        materias = generarGrupos.ordenarMateriasMRV(materias, profesorMaterias, profesorHorarios);
 
         let gruposAsignados = []; // Almacenará los grupos asignados para validar restricciones
+        const combinacionesCache = new Map(); // Cache que almacena combinaciones de disponibilidad de profesores ya calculadas
 
         // Función recursiva de backtracking
         async function backtrack(i) {
-            if (i === materias.length) return true; // Si todas las materias ya han sido asignadas
+            if (i === materias.length) {
+                return true;
+            }
 
             const materia = materias[i]; // Materia que se asignará
             const bloquesNecesarios = materia.horas_profesor * 2; // Bloques de tiempo requeridos
 
-            // Filtrar profesores disponibles para la materia
+            // Filtrar profesores disponibles para la materia y ordenar por disponibilidad
             let profesoresDisponibles = profesorMaterias[materia.materia_id] || [];
+            profesoresDisponibles.sort((a, b) => (profesorHorarios[a]?.length || 0) - (profesorHorarios[b]?.length || 0));
 
             // Iterar sobre cada profesor candidato para la materia
             for (let profesor of profesoresDisponibles) {
                 const disponibilidad = profesorHorarios[profesor] || [];
 
-                // Generar todas las combinaciones de bloques de tiempo que cumplan con bloquesNecesarios
-                const combinaciones = generarGrupos.generarCombinaciones(disponibilidad, bloquesNecesarios);
-                if (!combinaciones.length) continue; // Si no hay combinaciones posibles, probar con otro profesor
+                // Cachear o calcular combinaciones de bloques de tiempo que cumplan con bloquesNecesarios
+                const cacheKey = generarGrupos.obtenerClaveCache(profesor, bloquesNecesarios);
+                let combinaciones = combinacionesCache.get(cacheKey);
+                // Si las combinaciones no se han calculado aún, generarlas
+                if (!combinaciones) {
+                    combinaciones = generarGrupos.generarCombinaciones(disponibilidad, bloquesNecesarios);
+                    combinacionesCache.set(cacheKey, combinaciones);
+                }
+                // Si no hay combinaciones posibles, probar con otro profesor
+                if (!combinaciones.length) {
+                    continue; 
+                } 
 
-                for (let salon of salones) {
-                    for (let combinacion of combinaciones) {
-                        // Validar que la asignación no tenga conflicto con grupos ya asignados
-                        if (generarGrupos.validarRestricciones(combinacion, profesor, salon.salon_id, gruposAsignados, materia.semestre_id)) {
+                for (let combinacion of combinaciones) {
+                    // Validar que la asignación no tenga conflicto con grupos ya asignados
+                    if (generarGrupos.validarRestricciones(combinacion, profesor, gruposAsignados, materia.semestres)) {
 
-                            // Crear el objeto grupo con la información necesaria
-                            const grupo = {
-                                materia_id: materia.materia_id,
-                                profesor_id: profesor,
-                                salon_id: salon.salon_id,
-                                ciclo_escolar_id: null // No se asigna de momento
-                            };
+                        // Crear el objeto grupo con la información necesaria
+                        const grupo = {
+                            materia_id: materia.materia_id,
+                            profesor_id: profesor,
+                            salon_id: 9999, // Salón por defecto para indicar que no se ha asignado
+                            ciclo_escolar_id: null // Se asigna al insertar el grupo
+                        };
 
-                            // Insertar el grupo en la BD y obtener el grupo_id
-                            const grupoInsertado = await generarGrupos.saveGrupo(grupo);
-                            const grupo_id = grupoInsertado.rows[0].grupo_id;
+                         // Insertar el grupo en la BD y obtener el grupo_id
+                        const grupoInsertado = await generarGrupos.saveGrupo(grupo, client);
+                        const grupo_id = grupoInsertado.rows[0].grupo_id;
 
-                            // Insertar la asignación de bloques en grupo_horario
-                            await generarGrupos.saveGrupoHorario(grupo_id, combinacion);
+                        // Insertar la asignación de bloques en grupo_horario
+                        await generarGrupos.saveGrupoHorario(grupo_id, combinacion, client);
 
-                            // Registrar la asignación para validar restricciones futuras
-                            gruposAsignados.push({
-                                grupo_id,
-                                profesor_id: profesor,
-                                salon_id: salon.salon_id,
-                                bloques: combinacion,
-                                semestres: materia.semestres
-                            });
+                        // Registrar la asignación para validar restricciones futuras
+                        gruposAsignados.push({
+                            grupo_id,
+                            profesor_id: profesor,
+                            bloques: combinacion,
+                            semestres: materia.semestres
+                        });
 
-                            // Intentar asignar la siguiente materia
-                            if (await backtrack(i + 1)) return true;
+                        // Intentar asignar la siguiente materia
+                        if (await backtrack(i + 1)) return true;
 
-                            // Backtracking: si no se pudo asignar, se retira la asignación actual
-                            gruposAsignados.pop();
-                            await generarGrupos.deleteGrupoHorario(grupo_id);
-                            await generarGrupos.deleteGrupo(grupo_id);
-                        }
+                        // Backtracking: si no se pudo asignar, se retira la asignación actual
+                        gruposAsignados.pop();
+                        await generarGrupos.deleteGrupoHorario(grupo_id, client);
+                        await generarGrupos.deleteGrupo(grupo_id, client);
                     }
                 }
             }
@@ -624,14 +639,19 @@ exports.get_generar_grupos = async (req, res, next) => {
 
         const exito = await backtrack(0);
         if (exito) {
-          res.redirect('/coordinador/grupos');
+            await client.query('COMMIT');
+            res.redirect('/coordinador/grupos');
         } else {
-          res.status(400).json({ mensaje: "No se pudo generar una asignación válida de grupos" });
+            await client.query('ROLLBACK');
+            res.status(400).json({ mensaje: "No se pudo generar una asignación válida de grupos" });
         }
-
-
+        
     } catch (error) {
-        console.error("Error en la generación de grupos:", error);    
+        await client.query('ROLLBACK');
+        console.error("Error en la generación de grupos:", error);
+        
+    } finally {
+        client.release();
     }
 };
 
