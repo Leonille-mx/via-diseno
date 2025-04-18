@@ -140,23 +140,27 @@ module.exports = class Alumno {
         return pool.query(`
             SELECT r.grupo_id AS grupo_id,
 
-                   (SELECT b.hora_inicio
-                    FROM grupo_bloque_tiempo gb
-                    JOIN bloque_tiempo b
-                        ON b.bloque_tiempo_id = gb.bloque_tiempo_id
-                    WHERE gb.grupo_id = r.grupo_id
-                    GROUP BY b.hora_inicio, b.dia, gb.bloque_tiempo_id
-                    ORDER BY gb.bloque_tiempo_id ASC
-                    LIMIT 1) AS hora_inicio,
+                   (SELECT ARRAY_AGG(b.hora_inicio)
+					  FROM (
+					    SELECT MIN(gb.bloque_tiempo_id) AS min_bloque_tiempo_id
+					    FROM grupo_bloque_tiempo gb
+					    JOIN bloque_tiempo b ON b.bloque_tiempo_id = gb.bloque_tiempo_id
+					    WHERE gb.grupo_id = r.grupo_id
+					    GROUP BY b.dia
+					  ) sub
+					  JOIN bloque_tiempo b ON b.bloque_tiempo_id = min_bloque_tiempo_id
+					) AS hora_inicio,
 
-                    (SELECT b.hora_fin
-                    FROM grupo_bloque_tiempo gb
-                    JOIN bloque_tiempo b
-                        ON b.bloque_tiempo_id = gb.bloque_tiempo_id
-                    WHERE gb.grupo_id = r.grupo_id
-                    GROUP BY b.hora_fin, b.dia, gb.bloque_tiempo_id
-                    ORDER BY gb.bloque_tiempo_id DESC
-                    LIMIT 1) AS hora_fin,
+                   (SELECT ARRAY_AGG(b.hora_fin)
+					  FROM (
+					    SELECT MAX(gb.bloque_tiempo_id) AS min_bloque_tiempo_id
+					    FROM grupo_bloque_tiempo gb
+					    JOIN bloque_tiempo b ON b.bloque_tiempo_id = gb.bloque_tiempo_id
+					    WHERE gb.grupo_id = r.grupo_id
+					    GROUP BY b.dia
+					  ) sub
+					  JOIN bloque_tiempo b ON b.bloque_tiempo_id = min_bloque_tiempo_id
+					) AS hora_fin,
 
                    m.nombre AS materia_nombre,
                    s.numero AS salon_numero,
