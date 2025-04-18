@@ -639,6 +639,7 @@ exports.get_generar_grupos = async (req, res, next) => {
 
         const exito = await backtrack(0);
         if (exito) {
+            await generarGrupos.asignarGruposAAlumnos(gruposAsignados, client);
             await client.query('COMMIT');
             res.redirect('/coordinador/grupos');
         } else {

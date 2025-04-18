@@ -233,4 +233,25 @@ module.exports = class generarGrupos {
     static async deleteAllGrupos(client = pool) {
         return client.query(`DELETE FROM grupo`);
     }
+
+    // Asigna cada grupo a todos los alumnos de su(s) semestre(s) que no hayan aprobado la materia previamente.
+    static async asignarGruposAAlumnos(gruposAsignados, client = pool) {
+        for (const { grupo_id, semestres } of gruposAsignados) {
+          for (const semestreId of semestres) {
+            await client.query(`INSERT INTO resultado_inscripcion (alumno_id, grupo_id, obligatorio)
+                                SELECT a.ivd_id, g.grupo_id, true
+                                FROM alumno a
+                                JOIN semestre s ON a.semestre = s.numero
+                                JOIN grupo g ON g.grupo_id = $1
+                                LEFT JOIN historial_academico h
+                                ON h.ivd_id = a.ivd_id
+                                AND h.materia_id = g.materia_id
+                                AND h.aprobado = true
+                                WHERE s.semestre_id = $2
+                                AND h.ivd_id IS NULL`,
+                                [grupo_id, semestreId]
+            );
+          }
+        }
+    }
 }
