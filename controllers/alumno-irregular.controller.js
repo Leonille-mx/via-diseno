@@ -41,12 +41,10 @@ exports.get_materias_disponibles = (req, res, nxt) => {
 exports.post_eliminar_materia_del_resultado = async (req, res, nxt) => {
     try {
         const grupo_id = req.body.grupo_id;
-        await ResultadoInscripcion.eliminarMateriaDelResultado(grupo_id);
+        await ResultadoInscripcion.eliminarMateriaOpcionalDelResultado(req.session.matricula, grupo_id);
 
         const materias_resultado = await Alumno.fetchAllResultadoAlumnoIrregular(req.session.matricula);
-        const materias_disponibles = req.body.semestre == 'semestre'
-            ? await Alumno.fetchAllMateriasDisponiblesDelAlumno(req.session.matricula)
-            : await Alumno.fetchAllMateriasDisponiblesDelAlumnoPorSemestre(req.body.semestre, req.session.matricula);
+        const materias_disponibles = await Alumno.fetchAllMateriasDisponiblesDelAlumno(req.session.matricula);
 
         res.status(200).json({
             isLoggedIn: req.session.isLoggedIn || false,
@@ -62,12 +60,10 @@ exports.post_eliminar_materia_del_resultado = async (req, res, nxt) => {
 exports.post_agregar_materia_del_resultado = async (req, res, nxt) => {
     try {
         const grupo_id = req.body.grupo_id;
-        await ResultadoInscripcion.agregarMateriaDelResultado(req.session.matricula, grupo_id);
+        await ResultadoInscripcion.agregarMateriaOpcionalDelResultado(req.session.matricula, grupo_id);
 
         const materias_resultado = await Alumno.fetchAllResultadoAlumnoIrregular(req.session.matricula);
-        const materias_disponibles = req.body.semestre == 'semestre'
-            ? await Alumno.fetchAllMateriasDisponiblesDelAlumno(req.session.matricula)
-            : await Alumno.fetchAllMateriasDisponiblesDelAlumnoPorSemestre(req.body.semestre, req.session.matricula);
+        const materias_disponibles = await Alumno.fetchAllMateriasDisponiblesDelAlumno(req.session.matricula);
 
         res.status(200).json({
             isLoggedIn: req.session.isLoggedIn || false,

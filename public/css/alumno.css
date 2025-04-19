@@ -93,8 +93,8 @@ html {
   
   /* Establece un alto fijo para las celdas */
   .custom-table td {
-    height: 50px; /* Ajusta este valor según necesites */
-    padding: 8px;
+    height: 1rem; /* Ajusta este valor según necesites */
+    padding: 0;
     vertical-align: middle;
   }
   

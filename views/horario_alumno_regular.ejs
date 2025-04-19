@@ -1,21 +1,32 @@
 <%- include('includes/_nav_alumno.ejs') %>
 
-    <main class="container-fluid bg-grey flex-grow-1 rounded-5 p-0 d-flex flex-column mx-2 my-2 pb-3 h-100">
-      <div class="d-flex" style="height: 80%;">
+    <main class="container-fluid bg-grey flex-grow-1 rounded-5 p-0 d-flex flex-column mx-2 my-2 pb-0 alumno-scroll" style="height: fit-content;">
+      <div class="d-flex" style="height: fit-content;">
         <!-- Columna de la izquierda -->
-        <div class="p-3 flex-grow-1" style="width: 66.66%; height: 100%;">
-          <div class="mb-4 h-100">
+        <div class="p-3 ps-0 flex-grow-1" style="width: 66.66%; height: fit-content;">
+          <div class="mb-4" style="min-height: fit-content;">
             <% if (!inscripcion_completada) { %>
-              <h1 class="ms-3 mt-2">Horario</h1>
+              <div class="mt-2 mb-4">
+                <div class="d-flex align-items-end" style="border-bottom: 3px solid #84251C; width: fit-content; margin-top: -10px;">
+                  <h1 class="m-0 ms-3">Horario</h1>
+                  <p class="fs-5 m-0 ms-4 me-3 ivd-text-red">Semestre Agosto - Diciembre 2025</p>
+                </div>
+              </div>
             <% } else { %>
-                <h1 class="ms-3 mt-2">Resultado de inscripción</h1>
+                <div class="mt-2 mb-4">
+                  <div class="d-flex align-items-end" style="border-bottom: 3px solid #84251C; width: fit-content; margin-top: -10px;">
+                    <h1 class="m-0 ms-3">Resultado de inscripción</h1>
+                    <p class="fs-5 m-0 ms-4 me-3 ivd-text-red">Semestre Agosto - Diciembre 2025</p>
+                  </div>
+                </div>
             <% } %>
-            <h2 class="ms-3 mt-2" style="color:#84251C;">Semestre Ago-Dic 2025</h2>
-            <div class="bg-white rounded-5 p-3 flex-grow-1 ms-3" style=" display: block; height: 100%; overflow-y: auto;">
+            <div class="bg-white rounded-5 p-0 flex-grow-1 ms-4" style=" display: block; height: fit-content; overflow-y: auto;">
               <!-- Contenido del horario principal -->
-              <table class="table custom-table p-3 table-striped table-bordered table-hover">
-                <thead class="table-danger">
-                  <tr class="text-center">
+              <table class="table custom-table p-0 table-striped table-bordered table-hover mb-0"
+                style="font-size: 0.85rem; border-collapse: separate !important; border-spacing: 0; border-radius: 1rem;"
+              >
+                <thead class="table-danger rounded-top">
+                  <tr class="text-center rounded-top">
                     <!-- Titulo de columnas -->
                     <th class="hour-col">Hora</th>
                     <th>Lunes</th>
@@ -90,7 +101,7 @@
                       horaFormato = `${hora}:${minutos} - ${hora}:30`;
                     }
                   %>
-                    <tr>
+                    <tr style="max-height: 1rem;">
                       <th class="hour-cell text-center align-middle"><%= horaFormato %></th>
                       <% ['Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes'].forEach(dia => { %>
                         <% if (horario[dia][bloque] === 'ocupar') return; %>
@@ -101,7 +112,11 @@
                               rowspan="<%= clase.rowspan %>"
                               data-bs-toggle="tooltip" 
                               data-bs-placement="top" 
-                              title="<%= clase.hora %> | Salon: <%= clase.salon %> | Prof: <%= clase.profesor %>">
+                              <% if (clase.salon === 9999) { %>
+                                title="<%= clase.hora %> | Salon: No asignado | Prof: <%= clase.profesor %>">
+                              <% } else { %>
+                                title="<%= clase.hora %> | Salon: <%= clase.salon %> | Prof: <%= clase.profesor %>">
+                              <% } %>
                             <%= clase.nombre %>
                           </td>
                         <% } else { %>
@@ -116,7 +131,7 @@
           </div> 
         </div>
         <!-- Columna de la derecha -->
-        <div class="p-3 flex-grow-1 d-flex flex-column" style="width: 33.33%; height: auto;">
+        <div class="p-3 flex-grow-1 d-flex flex-column mt-5" style="width: 33.33%; height: auto;">
           <!-- Botones de los días -->
            <div class="d-flex justify-content-center gap-4 mt-3 mb-4">
             <button type="button" class="btn btn-circle-custom day-btn" data-day="LU">LU</button>
@@ -126,21 +141,21 @@
             <button type="button" class="btn btn-circle-custom day-btn" data-day="VI">VI</button>
             </div>
           <!-- Clases -->
-          <div id="classes-container" class="flex-grow-1 overflow-y-auto" style="min-height: 90%;">
+          <div id="classes-container" class="flex-grow-1 overflow-y-auto">
             <% for (let materia_resultado of materias_resultado) { %>
-              <div class="bg-white rounded-5 p-3 mb-3 class-card" 
+              <div class="bg-white rounded-5 py-2 mb-3 class-card" 
                 data-days="<%= materia_resultado.dias.map(dia => dia.substring(0,2).toUpperCase()).join(',') %>"
                 data-hora-inicio="<%= materia_resultado.hora_inicio.join(',') %>"
                 data-hora-fin="<%= materia_resultado.hora_fin.join(',') %>"
               >
-                <div class="d-flex m-0 align-items-center justify-content-center" style="width: 100%; padding-left: 10%;">
+                <div class="d-flex m-0 align-items-center justify-content-center" style="width: 100%;">
                   <p class="m-0 me-3 hora-card"></p>
                   <p class="m-0" style="color: #84251C;">(<%= materia_resultado.dias.join(', ') %>)</p>
                 </div>
                 <div class="d-flex justify-content-center my-3">
                   <div style="border-bottom: 3px solid #84251C; width: 100%;"></div>
                 </div>
-                <h5 class="fw-semibold text-center"><%= materia_resultado.materia_nombre %></h5>
+                <p class="fw-semibold text-center"><%= materia_resultado.materia_nombre %></p>
                 <p class="text-center mb-3">
                   Salón: 
                   <% if (materia_resultado.salon_numero === 9999) { %>
@@ -197,8 +212,8 @@
       <!-- Cuerpo del modal -->
       <div class="modal-body  px-4">
         <div class="rounded-5 p-4" style="background-color: white;">
-          <h5 class="modal-title text-center" id="registerInscripcionModalLabel" style="color: #84251C;"><b>Usted esta cerrando su proceso de admision. 
-            ¿Esta seguro?</b></h5>
+          <p class="modal-title text-center" id="registerInscripcionModalLabel" style="color: #84251C;"><b>Usted esta cerrando su proceso de admision. 
+            ¿Esta seguro?</b></p>
         </div>
       </div>
       
@@ -226,9 +241,9 @@
       <form id="solicitudForm" method="POST" action="/alumno-regular/horario/solitud">
         <div class="modal-body px-4">
           <div class="rounded-5 p-4" style="background-color: white;">
-            <h5 class="modal-title text-center" id="registerSolicitudModalLabel" style="color: #84251C; margin-bottom: 20px;">
+            <p class="modal-title text-center" id="registerSolicitudModalLabel" style="color: #84251C; margin-bottom: 20px;">
               <b>Usted está solicitando un cambio de estatus ¿Está seguro?</b>
-            </h5>
+            </p>
             <div class="mb-3">
               <textarea maxlength="60" class="form-control rounded-5 mx-auto" id="nota" name="descripcion" rows="2" 
                 placeholder="Escriba sus razones" style="background-color: #f0f0f0; resize: none;" required></textarea>
@@ -264,7 +279,11 @@
           const horaFinArray = card.getAttribute('data-hora-fin').split(','); 
           const indexDiaCard = card.getAttribute('data-days').split(',').indexOf(day);
           card.style.display = card.getAttribute('data-days').includes(day) ? 'block' : 'none';
-          card.querySelector(".hora-card").textContent = `${horaInicioArray[indexDiaCard]} - ${horaFinArray[indexDiaCard]}`;
+          if (indexDiaCard !== -1) {
+            card.querySelector(".hora-card").textContent = `${horaInicioArray[indexDiaCard].substring(0, 5)} - ${horaFinArray[indexDiaCard].substring(0, 5)}`;
+          } else {
+            card.querySelector(".hora-card").textContent = `${horaInicioArray[0].substring(0, 5)} - ${horaFinArray[0].substring(0, 5)}`;
+          }
         });
         //Hover cuando se selecciona
         dayButtons.forEach(btn => {
