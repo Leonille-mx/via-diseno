@@ -85,3 +85,67 @@ html {
 
 
 .border-grey { border-color: #f0f0f0 !important; }
+
+
+/* =============================================
+   Custom Table Styling
+   - Striped rows (white/gray)
+   - White borders
+   - Works with Bootstrap tables
+============================================= */
+
+/* Custom striped table */
+/* Custom striped table */
+.table-custom-striped {
+    border-collapse: separate !important;
+    border-spacing: 0;
+    border-radius: 1rem;
+    overflow: hidden;
+  }
+  
+  /* Header styling */
+  .table-custom-striped thead {
+    background-color: #84251C !important;
+    border: 1px solid #555 !important; /* Dark gray border for header */
+  }
+  
+  .table-custom-striped thead tr {
+    color: white;
+  }
+  
+  /* Striped row pattern with dark gray borders */
+  .table-custom-striped tbody tr:nth-child(odd) td {
+    background-color: white;
+    border: 1px solid #e0e0e0 !important; /* Light gray border for contrast */
+  }
+  
+  .table-custom-striped tbody tr:nth-child(even) td {
+    background-color: #f5f5f5c5;
+    border: 1px solid #e0e0e0 !important; /* Light gray border for contrast */
+  }
+  
+  /* Cell borders */
+  .table-custom-striped th {
+    border: 1px solid #721d16 !important; /* Dark gray border for headers */
+  }
+  
+  .table-custom-striped td {
+    border: 1px solid #e0e0e0 !important; /* Light gray border for cells */
+  }
+  
+  /* Empty slots */
+  .table-custom-striped .empty-slot {
+    background-color: transparent;
+    border: 1px solid #e0e0e0 !important;
+  }
+  
+  /* Hover effects */
+  .table-custom-striped tbody tr:hover td {
+    background-color: #ffdddd !important; /* Light red hover */
+    border-color: #d0d0d0 !important; /* Slightly darker border on hover */
+  }
+  
+  /* Stronger red for even rows on hover */
+  .table-custom-striped tbody tr:nth-child(even):hover td {
+    background-color: #ffcccc !important;
+  }
