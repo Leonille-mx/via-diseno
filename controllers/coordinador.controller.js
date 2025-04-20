@@ -439,6 +439,17 @@ exports.post_sincronizar_alumnos = async (req, res, nxt) => {
     }
 };
 
+exports.get_alumno_horario = (req, res, nxt) => {
+    Alumno.fetchAllResultadoAlumno(req.params.id)
+    .then((data) => {
+        res.status(200).json({
+            isLoggedIn: req.session.isLoggedIn || false,
+            matricula: req.session.matricula || '',
+            materias_resultado: data.rows,
+        });
+    })
+}
+
 exports.get_solicitudes_cambio = (req, res, nxt) => {
     res.render('solicitudes_cambio_coordinador', {
         isLoggedIn: req.session.isLoggedIn || false,

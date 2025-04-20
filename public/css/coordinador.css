@@ -295,8 +295,8 @@ thead th {
   cursor: pointer;
 }
 
-.table-hover tbody tr:hover td,
-.table-hover tbody tr:hover th {
+.table-hover:not(.custom-table) tbody tr:hover td,
+.table-hover:not(.custom-table) tbody tr:hover th {
   background-color: #84251c44 !important;
   --bs-table-accent-bg: #84251c44 !important;
 }
@@ -373,4 +373,52 @@ textarea.form-control,
 select.form-select {
   width: calc(100% - 1.5rem);
   box-sizing: border-box;
+}
+
+
+.btn-circle-custom {
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+  padding: 0;
+  background: white;
+  border: 1px solid #84251C;
+  color: black; /* Texto negro */
+  font-weight: bold;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.3s;
+}
+.btn-circle-custom:hover {
+  background: #84251C !important;
+  color: white !important;
+}
+
+/* Asegura que la tabla ocupe todo el espacio */
+.custom-table {
+  width: 100%;
+  table-layout: fixed;
+}
+
+/* Establece un alto fijo para las celdas */
+.custom-table td {
+  height: 1rem; /* Ajusta este valor según necesites */
+  padding: 0;
+  vertical-align: middle;
+}
+
+/* Celda de hora */
+.hour-cell {
+  width: 80px; /* Ancho fijo para la columna de horas */
+}
+
+/* Celdas vacías */
+.empty-slot {
+  background-color: #f8f9fa;
+}
+
+/* Asegura que las celdas con rowspan mantengan el tamaño */
+.custom-table td[rowspan] {
+  height: auto;
 }

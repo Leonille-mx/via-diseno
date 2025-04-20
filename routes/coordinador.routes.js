@@ -26,6 +26,8 @@ router.get('/alumnos', isAuth, coordinador_controller.get_alumnos);
 
 router.post('/alumnos/sincronizar', isAuth, coordinador_controller.post_sincronizar_alumnos);
 
+router.get('/alumnos/consultar-horario/:id', isAuth, coordinador_controller.get_alumno_horario);
+
 router.get('/salones', isAuth, coordinador_controller.get_salones);
 router.post('/salones', isAuth, coordinador_controller.post_salones);
 router.post('/salones/eliminar/:id', isAuth, coordinador_controller.post_eliminar_salon);

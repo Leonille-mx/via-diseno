@@ -68,6 +68,7 @@ module.exports = class Alumno {
             FROM alumno a, usuario u
             WHERE a.ivd_id = u.ivd_id AND
                   a.regular = true
+            ORDER BY a.ivd_id ASC
         `;
         return await pool.query(query);
     }
@@ -78,6 +79,7 @@ module.exports = class Alumno {
             FROM alumno a, usuario u
             WHERE a.ivd_id = u.ivd_id AND
                   a.regular = false
+            ORDER BY a.ivd_id ASC
         `;
         return await pool.query(query);
     }
@@ -140,7 +142,7 @@ module.exports = class Alumno {
             , [id]);
     }
     
-    static async fetchAllResultadoAlumnoRegular(id) {
+    static async fetchAllResultadoAlumno(id) {
         return pool.query(`
             SELECT r.grupo_id AS grupo_id,
 

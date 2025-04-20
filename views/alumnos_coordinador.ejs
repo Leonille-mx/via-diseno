@@ -71,7 +71,11 @@
             <td class="text-center align-middle"><%= alumnoRegular.correo_institucional %></td>
             <td class="text-center align-middle">
               <button class="btn btn-sm p-0 d-flex align-items-center justify-content-center" 
-                style="width: 1.5rem; height: 1.5rem; border-radius: 50%; background-color: #84251c; color: white; border: none;">
+                style="width: 1.5rem; height: 1.5rem; border-radius: 50%; background-color: #84251c; color: white; border: none;"
+                data-bs-toggle="modal" 
+                data-bs-target="#viewModal"
+                data-alumno-id="<%= alumnoRegular.ivd_id %>"
+                data-alumno-nombre="<%= alumnoRegular.nombre %> <%= alumnoRegular.primer_apellido %> <%= alumnoRegular.segundo_apellido|| '' %>">
                   <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-eye-fill" viewBox="0 0 16 16">
                     <path d="M10.5 8a2.5 2.5 0 1 1-5 0 2.5 2.5 0 0 1 5 0"/>
                     <path d="M0 8s3-5.5 8-5.5S16 8 16 8s-3 5.5-8 5.5S0 8 0 8m8 3.5a3.5 3.5 0 1 0 0-7 3.5 3.5 0 0 0 0 7"/>
@@ -125,7 +129,11 @@
             <td class="text-center align-middle"><%= alumnoIrregular.correo_institucional %></td>
             <td class="text-center align-middle">
               <button class="btn btn-sm p-0 d-flex align-items-center justify-content-center" 
-                style="width: 1.5rem; height: 1.5rem; border-radius: 50%; background-color: #84251c; color: white; border: none;">
+                style="width: 1.5rem; height: 1.5rem; border-radius: 50%; background-color: #84251c; color: white; border: none;"
+                data-bs-toggle="modal" 
+                data-bs-target="#viewModal"
+                data-alumno-id="<%= alumnoIrregular.ivd_id %>"
+                data-alumno-nombre="<%= alumnoIrregular.nombre %> <%= alumnoIrregular.primer_apellido %> <%= alumnoIrregular.segundo_apellido|| '' %>">
                   <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-eye-fill" viewBox="0 0 16 16">
                     <path d="M10.5 8a2.5 2.5 0 1 1-5 0 2.5 2.5 0 0 1 5 0"/>
                     <path d="M0 8s3-5.5 8-5.5S16 8 16 8s-3 5.5-8 5.5S0 8 0 8m8 3.5a3.5 3.5 0 1 0 0-7 3.5 3.5 0 0 0 0 7"/>
@@ -148,18 +156,262 @@
   </main>
 </div>
 </div>
+
+<div class="modal fade" id="viewModal" tabindex="-1" aria-labelledby="viewModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-xl modal-dialog-centered modal-dialog-scrollable">
+    <div class="modal-content rounded-5" style="background-color: #f0f0f0; max-width: 95vw;">
+      <div class="modal-header justify-content-center border-bottom-0">
+        <h5 class="modal-title ivd-text-red" id="viewModalLabel"><b>Estás viendo el horario de un alumno</b></h5>
+      </div>
+      <div class="modal-body px-4 materia-scroll">
+        <div class="rounded-5 py-1" style="background-color: white;">
+          <div class="d-flex" style="height: fit-content;">
+            <!-- Columna de la izquierda -->
+            <div class="p-3 ps-0 flex-grow-1" style="width: 66.66%; height: fit-content;">
+              <div class="mb-4" style="min-height: fit-content;">
+                <div class="mt-1 mb-4">
+                  <div class="d-flex align-items-end" style="border-bottom: 3px solid #84251C; width: fit-content; margin-top: -10px;">
+                    <p class="fs-5 m-0 ms-2 me-3" id="viewModalAlumnoNombre"></p>
+                  </div>
+                </div>
+                <div class="bg-white rounded-5 p-0 flex-grow-1 ms-3 border ivd-border-red" style=" display: block; height: fit-content; overflow-y: auto;">
+                  <!-- Contenido del horario principal -->
+                  <table class="table custom-table p-0 table-striped table-bordered table-hover mb-0"
+                    style="font-size: 0.85rem; border-collapse: separate !important; border-spacing: 0; border-radius: 1rem;"
+                  >
+                    <thead class="table-danger rounded-top">
+                      <tr class="text-center rounded-top">
+                        <!-- Titulo de columnas -->
+                        <th class="hour-col">Hora</th>
+                        <th>Lunes</th>
+                        <th>Martes</th>
+                        <th>Miércoles</th>
+                        <th>Jueves</th>
+                        <th>Viernes</th>
+                      </tr>
+                    </thead>
+                    <tbody id="viewModalTableBody">
+                    </tbody>
+                  </table>
+                </div>
+              </div> 
+            </div>
+            <!-- Columna de la derecha -->
+            <div class="p-3 flex-grow-1 d-flex flex-column mt-5" style="width: 33.33%; height: auto;">
+              <!-- Botones de los días -->
+               <div class="d-flex justify-content-center gap-4 mt-3 mb-4">
+                <button type="button" class="btn btn-circle-custom day-btn" data-day="LU">LU</button>
+                <button type="button" class="btn btn-circle-custom day-btn" data-day="MA">MA</button>
+                <button type="button" class="btn btn-circle-custom day-btn" data-day="MI">MI</button>
+                <button type="button" class="btn btn-circle-custom day-btn" data-day="JU">JU</button>
+                <button type="button" class="btn btn-circle-custom day-btn" data-day="VI">VI</button>
+                </div>
+              <!-- Clases -->
+              <div id="classes-container" class="flex-grow-1 overflow-y-auto">
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="modal-footer justify-content-center" style="background-color: #f0f0f0;">
+        <button type="submit" form="scheduleForm" class="btn btn-primary rounded-pill px-4 mx-4" 
+          style="background-color: #84251C; border: none;"
+          data-bs-dismiss="modal">
+          Aceptar
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
 <script src="/js/coordinador.js"></script>
-  <% if (msg) { %>
-    <script>
-      // Solo cuando el html carga completamente
-      document.addEventListener('DOMContentLoaded', () => {
-        // Crea una instancia de nuevo modal
-        var myModal = new bootstrap.Modal(document.getElementById('msgModal'));
-        // Muestra el nuevo modal
-        myModal.show();
+<% if (msg) { %>
+  <script>
+    // Solo cuando el html carga completamente
+    document.addEventListener('DOMContentLoaded', () => {
+      // Crea una instancia de nuevo modal
+      var myModal = new bootstrap.Modal(document.getElementById('msgModal'));
+      // Muestra el nuevo modal
+      myModal.show();
+    });
+  </script>
+<% } %>
+<script>
+  document.getElementById('viewModal').addEventListener('shown.bs.modal', (event) => {
+    const button = event.relatedTarget;
+    const alumno_id = button.getAttribute('data-alumno-id');
+    const alumno_nombre = button.getAttribute('data-alumno-nombre');
+    document.getElementById('viewModalAlumnoNombre').innerHTML = alumno_nombre;
+    fetch(`/coordinador/alumnos/consultar-horario/${alumno_id}`, {
+      method: 'GET',
+    }).then((res) => {
+      return res.json();
+    }).then((data) => {
+      // Tabla de horario
+      const colores = ['bg-primary-subtle', 'bg-success-subtle ','bg-warning-subtle ','bg-danger-subtle','bg-info-subtle','bg-secondary-subtle','bg-light'];
+      const materiasColor = {};
+      let colorIndex = 0;
+      
+      const horario = { 
+        Lunes: {}, Martes: {}, Miércoles: {}, Jueves: {}, Viernes: {} 
+      };
+      
+      if (typeof data.materias_resultado !== 'undefined' && Array.isArray(data.materias_resultado)) {
+        data.materias_resultado.forEach(materia => {
+          // Asignar color único por materia
+          if (!materiasColor[materia.materia_nombre]) {
+            materiasColor[materia.materia_nombre] = colores[colorIndex % colores.length];
+            colorIndex++;
+          }
+          
+          let indexDia = 0;
+          materia.dias.forEach(dia => {
+            const diaNombre = dia.charAt(0).toUpperCase() + dia.slice(1).toLowerCase();
+          
+            const [hi, mi] = materia.hora_inicio[indexDia].split(':').map(Number);
+            const [hf, mf] = materia.hora_fin[indexDia].split(':').map(Number);
+            
+            const inicioBloque = hi * 2 + (mi >= 30 ? 1 : 0);
+            const finBloque = hf * 2 + (mf >= 30 ? 1 : 0);
+            
+            if (horario[diaNombre]) {
+              horario[diaNombre][inicioBloque] = {
+                rowspan: finBloque - inicioBloque,
+                nombre: materia.materia_nombre,
+                color: materiasColor[materia.materia_nombre],
+                salon: materia.salon_numero,
+                profesor: `${materia.profesor_nombre} ${materia.profesor_primer_apellido}`,
+                hora: `${materia.hora_inicio[indexDia]} - ${materia.hora_fin[indexDia]}`
+              };
+              
+              for (let b = inicioBloque + 1; b < finBloque; b++) {
+                horario[diaNombre][b] = 'ocupar';
+              }
+            }
+            indexDia ++;
+          });
+        });
+      }
+      let html_container_tabla = '';
+      for (let bloque = 14; bloque < 32; bloque++) {
+        const hora = Math.floor(bloque / 2);
+        const minutos = bloque % 2 === 0 ? '00' : '30';
+        let horaFormato;
+        if (bloque % 2 !== 0) {
+          horaFormato = `${hora}:${minutos} - ${hora + 1}:00`;
+        } else {
+          horaFormato = `${hora}:${minutos} - ${hora}:30`;
+        }
+        html_container_tabla += `
+          <tr style="max-height: 1rem;">
+            <th class="hour-cell text-center align-middle">${horaFormato}</th>`;
+            ['Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes'].forEach(dia => {
+              if (horario[dia][bloque] === 'ocupar') return;
+              if (horario[dia][bloque]) { 
+                const clase = horario[dia][bloque];
+                html_container_tabla += `
+                  <td class="text-black text-center align-middle ${clase.color}" 
+                      rowspan="${clase.rowspan}"
+                      data-bs-toggle="tooltip" 
+                      data-bs-placement="top"`;
+                      if (clase.salon === 9999) {
+                        html_container_tabla += `
+                          title="${clase.hora} | Salon: No asignado | Prof: ${clase.profesor}">`;
+                      } else {
+                        html_container_tabla += `
+                          title="${clase.hora} | Salon: ${clase.salon} | Prof: ${clase.profesor}">`
+                      }
+                    html_container_tabla += `
+                    ${clase.nombre}
+                  </td>`;
+              } else {
+                html_container_tabla += `
+                  <td class="empty-slot"></td>`;
+              }
+            })
+        html_container_tabla += `
+          </tr>`;
+      }
+
+      document.getElementById('viewModalTableBody').innerHTML = html_container_tabla;
+      
+      // Tarjetas de materias
+      let html_container_materias = '';
+      for (let materia_resultado of data.materias_resultado) {
+        html_container_materias += `
+        <div class="bg-white rounded-5 py-2 mb-3 class-card border ivd-border-red" 
+          data-days="${materia_resultado.dias.map(dia => dia.substring(0,2).toUpperCase()).join(',')}"
+          data-hora-inicio="${materia_resultado.hora_inicio.join(',')}"
+          data-hora-fin="${materia_resultado.hora_fin.join(',')}"
+        >
+          <div class="d-flex m-0 align-items-center justify-content-center" style="width: 100%;">
+            <p class="m-0 me-3 hora-card"></p>
+            <p class="m-0" style="color: #84251C;">(${materia_resultado.dias.join(', ')})</p>
+          </div>
+          <div class="d-flex justify-content-center my-3">
+            <div style="border-bottom: 3px solid #84251C; width: 100%;"></div>
+          </div>
+          <p class="fw-semibold text-center">${materia_resultado.materia_nombre}</p>
+          <p class="text-center mb-3">
+            Salón: `;
+            if (materia_resultado.salon_numero === 9999) {
+              html_container_materias += `
+              No asignado |`;
+            } else {
+              html_container_materias += `
+              ${materia_resultado.salon_numero} |`
+            }
+            html_container_materias += ` 
+            ${materia_resultado.profesor_nombre} 
+            ${materia_resultado.profesor_primer_apellido}
+            ${materia_resultado.profesor_segundo_apellido}
+          </p>
+        </div>`;
+      }
+      document.getElementById('classes-container').innerHTML = html_container_materias;
+
+      const dayButtons = document.querySelectorAll('.day-btn');
+      const classCards = document.querySelectorAll('.class-card');  
+
+      function filterClassesByDay(day) {
+        classCards.forEach(card => {
+          const horaInicioArray = card.getAttribute('data-hora-inicio').split(',');
+          const horaFinArray = card.getAttribute('data-hora-fin').split(','); 
+          const indexDiaCard = card.getAttribute('data-days').split(',').indexOf(day);
+          card.style.display = card.getAttribute('data-days').includes(day) ? 'block' : 'none';
+          if (indexDiaCard !== -1) {
+            card.querySelector(".hora-card").textContent = `${horaInicioArray[indexDiaCard].substring(0, 5)} - ${horaFinArray[indexDiaCard].substring(0, 5)}`;
+          } else {
+            card.querySelector(".hora-card").textContent = `${horaInicioArray[0].substring(0, 5)} - ${horaFinArray[0].substring(0, 5)}`;
+          }
+        });
+        //Hover cuando se selecciona
+        dayButtons.forEach(btn => {
+          if (btn.getAttribute('data-day') === day) {
+            btn.style.backgroundColor = '#84251C';
+            btn.style.color = 'white';
+            btn.style.borderColor = '#84251C';
+          } else {
+            btn.style.backgroundColor = 'white';
+            btn.style.color = 'black';
+            btn.style.borderColor = '#84251C';
+          }
+        });
+      }
+      dayButtons.forEach(button => {
+        button.addEventListener('click', function() {
+          filterClassesByDay(this.getAttribute('data-day')); });
+        button.addEventListener('mouseover', function() { });
+        button.addEventListener('mouseout', function() { });
       });
-    </script>
-  <% } %>
+      //Muestra siempre el lunes
+      filterClassesByDay('LU');
+    }).catch((error) => {
+      console.log(error);
+    });
+  });
+</script>
+
 </body>
 </html>
