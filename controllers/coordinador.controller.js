@@ -304,6 +304,8 @@ exports.post_eliminar_salon = (req, res, nxt) => {
 };
 
 exports.get_grupos = (req, res, next) => {
+    const msgTitle = req.query.msgTitle || null; 
+    const msg = req.query.msg || null; 
     Promise.all([
         MateriaSemestre.fetchMateriasSemestre(),
         Profesor.fetchAll(),
@@ -318,6 +320,8 @@ exports.get_grupos = (req, res, next) => {
             salones: salones.rows,
             isLoggedIn: req.session.isLoggedIn || false,
             matricula: req.session.matricula || '',
+            msgTitle,
+            msg
         });
     })
     .catch((error) => {
@@ -328,6 +332,8 @@ exports.get_grupos = (req, res, next) => {
 
 exports.post_grupos = async (req, res, next) => {
     try {
+        const msgTitle = `Agregar grupo`;
+
         const selectedBlocks = JSON.parse(req.body.selectedBlocks);
         const grupo = new Grupos(req.body.materia, req.body.profesor, req.body.salon);
         
@@ -340,10 +346,12 @@ exports.post_grupos = async (req, res, next) => {
         );
         await Promise.all(asignarBloquesPromises);
 
-        res.redirect('/coordinador/grupos');
+        res.redirect(`/coordinador/grupos?msg=${encodeURIComponent('El grupo fue registrado exitosamente.')}
+                                         &msgTitle=${encodeURIComponent(msgTitle)}`);
     } catch (error) {
         console.error(error);
-        res.status(500).send('Error al registrar el grupo'); 
+        res.redirect(`/coordinador/grupos?msg=${encodeURIComponent('La operación fue fracasada. Intente de nuevo.')}
+                                         &msgTitle=${encodeURIComponent(msgTitle)}`); 
     }
 };
 
@@ -369,6 +377,8 @@ exports.get_modificar_grupo = (req, res, next) => {
 
 exports.post_modificar_grupo = async (req, res, next) => {
     try {
+        const msgTitle = `Agregar grupo`;
+
         const selectedBlocks = JSON.parse(req.body.selectedBlocks);
 
         await Grupos.deleteHorario(req.params.id);
@@ -380,10 +390,12 @@ exports.post_modificar_grupo = async (req, res, next) => {
         );
         await Promise.all(actualizarHorarioPromises);
 
-        res.redirect('/coordinador/grupos');
+        res.redirect(`/coordinador/grupos?msg=${encodeURIComponent('Los detalles del grupo fueron modificados exitosamente.')}
+                                         &msgTitle=${encodeURIComponent(msgTitle)}`);
     } catch (error) {
         console.error(error);
-        res.status(500).send('Error al modificar detalles del grupo');
+        res.redirect(`/coordinador/grupos?msg=${encodeURIComponent('La operación fue fracasada. Intente de nuevo.')}
+                                         &msgTitle=${encodeURIComponent(msgTitle)}`); 
     }
 };
 
@@ -478,6 +490,8 @@ exports.get_cicloescolar = (req, res, next) => {
 };
 
 exports.post_eliminar_grupo = (req, res, nxt) => {
+    const msgTitle = `Eliminar grupo`;
+
     Grupos.deleteHorario(req.params.id)
     .then(() => {
         return Grupos.deleteInscripcion(req.params.id);
@@ -486,11 +500,13 @@ exports.post_eliminar_grupo = (req, res, nxt) => {
         return Grupos.delete(req.params.id);
     })
     .then(() => {
-        res.redirect('/coordinador/grupos');
+        res.redirect(`/coordinador/grupos?msg=${encodeURIComponent('El grupo fue eliminado exitosamente.')}
+                                         &msgTitle=${encodeURIComponent(msgTitle)}`);
     })
     .catch((error) => {
-        console.error('Delete error:', error);
-        res.redirect('/coordinador/grupos?error=delete_failed');
+        console.error(error);
+        res.redirect(`/coordinador/grupos?msg=${encodeURIComponent('La operación fue fracasada. Intente de nuevo.')}
+                                         &msgTitle=${encodeURIComponent(msgTitle)}`); 
     });
 };
 
@@ -522,6 +538,7 @@ exports.postSincronizarCicloEscolar = async (req, res) => {
 exports.get_generar_grupos = async (req, res, next) => {
 
     const client = await pool.connect();
+    const msgTitle = `Generar grupos`;
 
     try {
         await client.query('BEGIN');
@@ -641,15 +658,19 @@ exports.get_generar_grupos = async (req, res, next) => {
         if (exito) {
             await generarGrupos.asignarGruposAAlumnos(gruposAsignados, client);
             await client.query('COMMIT');
-            res.redirect('/coordinador/grupos');
+            res.redirect(`/coordinador/grupos?msg=${encodeURIComponent('Los grupos fueron generados exitosamente.')}
+                                             &msgTitle=${encodeURIComponent(msgTitle)}`);
         } else {
             await client.query('ROLLBACK');
-            res.status(400).json({ mensaje: "No se pudo generar una asignación válida de grupos" });
+            const msg = 'El sistema no fue capaz de encontrar combinaciones válidas.<br>Asegúrese de que todas las materias abiertas tengan profesores con horarios disponibles.'
+            res.redirect(`/coordinador/grupos?msg=${encodeURIComponent(msg)}
+                                             &msgTitle=${encodeURIComponent(msgTitle)}`); 
         }
         
     } catch (error) {
         await client.query('ROLLBACK');
-        console.error("Error en la generación de grupos:", error);
+        res.redirect(`/coordinador/grupos?msg=${encodeURIComponent('La operación fue fracasada. Intente de nuevo.')}
+                                         &msgTitle=${encodeURIComponent(msgTitle)}`); 
         
     } finally {
         client.release();
