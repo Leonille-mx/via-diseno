@@ -163,12 +163,14 @@ exports.get_profesores = async (req, res, nxt) => {
       const materias = await MateriaSemestre.fetchMateriasSemestre(); 
       const profesoresActivos = await Profesor.fetchActivos();  
       const msg = req.query.msg || null;
+      const msg2 = req.query.msg2 || null;
   
       res.render('profesores_coordinador', {
           isLoggedIn: req.session.isLoggedIn || false,
           matricula: req.session.matricula || '',
           profesores: profesoresActivos.rows,  
           msg, 
+          msg2,
           materias: materias.rows
       });
     } catch (error) {
@@ -248,10 +250,10 @@ exports.post_modificar_profesor = async (req, res, next) => {
         );
         await Promise.all(actualizarHorarioPromises);
 
-        res.redirect('/coordinador/profesores');
+        res.redirect(`/coordinador/profesores?msg2=${'Los detalles del profesor se modificaron exitosamente.'}`);
     } catch (error) {
         console.error(error);
-        res.status(500).send('Error al modificar detalles del profesor');
+        res.redirect(`/coordinador/profesores?msg2=${'La operación fue fracasada. Intente de nuevo.'}`);
     }
 };
 
@@ -282,7 +284,7 @@ exports.get_salones = (req, res, nxt) => {
 };
 
 exports.post_salones = (req, res, nxt) => {
-    msgTitle = `Agregar salón`
+    msgTitle = `Agregar Salón`
 
     const salon = new Salon(req.body.numero, req.body.capacidad, req.body.tipo, req.body.nota, req.body.campus);
     salon.save()
@@ -298,7 +300,7 @@ exports.post_salones = (req, res, nxt) => {
 };
 
 exports.post_eliminar_salon = (req, res, nxt) => {
-    msgTitle = `Eliminar salón`
+    msgTitle = `Eliminar Salón`
     
     Salon.deleteGrupoSalon(req.params.id)
         .then(() => {
@@ -344,7 +346,7 @@ exports.get_grupos = (req, res, next) => {
 
 exports.post_grupos = async (req, res, next) => {
     try {
-        const msgTitle = `Agregar grupo`;
+        const msgTitle = `Agregar Grupo`;
 
         const selectedBlocks = JSON.parse(req.body.selectedBlocks);
         const grupo = new Grupos(req.body.materia, req.body.profesor, req.body.salon);
@@ -389,7 +391,7 @@ exports.get_modificar_grupo = (req, res, next) => {
 
 exports.post_modificar_grupo = async (req, res, next) => {
     try {
-        const msgTitle = `Agregar grupo`;
+        const msgTitle = `Modificar Grupo`;
 
         const selectedBlocks = JSON.parse(req.body.selectedBlocks);
 
@@ -502,7 +504,7 @@ exports.get_cicloescolar = (req, res, next) => {
 };
 
 exports.post_eliminar_grupo = (req, res, nxt) => {
-    const msgTitle = `Eliminar grupo`;
+    const msgTitle = `Eliminar Grupo`;
 
     Grupos.deleteHorario(req.params.id)
     .then(() => {
@@ -550,7 +552,7 @@ exports.postSincronizarCicloEscolar = async (req, res) => {
 exports.get_generar_grupos = async (req, res, next) => {
 
     const client = await pool.connect();
-    const msgTitle = `Generar grupos`;
+    const msgTitle = `Generar Grupos`;
 
     try {
         await client.query('BEGIN');
