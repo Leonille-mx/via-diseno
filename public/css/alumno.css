@@ -149,3 +149,35 @@ html {
   .table-custom-striped tbody tr:nth-child(even):hover td {
     background-color: #ffcccc !important;
   }
+
+  .alumno-scroll::-webkit-scrollbar {
+    height: 10px;
+    width: 8px;
+}
+  
+.alumno-scroll::-webkit-scrollbar-thumb {
+    background-color: #a83232;
+    border-radius: 10px;
+    border: 2px solid #84251c;
+}
+
+.alumno-scroll {
+    overflow-y: auto; /* Enables vertical scrolling */
+    overflow-x: hidden; /* Prevents horizontal scrolling */
+}
+
+.alumno-scroll-gris::-webkit-scrollbar {
+    height: 10px;
+    width: 6px;
+}
+  
+.alumno-scroll-gris::-webkit-scrollbar-thumb {
+    background-color: lightgray;
+    border-radius: 10px;
+    border: 2px solid lightgray;
+}
+
+.alumno-scroll-gris {
+    overflow-y: auto; /* Enables vertical scrolling */
+    overflow-x: hidden; /* Prevents horizontal scrolling */
+}
