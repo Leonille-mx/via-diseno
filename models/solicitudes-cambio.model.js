@@ -52,7 +52,7 @@ module.exports = class Solicitud {
         WHERE 
             sc.aprobada = false
         ORDER BY 
-            sc.created_at::timestamp DESC
+            sc.created_at::timestamp ASC
     `);
   }
 
@@ -85,7 +85,7 @@ module.exports = class Solicitud {
         JOIN 
             usuario u ON sc.ivd_id = u.ivd_id
               ORDER BY
-                sc.created_at DESC`);
+                sc.created_at ASC`);
     return result.rows;
   }
 
