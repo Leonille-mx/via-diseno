@@ -85,7 +85,7 @@ module.exports = class Solicitud {
         JOIN 
             usuario u ON sc.ivd_id = u.ivd_id
               ORDER BY
-                sc.created_at ASC`);
+                sc.created_at DESC`);
     return result.rows;
   }
 
