@@ -3,6 +3,24 @@
 
       <main class="bg-grey flex-grow-1 rounded-5 p-0 d-flex flex-column" style="height: 100vh;">
         
+        <% if (msg) { %>
+          <div class="modal fade" id="msgModal" tabindex="-1" aria-labelledby="msgModalLabel" aria-hidden="true">
+            <div class="modal-dialog modal-dialog-centered modal-sm">
+              <div class="modal-content align-items-center rounded-5">
+                <div class="modal-header border border-0">
+                  <h5 class="modal-title ivd-text-red" id="msgModalLabel"><%- msgTitle %></h5>
+                </div>
+                <div class="modal-body bg-grey rounded-5 text-center mx-4">
+                  <%- msg %>
+                </div>
+                <div class="modal-footer">
+                  <button type="button" class="btn ivd-bg-red text-white rounded-5" data-bs-dismiss="modal">Aceptar</button>
+                </div>
+              </div>
+            </div>
+          </div>
+        <% } %>
+
         <!-- Título de la sección -->
         <div class="mb-4">
           <h1 class="ms-3 mt-2">Salones</h1>
@@ -25,7 +43,7 @@
             <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-plus-lg" viewBox="0 0 16 16">
               <path fill-rule="evenodd" d="M8 2a.5.5 0 0 1 .5.5v5h5a.5.5 0 0 1 0 1h-5v5a.5.5 0 0 1-1 0v-5h-5a.5.5 0 0 1 0-1h5v-5A.5.5 0 0 1 8 2"/>
             </svg>
-            Añadir Salón
+            Agregar Salón
           </button>
         </div>
 
@@ -136,7 +154,7 @@
         
         <!-- Encabezado del modal -->
         <div class="modal-header justify-content-center">
-          <h5 class="modal-title" id="registerSalonModalLabel" style="color: #84251C;"><b>Estás añadiendo un nuevo salón</b></h5>
+          <h5 class="modal-title" id="registerSalonModalLabel" style="color: #84251C;"><b>Estás agregando un nuevo salón</b></h5>
         </div>
         
         <!-- Cuerpo del modal con el formulario de registro -->
@@ -183,7 +201,7 @@
         <!-- Pie del modal con los botones de acción -->
         <div class="modal-footer justify-content-center" style="background-color: #f0f0f0">
           <button type="button" class="btn btn-secondary rounded-pill px-4 mx-4" style="background-color: white; border: 1px solid #84251C; color: #84251C;" data-bs-dismiss="modal">Cancelar</button>
-          <button type="submit" form="registerSalonForm" class="btn btn-primary rounded-pill px-4 mx-4" style="background-color: #84251C; border: none;">Registrar</button>
+          <button type="submit" form="registerSalonForm" class="btn btn-primary rounded-pill px-4 mx-4" style="background-color: #84251C; border: none;">Agregar</button>
         </div>
 
       </div>
@@ -236,6 +254,14 @@
         row.style.display = 'none';
       }
     });
+  });
+  
+    window.addEventListener('DOMContentLoaded', () => {
+    const msgModal = document.getElementById('msgModal');
+    if (msgModal) {
+      const modal = new bootstrap.Modal(msgModal);
+      modal.show();
+    }
   });
   </script>
 </body>

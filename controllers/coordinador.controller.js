@@ -256,6 +256,8 @@ exports.post_modificar_profesor = async (req, res, next) => {
 };
 
 exports.get_salones = (req, res, nxt) => {
+    const msgTitle = req.query.msgTitle || null; 
+    const msg = req.query.msg || null; 
     Salon.fetchAll()
     .then((salones) => {
         Campus.fetchAll()
@@ -264,7 +266,9 @@ exports.get_salones = (req, res, nxt) => {
                     isLoggedIn: req.session.isLoggedIn || false,
                     matricula: req.session.matricula || '',
                     salones : salones.rows,
-                    campus : campus.rows
+                    campus : campus.rows,
+                    msgTitle,
+                    msg
                 });
             })
             .catch((error) => {
@@ -278,28 +282,36 @@ exports.get_salones = (req, res, nxt) => {
 };
 
 exports.post_salones = (req, res, nxt) => {
+    msgTitle = `Agregar salón`
+
     const salon = new Salon(req.body.numero, req.body.capacidad, req.body.tipo, req.body.nota, req.body.campus);
     salon.save()
     .then(() => {
-        res.redirect('/coordinador/salones');
+        res.redirect(`/coordinador/salones?msg=${encodeURIComponent('El salón fue registrado exitosamente.')}
+                                          &msgTitle=${encodeURIComponent(msgTitle)}`);
     })
     .catch((error) => {
-        console.log(error);
-        res.status(500).send('Error al registrar el salón'); 
+        console.error(error);
+        res.redirect(`/coordinador/salones?msg=${encodeURIComponent('La operación fue fracasada. Intente de nuevo.')}
+                                          &msgTitle=${encodeURIComponent(msgTitle)}`); 
     });
 };
 
 exports.post_eliminar_salon = (req, res, nxt) => {
+    msgTitle = `Eliminar salón`
+    
     Salon.deleteGrupoSalon(req.params.id)
         .then(() => {
             return  Salon.delete(req.params.id);
         })
         .then(() => {
-            res.redirect('/coordinador/salones');
+            res.redirect(`/coordinador/salones?msg=${encodeURIComponent('El salón fue eliminado exitosamente.')}
+                                          &msgTitle=${encodeURIComponent(msgTitle)}`);
         })
         .catch((error) => {
             console.log(error);
-            res.status(500).send('Error al eliminar el salón'); 
+            res.redirect(`/coordinador/salones?msg=${encodeURIComponent('La operación fue fracasada. Intente de nuevo.')}
+                                              &msgTitle=${encodeURIComponent(msgTitle)}`); 
         });
 };
 
