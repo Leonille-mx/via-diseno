@@ -35,13 +35,14 @@
     </div>
     <div class="d-flex gap-3">
       <!-- Botón Generar Grupos -->
-      <a href="/coordinador/grupos/generar" class="btn btn-primary d-flex align-items-center gap-2 rounded-pill px-3 py-2"
-         style="background-color: #84251C; border: none;">
+      <button type="button" class="btn btn-primary d-flex align-items-center gap-2 rounded-pill px-3 py-2"
+              style="background-color: #84251C; border: none;"
+              data-bs-toggle="modal" data-bs-target="#generateModal" data-href="/coordinador/grupos/generar">
         <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-plus-lg" viewBox="0 0 16 16">
           <path fill-rule="evenodd" d="M8 2a.5.5 0 0 1 .5.5v5h5a.5.5 0 0 1 0 1h-5v5a.5.5 0 0 1-1 0v-5h-5a.5.5 0 0 1 0-1h5v-5A.5.5 0 0 1 8 2"/>
         </svg>
         Generar Grupos
-      </a>
+      </button>
       <!-- Botón Agregar Grupo -->
       <button class="btn btn-primary d-flex align-items-center gap-2 rounded-pill px-3 py-2"
               style="background-color: #84251C; border: none;"
@@ -379,6 +380,25 @@
   </div>
 </div>
 
+<!-- Modal de confirmación para Generar Grupos -->
+<div class="modal fade" id="generateModal" tabindex="-1" aria-labelledby="generateModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered modal-sm">
+    <div class="modal-content rounded-5" style="background-color: #f0f0f0">
+      <div class="modal-header border-0 justify-content-center">
+        <h5 class="modal-title ivd-text-red" id="generateModalLabel">Generar Grupos</h5>
+      </div>
+      <div class="modal-body text-center mx-4 rounded-5" style="background-color: white">
+        <p>El proceso de generar grupos <b>eliminará</b> la asignación de grupos actuales. ¿Está seguro que desea continuar?</p>
+      </div>
+      <div class="modal-footer justify-content-center mt-3">
+        <button type="button" class="btn btn-secondary rounded-pill px-4 mx-4" data-bs-dismiss="modal"
+                style="background-color: white; border: 1px solid #84251C; color: #84251C;">Cancelar</button>
+        <a id="confirmGenerateBtn" href="#" class="btn ivd-bg-red text-white rounded-pill px-4">Aceptar</a>
+      </div>
+    </div>
+  </div>
+</div>
+
 <!-- Scripts -->
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
 <script src="/js/coordinador.js"></script>
@@ -617,6 +637,15 @@ searchInput.addEventListener('keyup', function() {
       row.style.display = 'none';
     }
   });
+});
+
+// Configura el botón de generación para pasar el href al modal
+var generateModal = document.getElementById('generateModal');
+generateModal.addEventListener('show.bs.modal', function (event) {
+  var button = event.relatedTarget;
+  var href = button.getAttribute('data-href');
+  var confirmBtn = document.getElementById('confirmGenerateBtn');
+  confirmBtn.setAttribute('href', href);
 });
 
 window.addEventListener('DOMContentLoaded', () => {
