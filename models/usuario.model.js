@@ -63,9 +63,23 @@ module.exports = class Usuario {
             client.release();
         }
     }
+
     static async fetchAll() {
         const query = `SELECT * FROM usuario.`;
         return await pool.query(query);
+    }
+    // Función para buscar usuario por su correo institucional
+    static async findByCorreo(correo) {
+        const client = await pool.connect();
+        try {
+            const result = await client.query('SELECT * FROM usuario WHERE correo_institucional = $1', [correo]);
+            return result.rows[0];
+        } catch (error) {
+            console.error('Error al buscar usuario:', error);
+            throw error;
+        } finally {
+            client.release();
+        }
     }
 
 };

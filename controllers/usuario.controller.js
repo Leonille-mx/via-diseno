@@ -1,3 +1,7 @@
+const bcrypt = require('bcryptjs');
+const Usuario = require('../models/usuario.model');
+const Alumno = require('../models/alumno.model');
+
 exports.get_login = (req, res, nxt) => {
     res.render('login', {
         isLoggedIn: req.session.isLoggedIn || false,
@@ -6,6 +10,8 @@ exports.get_login = (req, res, nxt) => {
 };
 
 exports.post_login = (req, res, nxt) => {
+
+    
     req.session.matricula = req.body.matricula;
     req.session.isLoggedIn = true;
     req.session.save(err => {
