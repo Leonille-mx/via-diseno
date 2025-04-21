@@ -14,7 +14,7 @@
           
           <!-- Campo de búsqueda con icono de lupa -->
           <div class="d-flex align-items-center flex-grow-1" style="max-width: 200px;">
-            <input class="form-control me-2 rounded-pill" type="search" placeholder="Buscar salón" aria-label="Search"
+            <input id="buscarSalon" class="form-control me-2 rounded-pill" type="search" placeholder="Buscar salón" aria-label="Search"
             style="background-image:url('/images/search.svg'); background-repeat:no-repeat; background-position: 1rem center; padding-left: 3rem; font-size: 1rem; width: 100%; border: 1px solid #84251C;">
           </div>
           
@@ -42,7 +42,7 @@
                 <th scope="col" style="width: 5%; min-width: 50px;"></th>
               </tr>
             </thead>
-            <tbody>
+            <tbody id="salonesBody">
               
               <!-- Iteración sobre los datos de los salones -->
               <% for (let salon of salones) { %>
@@ -214,6 +214,29 @@
       // Actualizar acción del formulario
       document.getElementById('deleteForm').action = `salones/eliminar/${salonId}`;
     });
+
+  // Barra de búsqueda para tabla de salones
+  const searchInput = document.getElementById('buscarSalon');
+  const salonesBody = document.getElementById('salonesBody');
+
+  // Escucha el evento de keyup (cuando el usuario escribe)
+  searchInput.addEventListener('keyup', function() {
+    const searchValue = this.value.toLowerCase().trim();
+    // Obtiene todas las filas de la tabla
+    const rows = salonesBody.querySelectorAll('tr');
+    
+    rows.forEach(row => {
+      // Filtramos el contenido de búsqueda basándonos en todo el texto de la fila. 
+      const rowText = row.textContent.toLowerCase();
+      
+      // Si el término buscado se encuentra en el texto de la fila, se muestra, de lo contrario se oculta
+      if (rowText.includes(searchValue)) {
+        row.style.display = '';
+      } else {
+        row.style.display = 'none';
+      }
+    });
+  });
   </script>
 </body>
 </html>
