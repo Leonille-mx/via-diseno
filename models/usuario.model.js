@@ -69,10 +69,10 @@ module.exports = class Usuario {
         return await pool.query(query);
     }
     // Función para buscar usuario por su correo institucional
-    static async findByCorreo(correo) {
+    static async findUsuarioById(usuarioId) {
         const client = await pool.connect();
         try {
-            const result = await client.query('SELECT * FROM usuario WHERE correo_institucional = $1', [correo]);
+            const result = await client.query('SELECT * FROM usuario WHERE ivd_id = $1', [usuarioId]);
             return result.rows[0];
         } catch (error) {
             console.error('Error al buscar usuario:', error);

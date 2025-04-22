@@ -13,7 +13,7 @@ exports.post_login = async (req, res, nxt) => {
     const { matricula, password } = req.body
 
     try {
-        const usuario = await Usuario.findByCorreo(matricula);
+        const usuario = await Usuario.findUsuarioById(matricula);
         const passwordValida = await bcrypt.compare(password, usuario.contrasena);
 
         if (!usuario || !passwordValida) {
@@ -29,7 +29,7 @@ exports.post_login = async (req, res, nxt) => {
         if (usuario.role_id === 1) {
             return req.session.save(() => res.redirect('/coordinador/dashboard'));
         } else if (usuario.role_id === 2) {
-            const alumno = await Alumno.findByUsuarioId(usuario.ivd_id);
+            const alumno = await Alumno.findAlumnoById(usuario.ivd_id);
             return req.session.save(() => {
                 if (alumno.regular) {
                     res.redirect('/alumno-regular/horario');
