@@ -380,4 +380,17 @@ module.exports = class Alumno {
           return false;
         }
       }
+
+    static async findByUsuarioId(usuarioId) {
+        const client = await pool.connect();
+        try {
+            const result = await client.query('SELECT * FROM alumno WHERE ivd_id = $1', [usuarioId]);
+            return result.rows[0];
+        } catch (error) {
+            console.error('Error al buscar alumno por usuario_id:', error);
+            throw error;
+        } finally {
+            client.release();
+        }
+      }
 }
