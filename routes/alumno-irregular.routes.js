@@ -17,6 +17,8 @@ router.get('/prevista-horario', isAuth, irregular_controller.get_prevista_horari
 
 router.get('/resultado-de-horario', isAuth, irregular_controller.get_resultado_de_horario);
 
+router.post('/confirmar-horario', isAuth, irregular_controller.post_confirmar_horario);
+
 router.get('/ayuda', isAuth, irregular_controller.get_ayuda);
 
 module.exports = router;
