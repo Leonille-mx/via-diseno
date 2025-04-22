@@ -26,6 +26,20 @@ router.get('/alumnos', isAuth, coordinador_controller.get_alumnos);
 
 router.post('/alumnos/sincronizar', isAuth, coordinador_controller.post_sincronizar_alumnos);
 
+router.get('/alumnos/consultar-horario/:id', isAuth, coordinador_controller.get_alumno_horario);
+
+router.post('/alumnos/cambiar-estatus', isAuth, coordinador_controller.post_cambiar_estatus);
+
+router.get('/alumnos/modificar-horario/:id', isAuth, coordinador_controller.get_alumno_modificar_horario);
+
+router.get('/alumnos/modificar-horario/materias-disponibles/:semestre/:id', isAuth, coordinador_controller.get_materias_disponibles);
+
+router.post('/alumnos/modificar-horario/eliminar-resultado', isAuth, coordinador_controller.post_eliminar_materia_del_resultado);
+
+router.post('/alumnos/modificar-horario/agregar-resultado', isAuth, coordinador_controller.post_agregar_materia_del_resultado);
+
+router.post('/alumnos/modificar-horario/modificar-obligacion', isAuth, coordinador_controller.post_modificar_obligacion);
+
 router.get('/salones', isAuth, coordinador_controller.get_salones);
 router.post('/salones', isAuth, coordinador_controller.post_salones);
 router.post('/salones/eliminar/:id', isAuth, coordinador_controller.post_eliminar_salon);
