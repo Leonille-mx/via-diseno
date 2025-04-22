@@ -95,23 +95,29 @@ module.exports = class Alumno {
 
     static async fetchAllResultadoAlumnoIrregular(id) {
         return pool.query(`
-            SELECT (SELECT b.hora_inicio
-                    FROM grupo_bloque_tiempo gb
-                    JOIN bloque_tiempo b
-                        ON b.bloque_tiempo_id = gb.bloque_tiempo_id
-                    WHERE gb.grupo_id = r.grupo_id
-                    GROUP BY b.hora_inicio, b.dia, gb.bloque_tiempo_id
-                    ORDER BY gb.bloque_tiempo_id ASC
-                    LIMIT 1) AS hora_inicio,
+            SELECT r.grupo_id AS grupo_id,
 
-                    (SELECT b.hora_fin
-                    FROM grupo_bloque_tiempo gb
-                    JOIN bloque_tiempo b
-                        ON b.bloque_tiempo_id = gb.bloque_tiempo_id
-                    WHERE gb.grupo_id = r.grupo_id
-                    GROUP BY b.hora_fin, b.dia, gb.bloque_tiempo_id
-                    ORDER BY gb.bloque_tiempo_id DESC
-                    LIMIT 1) AS hora_fin,
+                   (SELECT ARRAY_AGG(b.hora_inicio)
+					  FROM (
+					    SELECT MIN(gb.bloque_tiempo_id) AS min_bloque_tiempo_id
+					    FROM grupo_bloque_tiempo gb
+					    JOIN bloque_tiempo b ON b.bloque_tiempo_id = gb.bloque_tiempo_id
+					    WHERE gb.grupo_id = r.grupo_id
+					    GROUP BY b.dia
+					  ) sub
+					  JOIN bloque_tiempo b ON b.bloque_tiempo_id = min_bloque_tiempo_id
+					) AS hora_inicio,
+
+                   (SELECT ARRAY_AGG(b.hora_fin)
+					  FROM (
+					    SELECT MAX(gb.bloque_tiempo_id) AS min_bloque_tiempo_id
+					    FROM grupo_bloque_tiempo gb
+					    JOIN bloque_tiempo b ON b.bloque_tiempo_id = gb.bloque_tiempo_id
+					    WHERE gb.grupo_id = r.grupo_id
+					    GROUP BY b.dia
+					  ) sub
+					  JOIN bloque_tiempo b ON b.bloque_tiempo_id = min_bloque_tiempo_id
+					) AS hora_fin,
 
                    m.nombre AS materia_nombre,
                    s.numero AS salon_numero,
@@ -120,23 +126,28 @@ module.exports = class Alumno {
                    p.segundo_apellido AS profesor_segundo_apellido,
                    r.obligatorio AS obligatorio,
 
-                   (SELECT ARRAY_AGG(DISTINCT b.dia)
-                    FROM grupo_bloque_tiempo gb
-                    JOIN bloque_tiempo b
-                        ON b.bloque_tiempo_id = gb.bloque_tiempo_id
-                    WHERE gb.grupo_id = r.grupo_id) AS dias
-
-
-
+                   (SELECT ARRAY_AGG(dia ORDER BY min_bloque_tiempo_id)
+					  FROM (
+					    SELECT b.dia, MIN(gb.bloque_tiempo_id) AS min_bloque_tiempo_id
+					    FROM grupo_bloque_tiempo gb
+					    JOIN bloque_tiempo b ON b.bloque_tiempo_id = gb.bloque_tiempo_id
+					    WHERE gb.grupo_id = r.grupo_id
+					    GROUP BY b.dia
+					  ) sub
+					) AS dias
             FROM resultado_inscripcion r
             JOIN grupo g ON r.grupo_id = g.grupo_id
             JOIN materia m ON g.materia_id = m.materia_id
             JOIN profesor p ON g.profesor_id = p.ivd_id
             JOIN salon s ON g.salon_id = s.salon_id
             JOIN grupo_bloque_tiempo gb ON g.grupo_id = gb.grupo_id
-            WHERE r.alumno_id = $1
+            WHERE r.alumno_id = $1 AND r.seleccionado = true
             GROUP BY r.grupo_id, m.nombre, s.numero, p.nombre, 
-                p.primer_apellido, p.segundo_apellido, r.obligatorio;`
+                p.primer_apellido, p.segundo_apellido, r.obligatorio
+            ORDER BY (SELECT MIN(gb.bloque_tiempo_id)
+					  FROM grupo_bloque_tiempo gb
+				      WHERE gb.grupo_id = r.grupo_id
+			) ASC;`
             , [id]);
     }
 
