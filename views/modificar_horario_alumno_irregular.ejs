@@ -1,6 +1,6 @@
 <%- include('includes/_nav_alumno.ejs') %>
 
-    <main class="bg-grey mx-4 mb-3 alumno-scroll" style="height: 85%; border-radius: 1.5rem;">
+    <main class="bg-grey mx-2 mb-2 alumno-scroll" style="height: 85%; border-radius: 1.5rem;">
       <!-- header -->
       <div class="mt-4">
         <div class="d-flex align-items-end" style="border-bottom: 3px solid #84251C; width: fit-content; margin-top: -10px;">
@@ -10,20 +10,127 @@
       </div>
       <!-- horario y grupos -->
       <div class="d-flex flex-column align-items-center pt-4 w-100">
-        <p class="w-100 text-center mb-3">Materias presentadas en negro no pueden ser modificadas</p>
-        <div class="rounded-5 mb-4" style="background-color: white; width: 70%; height: 30rem;">
+        <p class="w-100 text-center mb-3">Materias presentadas en gris no se pueden modificar</p>
+        <div class="rounded-4 mb-4" style="background-color: white; width: 70%; height: fit-content; overflow: hidden;">
+          <table class="table custom-table p-0 table-striped table-bordered table-hover mb-0 rounded-4" 
+          style="font-size: 0.85rem; border-collapse: separate !important; border-spacing: 0; border-radius: 1rem;"
+          >
+            <thead class="table-danger rounded-top">
+              <tr class="text-center rounded-top">
+                <!-- Titulo de columnas -->
+                <th class="hour-col">Hora</th>
+                <th>Lunes</th>
+                <th>Martes</th>
+                <th>Miércoles</th>
+                <th>Jueves</th>
+                <th>Viernes</th>
+              </tr>
+            </thead>
+            <tbody class="horario-body">
+              <%
+              <!-- Colores de bloques -->
+              const colores = ['bg-primary-subtle', 'bg-success-subtle ','bg-warning-subtle ','bg-danger-subtle','bg-info-subtle'];
+              const materiasColor = {};
+              let colorIndex = 0;
+              
+              <!-- Inicializa estructura de horario -->
+              const horario = { 
+                Lunes: {}, Martes: {}, Miércoles: {}, Jueves: {}, Viernes: {} 
+              };
+              
+              <!--  Procesa las materia de resultado para construir el horario-->
+              if (typeof materias_resultado !== 'undefined' && Array.isArray(materias_resultado)) {
+                materias_resultado.forEach(materia => {
+                  // Asignar color único por materia
+                  if (!materiasColor[materia.materia_nombre]) {
+                    if (materia.obligatorio === true) {
+                      materiasColor[materia.materia_nombre] = 'bg-secondary';
+                    } else {
+                      materiasColor[materia.materia_nombre] = colores[colorIndex % colores.length];
+                      colorIndex++;
+                    }
+                  }
+                  
+                  <!-- Procesa el dia de la materia -->
+                  let indexDia = 0;
+                  materia.dias.forEach(dia => {
+                    const diaNombre = dia.charAt(0).toUpperCase() + dia.slice(1).toLowerCase();
+                    
+                    <!-- Bloques de 30 min -->
+                    const [hi, mi] = materia.hora_inicio[indexDia].split(':').map(Number);
+                    const [hf, mf] = materia.hora_fin[indexDia].split(':').map(Number);
+                    
+                    const inicioBloque = hi * 2 + (mi >= 30 ? 1 : 0);
+                    const finBloque = hf * 2 + (mf >= 30 ? 1 : 0);
+                    
+                    <!-- Si el dia es valido -->
+                    if (horario[diaNombre]) {
+                      horario[diaNombre][inicioBloque] = {
+                        rowspan: finBloque - inicioBloque,
+                        nombre: materia.materia_nombre,
+                        color: materiasColor[materia.materia_nombre],
+                        salon: materia.salon_numero,
+                        profesor: `${materia.profesor_nombre} ${materia.profesor_primer_apellido}`,
+                        hora: `${materia.hora_inicio[indexDia]} - ${materia.hora_fin[indexDia]}`
+                      };
+                      
+                      <!-- Bloques intermedios como ocupados -->
+                      for (let b = inicioBloque + 1; b < finBloque; b++) {
+                        horario[diaNombre][b] = 'ocupar';
+                      }
+                    }
+                    indexDia ++;
+                  });
+                });
+              }
+              
+              <!-- Filas de la tabla -->
+              for (let bloque = 14; bloque < 32; bloque++) {
+                const hora = Math.floor(bloque / 2);
+                const minutos = bloque % 2 === 0 ? '00' : '30';
+                let horaFormato;
+                if (bloque % 2 !== 0) {
+                  horaFormato = `${hora}:${minutos} - ${hora + 1}:00`;
+                } else {
+                  horaFormato = `${hora}:${minutos} - ${hora}:30`;
+                }
+              %>
+                <tr style="max-height: 1rem;">
+                  <th class="hour-cell text-center align-middle"><%= horaFormato %></th>
+                  <% ['Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes'].forEach(dia => { %>
+                    <% if (horario[dia][bloque] === 'ocupar') return; %>
+                    <% if (horario[dia][bloque]) { 
+                      const clase = horario[dia][bloque];
+                    %>
+                      <td class="text-black text-center align-middle <%= clase.color %> p-0" 
+                          rowspan="<%= clase.rowspan %>"
+                          data-bs-toggle="tooltip" 
+                          data-bs-placement="top" 
+                          <% if (clase.salon === 9999) { %>
+                            title="<%= clase.hora %> | Salon: No asignado | Prof: <%= clase.profesor %>"
+                          <% } else { %>
+                            title="<%= clase.hora %> | Salon: <%= clase.salon %> | Prof: <%= clase.profesor %>"
+                          <% } %>
+                          style="height: 2rem">
+                        <%= clase.nombre %>
+                      </td>
+                    <% } else { %>
+                      <td class="empty-slot p-0" style="height: 2rem"></td>
+                    <% } %>
+                  <% }) %>
+                </tr>
+              <% } %>
+            </tbody>
+          </table>
         </div>
-        <div class="d-flex justify-content-between mb-4" style="width: 40%;">
-          <form action="">
-            <button class="rounded-5 px-3 py-1 border ivd-border-red" 
-                    style="background-color: white; font-size: 1.1rem;">
-                    Cancelar
-            </button>
-          </form>
-          <form action="">
-            <button class="rounded-5 px-3 py-1 border-0 ivd-bg-red text-white" 
+        <div class="d-flex justify-content-center mb-4" style="width: 100%;">
+          <form action="/alumno-irregular/prevista-horario" method="GET">
+            <button class="rounded-5 px-4 py-2 border-0 ivd-bg-red text-white d-flex justify-content-center align-items-center" 
                     style="font-size: 1.1rem;">
-                    Guardar
+                    Siguiente
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-arrow-right ms-2" viewBox="0 0 16 16">
+                      <path fill-rule="evenodd" d="M1 8a.5.5 0 0 1 .5-.5h11.793l-3.147-3.146a.5.5 0 0 1 .708-.708l4 4a.5.5 0 0 1 0 .708l-4 4a.5.5 0 0 1-.708-.708L13.293 8.5H1.5A.5.5 0 0 1 1 8"/>
+                    </svg>
             </button>
           </form>
         </div>
@@ -31,21 +138,27 @@
         <div class="w-100 d-flex align-items-center" style="height: 500px;">
           <div class="w-50 h-100 px-5 py-4 d-flex flex-column align-items-center">
             <p class="w-100 ms-3 fw-semibold" style="font-size: 1.2rem;">Materias Seleccionadas</p>
-            <form class="d-flex" role="search" style="width: 100%;">
-              <input class="form-control rounded-pill" type="search" 
-                  placeholder="Buscar" aria-label="Search"
-                  style="background-image:url('/images/search.svg'); color: black;
-                  background-repeat:no-repeat;
-                  background-position: 1rem center; 
-                  padding-left: 3rem; font-size: 1rem;">
-            </form>
             <div id="materiasSeleccionadas" class="w-100 pb-3 alumno-scroll-gris">
               <% for (let materia_resultado of materias_resultado) { %>
                 <div class="w-100 d-flex flex-column align-items-center rounded-5 mt-3" style="background-color: white;">
                   <div class="w-100 d-flex my-2">
-                    <div class="d-flex m-0 align-items-center justify-content-center" style="width: 100%; padding-left: 10%;">
-                      <p class="m-0 me-3"><%= materia_resultado.hora_inicio %> - <%= materia_resultado.hora_fin %></p>
-                      <p class="m-0 ivd-text-red">(<%= materia_resultado.dias.join(', ') %>)</p>
+                    <div class="d-flex flex-column" style="width: 100%;">
+                      <div class="d-flex m-0 align-items-center justify-content-center" style="width: 100%; padding-left: 10%;">
+                        <% for (let i = 0; i < materia_resultado.dias.length; i++) { %>
+                          <p class="m-0 me-2">
+                            <%= materia_resultado.hora_inicio[i].substring(0, 5) %> - <%= materia_resultado.hora_fin[i].substring(0, 5) %>
+                          </p>
+                          <% if (i !== materia_resultado.dias.length - 1) { %>
+                            <p class="m-0 me-3 ivd-text-red">
+                              (<%= materia_resultado.dias[i] %>)  
+                            </p>
+                          <% } else { %>
+                            <p class="m-0 ivd-text-red">
+                              (<%= materia_resultado.dias[i] %>)  
+                            </p>
+                          <% } %>
+                        <% } %>
+                      </div>
                     </div>
                     <div class="d-flex align-items-center justify-content-end" style="width: 10%;">
                       <% if (materia_resultado.obligatorio === false) { %>
@@ -70,8 +183,12 @@
                   <div class="ivd-bg-red w-100" style="height: 1px;"></div>
                   <p class="fw-semibold my-3"><%= materia_resultado.materia_nombre %></p>
                   <p class="mb-3">
-                    Salon 
-                    <%= materia_resultado.salon_numero %> | 
+                    Salon:
+                    <% if (materia_resultado.salon_numero === 9999) { %>
+                      No asignado | 
+                    <% } else { %>
+                      <%= materia_resultado.salon_numero %> | 
+                    <% } %>
                     <%= materia_resultado.profesor_nombre %> 
                     <%= materia_resultado.profesor_primer_apellido %>
                     <%= materia_resultado.profesor_segundo_apellido %>
@@ -83,42 +200,26 @@
           <div style="background-color:lightgrey; width: 3px; height: 80%;"></div>
           <div class="w-50 h-100 px-5 py-4 d-flex flex-column align-items-center">
             <p class="w-100 ms-3 fw-semibold" style="font-size: 1.2rem;">Materias Disponibles</p>
-            <div class="w-100 d-flex justify-content-between">
-              <div class="dropdown">
-                <button id="btnSemestre" class="btn border dropdown-toggle rounded-pill ivd-border-red" 
-                        type="button" data-bs-toggle="dropdown" style="background-color: white;">
-                    Semestre
-                </button>
-                <ul class="dropdown-menu">
-                  <li class="dropdown-item" data-semestre="semestre">Semestre</li>
-                  <li class="dropdown-item" data-semestre="s1">1°ro</li>
-                  <li class="dropdown-item" data-semestre="s2">2°nd</li>
-                  <li class="dropdown-item" data-semestre="s3">3°ro</li>
-                  <li class="dropdown-item" data-semestre="s4">4°to</li>
-                  <li class="dropdown-item" data-semestre="s5">5°to</li>
-                  <li class="dropdown-item" data-semestre="s6">6°to</li>
-                  <li class="dropdown-item" data-semestre="s7">7°mo</li>
-                  <li class="dropdown-item" data-semestre="s8">8°vo</li>
-                  <li class="dropdown-item" data-semestre="s9">9°no</li>
-                </ul>
-              </div>
-              <form class="d-flex" role="search" style="width: 70%;">
-                <input class="form-control rounded-pill" type="search" 
-                      placeholder="Buscar Materia" aria-label="Search"
-                      style="background-image:url('/images/search.svg'); color: black;
-                      background-repeat:no-repeat;
-                      background-position: 1rem center; 
-                      padding-left: 3rem; font-size: 1rem;">
-              </form>
-            </div>
             <div id="materiasDisponibles" class="w-100 pb-3 alumno-scroll-gris">
               <!-- materias disponibles -->
               <% for (let materia_disponible of materias_disponibles_semestre) { %>
                 <div class="w-100 d-flex flex-column align-items-center rounded-5 mt-3" style="background-color: white;">
                   <div class="w-100 d-flex my-2">
                     <div class="d-flex m-0 align-items-center justify-content-center" style="width: 100%; padding-left: 10%;">
-                      <p class="m-0 me-3"><%= materia_disponible.hora_inicio %> - <%= materia_disponible.hora_fin %></p>
-                      <p class="m-0 ivd-text-red">(<%= materia_disponible.dias.join(', ') %>)</p>
+                      <% for (let i = 0; i < materia_disponible.dias.length; i++) { %>
+                        <p class="m-0 me-2">
+                          <%= materia_disponible.hora_inicio[i].substring(0, 5) %> - <%= materia_disponible.hora_fin[i].substring(0, 5) %>
+                        </p>
+                        <% if (i !== materia_disponible.dias.length - 1) { %>
+                          <p class="m-0 me-3 ivd-text-red">
+                            (<%= materia_disponible.dias[i] %>)  
+                          </p>
+                        <% } else { %>
+                          <p class="m-0 ivd-text-red">
+                            (<%= materia_disponible.dias[i] %>)  
+                          </p>
+                        <% } %>
+                      <% } %>
                     </div>
                     <div class="d-flex align-items-center justify-content-end" style="width: 10%;">
                         <button class="btn-agregar btn btn-sm p-0 d-flex align-items-center justify-content-center me-3" 
@@ -141,8 +242,12 @@
                   <div class="ivd-bg-red w-100" style="height: 1px;"></div>
                   <p class="fw-semibold my-3"><%= materia_disponible.materia_nombre %></p>
                   <p class="mb-3">
-                    Salon 
-                    <%= materia_disponible.salon_numero %> | 
+                    Salon:
+                    <% if (materia_disponible.salon_numero === 9999) { %>
+                      No asignado | 
+                    <% } else { %>
+                      <%= materia_disponible.salon_numero %> | 
+                    <% } %>
                     <%= materia_disponible.profesor_nombre %> 
                     <%= materia_disponible.profesor_primer_apellido %>
                     <%= materia_disponible.profesor_segundo_apellido %>

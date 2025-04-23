@@ -36,56 +36,506 @@
     </div>
   </div>
 
-  <!-- Tabla de Grupos -->
-  <div class="table-responsive mx-5 mb-5 rounded-5 flex-grow-1" style="overflow: auto; background-color: white;">
-    <table class="table table-hover" style="min-width: 800px; width: 100%;">
-      <thead class="table-light">
-        <tr>
-          <th scope="col" style="width: 15%; min-width: 100px;" class="text-center align-middle">Grupo</th>
-          <th scope="col" style="width: 25%; min-width: 100px;" class="text-center align-middle">Materia</th>
-          <th scope="col" style="width: 25%; min-width: 100px;" class="text-center align-middle">Profesor</th>
-          <th scope="col" style="width: 14%; min-width: 150px;" class="text-center align-middle">Salón</th>
-          <th scope="col" style="width: 14%; min-width: 100px;" class="text-center align-middle">Ciclo Escolar</th>
-          <th scope="col" style="width: 4%; min-width: 50px;" class="text-center align-middle"></th>
-          <th scope="col" style="width: 4%; min-width: 50px;" class="text-center align-middle"></th>
-        </tr>
-      </thead>
-      <tbody>
-        <% for (let grupo of grupos) { %>
-          <tr>
-            <th scope="row" class="text-center align-middle"><%= grupo.grupo_id %></th>
+  <!-- Contenedor principal con scroll -->
+  <div class="mx-5 mb-5 rounded-5 flex-grow-1" style="overflow-y: auto;  padding: 1rem;">
+    <!-- Primer Semestre --> 
+    <div class="mb-4">
+      <div class="d-flex justify-content-between align-items-center">
+        <h3 class="ms-3 text-decoration-underline ivd-text-red">1er Semestre</h3>
+      </div>
+      <div class="table-responsive rounded-5" style="background-color: white; overflow-x: auto; margin-bottom: 2rem;">
+        <table class="table table-hover" style="min-width: 800px; width: 100%;">
+          <thead class="table-light">
+            <tr>
+              <th scope="col" style="width: 15%; min-width: 100px;" class="text-center align-middle">Grupo</th>
+              <th scope="col" style="width: 25%; min-width: 100px;" class="text-center align-middle">Materia</th>
+              <th scope="col" style="width: 25%; min-width: 100px;" class="text-center align-middle">Profesor</th>
+              <th scope="col" style="width: 14%; min-width: 150px;" class="text-center align-middle">Salón</th>
+              <th scope="col" style="width: 14%; min-width: 100px;" class="text-center align-middle">Ciclo Escolar</th>
+              <th scope="col" style="width: 4%; min-width: 50px;" class="text-center align-middle"></th>
+              <th scope="col" style="width: 4%; min-width: 50px;" class="text-center align-middle"></th>
+            </tr>
+          </thead>
+          <tbody>
+            <% for (let grupo of grupos.filter(g => g.semestre_id === 's1')) { %>
+              <tr>
+                <th scope="row" class="text-center align-middle"><%= grupo.grupo_id %></th>
             <td class="text-center align-middle"><%= grupo.materia %></td>
             <td class="text-center align-middle"><%= grupo.nombre + ' ' + grupo.primer_apellido + ' ' + grupo.segundo_apellido %></td>
             <td class="text-center align-middle"><%= grupo.numero %></td>
             <td class="text-center align-middle"><%= grupo.code %></td>
             <td class="text-center align-middle">
-              <!-- Botón para abrir el modal de consulta (solo lectura) -->
-              <button class="btn btn-sm p-0 d-flex align-items-center justify-content-center"
-                      style="width: 1.5rem; height: 1.5rem; border-radius: 50%; background-color: #84251c; color: white; border: none;"
-                      data-bs-toggle="modal" data-bs-target="#viewModal"
-                      data-grupo-id="<%= grupo.grupo_id %>">
-                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-eye-fill" viewBox="0 0 16 16">
-                  <path d="M10.5 8a2.5 2.5 0 1 1-5 0 2.5 2.5 0 0 1 5 0"/>
-                  <path d="M0 8s3-5.5 8-5.5S16 8 16 8s-3 5.5-8 5.5S0 8 0 8m8 3.5a3.5 3.5 0 1 0 0-7 3.5 3.5 0 0 0 0 7"/>
-                </svg>
-              </button>
-            </td>
-            <td class="text-center align-middle">
-              <form action="/coordinador/grupos/eliminar/<%= grupo.grupo_id %>" method="POST">
-                <button type="button" class="btn btn-sm p-0 d-flex align-items-center justify-content-center delete-btn"
-                        style="width: 1.5rem; height: 1.5rem; border-radius: 50%; background-color: #84251c; color: white; border: none;"
-                        data-bs-toggle="modal" data-bs-target="#deleteModal"
-                        data-grupo-id="<%= grupo.grupo_id %>" data-materia="<%= grupo.materia %>" data-ciclo="<%= grupo.code %>">
-                  <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-x-lg" viewBox="0 0 16 16">
-                    <path d="M2.146 2.854a.5.5 0 1 1 .708-.708L8 7.293l5.146-5.147a.5.5 0 0 1 .708.708L8.707 8l5.147 5.146a.5.5 0 0 1-.708.708L8 8.707l-5.146 5.147a.5.5 0 0 1-.708-.708L7.293 8z"/>
-                  </svg>
-                </button>
-              </form>
-            </td>
-          </tr>
-        <% } %>
-      </tbody>
-    </table>
+                  <button class="btn btn-sm p-0 d-flex align-items-center justify-content-center"
+                          style="width: 1.5rem; height: 1.5rem; border-radius: 50%; background-color: #84251c; color: white; border: none;"
+                          data-bs-toggle="modal" data-bs-target="#viewModal"
+                          data-grupo-id="<%= grupo.grupo_id %>">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-eye-fill" viewBox="0 0 16 16">
+                      <path d="M10.5 8a2.5 2.5 0 1 1-5 0 2.5 2.5 0 0 1 5 0"/>
+                      <path d="M0 8s3-5.5 8-5.5S16 8 16 8s-3 5.5-8 5.5S0 8 0 8m8 3.5a3.5 3.5 0 1 0 0-7 3.5 3.5 0 0 0 0 7"/>
+                    </svg>
+                  </button>
+                </td>
+                <td class="text-center align-middle">
+                  <form action="/coordinador/grupos/eliminar/<%= grupo.grupo_id %>" method="POST">
+                    <button type="button" class="btn btn-sm p-0 d-flex align-items-center justify-content-center delete-btn"
+                            style="width: 1.5rem; height: 1.5rem; border-radius: 50%; background-color: #84251c; color: white; border: none;"
+                            data-bs-toggle="modal" data-bs-target="#deleteModal"
+                            data-grupo-id="<%= grupo.grupo_id %>" data-materia="<%= grupo.materia %>" data-ciclo="<%= grupo.code %>">
+                      <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-x-lg" viewBox="0 0 16 16">
+                        <path d="M2.146 2.854a.5.5 0 1 1 .708-.708L8 7.293l5.146-5.147a.5.5 0 0 1 .708.708L8.707 8l5.147 5.146a.5.5 0 0 1-.708.708L8 8.707l-5.146 5.147a.5.5 0 0 1-.708-.708L7.293 8z"/>
+                      </svg>
+                    </button>
+                  </form>
+                </td>
+              </tr>
+            <% } %>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- Segundo Semestre -->
+    <div class="mb-4">
+      <div class="d-flex justify-content-between align-items-center">
+        <h3 class="ms-3 text-decoration-underline ivd-text-red">2do Semestre</h3>
+      </div>
+      <div class="table-responsive rounded-5" style="background-color: white; overflow-x: auto; margin-bottom: 2rem;">
+        <table class="table table-hover" style="min-width: 800px; width: 100%;">
+          <thead class="table-light">
+            <tr>
+              <th scope="col" style="width: 15%; min-width: 100px;" class="text-center align-middle">Grupo</th>
+              <th scope="col" style="width: 25%; min-width: 100px;" class="text-center align-middle">Materia</th>
+              <th scope="col" style="width: 25%; min-width: 100px;" class="text-center align-middle">Profesor</th>
+              <th scope="col" style="width: 14%; min-width: 150px;" class="text-center align-middle">Salón</th>
+              <th scope="col" style="width: 14%; min-width: 100px;" class="text-center align-middle">Ciclo Escolar</th>
+              <th scope="col" style="width: 4%; min-width: 50px;" class="text-center align-middle"></th>
+              <th scope="col" style="width: 4%; min-width: 50px;" class="text-center align-middle"></th>
+            </tr>
+          </thead>
+          <tbody>
+            <% for (let grupo of grupos.filter(g => g.semestre_id === 's2')) { %>
+              <tr>
+                <th scope="row" class="text-center align-middle"><%= grupo.grupo_id %></th>
+                <td class="text-center align-middle"><%= grupo.materia %></td>
+                <td class="text-center align-middle"><%= grupo.nombre + ' ' + grupo.primer_apellido + ' ' + grupo.segundo_apellido %></td>
+                <td class="text-center align-middle"><%= grupo.numero %></td>
+                <td class="text-center align-middle"><%= grupo.code %></td>
+                <td class="text-center align-middle">
+                  <button class="btn btn-sm p-0 d-flex align-items-center justify-content-center"
+                          style="width: 1.5rem; height: 1.5rem; border-radius: 50%; background-color: #84251c; color: white; border: none;"
+                          data-bs-toggle="modal" data-bs-target="#viewModal"
+                          data-grupo-id="<%= grupo.grupo_id %>">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-eye-fill" viewBox="0 0 16 16">
+                      <path d="M10.5 8a2.5 2.5 0 1 1-5 0 2.5 2.5 0 0 1 5 0"/>
+                      <path d="M0 8s3-5.5 8-5.5S16 8 16 8s-3 5.5-8 5.5S0 8 0 8m8 3.5a3.5 3.5 0 1 0 0-7 3.5 3.5 0 0 0 0 7"/>
+                    </svg>
+                  </button>
+                </td>
+                <td class="text-center align-middle">
+                  <form action="/coordinador/grupos/eliminar/<%= grupo.grupo_id %>" method="POST">
+                    <button type="button" class="btn btn-sm p-0 d-flex align-items-center justify-content-center delete-btn"
+                            style="width: 1.5rem; height: 1.5rem; border-radius: 50%; background-color: #84251c; color: white; border: none;"
+                            data-bs-toggle="modal" data-bs-target="#deleteModal"
+                            data-grupo-id="<%= grupo.grupo_id %>" data-materia="<%= grupo.materia %>" data-ciclo="<%= grupo.code %>">
+                      <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-x-lg" viewBox="0 0 16 16">
+                        <path d="M2.146 2.854a.5.5 0 1 1 .708-.708L8 7.293l5.146-5.147a.5.5 0 0 1 .708.708L8.707 8l5.147 5.146a.5.5 0 0 1-.708.708L8 8.707l-5.146 5.147a.5.5 0 0 1-.708-.708L7.293 8z"/>
+                      </svg>
+                    </button>
+                  </form>
+                </td>
+              </tr>
+            <% } %>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- Tercer Semestre -->
+    <div class="mb-4">
+      <div class="d-flex justify-content-between align-items-center">
+        <h3 class="ms-3 text-decoration-underline ivd-text-red">3er Semestre</h3>
+      </div>
+      <div class="table-responsive rounded-5" style="background-color: white; overflow-x: auto; margin-bottom: 2rem;">
+        <table class="table table-hover" style="min-width: 800px; width: 100%;">
+          <thead class="table-light">
+            <tr>
+              <th scope="col" style="width: 15%; min-width: 100px;" class="text-center align-middle">Grupo</th>
+              <th scope="col" style="width: 25%; min-width: 100px;" class="text-center align-middle">Materia</th>
+              <th scope="col" style="width: 25%; min-width: 100px;" class="text-center align-middle">Profesor</th>
+              <th scope="col" style="width: 14%; min-width: 150px;" class="text-center align-middle">Salón</th>
+              <th scope="col" style="width: 14%; min-width: 100px;" class="text-center align-middle">Ciclo Escolar</th>
+              <th scope="col" style="width: 4%; min-width: 50px;" class="text-center align-middle"></th>
+              <th scope="col" style="width: 4%; min-width: 50px;" class="text-center align-middle"></th>
+            </tr>
+          </thead>
+          <tbody>
+            <% for (let grupo of grupos.filter(g => g.semestre_id === 's3')) { %>
+              <tr>
+                <th scope="row" class="text-center align-middle"><%= grupo.grupo_id %></th>
+                <td class="text-center align-middle"><%= grupo.materia %></td>
+                <td class="text-center align-middle"><%= grupo.nombre + ' ' + grupo.primer_apellido + ' ' + grupo.segundo_apellido %></td>
+                <td class="text-center align-middle"><%= grupo.numero %></td>
+                <td class="text-center align-middle"><%= grupo.code %></td>
+                <td class="text-center align-middle">
+                  <button class="btn btn-sm p-0 d-flex align-items-center justify-content-center"
+                          style="width: 1.5rem; height: 1.5rem; border-radius: 50%; background-color: #84251c; color: white; border: none;"
+                          data-bs-toggle="modal" data-bs-target="#viewModal"
+                          data-grupo-id="<%= grupo.grupo_id %>">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-eye-fill" viewBox="0 0 16 16">
+                      <path d="M10.5 8a2.5 2.5 0 1 1-5 0 2.5 2.5 0 0 1 5 0"/>
+                      <path d="M0 8s3-5.5 8-5.5S16 8 16 8s-3 5.5-8 5.5S0 8 0 8m8 3.5a3.5 3.5 0 1 0 0-7 3.5 3.5 0 0 0 0 7"/>
+                    </svg>
+                  </button>
+                </td>
+                <td class="text-center align-middle">
+                  <form action="/coordinador/grupos/eliminar/<%= grupo.grupo_id %>" method="POST">
+                    <button type="button" class="btn btn-sm p-0 d-flex align-items-center justify-content-center delete-btn"
+                            style="width: 1.5rem; height: 1.5rem; border-radius: 50%; background-color: #84251c; color: white; border: none;"
+                            data-bs-toggle="modal" data-bs-target="#deleteModal"
+                            data-grupo-id="<%= grupo.grupo_id %>" data-materia="<%= grupo.materia %>" data-ciclo="<%= grupo.code %>">
+                      <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-x-lg" viewBox="0 0 16 16">
+                        <path d="M2.146 2.854a.5.5 0 1 1 .708-.708L8 7.293l5.146-5.147a.5.5 0 0 1 .708.708L8.707 8l5.147 5.146a.5.5 0 0 1-.708.708L8 8.707l-5.146 5.147a.5.5 0 0 1-.708-.708L7.293 8z"/>
+                      </svg>
+                    </button>
+                  </form>
+                </td>
+              </tr>
+            <% } %>
+          </tbody>
+        </table>
+      </div>
+    </div>
+    <!-- Cuarto Semestre -->
+    <div class="mb-4">
+      <div class="d-flex justify-content-between align-items-center">
+        <h3 class="ms-3 text-decoration-underline ivd-text-red">4to Semestre</h3>
+      </div>
+      <div class="table-responsive rounded-5" style="background-color: white; overflow-x: auto; margin-bottom: 2rem;">
+        <table class="table table-hover" style="min-width: 800px; width: 100%;">
+          <thead class="table-light">
+            <tr>
+              <th scope="col" style="width: 15%; min-width: 100px;" class="text-center align-middle">Grupo</th>
+              <th scope="col" style="width: 25%; min-width: 100px;" class="text-center align-middle">Materia</th>
+              <th scope="col" style="width: 25%; min-width: 100px;" class="text-center align-middle">Profesor</th>
+              <th scope="col" style="width: 14%; min-width: 150px;" class="text-center align-middle">Salón</th>
+              <th scope="col" style="width: 14%; min-width: 100px;" class="text-center align-middle">Ciclo Escolar</th>
+              <th scope="col" style="width: 4%; min-width: 50px;" class="text-center align-middle"></th>
+              <th scope="col" style="width: 4%; min-width: 50px;" class="text-center align-middle"></th>
+            </tr>
+          </thead>
+          <tbody>
+            <% for (let grupo of grupos.filter(g => g.semestre_id === 's4')) { %>
+              <tr>
+                <th scope="row" class="text-center align-middle"><%= grupo.grupo_id %></th>
+                <td class="text-center align-middle"><%= grupo.materia %></td>
+                <td class="text-center align-middle"><%= grupo.nombre + ' ' + grupo.primer_apellido + ' ' + grupo.segundo_apellido %></td>
+                <td class="text-center align-middle"><%= grupo.numero %></td>
+                <td class="text-center align-middle"><%= grupo.code %></td>
+                <td class="text-center align-middle">
+                  <button class="btn btn-sm p-0 d-flex align-items-center justify-content-center"
+                          style="width: 1.5rem; height: 1.5rem; border-radius: 50%; background-color: #84251c; color: white; border: none;"
+                          data-bs-toggle="modal" data-bs-target="#viewModal"
+                          data-grupo-id="<%= grupo.grupo_id %>">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-eye-fill" viewBox="0 0 16 16">
+                      <path d="M10.5 8a2.5 2.5 0 1 1-5 0 2.5 2.5 0 0 1 5 0"/>
+                      <path d="M0 8s3-5.5 8-5.5S16 8 16 8s-3 5.5-8 5.5S0 8 0 8m8 3.5a3.5 3.5 0 1 0 0-7 3.5 3.5 0 0 0 0 7"/>
+                    </svg>
+                  </button>
+                </td>
+                <td class="text-center align-middle">
+                  <form action="/coordinador/grupos/eliminar/<%= grupo.grupo_id %>" method="POST">
+                    <button type="button" class="btn btn-sm p-0 d-flex align-items-center justify-content-center delete-btn"
+                            style="width: 1.5rem; height: 1.5rem; border-radius: 50%; background-color: #84251c; color: white; border: none;"
+                            data-bs-toggle="modal" data-bs-target="#deleteModal"
+                            data-grupo-id="<%= grupo.grupo_id %>" data-materia="<%= grupo.materia %>" data-ciclo="<%= grupo.code %>">
+                      <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-x-lg" viewBox="0 0 16 16">
+                        <path d="M2.146 2.854a.5.5 0 1 1 .708-.708L8 7.293l5.146-5.147a.5.5 0 0 1 .708.708L8.707 8l5.147 5.146a.5.5 0 0 1-.708.708L8 8.707l-5.146 5.147a.5.5 0 0 1-.708-.708L7.293 8z"/>
+                      </svg>
+                    </button>
+                  </form>
+                </td>
+              </tr>
+            <% } %>
+          </tbody>
+        </table>
+      </div>
+    </div>
+    <!-- Quinto Semestre -->
+    <div class="mb-4">
+      <div class="d-flex justify-content-between align-items-center">
+        <h3 class="ms-3 text-decoration-underline ivd-text-red">5to Semestre</h3>
+      </div>
+      <div class="table-responsive rounded-5" style="background-color: white; overflow-x: auto; margin-bottom: 2rem;">
+        <table class="table table-hover" style="min-width: 800px; width: 100%;">
+          <thead class="table-light">
+            <tr>
+              <th scope="col" style="width: 15%; min-width: 100px;" class="text-center align-middle">Grupo</th>
+              <th scope="col" style="width: 25%; min-width: 100px;" class="text-center align-middle">Materia</th>
+              <th scope="col" style="width: 25%; min-width: 100px;" class="text-center align-middle">Profesor</th>
+              <th scope="col" style="width: 14%; min-width: 150px;" class="text-center align-middle">Salón</th>
+              <th scope="col" style="width: 14%; min-width: 100px;" class="text-center align-middle">Ciclo Escolar</th>
+              <th scope="col" style="width: 4%; min-width: 50px;" class="text-center align-middle"></th>
+              <th scope="col" style="width: 4%; min-width: 50px;" class="text-center align-middle"></th>
+            </tr>
+          </thead>
+          <tbody>
+            <% for (let grupo of grupos.filter(g => g.semestre_id === 's5')) { %>
+              <tr>
+                <th scope="row" class="text-center align-middle"><%= grupo.grupo_id %></th>
+                <td class="text-center align-middle"><%= grupo.materia %></td>
+                <td class="text-center align-middle"><%= grupo.nombre + ' ' + grupo.primer_apellido + ' ' + grupo.segundo_apellido %></td>
+                <td class="text-center align-middle"><%= grupo.numero %></td>
+                <td class="text-center align-middle"><%= grupo.code %></td>
+                <td class="text-center align-middle">
+                  <button class="btn btn-sm p-0 d-flex align-items-center justify-content-center"
+                          style="width: 1.5rem; height: 1.5rem; border-radius: 50%; background-color: #84251c; color: white; border: none;"
+                          data-bs-toggle="modal" data-bs-target="#viewModal"
+                          data-grupo-id="<%= grupo.grupo_id %>">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-eye-fill" viewBox="0 0 16 16">
+                      <path d="M10.5 8a2.5 2.5 0 1 1-5 0 2.5 2.5 0 0 1 5 0"/>
+                      <path d="M0 8s3-5.5 8-5.5S16 8 16 8s-3 5.5-8 5.5S0 8 0 8m8 3.5a3.5 3.5 0 1 0 0-7 3.5 3.5 0 0 0 0 7"/>
+                    </svg>
+                  </button>
+                </td>
+                <td class="text-center align-middle">
+                  <form action="/coordinador/grupos/eliminar/<%= grupo.grupo_id %>" method="POST">
+                    <button type="button" class="btn btn-sm p-0 d-flex align-items-center justify-content-center delete-btn"
+                            style="width: 1.5rem; height: 1.5rem; border-radius: 50%; background-color: #84251c; color: white; border: none;"
+                            data-bs-toggle="modal" data-bs-target="#deleteModal"
+                            data-grupo-id="<%= grupo.grupo_id %>" data-materia="<%= grupo.materia %>" data-ciclo="<%= grupo.code %>">
+                      <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-x-lg" viewBox="0 0 16 16">
+                        <path d="M2.146 2.854a.5.5 0 1 1 .708-.708L8 7.293l5.146-5.147a.5.5 0 0 1 .708.708L8.707 8l5.147 5.146a.5.5 0 0 1-.708.708L8 8.707l-5.146 5.147a.5.5 0 0 1-.708-.708L7.293 8z"/>
+                      </svg>
+                    </button>
+                  </form>
+                </td>
+              </tr>
+            <% } %>
+          </tbody>
+        </table>
+      </div>
+    </div>
+    <!-- Sexto Semestre -->
+    <div class="mb-4">
+      <div class="d-flex justify-content-between align-items-center">
+        <h3 class="ms-3 text-decoration-underline ivd-text-red">6to Semestre</h3>
+      </div>
+      <div class="table-responsive rounded-5" style="background-color: white; overflow-x: auto; margin-bottom: 2rem;">
+        <table class="table table-hover" style="min-width: 800px; width: 100%;">
+          <thead class="table-light">
+            <tr>
+              <th scope="col" style="width: 15%; min-width: 100px;" class="text-center align-middle">Grupo</th>
+              <th scope="col" style="width: 25%; min-width: 100px;" class="text-center align-middle">Materia</th>
+              <th scope="col" style="width: 25%; min-width: 100px;" class="text-center align-middle">Profesor</th>
+              <th scope="col" style="width: 14%; min-width: 150px;" class="text-center align-middle">Salón</th>
+              <th scope="col" style="width: 14%; min-width: 100px;" class="text-center align-middle">Ciclo Escolar</th>
+              <th scope="col" style="width: 4%; min-width: 50px;" class="text-center align-middle"></th>
+              <th scope="col" style="width: 4%; min-width: 50px;" class="text-center align-middle"></th>
+            </tr>
+          </thead>
+          <tbody>
+            <% for (let grupo of grupos.filter(g => g.semestre_id === 's6')) { %>
+              <tr>
+                <th scope="row" class="text-center align-middle"><%= grupo.grupo_id %></th>
+                <td class="text-center align-middle"><%= grupo.materia %></td>
+                <td class="text-center align-middle"><%= grupo.nombre + ' ' + grupo.primer_apellido + ' ' + grupo.segundo_apellido %></td>
+                <td class="text-center align-middle"><%= grupo.numero %></td>
+                <td class="text-center align-middle"><%= grupo.code %></td>
+                <td class="text-center align-middle">
+                  <button class="btn btn-sm p-0 d-flex align-items-center justify-content-center"
+                          style="width: 1.5rem; height: 1.5rem; border-radius: 50%; background-color: #84251c; color: white; border: none;"
+                          data-bs-toggle="modal" data-bs-target="#viewModal"
+                          data-grupo-id="<%= grupo.grupo_id %>">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-eye-fill" viewBox="0 0 16 16">
+                      <path d="M10.5 8a2.5 2.5 0 1 1-5 0 2.5 2.5 0 0 1 5 0"/>
+                      <path d="M0 8s3-5.5 8-5.5S16 8 16 8s-3 5.5-8 5.5S0 8 0 8m8 3.5a3.5 3.5 0 1 0 0-7 3.5 3.5 0 0 0 0 7"/>
+                    </svg>
+                  </button>
+                </td>
+                <td class="text-center align-middle">
+                  <form action="/coordinador/grupos/eliminar/<%= grupo.grupo_id %>" method="POST">
+                    <button type="button" class="btn btn-sm p-0 d-flex align-items-center justify-content-center delete-btn"
+                            style="width: 1.5rem; height: 1.5rem; border-radius: 50%; background-color: #84251c; color: white; border: none;"
+                            data-bs-toggle="modal" data-bs-target="#deleteModal"
+                            data-grupo-id="<%= grupo.grupo_id %>" data-materia="<%= grupo.materia %>" data-ciclo="<%= grupo.code %>">
+                      <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-x-lg" viewBox="0 0 16 16">
+                        <path d="M2.146 2.854a.5.5 0 1 1 .708-.708L8 7.293l5.146-5.147a.5.5 0 0 1 .708.708L8.707 8l5.147 5.146a.5.5 0 0 1-.708.708L8 8.707l-5.146 5.147a.5.5 0 0 1-.708-.708L7.293 8z"/>
+                      </svg>
+                    </button>
+                  </form>
+                </td>
+              </tr>
+            <% } %>
+          </tbody>
+        </table>
+      </div>
+    </div>
+    <!-- Spetimo Semestre -->
+    <div class="mb-4">
+      <div class="d-flex justify-content-between align-items-center">
+        <h3 class="ms-3 text-decoration-underline ivd-text-red">7mo Semestre</h3>
+      </div>
+      <div class="table-responsive rounded-5" style="background-color: white; overflow-x: auto; margin-bottom: 2rem;">
+        <table class="table table-hover" style="min-width: 800px; width: 100%;">
+          <thead class="table-light">
+            <tr>
+              <th scope="col" style="width: 15%; min-width: 100px;" class="text-center align-middle">Grupo</th>
+              <th scope="col" style="width: 25%; min-width: 100px;" class="text-center align-middle">Materia</th>
+              <th scope="col" style="width: 25%; min-width: 100px;" class="text-center align-middle">Profesor</th>
+              <th scope="col" style="width: 14%; min-width: 150px;" class="text-center align-middle">Salón</th>
+              <th scope="col" style="width: 14%; min-width: 100px;" class="text-center align-middle">Ciclo Escolar</th>
+              <th scope="col" style="width: 4%; min-width: 50px;" class="text-center align-middle"></th>
+              <th scope="col" style="width: 4%; min-width: 50px;" class="text-center align-middle"></th>
+            </tr>
+          </thead>
+          <tbody>
+            <% for (let grupo of grupos.filter(g => g.semestre_id === 's7')) { %>
+              <tr>
+                <th scope="row" class="text-center align-middle"><%= grupo.grupo_id %></th>
+                <td class="text-center align-middle"><%= grupo.materia %></td>
+                <td class="text-center align-middle"><%= grupo.nombre + ' ' + grupo.primer_apellido + ' ' + grupo.segundo_apellido %></td>
+                <td class="text-center align-middle"><%= grupo.numero %></td>
+                <td class="text-center align-middle"><%= grupo.code %></td>
+                <td class="text-center align-middle">
+                  <button class="btn btn-sm p-0 d-flex align-items-center justify-content-center"
+                          style="width: 1.5rem; height: 1.5rem; border-radius: 50%; background-color: #84251c; color: white; border: none;"
+                          data-bs-toggle="modal" data-bs-target="#viewModal"
+                          data-grupo-id="<%= grupo.grupo_id %>">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-eye-fill" viewBox="0 0 16 16">
+                      <path d="M10.5 8a2.5 2.5 0 1 1-5 0 2.5 2.5 0 0 1 5 0"/>
+                      <path d="M0 8s3-5.5 8-5.5S16 8 16 8s-3 5.5-8 5.5S0 8 0 8m8 3.5a3.5 3.5 0 1 0 0-7 3.5 3.5 0 0 0 0 7"/>
+                    </svg>
+                  </button>
+                </td>
+                <td class="text-center align-middle">
+                  <form action="/coordinador/grupos/eliminar/<%= grupo.grupo_id %>" method="POST">
+                    <button type="button" class="btn btn-sm p-0 d-flex align-items-center justify-content-center delete-btn"
+                            style="width: 1.5rem; height: 1.5rem; border-radius: 50%; background-color: #84251c; color: white; border: none;"
+                            data-bs-toggle="modal" data-bs-target="#deleteModal"
+                            data-grupo-id="<%= grupo.grupo_id %>" data-materia="<%= grupo.materia %>" data-ciclo="<%= grupo.code %>">
+                      <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-x-lg" viewBox="0 0 16 16">
+                        <path d="M2.146 2.854a.5.5 0 1 1 .708-.708L8 7.293l5.146-5.147a.5.5 0 0 1 .708.708L8.707 8l5.147 5.146a.5.5 0 0 1-.708.708L8 8.707l-5.146 5.147a.5.5 0 0 1-.708-.708L7.293 8z"/>
+                      </svg>
+                    </button>
+                  </form>
+                </td>
+              </tr>
+            <% } %>
+          </tbody>
+        </table>
+      </div>
+    </div>
+    <!-- Octavo Semestre -->
+    <div class="mb-4">
+      <div class="d-flex justify-content-between align-items-center">
+        <h3 class="ms-3 text-decoration-underline ivd-text-red">8vo Semestre</h3>
+      </div>
+      <div class="table-responsive rounded-5" style="background-color: white; overflow-x: auto; margin-bottom: 2rem;">
+        <table class="table table-hover" style="min-width: 800px; width: 100%;">
+          <thead class="table-light">
+            <tr>
+              <th scope="col" style="width: 15%; min-width: 100px;" class="text-center align-middle">Grupo</th>
+              <th scope="col" style="width: 25%; min-width: 100px;" class="text-center align-middle">Materia</th>
+              <th scope="col" style="width: 25%; min-width: 100px;" class="text-center align-middle">Profesor</th>
+              <th scope="col" style="width: 14%; min-width: 150px;" class="text-center align-middle">Salón</th>
+              <th scope="col" style="width: 14%; min-width: 100px;" class="text-center align-middle">Ciclo Escolar</th>
+              <th scope="col" style="width: 4%; min-width: 50px;" class="text-center align-middle"></th>
+              <th scope="col" style="width: 4%; min-width: 50px;" class="text-center align-middle"></th>
+            </tr>
+          </thead>
+          <tbody>
+            <% for (let grupo of grupos.filter(g => g.semestre_id === 's8')) { %>
+              <tr>
+                <th scope="row" class="text-center align-middle"><%= grupo.grupo_id %></th>
+                <td class="text-center align-middle"><%= grupo.materia %></td>
+                <td class="text-center align-middle"><%= grupo.nombre + ' ' + grupo.primer_apellido + ' ' + grupo.segundo_apellido %></td>
+                <td class="text-center align-middle"><%= grupo.numero %></td>
+                <td class="text-center align-middle"><%= grupo.code %></td>
+                <td class="text-center align-middle">
+                  <button class="btn btn-sm p-0 d-flex align-items-center justify-content-center"
+                          style="width: 1.5rem; height: 1.5rem; border-radius: 50%; background-color: #84251c; color: white; border: none;"
+                          data-bs-toggle="modal" data-bs-target="#viewModal"
+                          data-grupo-id="<%= grupo.grupo_id %>">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-eye-fill" viewBox="0 0 16 16">
+                      <path d="M10.5 8a2.5 2.5 0 1 1-5 0 2.5 2.5 0 0 1 5 0"/>
+                      <path d="M0 8s3-5.5 8-5.5S16 8 16 8s-3 5.5-8 5.5S0 8 0 8m8 3.5a3.5 3.5 0 1 0 0-7 3.5 3.5 0 0 0 0 7"/>
+                    </svg>
+                  </button>
+                </td>
+                <td class="text-center align-middle">
+                  <form action="/coordinador/grupos/eliminar/<%= grupo.grupo_id %>" method="POST">
+                    <button type="button" class="btn btn-sm p-0 d-flex align-items-center justify-content-center delete-btn"
+                            style="width: 1.5rem; height: 1.5rem; border-radius: 50%; background-color: #84251c; color: white; border: none;"
+                            data-bs-toggle="modal" data-bs-target="#deleteModal"
+                            data-grupo-id="<%= grupo.grupo_id %>" data-materia="<%= grupo.materia %>" data-ciclo="<%= grupo.code %>">
+                      <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-x-lg" viewBox="0 0 16 16">
+                        <path d="M2.146 2.854a.5.5 0 1 1 .708-.708L8 7.293l5.146-5.147a.5.5 0 0 1 .708.708L8.707 8l5.147 5.146a.5.5 0 0 1-.708.708L8 8.707l-5.146 5.147a.5.5 0 0 1-.708-.708L7.293 8z"/>
+                      </svg>
+                    </button>
+                  </form>
+                </td>
+              </tr>
+            <% } %>
+          </tbody>
+        </table>
+      </div>
+    </div>
+    <!-- Noveno Semestre -->
+    <div class="mb-4">
+      <div class="d-flex justify-content-between align-items-center">
+        <h3 class="ms-3 text-decoration-underline ivd-text-red">9no Semestre</h3>
+      </div>
+      <div class="table-responsive rounded-5" style="background-color: white; overflow-x: auto; margin-bottom: 2rem;">
+        <table class="table table-hover" style="min-width: 800px; width: 100%;">
+          <thead class="table-light">
+            <tr>
+              <th scope="col" style="width: 15%; min-width: 100px;" class="text-center align-middle">Grupo</th>
+              <th scope="col" style="width: 25%; min-width: 100px;" class="text-center align-middle">Materia</th>
+              <th scope="col" style="width: 25%; min-width: 100px;" class="text-center align-middle">Profesor</th>
+              <th scope="col" style="width: 14%; min-width: 150px;" class="text-center align-middle">Salón</th>
+              <th scope="col" style="width: 14%; min-width: 100px;" class="text-center align-middle">Ciclo Escolar</th>
+              <th scope="col" style="width: 4%; min-width: 50px;" class="text-center align-middle"></th>
+              <th scope="col" style="width: 4%; min-width: 50px;" class="text-center align-middle"></th>
+            </tr>
+          </thead>
+          <tbody>
+            <% for (let grupo of grupos.filter(g => g.semestre_id === 's9')) { %>
+              <tr>
+                <th scope="row" class="text-center align-middle"><%= grupo.grupo_id %></th>
+                <td class="text-center align-middle"><%= grupo.materia %></td>
+                <td class="text-center align-middle"><%= grupo.nombre + ' ' + grupo.primer_apellido + ' ' + grupo.segundo_apellido %></td>
+                <td class="text-center align-middle"><%= grupo.numero %></td>
+                <td class="text-center align-middle"><%= grupo.code %></td>
+                <td class="text-center align-middle">
+                  <button class="btn btn-sm p-0 d-flex align-items-center justify-content-center"
+                          style="width: 1.5rem; height: 1.5rem; border-radius: 50%; background-color: #84251c; color: white; border: none;"
+                          data-bs-toggle="modal" data-bs-target="#viewModal"
+                          data-grupo-id="<%= grupo.grupo_id %>">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-eye-fill" viewBox="0 0 16 16">
+                      <path d="M10.5 8a2.5 2.5 0 1 1-5 0 2.5 2.5 0 0 1 5 0"/>
+                      <path d="M0 8s3-5.5 8-5.5S16 8 16 8s-3 5.5-8 5.5S0 8 0 8m8 3.5a3.5 3.5 0 1 0 0-7 3.5 3.5 0 0 0 0 7"/>
+                    </svg>
+                  </button>
+                </td>
+                <td class="text-center align-middle">
+                  <form action="/coordinador/grupos/eliminar/<%= grupo.grupo_id %>" method="POST">
+                    <button type="button" class="btn btn-sm p-0 d-flex align-items-center justify-content-center delete-btn"
+                            style="width: 1.5rem; height: 1.5rem; border-radius: 50%; background-color: #84251c; color: white; border: none;"
+                            data-bs-toggle="modal" data-bs-target="#deleteModal"
+                            data-grupo-id="<%= grupo.grupo_id %>" data-materia="<%= grupo.materia %>" data-ciclo="<%= grupo.code %>">
+                      <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-x-lg" viewBox="0 0 16 16">
+                        <path d="M2.146 2.854a.5.5 0 1 1 .708-.708L8 7.293l5.146-5.147a.5.5 0 0 1 .708.708L8.707 8l5.147 5.146a.5.5 0 0 1-.708.708L8 8.707l-5.146 5.147a.5.5 0 0 1-.708-.708L7.293 8z"/>
+                      </svg>
+                    </button>
+                  </form>
+                </td>
+              </tr>
+            <% } %>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
   </div>
 </main>
 
@@ -173,7 +623,9 @@
               <select class="form-select rounded-5 mx-auto" id="salon" name="salon" required style="background-color: #f0f0f0;">
                 <option value="">Seleccione un salón</option>
                 <% for (let salon of salones) { %>
-                  <option value="<%= salon.salon_id %>"><%= salon.numero %></option>
+                  <% if (salon.salon_id !== 9999) { %>
+                    <option value="<%= salon.salon_id %>"><%= salon.numero %></option>
+                    <% } %>
                 <% } %>
               </select>
             </div>
@@ -207,7 +659,7 @@
                 style="background-color: white; border: 1px solid #84251C; color: #84251C;" 
                 data-bs-dismiss="modal">Cancelar</button>
         <button type="submit" form="scheduleForm" class="btn btn-primary rounded-pill px-4 mx-4" 
-                style="background-color: #84251C; border: none;">Registrar</button>
+                style="background-color: #84251C; border: none;">Agregar</button>
       </div>
     </div>
   </div>
@@ -315,7 +767,9 @@
               <select class="form-select rounded-5" id="editSalon" name="salon" required style="background-color: #f0f0f0;">
                 <option value="">Seleccione un salón</option>
                 <% salones.forEach(salon => { %>
+                  <% if (salon.salon_id !== 9999) { %>
                   <option value="<%= salon.salon_id %>"><%= salon.numero %></option>
+                  <% } %>
                 <% }) %>
               </select>
             </div>
@@ -353,6 +807,25 @@
   </div>
 </div>
 
+<!-- Modal de confirmación para Generar Grupos -->
+<div class="modal fade" id="generateModal" tabindex="-1" aria-labelledby="generateModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered modal-sm">
+    <div class="modal-content rounded-5" style="background-color: #f0f0f0">
+      <div class="modal-header border-0 justify-content-center">
+        <h5 class="modal-title ivd-text-red" id="generateModalLabel">Generar Grupos</h5>
+      </div>
+      <div class="modal-body text-center mx-4 rounded-5" style="background-color: white">
+        <p>El proceso de generar grupos <b>eliminará</b> la asignación de grupos actuales. ¿Está seguro que desea continuar?</p>
+      </div>
+      <div class="modal-footer justify-content-center mt-3">
+        <button type="button" class="btn btn-secondary rounded-pill px-4 mx-4" data-bs-dismiss="modal"
+                style="background-color: white; border: 1px solid #84251C; color: #84251C;">Cancelar</button>
+        <a id="confirmGenerateBtn" href="#" class="btn ivd-bg-red text-white rounded-pill px-4">Aceptar</a>
+      </div>
+    </div>
+  </div>
+</div>
+
 <!-- Scripts -->
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
 <script src="/js/coordinador.js"></script>
@@ -382,7 +855,7 @@
     try {
       const days = ["Lunes", "Martes", "Miércoles", "Jueves", "Viernes"];
       const startTime = 7;
-      const endTime = 19;
+      const endTime = 16;
       const formatTime = (num) => num.toString().padStart(2, '0');
 
       for (let hour = startTime; hour < endTime; hour++) {
@@ -442,7 +915,7 @@
           <td class="text-center align-middle">${grupoInfo.grupo_id}</td>
           <td class="text-center align-middle">${grupoInfo.materia}</td>
           <td class="text-center align-middle">${grupoInfo.nombre + ' ' + grupoInfo.primer_apellido + ' ' + grupoInfo.segundo_apellido}</td>
-          <td class="text-center align-middle">${grupoInfo.numero}</td>
+          <td class="text-center align-middle">${grupoInfo.numero === 9999 ? 'No Asignado' : grupoInfo.numero}</td>
           <td class="text-center align-middle">${grupoInfo.code}</td>
         </tr>
       `;
@@ -452,7 +925,7 @@
       scheduleBody.innerHTML = '';
       const days = ["Lunes", "Martes", "Miércoles", "Jueves", "Viernes"];
       const startTime = 7;
-      const endTime = 19;
+      const endTime = 16;
       const formatTime = num => num.toString().padStart(2, '0');
 
       for (let hour = startTime; hour < endTime; hour++) {
@@ -523,7 +996,7 @@
     
     const days = ["Lunes", "Martes", "Miércoles", "Jueves", "Viernes"];
     const startTime = 7;
-    const endTime = 19;
+    const endTime = 16;
     const formatTime = (num) => num.toString().padStart(2, '0');
 
     for (let hour = startTime; hour < endTime; hour++) {
@@ -568,6 +1041,46 @@
   } catch (error) {
     console.error("Error al cargar datos:", error);
   }
+});
+
+// Barra de búsqueda para tabla de grupos
+const searchInput = document.getElementById('buscarGrupo');
+const gruposBody = document.getElementById('gruposBody');
+
+// Escucha el evento de keyup (cuando el usuario escribe)
+searchInput.addEventListener('keyup', function() {
+  const searchValue = this.value.toLowerCase().trim();
+  // Obtiene todas las filas de la tabla
+  const rows = gruposBody.querySelectorAll('tr');
+  
+  rows.forEach(row => {
+    // Filtramos el contenido de búsqueda basándonos en todo el texto de la fila. 
+    const rowText = row.textContent.toLowerCase();
+    
+    // Si el término buscado se encuentra en el texto de la fila, se muestra, de lo contrario se oculta
+    if (rowText.includes(searchValue)) {
+      row.style.display = '';
+    } else {
+      row.style.display = 'none';
+    }
+  });
+});
+
+// Configura el botón de generación para pasar el href al modal
+var generateModal = document.getElementById('generateModal');
+generateModal.addEventListener('show.bs.modal', function (event) {
+  var button = event.relatedTarget;
+  var href = button.getAttribute('data-href');
+  var confirmBtn = document.getElementById('confirmGenerateBtn');
+  confirmBtn.setAttribute('href', href);
+});
+
+window.addEventListener('DOMContentLoaded', () => {
+    const msgModal = document.getElementById('msgModal');
+    if (msgModal) {
+      const modal = new bootstrap.Modal(msgModal);
+      modal.show();
+    }
 });
 </script>
 </body>

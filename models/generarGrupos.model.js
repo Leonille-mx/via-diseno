@@ -1,161 +1,384 @@
 const pool = require('../util/database');
 
-module.exports = class generarGrupos {
+module.exports = class GenerarGruposGA {
+    constructor({
+        popSize = 100,
+        generations = 100,
+        crossoverRate = 0.8,
+        mutationRate = 0.04,
+        eliteRatio = 0.2,
+        tournamentSize = 5,
+        greedyRatio = 0.2,
+        stagnationThreshold = 50,
+        maxMutationRate = 0.2,
+        localSearchIters = 5,
+        restartRatio = 0.1,
+        dynamicEliteMax = 0.3
+    } = {}) {
+        this.popSize = popSize;
+        this.generations = generations;
+        this.crossoverRate = crossoverRate;
+        this.baseMutationRate = mutationRate;
+        this.mutationRate = mutationRate;
+        this.maxMutationRate = maxMutationRate;
 
-    // Obtiene las materias abiertas para las que deben generarse grupos
-    static async getMateriasAbiertas() {
-        return pool.query(`SELECT * FROM materia m, materia_semestre ms
-                            WHERE m.materia_id = ms.materia_id`);
+        this.baseEliteRatio = eliteRatio;
+        this.eliteRatio = eliteRatio;
+        this.dynamicEliteMax = dynamicEliteMax;
+        this.eliteCount = Math.max(1, Math.floor(this.popSize * this.eliteRatio));
+
+        this.tournamentSize = tournamentSize;
+        this.greedyRatio = greedyRatio;
+        this.stagnationThreshold = stagnationThreshold;
+        this.localSearchIters = localSearchIters;
+        this.restartRatio = restartRatio;
+
+        this.materias = [];
+        this.profesorMaterias = {};
+        this.profesorHorarios = {};
+        this.bloquesNecesariosMap = {};
+        this.population = [];
+        this.bestIndividual = null;
+        this.unassignedMaterias = [];
+
+        this.metrics = {
+            bestFitnessPerGen: [],
+            avgFitnessPerGen: [],
+            noImprovementStreak: []
+        };
     }
 
-    // Obtiene la relación materia-profesor y la devuelve como un objeto:
-    // { materia_id: [profesor_id, ...], ... }
-    static async getProfesorMaterias() {
-        const result = await pool.query(`SELECT * FROM profesor_materia`);
-        const mapping = {};
-        result.rows.forEach(row => {
-            if (!mapping[row.materia_id]) mapping[row.materia_id] = [];
-            mapping[row.materia_id].push(row.profesor_id);
+    async loadData(client = pool) {
+        const [mRes, pmRes, phRes] = await Promise.all([
+            client.query(
+                `SELECT m.materia_id, m.sep_id, m.horas_profesor, ms.semestre_id
+                 FROM materia m
+                 JOIN materia_semestre ms ON m.materia_id = ms.materia_id`
+            ),
+            client.query(`SELECT materia_id, profesor_id FROM profesor_materia`),
+            client.query(`SELECT profesor_id, bloque_tiempo_id FROM profesor_bloque_tiempo`)
+        ]);
+
+        const mapMat = {};
+        mRes.rows.forEach(r => {
+            if (!mapMat[r.materia_id]) mapMat[r.materia_id] = { materia_id: r.materia_id, sep_id: r.sep_id, horas_profesor: r.horas_profesor, semestres: [] };
+            if (!mapMat[r.materia_id].semestres.includes(r.semestre_id)) mapMat[r.materia_id].semestres.push(r.semestre_id);
         });
-        return mapping;
+        this.materias = Object.values(mapMat);
+        this.materias.forEach(m => { this.bloquesNecesariosMap[m.materia_id] = m.horas_profesor * 2; });
+
+        pmRes.rows.forEach(r => {
+            this.profesorMaterias[r.materia_id] = this.profesorMaterias[r.materia_id] || [];
+            this.profesorMaterias[r.materia_id].push(r.profesor_id);
+        });
+        phRes.rows.forEach(r => {
+            this.profesorHorarios[r.profesor_id] = this.profesorHorarios[r.profesor_id] || [];
+            this.profesorHorarios[r.profesor_id].push(r.bloque_tiempo_id);
+        });
     }
 
-    // Obtiene la disponibilidad de todos los profesores en una sola consulta.
-    // Devuelve un objeto: { profesor_id: [bloque_tiempo_id, ...], ... }
-    static async getProfesorHorarios() {
-        const result = await pool.query(`SELECT * FROM profesor_bloque_tiempo`);
-        const mapping = {};
-        result.rows.forEach(row => {
-            if (!mapping[row.profesor_id]) mapping[row.profesor_id] = [];
-            mapping[row.profesor_id].push(row.bloque_tiempo_id);
+    createGreedyIndividual() {
+        const ind = this.materias.map(mat => {
+            const profs = this.profesorMaterias[mat.materia_id] || [];
+            const profesor = profs.length
+                ? profs.reduce((a, b) => ((this.profesorHorarios[a] || []).length >= (this.profesorHorarios[b] || []).length ? a : b))
+                : null;
+            const disp = this.profesorHorarios[profesor] || [];
+            const k = this.bloquesNecesariosMap[mat.materia_id];
+            const bloques = this.randomBloquesConsecutivos(disp, k);
+            return { materia_id: mat.materia_id, sep_id: mat.sep_id, profesor, bloques, semestres: mat.semestres };
         });
-        return mapping;
+        return this.repairIndividual(ind);
     }
 
-    // Obtiene todos los salones disponibles
-    static async getSalonesDisponibles() {
-        return pool.query('SELECT * FROM salon');
-    }
-    
-    // Valida que en cada día los bloques seleccionados
-    // aparezcan en secuencias consecutivas de al menos 2.
-    static validarSesion(asignacion, blocksPerDay) {
-        let dias = {};
-        asignacion.forEach(b => {
-            const dayIndex = Math.floor((parseInt(b) - 1) / blocksPerDay);
-            if (!dias[dayIndex]) dias[dayIndex] = [];
-            dias[dayIndex].push(parseInt(b));
+    createIndividual() {
+        const ind = this.materias.map(mat => {
+            const profs = this.profesorMaterias[mat.materia_id] || [];
+            const profesor = profs[Math.floor(Math.random() * profs.length)] || null;
+            const disp = this.profesorHorarios[profesor] || [];
+            const k = this.bloquesNecesariosMap[mat.materia_id];
+            const bloques = this.randomBloquesConsecutivos(disp, k);
+            return { materia_id: mat.materia_id, sep_id: mat.sep_id, profesor, bloques, semestres: mat.semestres };
         });
-        for (const day in dias) {
-            let bloques = dias[day].sort((a, b) => a - b);
-            if (bloques.length === 1) return false;
-            let secuencia = [bloques[0]];
-            for (let i = 1; i < bloques.length; i++) {
-                if (bloques[i] === bloques[i - 1] + 1) {
-                    secuencia.push(bloques[i]);
-                } else {
-                    if (secuencia.length < 2) return false;
-                        secuencia = [bloques[i]];
+        return this.repairIndividual(ind);
+    }
+
+    repairIndividual(ind) {
+        const usedProf = {};
+        const usedSem = {};
+        const repaired = [];
+
+        for (const g of ind) {
+            const k = this.bloquesNecesariosMap[g.materia_id];
+            let profesor = g.profesor;
+            let bloques = g.bloques;
+
+            const profs = this.profesorMaterias[g.materia_id] || [];
+            const validProf = profs.includes(profesor);
+            const validBlocks = Array.isArray(bloques) && bloques.length === k && this.validarSesion(bloques);
+
+            if (!validProf || !validBlocks) {
+                let best = null;
+                let bestDisp = [];
+                for (const p of profs) {
+                    const disp = this.profesorHorarios[p] || [];
+                    if (!usedProf[p]) usedProf[p] = new Set();
+                    const free = disp.filter(b => !usedProf[p].has(b));
+                    if (free.length >= k && free.length > bestDisp.length) {
+                        best = p;
+                        bestDisp = free;
+                    }
+                }
+                profesor = best;
+                bloques = profesor
+                    ? this.randomBloquesConsecutivos(bestDisp, k)
+                    : [];
+            }
+
+            if (profesor && bloques.length === k && this.validarSesion(bloques)) {
+                if (!usedProf[profesor]) usedProf[profesor] = new Set();
+                bloques.forEach(b => usedProf[profesor].add(b));
+                for (const s of g.semestres) {
+                    if (!usedSem[s]) usedSem[s] = new Set();
+                    bloques.forEach(b => usedSem[s].add(b));
                 }
             }
-            if (secuencia.length < 2) return false;
+
+            repaired.push({ ...g, profesor, bloques });
         }
-        return true;
+        return repaired;
     }
 
-    // Genera todas las combinaciones de k elementos a partir del arreglo "disponibilidad",
-    // pero sólo conserva aquellas combinaciones en las que, para cada día, 
-    // si se selecciona un bloque, éstos vienen en secuencias de al menos dos (sesión mínima de 1 hora).
-    static generarCombinaciones(disponibilidad, k) {
-        let resultados = [];
-        function backtrack(start, comb) {
-            if (comb.length === k) {
-                if (generarGrupos.validarSesion(comb, 24)) {
-                    resultados.push([...comb]);
+    randomBloquesConsecutivos(disponibilidad, k) {
+        const byDay = disponibilidad.reduce((acc, b) => {
+            const day = Math.floor((b - 1) / 24);
+            (acc[day] = acc[day] || []).push(b);
+            return acc;
+        }, {});
+        const segmentos = [];
+        Object.values(byDay).forEach(bloques => {
+            bloques.sort((a, b) => a - b);
+            for (let i = 0; i < bloques.length; i++) {
+                const seq = [bloques[i]];
+                for (let j = i + 1; j < bloques.length && bloques[j] === bloques[j - 1] + 1; j++) seq.push(bloques[j]);
+                if (seq.length >= 2) segmentos.push(seq);
+            }
+        });
+        segmentos.sort(() => 0.5 - Math.random());
+        const result = [];
+        let sum = 0;
+        for (const seg of segmentos) {
+            if (sum + seg.length <= k) { result.push(...seg); sum += seg.length; }
+            if (sum === k) break;
+        }
+        if (sum < k) {
+            [...new Set(disponibilidad)].sort(() => 0.5 - Math.random()).some(b => {
+                if (!result.includes(b) && sum < k) { result.push(b); sum++; }
+                return sum === k;
+            });
+        }
+        return result;
+    }
+
+    fitness(ind) {
+        let score = 0;
+        const usedProf = {}, usedSem = {};
+        ind.forEach(g => {
+            const k = this.bloquesNecesariosMap[g.materia_id];
+            if (!g.profesor || g.bloques.length !== k || !this.validarSesion(g.bloques)) return;
+            let conflict = false;
+            usedProf[g.profesor] = usedProf[g.profesor] || new Set();
+            for (const b of g.bloques) if (usedProf[g.profesor].has(b)) { conflict = true; break; }
+            for (const s of g.semestres) {
+                usedSem[s] = usedSem[s] || new Set();
+                for (const b of g.bloques) if (usedSem[s].has(b)) conflict = true;
+            }
+            if (!conflict) {
+                score++;
+                g.bloques.forEach(b => { usedProf[g.profesor].add(b); g.semestres.forEach(s => usedSem[s].add(b)); });
+            }
+        });
+        return score;
+    }
+
+    validarSesion(bloques) {
+        if (!Array.isArray(bloques) || bloques.length < 2) return false;
+        bloques.sort((a, b) => a - b);
+        let cnt = 1;
+        for (let i = 1; i < bloques.length; i++) {
+            if (bloques[i] === bloques[i - 1] + 1) cnt++;
+            else { if (cnt < 2) return false; cnt = 1; }
+        }
+        return cnt >= 2;
+    }
+
+    selectParent() {
+        let best = null;
+        for (let i = 0; i < this.tournamentSize; i++) {
+            const ind = this.population[Math.floor(Math.random() * this.popSize)];
+            if (!best || this.fitness(ind) > this.fitness(best)) best = ind;
+        }
+        return best;
+    }
+
+    crossover(p1, p2) {
+        return p1.map((g, i) => (Math.random() < this.crossoverRate ? { ...g } : { ...p2[i] }));
+    }
+
+    mutate(ind) {
+        const mutated = ind.map(g => {
+            const newGene = { ...g };
+            if (Math.random() < this.mutationRate) {
+                const profs = this.profesorMaterias[newGene.materia_id] || [];
+                newGene.profesor = profs[Math.floor(Math.random() * profs.length)];
+            }
+            if (Math.random() < this.mutationRate) {
+                const disp = this.profesorHorarios[newGene.profesor] || [];
+                const k = this.bloquesNecesariosMap[newGene.materia_id];
+                newGene.bloques = this.randomBloquesConsecutivos(disp, k);
+            }
+            return newGene;
+        });
+        return this.repairIndividual(mutated);
+    }
+
+    hillClimb(ind) {
+        let best = ind;
+        let bestFit = this.fitness(ind);
+        for (let i = 0; i < this.localSearchIters; i++) {
+            const candidate = best.map(g => ({ ...g }));
+            const idx1 = Math.floor(Math.random() * candidate.length);
+            const idx2 = Math.floor(Math.random() * candidate.length);
+            [candidate[idx1].profesor, candidate[idx2].profesor] = [candidate[idx2].profesor, candidate[idx1].profesor];
+            const fit1 = this.fitness(candidate);
+            if (fit1 > bestFit) { best = candidate; bestFit = fit1; continue; }
+            const idx = Math.floor(Math.random() * candidate.length);
+            const gene = candidate[idx];
+            const disp = this.profesorHorarios[gene.profesor] || [];
+            const k = this.bloquesNecesariosMap[gene.materia_id];
+            gene.bloques = this.randomBloquesConsecutivos(disp, k);
+            const fit2 = this.fitness(candidate);
+            if (fit2 > bestFit) { best = candidate; bestFit = fit2; }
+        }
+        return this.repairIndividual(best);
+    }
+
+    async run() {
+        await this.loadData();
+        const start = Date.now();
+        const limit = 10 * 60 * 1000;
+        this.bestIndividual = null;
+
+        const greedyCount = Math.floor(this.popSize * this.greedyRatio);
+        this.population = [];
+        for (let i = 0; i < greedyCount; i++) this.population.push(this.createGreedyIndividual());
+        for (let i = greedyCount; i < this.popSize; i++) this.population.push(this.createIndividual());
+
+        let noImprovementCount = 0;
+        let prevBestFitness = -Infinity;
+        let genCount = 0;
+
+        while (Date.now() - start < limit && genCount < this.generations) {
+            this.population.sort((a, b) => this.fitness(b) - this.fitness(a));
+            const currentBest = this.fitness(this.population[0]);
+            const avgFitness = this.population.reduce((s, ind) => s + this.fitness(ind), 0) / this.popSize;
+
+            if (currentBest > prevBestFitness) {
+                prevBestFitness = currentBest;
+                noImprovementCount = 0;
+                this.mutationRate = this.baseMutationRate;
+                this.eliteRatio = this.baseEliteRatio;
+            } else {
+                noImprovementCount++;
+            }
+            if (noImprovementCount > this.stagnationThreshold/2) {
+                this.eliteRatio = Math.min(this.dynamicEliteMax, this.baseEliteRatio * 1.5);
+            }
+            this.eliteCount = Math.max(1, Math.floor(this.popSize * this.eliteRatio));
+            if (noImprovementCount > this.stagnationThreshold) {
+                this.mutationRate = Math.min(this.mutationRate * 2, this.maxMutationRate);
+            }
+
+            this.metrics.bestFitnessPerGen.push(currentBest);
+            this.metrics.avgFitnessPerGen.push(avgFitness);
+            this.metrics.noImprovementStreak.push(noImprovementCount);
+
+            console.log(`Gen ${genCount}: best=${currentBest}, avg=${avgFitness.toFixed(2)}, noImp=${noImprovementCount}, mut=${this.mutationRate.toFixed(3)}, elite=${this.eliteRatio.toFixed(2)}`);
+
+            if (!this.bestIndividual || currentBest > this.fitness(this.bestIndividual)) {
+                this.bestIndividual = this.population[0];
+                if (currentBest === this.materias.length) break;
+            }
+
+            if (noImprovementCount > this.stagnationThreshold * 2) {
+                const reinits = Math.floor(this.popSize * this.restartRatio);
+                for (let i = 0; i < reinits; i++) {
+                    this.population[this.popSize - 1 - i] = this.createIndividual();
                 }
-            return;
             }
-            for (let i = start; i < disponibilidad.length; i++) {
-                comb.push(disponibilidad[i]);
-                backtrack(i + 1, comb);
-                comb.pop();
+
+            const elites = this.population.slice(0, this.eliteCount);
+            const newPop = [...elites];
+            while (newPop.length < this.popSize && Date.now() - start < limit) {
+                const p1 = this.selectParent();
+                const p2 = this.selectParent();
+                let child = Math.random() < this.crossoverRate ? this.crossover(p1, p2) : [...p1];
+                child = this.mutate(child);
+                child = this.hillClimb(child);
+                newPop.push(child);
             }
+            this.population = newPop;
+            genCount++;
         }
-        backtrack(0, []);
-        return resultados;
-    } 
 
-    // Valida que la asignación de bloques para un grupo no genere conflictos:
-    // - Dos grupos con el mismo profesor no pueden tener bloques en común.
-    // - Dos grupos en el mismo salón no pueden tener bloques en común.
-    // - Dos grupos del mismo semestre (ciclo escolar) no pueden tener bloques en común.
-    static validarRestricciones(asignacion, profesor, salon, gruposAsignados, semestres) {
-        for (let grupo of gruposAsignados) {
-            // Verificar conflicto de profesor
-            if (grupo.profesor_id === profesor) {
-                if (grupo.bloques.some(b => asignacion.includes(b))) return false;
+        this.unassignedMaterias = this.bestIndividual
+            .filter(g => !g.profesor || !this.validarSesion(g.bloques) || g.bloques.length !== this.bloquesNecesariosMap[g.materia_id])
+            .map(g => g.sep_id);
+
+        return { best: this.bestIndividual, unassigned: this.unassignedMaterias, metrics: this.metrics };
+    }
+
+    async saveResult(resultado, client = pool) {
+        const { best } = resultado;
+        await client.query('BEGIN');
+        try {
+            await client.query(`DELETE FROM grupo_bloque_tiempo`);
+            await client.query(`DELETE FROM resultado_inscripcion`);
+            await client.query(`DELETE FROM grupo`);
+            const asigns = [];
+            for (const g of best) {
+                if (!g.profesor || !this.validarSesion(g.bloques)) continue;
+                const rId = await client.query(`SELECT COALESCE(MAX(grupo_id),0)+1 AS id FROM grupo`);
+                const newId = rId.rows[0].id;
+                await client.query(
+                    `INSERT INTO grupo (grupo_id, materia_id, profesor_id, salon_id, ciclo_escolar_id)
+                     VALUES ($1,$2,$3,9999,(SELECT ciclo_escolar_id FROM ciclo_escolar ORDER BY fecha_fin DESC LIMIT 1))`,
+                    [newId, g.materia_id, g.profesor]
+                );
+                const vals = g.bloques.map((_, i) => `($1, $${i+2})`).join(',');
+                await client.query(
+                    `INSERT INTO grupo_bloque_tiempo (grupo_id, bloque_tiempo_id) VALUES ${vals}`,
+                    [newId, ...g.bloques]
+                );
+                asigns.push({ grupo_id: newId, materia_id: g.materia_id, semestres: g.semestres });
             }
-            // Verificar conflicto de salón
-            if (grupo.salon_id === salon) {
-                if (grupo.bloques.some(b => asignacion.includes(b))) return false;
+            for (const a of asigns) {
+                for (const sem of a.semestres) {
+                    await client.query(
+                        `INSERT INTO resultado_inscripcion (alumno_id, grupo_id, obligatorio, seleccionado)
+                         SELECT al.ivd_id,$1,true,true
+                         FROM alumno al
+                         JOIN semestre s ON al.semestre = s.numero
+                         LEFT JOIN historial_academico h ON h.ivd_id=al.ivd_id AND h.materia_id=$2 AND h.aprobado=true
+                         WHERE s.semestre_id=$3 AND h.ivd_id IS NULL`,
+                        [a.grupo_id, a.materia_id, sem]
+                    );
+                }
             }
-            // Verificar conflicto en los semestres involucrados
-            if (grupo.semestres.some(s => semestres.includes(s))) {
-                if (grupo.bloques.some(b => asignacion.includes(b))) return false;
-            }
+            await client.query('COMMIT');
+        } catch (err) {
+            await client.query('ROLLBACK');
+            throw err;
         }
-        // Además, se valida que la sesión sea correcta en cada día
-        return generarGrupos.validarSesion(asignacion, 24);
     }
-
-    // Inserta un grupo en la tabla "grupo" y retorna el grupo_id generado
-    static async saveGrupo(grupo) {
-        // Obtener el máximo grupo_id actual (si no hay registros, se usa 0)
-        const resultMax = await pool.query(`SELECT COALESCE(MAX(grupo_id), 0) AS max_id FROM grupo`);
-        const newId = resultMax.rows[0].max_id + 1;
-        
-        // Obtener el ciclo escolar sincronizado más reciente
-        const cicloMax = await pool.query(`SELECT ciclo_escolar_id FROM ciclo_escolar ORDER BY fecha_fin DESC LIMIT 1;`)
-        const ciclo = cicloMax.rows[0].ciclo_escolar_id;
-
-        // Insertar el grupo con el nuevo id
-        return pool.query(
-            `INSERT INTO grupo (grupo_id, materia_id, profesor_id, salon_id, ciclo_escolar_id)
-            VALUES ($1, $2, $3, $4, $5) RETURNING grupo_id`,
-            [newId, grupo.materia_id, grupo.profesor_id, grupo.salon_id, ciclo]
-        );
-    }
-
-    // Inserta la asignación de bloques en la tabla "grupo_horario"
-    static async saveGrupoHorario(grupo_id, bloques) {
-        if (!bloques.every(b => Number.isInteger(b))) throw new Error(error);
-        const values = bloques.map((_, i) => `($1, $${i + 2})`).join(', ');
-        return pool.query(`INSERT INTO grupo_bloque_tiempo (grupo_id, bloque_tiempo_id)
-                           VALUES ${values}`, [grupo_id, ...bloques]);
-    }   
-
-    // Elimina el horario de un grupo de la base de datos
-    static async deleteGrupoHorario(grupo_id) {
-        return pool.query(`DELETE FROM grupo_bloque_tiempo WHERE grupo_id = $1`, [grupo_id]);
-    }
-
-    // Elimina un grupo de la base de datos
-    static async deleteGrupo(grupo_id) {
-        return pool.query(`DELETE FROM grupo WHERE grupo_id = $1`, [grupo_id]);
-    }
-
-    // Elimina los grupos asignados a los alumnos
-    static async deleteResultadoInscripcion() {
-        return pool.query(`DELETE FROM resultado_inscripcion`);
-    }
-
-    // Elimina todos los horarios asignados a los grupos
-    static async deleteAllGruposBloqueTiempo() {
-        return pool.query(`DELETE FROM grupo_bloque_tiempo`);
-    }
-
-    // Elimina todos los grupos
-    static async deleteAllGrupos() {
-        return pool.query(`DELETE FROM grupo`);
-    }
-}
+};
