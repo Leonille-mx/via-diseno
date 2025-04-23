@@ -1,10 +1,62 @@
 <%- include('includes/_nav_coordinador.ejs') %>
 <%- include('includes/_header_coordinador.ejs') %>
-
-        <main class="bg-grey flex-grow-1 rounded-5 p-4">
-          <h1>Ayuda</h1>
-          <p>Aquí ponemos todo lo de ayuda</p>
-        </main>
+<main class="bg-grey flex-grow-1 rounded-5 p-0 d-flex flex-column" style="height: 100vh; overflow-y: auto; border-radius: 1.5rem;">
+  <div class="p-4">
+    <div style="width: 66.66%;">
+      <div class="d-flex align-items-end" style="border-bottom: 3px solid #84251C; width: fit-content; margin-top: -10px;">
+        <h1 class="m-0 ms-3">Ayuda</h1>
+      </div>
+      <h4 class="ms-3 mt-4 ivd-text-red">Manual de Ayuda para Coordinador</h4>
+      <ol>
+        <li class="ms-3 mt-4">
+          Accede al inicio de sesión con el link: 
+          <a href="https://ivd-inscripciones-leonille-97f95df993b3.herokuapp.com/usuario/iniciar-sesion" target="_blank">
+            https://ivd-inscripciones-leonille-97f95df993b3.herokuapp.com/usuario/iniciar-sesion
+          </a>
+          <img src="/images/img1.png" class="mt-4" style="max-width: 100%; height: auto;">
+        </li>
+        <li class="ms-3 mt-4">
+          Ingresa tu contraseña y matrícula en caso de tener una.  
+          <br>
+          <img src="/images/img2.png" class="mt-4" style="max-width: 100%; height: auto;">
+        </li>
+        <li class="ms-3 mt-4">
+          Al acceder, se mostrará el dashboard del coordinador, donde podrá ver el número de materias abiertas, grupos, 
+          alumnos inscritos, no inscritos y profesores. También podrá consultar los detalles de los grupos, salones y solicitudes.
+          Finalmente, en la parte inferior, se comparan los alumnos inscritos y no inscritos, agrupados por semestre.
+          <img src="/images/imgc1.png" class="mt-4" style="max-width: 100%; height: auto;">
+        </li>
+        <li class="ms-3 mt-4">
+          Para sincronizar los datos entre ciclos escolares: Localiza el botón "Sincronizar Ciclos Escolares". 
+          Una vez activado el sistema mostrará un mensaje mencionando la sincronización.
+          <img src="/images/imgc2.png" class="mt-4" style="max-width: 100%; height: auto;">
+        </li>
+        <li class="ms-3 mt-4">
+          Para sincronizar los datos de los planes de estudio: Localiza el botón "Sincronizar Planes de estudio". 
+          Una vez activado el sistema mostrará un mensaje mencionando la sincronización.
+          <img src="/images/imgc3.png" class="mt-4" style="max-width: 100%; height: auto;">
+        </li>
+        <li class="ms-3 mt-4">
+          En la parte de la izquierda se puede apreciar un Menú, dándole click a la opción de “Materias”. 
+          Nos mostrará las materias abiertas en donde son agrupadas por semestres.
+          <img src="/images/imgc4.png" class="mt-4" style="max-width: 100%; height: auto;">
+          <ol type="a" class="mt-3">
+            <li class="ms-3 mt-4">Para sincronizar las materias abiertas: Localiza el botón "Sincronizar
+               Materias". Una vez presionado el sistema mostrará un mensaje mencionando la sincronización. </li>
+            <img src="/images/imgc5.png" class="mt-4" style="max-width: 100%; height: auto;">
+            <li class="ms-3 mt-4">Para poder eliminar una materia abierta localiza el botón “x” de la materia
+               correspondiente. Una vez presionado se mostrará un mensaje con los detalles de la materia seleccionada.
+                Para poder eliminarla presiona el botón de eliminar. </li>
+            <img src="/images/imgc6.png" class="mt-4" style="max-width: 100%; height: auto;">
+            <li class="ms-3 mt-4">Para abrir una materia, localiza el botón “Abrir Materia” en el semestre seleccionado. 
+              Luego, se mostrarán las materias disponibles, y podrás agregar cualquiera de ellas a la lista de materias seleccionadas. </li>
+           <img src="/images/imgc7.png" class="mt-4" style="max-width: 100%; height: auto;">
+          </ol>
+        </li>
+      </ol> 
+    </div>
+  </div>
+</main>
       </div>
     </div>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
