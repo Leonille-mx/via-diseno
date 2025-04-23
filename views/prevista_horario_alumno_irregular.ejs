@@ -188,6 +188,8 @@
             </div>
           </div>
         </div>
+
+
         <div class="card-body">
           <div class="d-flex justify-content-center"
             style="background-color: #f0f0f0; border-bottom-left-radius: 1.5rem; border-bottom-right-radius: 1.5rem;">
@@ -196,6 +198,43 @@
               style="background-color: white; border: 1px solid #84251C; color: #84251C;">Modificar
             </button>
             <button type="button" id="btnConfirmarHorario" class="btn btn-danger rounded-pill px-4 mx-4"
+              style="background-color: #84251C; border: none;" data-bs-toggle="modal" data-bs-target="#confirmHorarioModal">
+              Confirmar
+            </button>
+          </div>
+        </div>
+        </div>
+        </div>
+        </div>
+        </main>
+
+    <!-- Modal de Confirmación de Horario -->
+    <div class="modal fade" id="confirmHorarioModal" tabindex="-1" aria-labelledby="confirmHorarioModalLabel"
+      aria-hidden="true">
+      <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content rounded-5" style="background-color: #f0f0f0; max-width: 95vw;">
+          <!-- Encabezado del modal -->
+          <div class="modal-header justify-content-center rounded-5 border-0" style="background-color: #f0f0f0">
+            <h5 class="modal-title" id="confirmHorarioModalLabel" style="color: #84251C;"><b>Confirmación de Horario</b>
+            </h5>
+          </div>
+          <!-- Cuerpo del modal -->
+          <div class="modal-body px-5 py-0">
+            <div class="rounded-5 p-4" style="background-color: white;">
+              <p class="modal-title text-center" style="color: #84251C; font-size: 1.1rem;">
+                Estás a punto de <strong>confirmar</strong> tu horario.
+                Una vez confirmado <strong>no podrás modificarlo</strong>.
+                ¿Deseas <strong>confirmar</strong> tu horario definitivamente?
+              </p>
+            </div>
+          </div>
+          <!-- Pie del modal -->
+          <div class="modal-footer justify-content-center border-0">
+            <button type="button" class="btn btn-secondary rounded-pill px-4 mx-2"
+              style="background-color: white; border: 1px solid #84251C; color: #84251C;" data-bs-dismiss="modal">
+              Cancelar
+            </button>
+            <button type="button" id="btnConfirmarModal" class="btn btn-danger rounded-pill px-4 mx-2"
               style="background-color: #84251C; border: none;">
               Confirmar
             </button>
@@ -203,54 +242,64 @@
         </div>
       </div>
     </div>
-    </div>
-    </main>
 
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
 
-<script>
-  document.getElementById('btnConfirmarHorario').addEventListener('click', async function() {
-    const btn = this;
-    const originalText = btn.innerHTML;
-    
-    try {
+  <script>
+    document.addEventListener('DOMContentLoaded', function() {
 
-        btn.disabled = true;
-        btn.innerHTML = `
+      const btnConfirmarModal = document.getElementById('btnConfirmarModal');
+      
+      btnConfirmarModal.addEventListener('click', async function() {
+        const btn = this;
+        const originalText = btn.innerHTML;
+        
+        try {
+          //Feedback Visual
+          btn.disabled = true;
+          btn.innerHTML = `
             <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
             Confirmando...
-        `;
-
-        const response = await fetch('/alumno-irregular/confirmar-horario', {
+          `;
+  
+          // Cerrar el modla
+          const modal = bootstrap.Modal.getInstance(document.getElementById('confirmHorarioModal'));
+          modal.hide();
+  
+          const response = await fetch('/alumno-irregular/confirmar-horario', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' }
-        });
-
-        const result = await response.json();
-        
-        if (!response.ok || !result.success) {
+          });
+  
+          const result = await response.json();
+          
+          if (!response.ok || !result.success) {
             throw new Error(result.message || 'Error en la confirmación');
-        }
-
-        window.location.href = result.redirectUrl;
-        
-    } catch (error) {
-        btn.disabled = false;
-        btn.innerHTML = originalText;
-        
-        const errorAlert = document.createElement('div');
-        errorAlert.className = 'alert alert-danger alert-dismissible fade show';
-        errorAlert.innerHTML = `
+          }
+  
+          // Si funciona hace redirect
+          window.location.href = result.redirectUrl;
+          
+        } catch (error) {
+          btn.disabled = false;
+          btn.innerHTML = originalText;
+          
+          // Mostrar el error 
+          const errorAlert = document.createElement('div');
+          errorAlert.className = 'alert alert-danger alert-dismissible fade show';
+          errorAlert.innerHTML = `
             <strong>Error!</strong> ${error.message}
             <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-        `;
-        
-        btn.closest('.card-body').prepend(errorAlert);
-        
-        console.error('Confirmación fallida:', error);
-    }
-});
-</script>
+          `;
+          
+
+          document.querySelector('.card-body').prepend(errorAlert);
+          
+          console.error('Confirmación fallida:', error);
+        }
+      });
+    });
+  </script>
   
 </body>  
 </html>
