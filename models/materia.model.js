@@ -219,6 +219,19 @@ module.exports = class Materia {
         return pool.query('SELECT sep_id, nombre, creditos, semestre_plan, horas_profesor, tipo_salon FROM Materia');
     }
     
+    // Método para obtener número total de materias obligatorias
+    static async numero_TotalObligatorias() {
+        const result = await pool.query('SELECT COUNT(*) FROM public.resultado_inscripcion WHERE obligatorio = true;');
+        return parseInt(result.rows[0].count); 
+    };
+
+    // Método para obtener número total de materias obligatorias
+    static async totalInscritas() {
+        const result = await pool.query('SELECT count(*) FROM public.resultado_inscripcion');
+        return parseInt(result.rows[0].count);
+    };
+
+    
      // Método para obtener número total de materias abiertas
      static async numeroMaterias() {
         const result = await pool.query('SELECT COUNT(*) FROM public.materia_semestre');

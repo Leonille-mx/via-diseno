@@ -68,6 +68,7 @@ module.exports = class Alumno {
             FROM alumno a, usuario u
             WHERE a.ivd_id = u.ivd_id AND
                   a.regular = true
+            ORDER BY a.ivd_id ASC
         `;
         return await pool.query(query);
     }
@@ -78,6 +79,7 @@ module.exports = class Alumno {
             FROM alumno a, usuario u
             WHERE a.ivd_id = u.ivd_id AND
                   a.regular = false
+            ORDER BY a.ivd_id ASC
         `;
         return await pool.query(query);
     }
@@ -140,7 +142,7 @@ module.exports = class Alumno {
             , [id]);
     }
     
-    static async fetchAllResultadoAlumnoRegular(id) {
+    static async fetchAllResultadoAlumno(id) {
         return pool.query(`
             SELECT r.grupo_id AS grupo_id,
 
@@ -197,6 +199,16 @@ module.exports = class Alumno {
 			) ASC;`
             , [id]);
     }
+    
+    static esRegular(alumno_id) {
+      return pool.query(`
+        SELECT regular
+        FROM alumno
+        WHERE ivd_id = $1`
+        , [alumno_id]
+      );
+    }
+
     // Método para obtener número total de alumnos no inscritos
     static async totalNoInscritos() {
         const result = await pool.query('SELECT count(*) FROM public.alumno WHERE inscripcion_completada = false');
@@ -277,6 +289,73 @@ module.exports = class Alumno {
 			) ASC;`
             , [id]);
     }
+
+    static async fetchAllMateriasDisponiblesCoordinador(id) {
+      return pool.query(`
+          SELECT g.grupo_id AS grupo_id, 
+
+                 (SELECT ARRAY_AGG(b.hora_inicio)
+          FROM (
+            SELECT MIN(gb.bloque_tiempo_id) AS min_bloque_tiempo_id
+            FROM grupo_bloque_tiempo gb
+            JOIN bloque_tiempo b ON b.bloque_tiempo_id = gb.bloque_tiempo_id
+            WHERE gb.grupo_id = g.grupo_id
+            GROUP BY b.dia
+          ) sub
+          JOIN bloque_tiempo b ON b.bloque_tiempo_id = min_bloque_tiempo_id
+        ) AS hora_inicio,
+
+                 (SELECT ARRAY_AGG(b.hora_fin)
+          FROM (
+            SELECT MAX(gb.bloque_tiempo_id) AS min_bloque_tiempo_id
+            FROM grupo_bloque_tiempo gb
+            JOIN bloque_tiempo b ON b.bloque_tiempo_id = gb.bloque_tiempo_id
+            WHERE gb.grupo_id = g.grupo_id
+            GROUP BY b.dia
+          ) sub
+          JOIN bloque_tiempo b ON b.bloque_tiempo_id = min_bloque_tiempo_id
+        ) AS hora_fin,
+
+                 m.nombre AS materia_nombre,
+                 s.numero AS salon_numero,
+                 p.nombre AS profesor_nombre,
+                 p.primer_apellido AS profesor_primer_apellido,
+                 p.segundo_apellido AS profesor_segundo_apellido,
+
+                 (SELECT ARRAY_AGG(dia ORDER BY min_bloque_tiempo_id)
+          FROM (
+            SELECT b.dia, MIN(gb.bloque_tiempo_id) AS min_bloque_tiempo_id
+            FROM grupo_bloque_tiempo gb
+            JOIN bloque_tiempo b ON b.bloque_tiempo_id = gb.bloque_tiempo_id
+            WHERE gb.grupo_id = g.grupo_id
+            GROUP BY b.dia
+          ) sub
+        ) AS dias
+
+          FROM grupo g
+    JOIN materia_semestre ms ON ms.materia_id = g.materia_id
+          JOIN materia m ON ms.materia_id = m.materia_id
+          JOIN profesor p ON g.profesor_id = p.ivd_id
+          JOIN salon s ON g.salon_id = s.salon_id
+          JOIN grupo_bloque_tiempo gb ON g.grupo_id = gb.grupo_id
+          WHERE g.grupo_id NOT IN (
+        SELECT r.grupo_id
+        FROM resultado_inscripcion r
+        ) AND
+          ms.materia_id IN (
+                  SELECT ha.materia_id
+                  FROM historial_academico ha
+                  WHERE ha.aprobado = false AND
+              ha.ivd_id = $1
+                )
+          GROUP BY g.grupo_id, m.nombre, s.numero, p.nombre, 
+              p.primer_apellido, p.segundo_apellido
+          ORDER BY (SELECT MIN(gb.bloque_tiempo_id)
+          FROM grupo_bloque_tiempo gb
+            WHERE gb.grupo_id = g.grupo_id
+    ) ASC;`
+          , [id]);
+  }
 
     static async fetchAllMateriasDisponiblesDelAlumnoPorSemestre(semestre, id) {
         return pool.query(`

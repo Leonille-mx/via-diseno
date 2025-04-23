@@ -1,5 +1,6 @@
 const Alumno = require('../models/alumno.model');
 const ResultadoInscripcion = require('../models/resultado_inscripcion.model');
+const Materia = require('../models/materia.model');
 
 exports.get_modificar_horario = async (req, res, nxt) => {
     try {
@@ -83,8 +84,27 @@ exports.get_ayuda = (req, res, nxt) => {
     });
 };
 
-exports.get_prevista_horario = (req, res, nxt) => {
-    res.render('prevista_horario_alumno_irregular', {
+exports.get_prevista_horario = async (req, res, nxt) => {  
+    try {
+        const materias_resultado = await Alumno.fetchAllResultadoAlumnoIrregular(req.session.matricula);
+        const obligatoriasTotales = await Materia.numero_TotalObligatorias();
+        const materias_inscritas = await Materia.totalInscritas();
+                
+        res.render('prevista_horario_alumno_irregular', {
+            isLoggedIn: req.session.isLoggedIn || false,
+            matricula: req.session.matricula || '',
+            materias_resultado: materias_resultado.rows,
+            obligatoriasTotales: obligatoriasTotales,
+            materias_inscritas: materias_inscritas
+        });
+    } catch (error) {
+        console.error("Error in get_prevista_horario:", error);
+        nxt(error);  
+    }
+};
+
+exports.get_resultado_de_horario = (req, res, nxt) => {
+    res.render('resultado_horario_alumno_irregular', {
         isLoggedIn: req.session.isLoggedIn || false,
         matricula: req.session.matricula || '',
     });
