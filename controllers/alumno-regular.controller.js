@@ -1,15 +1,19 @@
 const Alumno = require('../models/alumno.model');
 const ResultadoInscripcion = require('../models/resultado_inscripcion.model');
+const BloqueTiempo = require('../models/bloque_tiempo.model');
 
 exports.get_prevista_de_horario = async (req, res, nxt) => {
     try {
-        const materias_resultado = await Alumno.fetchAllResultadoAlumno(req.session.matricula);
+        const materias_resultado = await Alumno.fetchAllResultadoAlumno2(req.session.matricula);
+        const bloque_tiempo = await BloqueTiempo.fetchAllHoras();
+        const bloqueTiempoMap = bloque_tiempo.rows[0]?.id_hora_map || {};
         const inscripcion_completada = await Alumno.verificarInscripcionCompletada(req.session.matricula);
         res.render('horario_alumno_regular', {
             isLoggedIn: req.session.isLoggedIn || false,
             matricula: req.session.matricula || '',
             materias_resultado: materias_resultado.rows,
-            inscripcion_completada: inscripcion_completada
+            inscripcion_completada: inscripcion_completada,
+            bloque_tiempo: bloqueTiempoMap
         });
     } catch (error){
         console.log(error);
