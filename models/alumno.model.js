@@ -75,7 +75,11 @@ module.exports = class Alumno {
 
     static async fetchAllIrregulares() {
         const query = `
-            SELECT *
+            SELECT *,
+                  (SELECT COUNT(alumno_id) > 0 AS result
+                   FROM resultado_inscripcion
+                   WHERE alumno_id = a.ivd_id)
+                  AS asignada
             FROM alumno a, usuario u
             WHERE a.ivd_id = u.ivd_id AND
                   a.regular = false
