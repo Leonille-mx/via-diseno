@@ -18,7 +18,7 @@ exports.get_prevista_de_horario = async (req, res, nxt) => {
 
 
 exports.get_ayuda = (req, res, nxt) => {
-    res.render('ayuda_alumno_irregular', {
+    res.render('ayuda_alumno_regular', {
         isLoggedIn: req.session.isLoggedIn || false,
         matricula: req.session.matricula || '',
     });
