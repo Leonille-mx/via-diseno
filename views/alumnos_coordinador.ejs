@@ -142,7 +142,7 @@
             <td class="text-center align-middle d-flex justify-content-center">
               <button class="btn btn-sm p-2 rounded-3 d-flex align-items-center justify-content-center <%= (alumnoIrregular.inscripcion_completada ? 'btn-success' : (alumnoIrregular.asignada ? 'btn-warning text-dark' : 'ivd-bg-red')) %>" 
                 style="width: 70%; height: 1.5rem; color: white; border: none;"> 
-                <%= (alumnoIrregular.inscripcion_completada ? 'Completa' : (alumnoIrregular.esAsignada ? 'Incompleta' : 'No Asignada')) %>
+                <%= (alumnoIrregular.inscripcion_completada ? 'Completa' : (alumnoIrregular.asignada ? 'Incompleta' : 'No Asignada')) %>
               </button>
             </td>
             <td class="text-center align-middle">
@@ -593,7 +593,7 @@ document.getElementById('alertaModal').addEventListener('show.bs.modal', functio
             <td class="text-center align-middle">${alumnoRegular.semestre}</td>
             <td class="text-center align-middle">${alumnoRegular.correo_institucional}</td>
             <td class="text-center align-middle d-flex justify-content-center">
-              <button class="btn btn-sm p-2 rounded-3 d-flex align-items-center justify-content-center ${alumnoRegular.inscripcion_completada ? 'btn-success' : 'ivd-bg-red'}" 
+              <button class="btn btn-sm p-2 rounded-3 d-flex align-items-center justify-content-center ${alumnoRegular.inscripcion_completada ? 'btn-success' : 'btn-warning text-dark'}" 
                 style="width: 70%; height: 1.5rem; color: white; border: none;">
                 ${alumnoRegular.inscripcion_completada ? 'Completa' : 'Incompleta'}
               </button>
@@ -647,10 +647,10 @@ document.getElementById('alertaModal').addEventListener('show.bs.modal', functio
               <td class="text-center align-middle">${alumnoIrregular.semestre}</td>
               <td class="text-center align-middle">${alumnoIrregular.correo_institucional}</td>
               <td class="text-center align-middle d-flex justify-content-center">
-                <button class="btn btn-sm p-2 rounded-3 d-flex align-items-center justify-content-center ${alumnoIrregular.inscripcion_completada ? 'btn-success' : 'ivd-bg-red'}" 
-                  style="width: 70%; height: 1.5rem; color: white; border: none;">
-                  ${alumnoIrregular.inscripcion_completada ? 'Completa' : 'Incompleta'}
-                </button>
+              <button class="btn btn-sm p-2 rounded-3 d-flex align-items-center justify-content-center ${(alumnoIrregular.inscripcion_completada ? 'btn-success' : (alumnoIrregular.asignada ? 'btn-warning text-dark' : 'ivd-bg-red'))}" 
+                style="width: 70%; height: 1.5rem; color: white; border: none;"> 
+                ${(alumnoIrregular.inscripcion_completada ? 'Completa' : (alumnoIrregular.asignada ? 'Incompleta' : 'No Asignada'))}
+              </button>
               </td>
               <td class="text-center align-middle">
                 <button class="btn btn-sm p-0 d-flex align-items-center justify-content-center" 
