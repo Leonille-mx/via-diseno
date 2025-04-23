@@ -88,6 +88,18 @@ module.exports = class Alumno {
         return await pool.query(query);
     }
 
+    static async fetchNumeroIrregularesConMaterias() {
+      const result = await pool.query(`
+            SELECT COUNT(*)
+            FROM (
+              SELECT alumno_id
+              FROM resultado_inscripcion
+              GROUP BY alumno_id
+            ) AS sub;
+      `);
+      return parseInt(result.rows[0].count);
+    }
+
     static async fetchAllResultadoAlumnoIrregular(id) {
         return pool.query(`
             SELECT r.grupo_id AS grupo_id,

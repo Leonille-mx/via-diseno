@@ -21,7 +21,7 @@ exports.get_dashboard = async (req, res) => {
         const msg1 = req.query.msg1 || null; 
         const msg2 = req.query.msg2 || null; 
         //Consulta el total de profesores activos de la Base de Datos
-        const profesoresTotales = await Profesor.numeroProfesores();
+        const alumnosConMaterias = await Alumno.fetchNumeroIrregularesConMaterias();
         const alumnosNoInscritos = await Alumno.totalNoInscritos();
         const alumnosInscritos = await Alumno.numero_TotalAlumnoInscritos();
         const salon_Totales = await Salon.numero_TotalSalones();
@@ -39,8 +39,8 @@ exports.get_dashboard = async (req, res) => {
             isLoggedIn: req.session.isLoggedIn || false,
             matricula: req.session.matricula || '',
             //Total de profesores para mostrar en el dashboard
-            profesoresTotales: profesoresTotales,
-            alumnosNoInscritos: alumnosNoInscritos,
+            alumnosSinMaterias: (alumnosNoInscritos - alumnosConMaterias),
+            alumnosNoInscritos: alumnosConMaterias,
             alumnosInscritos: alumnosInscritos,
             salon_Totales: salon_Totales,
             grupos_Totales: grupos_Totales,
