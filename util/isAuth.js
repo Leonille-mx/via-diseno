@@ -20,7 +20,7 @@ module.exports = {
             return res.status(404).render('404');
         }
 
-        const alumno = await Alumno.findByUsuarioId(req.session.usuario.id);
+        const alumno = await Alumno.findAlumnoById(req.session.usuario.id);
         if (!alumno?.regular) {
             return res.status(404).render('404');
         }
@@ -33,7 +33,7 @@ module.exports = {
             return res.status(404).render('404');
         }
 
-        const alumno = await Alumno.findByUsuarioId(req.session.usuario.id);
+        const alumno = await Alumno.findAlumnoById(req.session.usuario.id);
         if (alumno?.regular) {
             return res.status(404).render('404');
         }
