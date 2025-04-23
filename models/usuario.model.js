@@ -82,4 +82,16 @@ module.exports = class Usuario {
         }
     }
 
+    static async actualizarContrasena(ivd_id, nuevaContrasenaHash) {
+        const client = await pool.connect();
+        try {
+            await client.query('UPDATE usuario SET contrasena = $1 WHERE ivd_id = $2', [nuevaContrasenaHash, ivd_id]);
+        } catch (error) {
+            console.error('Error al actualizar contraseña:', error);
+            throw error;
+        } finally {
+            client.release();
+        }
+    }
+
 };
