@@ -1,6 +1,5 @@
 const Alumno = require('../models/alumno.model');
 const ResultadoInscripcion = require('../models/resultado_inscripcion.model');
-const Materia = require('../models/materia.model');
 
 exports.get_modificar_horario = async (req, res, nxt) => {
     try {
@@ -42,10 +41,12 @@ exports.get_materias_disponibles = (req, res, nxt) => {
 exports.post_eliminar_materia_del_resultado = async (req, res, nxt) => {
     try {
         const grupo_id = req.body.grupo_id;
-        await ResultadoInscripcion.eliminarMateriaOpcionalDelResultado(req.session.matricula, grupo_id);
+        await ResultadoInscripcion.eliminarMateriaDelResultado(grupo_id);
 
         const materias_resultado = await Alumno.fetchAllResultadoAlumnoIrregular(req.session.matricula);
-        const materias_disponibles = await Alumno.fetchAllMateriasDisponiblesDelAlumno(req.session.matricula);
+        const materias_disponibles = req.body.semestre == 'semestre'
+            ? await Alumno.fetchAllMateriasDisponiblesDelAlumno(req.session.matricula)
+            : await Alumno.fetchAllMateriasDisponiblesDelAlumnoPorSemestre(req.body.semestre, req.session.matricula);
 
         res.status(200).json({
             isLoggedIn: req.session.isLoggedIn || false,
@@ -61,10 +62,12 @@ exports.post_eliminar_materia_del_resultado = async (req, res, nxt) => {
 exports.post_agregar_materia_del_resultado = async (req, res, nxt) => {
     try {
         const grupo_id = req.body.grupo_id;
-        await ResultadoInscripcion.agregarMateriaOpcionalDelResultado(req.session.matricula, grupo_id);
+        await ResultadoInscripcion.agregarMateriaDelResultado(req.session.matricula, grupo_id);
 
         const materias_resultado = await Alumno.fetchAllResultadoAlumnoIrregular(req.session.matricula);
-        const materias_disponibles = await Alumno.fetchAllMateriasDisponiblesDelAlumno(req.session.matricula);
+        const materias_disponibles = req.body.semestre == 'semestre'
+            ? await Alumno.fetchAllMateriasDisponiblesDelAlumno(req.session.matricula)
+            : await Alumno.fetchAllMateriasDisponiblesDelAlumnoPorSemestre(req.body.semestre, req.session.matricula);
 
         res.status(200).json({
             isLoggedIn: req.session.isLoggedIn || false,
@@ -84,27 +87,8 @@ exports.get_ayuda = (req, res, nxt) => {
     });
 };
 
-exports.get_prevista_horario = async (req, res, nxt) => {  
-    try {
-        const materias_resultado = await Alumno.fetchAllResultadoAlumnoIrregular(req.session.matricula);
-        const obligatoriasTotales = await Materia.numero_TotalObligatorias();
-        const materias_inscritas = await Materia.totalInscritas();
-                
-        res.render('prevista_horario_alumno_irregular', {
-            isLoggedIn: req.session.isLoggedIn || false,
-            matricula: req.session.matricula || '',
-            materias_resultado: materias_resultado.rows,
-            obligatoriasTotales: obligatoriasTotales,
-            materias_inscritas: materias_inscritas
-        });
-    } catch (error) {
-        console.error("Error in get_prevista_horario:", error);
-        nxt(error);  
-    }
-};
-
-exports.get_resultado_de_horario = (req, res, nxt) => {
-    res.render('resultado_horario_alumno_irregular', {
+exports.get_prevista_horario = (req, res, nxt) => {
+    res.render('prevista_horario_alumno_irregular', {
         isLoggedIn: req.session.isLoggedIn || false,
         matricula: req.session.matricula || '',
     });
