@@ -49,7 +49,10 @@ exports.post_login = async (req, res, nxt) => {
         req.session.usuario = {
             id: usuario.ivd_id,
             rol_id: usuario.role_id,
+            nombre: `${usuario.nombre} ${usuario.primer_apellido} ${usuario.segundo_apellido}`,
+            correo: usuario.correo_institucional
         };
+          
 
         if (usuario.role_id === 1) {
             return req.session.save(() => res.redirect('/coordinador/dashboard'));

@@ -28,6 +28,11 @@ const bodyParser = require('body-parser');
 app.use(bodyParser.urlencoded({extended: false}));
 app.use(express.json());
 
+app.use((req, res, nxt) => {
+    res.locals.usuario = req.session.usuario || null;
+    nxt();
+});  
+
 const rutasUsuario = require('./routes/usuario.routes');
 app.use('/usuario', rutasUsuario);
 
