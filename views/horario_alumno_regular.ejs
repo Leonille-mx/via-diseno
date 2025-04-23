@@ -1,138 +1,21 @@
 <%- include('includes/_nav_alumno.ejs') %>
-<main class="bg-grey mx-2 mb-2 alumno-scroll" style="height: 85%; border-radius: 1.5rem;">
-      <div class="d-flex" style="height: fit-content;">
+
+    <main class="container-fluid bg-grey flex-grow-1 rounded-5 p-0 d-flex flex-column mx-2 my-2 pb-3">
+      <div class="d-flex h-100">
         <!-- Columna de la izquierda -->
-        <div class="p-3 ps-0 flex-grow-1" style="width: 66.66%; height: fit-content;">
-          <div class="mb-4" style="min-height: fit-content;">
-            <% if (!inscripcion_completada) { %>
-              <div class="mt-2 mb-4">
-                <div class="d-flex align-items-end" style="border-bottom: 3px solid #84251C; width: fit-content; margin-top: -10px;">
-                  <h1 class="m-0 ms-3">Horario</h1>
-                  <p class="fs-5 m-0 ms-4 me-3 ivd-text-red">Semestre Agosto - Diciembre 2025</p>
-                </div>
-              </div>
-            <% } else { %>
-                <div class="mt-2 mb-4">
-                  <div class="d-flex align-items-end" style="border-bottom: 3px solid #84251C; width: fit-content; margin-top: -10px;">
-                    <h1 class="m-0 ms-3">Resultado de inscripción</h1>
-                    <p class="fs-5 m-0 ms-4 me-3 ivd-text-red">Semestre Agosto - Diciembre 2025</p>
-                  </div>
-                </div>
-            <% } %>
-            <div class="bg-white rounded-5 p-0 flex-grow-1 ms-4" style=" display: block; height: fit-content; overflow-y: auto;">
+        <div class="p-3 flex-grow-1" style="width: 66.66%;">
+          <div class="mb-4">
+            <h1 class="ms-3 mt-2">Horario</h1>
+            <h2 class="ms-3 mt-2" style="color:#84251C;">Semestre Ago-Dic 2025</h2>
+            <div class="bg-white rounded-5 p-3 flex-grow-1 ms-3" style="height:500px">
               <!-- Contenido del horario principal -->
-              <table class="table custom-table p-0 table-striped table-bordered table-hover mb-0"
-                style="font-size: 0.85rem; border-collapse: separate !important; border-spacing: 0; border-radius: 1rem;"
-              >
-                <thead class="table-danger rounded-top">
-                  <tr class="text-center rounded-top">
-                    <!-- Titulo de columnas -->
-                    <th class="hour-col">Hora</th>
-                    <th>Lunes</th>
-                    <th>Martes</th>
-                    <th>Miércoles</th>
-                    <th>Jueves</th>
-                    <th>Viernes</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  <%
-                  <!-- Colores de bloques -->
-                  const colores = ['bg-primary-subtle', 'bg-success-subtle ','bg-warning-subtle ','bg-danger-subtle','bg-info-subtle','bg-secondary-subtle','bg-light'];
-                  const materiasColor = {};
-                  let colorIndex = 0;
-                  
-                  <!-- Inicializa estructura de horario -->
-                  const horario = { 
-                    Lunes: {}, Martes: {}, Miércoles: {}, Jueves: {}, Viernes: {} 
-                  };
-                  
-                  <!--  Procesa las materia de resultado para construir el horario-->
-                  if (typeof materias_resultado !== 'undefined' && Array.isArray(materias_resultado)) {
-                    materias_resultado.forEach(materia => {
-                      // Asignar color único por materia
-                      if (!materiasColor[materia.materia_nombre]) {
-                        materiasColor[materia.materia_nombre] = colores[colorIndex % colores.length];
-                        colorIndex++;
-                      }
-                      
-                      <!-- Procesa el dia de la materia -->
-                      let indexDia = 0;
-                      materia.dias.forEach(dia => {
-                        const diaNombre = dia.charAt(0).toUpperCase() + dia.slice(1).toLowerCase();
-                        
-                        <!-- Bloques de 30 min -->
-                        const [hi, mi] = materia.hora_inicio[indexDia].split(':').map(Number);
-                        const [hf, mf] = materia.hora_fin[indexDia].split(':').map(Number);
-                        
-                        const inicioBloque = hi * 2 + (mi >= 30 ? 1 : 0);
-                        const finBloque = hf * 2 + (mf >= 30 ? 1 : 0);
-                        
-                        <!-- Si el dia es valido -->
-                        if (horario[diaNombre]) {
-                          horario[diaNombre][inicioBloque] = {
-                            rowspan: finBloque - inicioBloque,
-                            nombre: materia.materia_nombre,
-                            color: materiasColor[materia.materia_nombre],
-                            salon: materia.salon_numero,
-                            profesor: `${materia.profesor_nombre} ${materia.profesor_primer_apellido}`,
-                            hora: `${materia.hora_inicio[indexDia]} - ${materia.hora_fin[indexDia]}`
-                          };
-                          
-                          <!-- Bloques intermedios como ocupados -->
-                          for (let b = inicioBloque + 1; b < finBloque; b++) {
-                            horario[diaNombre][b] = 'ocupar';
-                          }
-                        }
-                        indexDia ++;
-                      });
-                    });
-                  }
-                  
-                  <!-- Filas de la tabla -->
-                  for (let bloque = 14; bloque < 32; bloque++) {
-                    const hora = Math.floor(bloque / 2);
-                    const minutos = bloque % 2 === 0 ? '00' : '30';
-                    let horaFormato;
-                    if (bloque % 2 !== 0) {
-                      horaFormato = `${hora}:${minutos} - ${hora + 1}:00`;
-                    } else {
-                      horaFormato = `${hora}:${minutos} - ${hora}:30`;
-                    }
-                  %>
-                    <tr style="max-height: 1rem;">
-                      <th class="hour-cell text-center align-middle"><%= horaFormato %></th>
-                      <% ['Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes'].forEach(dia => { %>
-                        <% if (horario[dia][bloque] === 'ocupar') return; %>
-                        <% if (horario[dia][bloque]) { 
-                          const clase = horario[dia][bloque];
-                        %>
-                          <td class="text-black text-center align-middle <%= clase.color %>" 
-                              rowspan="<%= clase.rowspan %>"
-                              data-bs-toggle="tooltip" 
-                              data-bs-placement="top" 
-                              <% if (clase.salon === 9999) { %>
-                                title="<%= clase.hora %> | Salon: No asignado | Prof: <%= clase.profesor %>">
-                              <% } else { %>
-                                title="<%= clase.hora %> | Salon: <%= clase.salon %> | Prof: <%= clase.profesor %>">
-                              <% } %>
-                            <%= clase.nombre %>
-                          </td>
-                        <% } else { %>
-                          <td class="empty-slot"></td>
-                        <% } %>
-                      <% }) %>
-                    </tr>
-                  <% } %>
-                </tbody>
-              </table>
             </div>
           </div> 
         </div>
         <!-- Columna de la derecha -->
-        <div class="p-3 flex-grow-1 d-flex flex-column mt-5" style="width: 33.33%; height: auto;">
+        <div class="p-3 flex-grow-1 ms-3 d-flex flex-column" style="width: 33.33%;">
           <!-- Botones de los días -->
-           <div class="d-flex justify-content-center gap-4 mt-3 mb-4">
+           <div class="d-flex justify-content-center gap-4 mt-3 mb-3">
             <button type="button" class="btn btn-circle-custom day-btn" data-day="LU">LU</button>
             <button type="button" class="btn btn-circle-custom day-btn" data-day="MA">MA</button>
             <button type="button" class="btn btn-circle-custom day-btn" data-day="MI">MI</button>
@@ -140,28 +23,20 @@
             <button type="button" class="btn btn-circle-custom day-btn" data-day="VI">VI</button>
             </div>
           <!-- Clases -->
-          <div id="classes-container" class="flex-grow-1 overflow-y-auto">
+          <div id="classes-container" class="flex-grow-1 overflow-y-auto" style="max-height: calc(100vh - 300px);">
             <% for (let materia_resultado of materias_resultado) { %>
-              <div class="bg-white rounded-5 py-2 mb-3 class-card" 
-                data-days="<%= materia_resultado.dias.map(dia => dia.substring(0,2).toUpperCase()).join(',') %>"
-                data-hora-inicio="<%= materia_resultado.hora_inicio.join(',') %>"
-                data-hora-fin="<%= materia_resultado.hora_fin.join(',') %>"
-              >
-                <div class="d-flex m-0 align-items-center justify-content-center" style="width: 100%;">
-                  <p class="m-0 me-3 hora-card"></p>
-                  <p class="m-0" style="color: #84251C;">(<%= materia_resultado.dias.join(', ') %>)</p>
-                </div>
+              <div class="bg-white rounded-5 p-3 mb-3 class-card" data-days="<%= materia_resultado.dias.map(dia => dia.substring(0,2).toUpperCase()).join(',') %>">
+                <div class="d-flex m-0 align-items-center justify-content-center" style="width: 100%; padding-left: 10%;">
+                      <p class="m-0 me-3"><%= materia_resultado.hora_inicio %> - <%= materia_resultado.hora_fin %></p>
+                      <p class="m-0" style="color: #84251C;">(<%= materia_resultado.dias.join(', ') %>)</p>
+                    </div>
                 <div class="d-flex justify-content-center my-3">
                   <div style="border-bottom: 3px solid #84251C; width: 100%;"></div>
                 </div>
-                <p class="fw-semibold text-center"><%= materia_resultado.materia_nombre %></p>
+                <h5 class="fw-semibold text-center"><%= materia_resultado.materia_nombre %></h5>
                 <p class="text-center mb-3">
                   Salón: 
-                  <% if (materia_resultado.salon_numero === 9999) { %>
-                    No asignado |
-                  <% } else { %>
-                    <%= materia_resultado.salon_numero %> |
-                  <% } %>   
+                  <%= materia_resultado.salon_numero %> |   
                   <%= materia_resultado.profesor_nombre %> 
                   <%= materia_resultado.profesor_primer_apellido %>
                   <%= materia_resultado.profesor_segundo_apellido %>
@@ -172,7 +47,7 @@
 
           <!-- División -->
           <div class="d-flex justify-content-center mt-3 mb-3">
-            <div style="border-bottom: 3px solid #84251C; width: 100%;"></div>
+            <div style="border-bottom: 3px solid #84251C; width: 20rem;"></div>
           </div>
           <% if (!inscripcion_completada) { %>
           <!-- Botones -->
@@ -211,24 +86,24 @@
       <!-- Cuerpo del modal -->
       <div class="modal-body  px-4">
         <div class="rounded-5 p-4" style="background-color: white;">
-          <p class="modal-title text-center" id="registerInscripcionModalLabel" style="color: #84251C;"><b>Usted esta cerrando su proceso de inscripcion. 
-            ¿Esta seguro?</b></p>
+          <h5 class="modal-title text-center" id="registerInscripcionModalLabel" style="color: #84251C;"><b>Usted esta cerrando su proceso de admision. 
+            ¿Esta seguro?</b></h5>
         </div>
       </div>
       
       <!-- Pie del modal con botones de acción -->
       <div class="modal-footer justify-content-center" style="background-color: #f0f0f0; border-bottom-left-radius: 20px; border-bottom-right-radius: 20px; border-top: none; padding: 1.5rem;">
-        <button type="button" class="btn btn-secondary rounded-pill px-4 py-2 mx-2" 
-          style="background-color: white; border: 1px solid #84251C; color: #84251C; min-width: 120px;" 
-          data-bs-dismiss="modal">
-          Cancelar
-        </button>
         <form id="AceptarForm" method="POST" action="">
           <button type="submit" class="btn btn-primary rounded-pill px-4 py-2 mx-2" 
             style="background-color: #84251C; border: none; min-width: 120px;">
             Confirmar
           </button>
         </form>
+        <button type="button" class="btn btn-secondary rounded-pill px-4 py-2 mx-2" 
+          style="background-color: white; border: 1px solid #84251C; color: #84251C; min-width: 120px;" 
+          data-bs-dismiss="modal">
+          Cancelar
+        </button>
       </div>
     </div>
   </div>
@@ -240,9 +115,9 @@
       <form id="solicitudForm" method="POST" action="/alumno-regular/horario/solitud">
         <div class="modal-body px-4">
           <div class="rounded-5 p-4" style="background-color: white;">
-            <p class="modal-title text-center" id="registerSolicitudModalLabel" style="color: #84251C; margin-bottom: 20px;">
+            <h5 class="modal-title text-center" id="registerSolicitudModalLabel" style="color: #84251C; margin-bottom: 20px;">
               <b>Usted está solicitando un cambio de estatus ¿Está seguro?</b>
-            </p>
+            </h5>
             <div class="mb-3">
               <textarea maxlength="60" class="form-control rounded-5 mx-auto" id="nota" name="descripcion" rows="2" 
                 placeholder="Escriba sus razones" style="background-color: #f0f0f0; resize: none;" required></textarea>
@@ -251,14 +126,14 @@
         </div>
         <div class="modal-footer justify-content-center">
           <input type="hidden" name="ivd_id" id="hiddenIvdId">
+          <button type="submit" class="btn btn-primary rounded-pill px-4 py-2 mx-2" 
+            style="background-color: #84251C; border: none; min-width: 120px;">
+            Confirmar
+          </button>
           <button type="button" class="btn btn-secondary rounded-pill px-4 py-2 mx-2" 
             style="background-color: white; border: 1px solid #84251C; color: #84251C; min-width: 120px;" 
             data-bs-dismiss="modal">
             Cancelar
-          </button>
-          <button type="submit" class="btn btn-primary rounded-pill px-4 py-2 mx-2" 
-            style="background-color: #84251C; border: none; min-width: 120px;">
-            Confirmar
           </button>
         </div>
       </form>      
@@ -271,18 +146,10 @@
 <script>
     document.addEventListener('DOMContentLoaded', function() {
       const dayButtons = document.querySelectorAll('.day-btn');
-      const classCards = document.querySelectorAll('.class-card');  
+      const classCards = document.querySelectorAll('.class-card');   
       function filterClassesByDay(day) {
         classCards.forEach(card => {
-          const horaInicioArray = card.getAttribute('data-hora-inicio').split(',');
-          const horaFinArray = card.getAttribute('data-hora-fin').split(','); 
-          const indexDiaCard = card.getAttribute('data-days').split(',').indexOf(day);
           card.style.display = card.getAttribute('data-days').includes(day) ? 'block' : 'none';
-          if (indexDiaCard !== -1) {
-            card.querySelector(".hora-card").textContent = `${horaInicioArray[indexDiaCard].substring(0, 5)} - ${horaFinArray[indexDiaCard].substring(0, 5)}`;
-          } else {
-            card.querySelector(".hora-card").textContent = `${horaInicioArray[0].substring(0, 5)} - ${horaFinArray[0].substring(0, 5)}`;
-          }
         });
         //Hover cuando se selecciona
         dayButtons.forEach(btn => {
@@ -322,9 +189,6 @@
         document.getElementById('hiddenIvdId').value = ivdId;
       });
     });
-
 </script>
 </body>
 </html>
-
-

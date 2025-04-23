@@ -52,7 +52,7 @@ module.exports = class Solicitud {
         WHERE 
             sc.aprobada = false
         ORDER BY 
-            sc.created_at::timestamp ASC
+            sc.created_at::timestamp DESC
     `);
   }
 
