@@ -24,7 +24,9 @@
       <div class="modal-dialog modal-dialog-centered modal-sm">
         <div class="modal-content align-items-center rounded-5">
           <div class="modal-header border border-0">
-            <h5 class="modal-title ivd-text-red" id="msgModalLabel">Sincronizar Materias</h5>
+            <h5 class="modal-title ivd-text-red" id="msgModalLabel">
+              <%= typeof msgTitle !== 'undefined' ? msgTitle : 'Materias' %>
+            </h5>
           </div>
           <div class="modal-body bg-grey rounded-5 text-center px-5">
             <%- msg %>
@@ -36,6 +38,7 @@
       </div>
     </div>
   <% } %>
+  
   
   <% const materias = materiasPorSemestre || {}; %>
   <div class="d-flex flex-column justfiy-content-center mt-4">
@@ -895,7 +898,7 @@
       const materiasEliminar = [...originalSet].filter(id => !selectedSet.has(id));
 
       if (materiasInsertar.length === 0 && materiasEliminar.length === 0) {
-        alert("No hay cambios que guardar.");
+        window.location.href = "/coordinador/materias?msg=No hay cambios que guardar.";
         return;
       }
 
@@ -906,7 +909,7 @@
       })
       .then(res => {
         if (res.ok) {
-          location.href = "/coordinador/materias?msg=Materias abiertas exitosamente";
+          location.href = "/coordinador/materias?msg=Materias abiertas exitosamente&msgTitle=Abrir Materias";
         } else {
           alert("Error al guardar cambios");
         }

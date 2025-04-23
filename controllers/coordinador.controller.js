@@ -64,6 +64,7 @@ exports.get_materias = async (req, res, nxt) => {
         
         // Si hay query string, lo guarda en la variable msg
         const msg = req.query.msg || null;
+        const msgTitle = req.query.msgTitle;
         const allMaterias = materiasSemestreDB.rows;
         // Creamos un nuevo objeto que tienen key-value relación y están separados
         // por semestre
@@ -93,6 +94,7 @@ exports.get_materias = async (req, res, nxt) => {
             materiasPorSemestre: materiasPorSemestre,
             materiasNoAbiertasPorSemestre,
             msg,
+            msgTitle
         });
     } catch(error) {
         console.log(error);
@@ -117,12 +119,12 @@ exports.post_sincronizar_materias = async (req, res, nxt) => {
 
         // Redirige a la siguiente ruta con el mensaje en query string 
         // con la función para encodificarlo
-        res.redirect(`/coordinador/materias?msg=${encodeURIComponent(msg)}`);
+        res.redirect(`/coordinador/materias?msg=${encodeURIComponent(msg)}&msgTitle=${encodeURIComponent('Sincronizar Materias')}`);
     } catch (error) {
         console.error(error);
         // Redirige a la siguiente ruta con un mensaje de error en query string 
         // con la función para encodificarlo
-        res.redirect(`/coordinador/materias?msg=${encodeURIComponent('La operación fue fracasada')}`);
+        res.redirect(`/coordinador/materias?msg=${encodeURIComponent('La operación fue fracasada')}&msgTitle=${encodeURIComponent('Sincronizar Materias')}`);
     }
 };
 
@@ -138,10 +140,10 @@ exports.post_abrir_materia = async (req, res) => {
             await MateriaSemestre.eliminar(materiaId, semestre_id);
         }
 
-        res.redirect('/coordinador/materias?msg=Materias abiertas exitosamente');
+        res.redirect(`/coordinador/materias?msg=${encodeURIComponent('Materias abiertas exitosamente')}&msgTitle=${encodeURIComponent('Abrir Materias')}`);
     } catch (error) {
         console.error(error);
-        res.redirect('/coordinador/materias?msg=Error al abrir materias');
+        res.redirect(`/coordinador/materias?msg=${encodeURIComponent('Error al abrir materias')}&msgTitle=${encodeURIComponent('Abrir Materias')}`);
     }
 };
 
