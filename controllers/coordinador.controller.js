@@ -503,8 +503,9 @@ exports.get_alumno_horario = async (req, res, nxt) => {
 exports.post_cambiar_estatus = async (req, res, nxt) => {
     try {
         await Solicitud.aprobar(req.body.alumno_id);
-        const alumnosRegularesDB = await Alumno.fetchAllRegulares(); 
-        const alumnosIrregularesDB = await Alumno.fetchAllIrregulares();
+        const carreraCoordinador = await Coordinador.getCarrera(req.session.usuario.id);
+        const alumnosRegularesDB = await Alumno.fetchAllRegularesPorCarrera(carreraCoordinador.rows[0].carrera_id); 
+        const alumnosIrregularesDB = await Alumno.fetchAllIrregularesPorCarrera(carreraCoordinador.rows[0].carrera_id);
         res.status(200).json({
             isLoggedIn: req.session.isLoggedIn || false,
             matricula: req.session.matricula || '',

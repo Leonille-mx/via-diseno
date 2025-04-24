@@ -1,7 +1,7 @@
 <%- include('includes/_nav_coordinador.ejs') %>
 <%- include('includes/_header_coordinador.ejs') %>
 
-<main class="bg-grey flex-grow-1 rounded-5 p-0 d-flex flex-column alumno-scroll" style="height: 100vh;">
+<main class="bg-grey flex-grow-1 rounded-5 p-0 d-flex flex-column materia-scroll" style="height: 100vh;">
   <div class="d-flex justify-content-between">
     <div class="mb-4">
       <h1 class="ms-3 mt-2">Alumnos</h1>
@@ -66,7 +66,7 @@
       <tbody id="alumnoRegularTablaBody">
         <% for (let alumnoRegular of alumnosRegulares) { %>
           <tr>
-            <td class="text-center align-middle"><%= alumnoRegular.ivd_id %></td>
+            <th scope="row" class="text-center align-middle"><%= alumnoRegular.ivd_id %></th>
             <td class="text-center align-middle"><%= alumnoRegular.nombre %> <%= alumnoRegular.primer_apellido %> <%= alumnoRegular.segundo_apellido|| '' %></td>
             <td class="text-center align-middle"><%= alumnoRegular.semestre %></td>
             <td class="text-center align-middle"><%= alumnoRegular.correo_institucional %></td>
@@ -135,7 +135,7 @@
       <tbody id="alumnoIrregularTablaBody">
         <% for (let alumnoIrregular of alumnosIrregulares) { %>
           <tr>
-            <td class="text-center align-middle"><%= alumnoIrregular.ivd_id %></td>
+            <th scope="row" class="text-center align-middle"><%= alumnoIrregular.ivd_id %></th>
             <td class="text-center align-middle"><%= alumnoIrregular.nombre %> <%= alumnoIrregular.primer_apellido %> <%= alumnoIrregular.segundo_apellido|| '' %></td>
             <td class="text-center align-middle"><%= alumnoIrregular.semestre %></td>
             <td class="text-center align-middle"><%= alumnoIrregular.correo_institucional %></td>
@@ -622,7 +622,7 @@ document.getElementById('alertaModal').addEventListener('show.bs.modal', functio
       for (let alumnoRegular of data.alumnosRegulares) {
         html_container_alumnos_regulares += `
           <tr>
-            <td class="text-center align-middle">${alumnoRegular.ivd_id}</td>
+            <th scope="row" class="text-center align-middle">${alumnoRegular.ivd_id}</th>
             <td class="text-center align-middle">${alumnoRegular.nombre} ${alumnoRegular.primer_apellido} ${alumnoRegular.segundo_apellido|| ''}</td>
             <td class="text-center align-middle">${alumnoRegular.semestre}</td>
             <td class="text-center align-middle">${alumnoRegular.correo_institucional}</td>
@@ -676,7 +676,7 @@ document.getElementById('alertaModal').addEventListener('show.bs.modal', functio
         for (let alumnoIrregular of data.alumnosIrregulares) {
           html_container_alumnos_irregulares += `
             <tr>
-              <td class="text-center align-middle">${alumnoIrregular.ivd_id}</td>
+              <th scope="row" class="text-center align-middle">${alumnoIrregular.ivd_id}</th>
               <td class="text-center align-middle">${alumnoIrregular.nombre} ${alumnoIrregular.primer_apellido} ${alumnoIrregular.segundo_apellido|| ''}</td>
               <td class="text-center align-middle">${alumnoIrregular.semestre}</td>
               <td class="text-center align-middle">${alumnoIrregular.correo_institucional}</td>
