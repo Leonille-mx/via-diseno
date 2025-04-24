@@ -238,14 +238,14 @@ module.exports = class Alumno {
             JOIN profesor p ON g.profesor_id = p.ivd_id
             JOIN salon s ON g.salon_id = s.salon_id
             JOIN grupo_bloque_tiempo gb ON g.grupo_id = gb.grupo_id
-            WHERE r.alumno_id = 100123
+            WHERE r.alumno_id = $1
             GROUP BY r.grupo_id, m.nombre, s.numero, p.nombre, 
                 p.primer_apellido, p.segundo_apellido, r.obligatorio
             ORDER BY (SELECT MIN(gb.bloque_tiempo_id)
 					  FROM grupo_bloque_tiempo gb
 				      WHERE gb.grupo_id = r.grupo_id
 			) ASC;`
-      );
+      , [id]);
     }
 
     static async fetchAllResultadoAlumno(id) {
@@ -446,35 +446,23 @@ module.exports = class Alumno {
       return pool.query(`
           SELECT g.grupo_id AS grupo_id, 
 
-                 (SELECT ARRAY_AGG(b.hora_inicio)
-          FROM (
-            SELECT MIN(gb.bloque_tiempo_id) AS min_bloque_tiempo_id
-            FROM grupo_bloque_tiempo gb
-            JOIN bloque_tiempo b ON b.bloque_tiempo_id = gb.bloque_tiempo_id
-            WHERE gb.grupo_id = g.grupo_id
-            GROUP BY b.dia
-          ) sub
-          JOIN bloque_tiempo b ON b.bloque_tiempo_id = min_bloque_tiempo_id
-        ) AS hora_inicio,
+          (SELECT ARRAY_AGG(bloque_tiempo_id_por_dias)
+					  FROM (
+					    SELECT ARRAY_AGG(gb.bloque_tiempo_id) AS bloque_tiempo_id_por_dias
+					    FROM grupo_bloque_tiempo gb
+					    JOIN bloque_tiempo b ON b.bloque_tiempo_id = gb.bloque_tiempo_id
+					    WHERE gb.grupo_id = g.grupo_id
+					    GROUP BY b.dia
+					  ) sub
+					) AS bloque_tiempo_id,
 
-                 (SELECT ARRAY_AGG(b.hora_fin)
-          FROM (
-            SELECT MAX(gb.bloque_tiempo_id) AS min_bloque_tiempo_id
-            FROM grupo_bloque_tiempo gb
-            JOIN bloque_tiempo b ON b.bloque_tiempo_id = gb.bloque_tiempo_id
-            WHERE gb.grupo_id = g.grupo_id
-            GROUP BY b.dia
-          ) sub
-          JOIN bloque_tiempo b ON b.bloque_tiempo_id = min_bloque_tiempo_id
-        ) AS hora_fin,
+          m.nombre AS materia_nombre,
+          s.numero AS salon_numero,
+          p.nombre AS profesor_nombre,
+          p.primer_apellido AS profesor_primer_apellido,
+          p.segundo_apellido AS profesor_segundo_apellido,
 
-                 m.nombre AS materia_nombre,
-                 s.numero AS salon_numero,
-                 p.nombre AS profesor_nombre,
-                 p.primer_apellido AS profesor_primer_apellido,
-                 p.segundo_apellido AS profesor_segundo_apellido,
-
-                 (SELECT ARRAY_AGG(dia ORDER BY min_bloque_tiempo_id)
+          (SELECT ARRAY_AGG(dia ORDER BY min_bloque_tiempo_id)
           FROM (
             SELECT b.dia, MIN(gb.bloque_tiempo_id) AS min_bloque_tiempo_id
             FROM grupo_bloque_tiempo gb
@@ -493,6 +481,7 @@ module.exports = class Alumno {
           WHERE g.grupo_id NOT IN (
         SELECT r.grupo_id
         FROM resultado_inscripcion r
+        WHERE r.alumno_id = $1
         ) AND
           ms.materia_id IN (
                   SELECT ha.materia_id
@@ -513,35 +502,23 @@ module.exports = class Alumno {
         return pool.query(`
             SELECT g.grupo_id AS grupo_id, 
             
-                   (SELECT ARRAY_AGG(b.hora_inicio)
-					  FROM (
-					    SELECT MIN(gb.bloque_tiempo_id) AS min_bloque_tiempo_id
-					    FROM grupo_bloque_tiempo gb
-					    JOIN bloque_tiempo b ON b.bloque_tiempo_id = gb.bloque_tiempo_id
-					    WHERE gb.grupo_id = g.grupo_id
-					    GROUP BY b.dia
-					  ) sub
-					  JOIN bloque_tiempo b ON b.bloque_tiempo_id = min_bloque_tiempo_id
-					) AS hora_inicio,
+            (SELECT ARRAY_AGG(bloque_tiempo_id_por_dias)
+              FROM (
+                SELECT ARRAY_AGG(gb.bloque_tiempo_id) AS bloque_tiempo_id_por_dias
+                FROM grupo_bloque_tiempo gb
+                JOIN bloque_tiempo b ON b.bloque_tiempo_id = gb.bloque_tiempo_id
+                WHERE gb.grupo_id = g.grupo_id
+                GROUP BY b.dia
+              ) sub
+            ) AS bloque_tiempo_id,
 
-                   (SELECT ARRAY_AGG(b.hora_fin)
-					  FROM (
-					    SELECT MAX(gb.bloque_tiempo_id) AS min_bloque_tiempo_id
-					    FROM grupo_bloque_tiempo gb
-					    JOIN bloque_tiempo b ON b.bloque_tiempo_id = gb.bloque_tiempo_id
-					    WHERE gb.grupo_id = g.grupo_id
-					    GROUP BY b.dia
-					  ) sub
-					  JOIN bloque_tiempo b ON b.bloque_tiempo_id = min_bloque_tiempo_id
-					) AS hora_fin,
+            m.nombre AS materia_nombre,
+            s.numero AS salon_numero,
+            p.nombre AS profesor_nombre,
+            p.primer_apellido AS profesor_primer_apellido,
+            p.segundo_apellido AS profesor_segundo_apellido,
 
-                   m.nombre AS materia_nombre,
-                   s.numero AS salon_numero,
-                   p.nombre AS profesor_nombre,
-                   p.primer_apellido AS profesor_primer_apellido,
-                   p.segundo_apellido AS profesor_segundo_apellido,
-
-                   (SELECT ARRAY_AGG(dia ORDER BY min_bloque_tiempo_id)
+            (SELECT ARRAY_AGG(dia ORDER BY min_bloque_tiempo_id)
 					  FROM (
 					    SELECT b.dia, MIN(gb.bloque_tiempo_id) AS min_bloque_tiempo_id
 					    FROM grupo_bloque_tiempo gb
@@ -550,19 +527,17 @@ module.exports = class Alumno {
 					    GROUP BY b.dia
 					  ) sub
 					) AS dias
-
-
-
-            FROM grupo g
-			JOIN materia_semestre ms ON ms.materia_id = g.materia_id
-            JOIN materia m ON ms.materia_id = m.materia_id
-            JOIN profesor p ON g.profesor_id = p.ivd_id
-            JOIN salon s ON g.salon_id = s.salon_id
-            JOIN grupo_bloque_tiempo gb ON g.grupo_id = gb.grupo_id
-            WHERE ms.semestre_id = $1 AND 
+          FROM grupo g
+          JOIN materia_semestre ms ON ms.materia_id = g.materia_id
+          JOIN materia m ON ms.materia_id = m.materia_id
+          JOIN profesor p ON g.profesor_id = p.ivd_id
+          JOIN salon s ON g.salon_id = s.salon_id
+          JOIN grupo_bloque_tiempo gb ON g.grupo_id = gb.grupo_id
+          WHERE ms.semestre_id = $1 AND 
 				  g.grupo_id NOT IN (
 					SELECT r.grupo_id
 					FROM resultado_inscripcion r
+          WHERE r.alumno_id = $2
 				  ) AND
 			      ms.materia_id IN (
                     SELECT ha.materia_id

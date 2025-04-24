@@ -175,8 +175,12 @@ async function eliminar(event) {
             data.materias_resultado.forEach(materia => {
             // Asignar color único por materia
             if (!materiasColor[materia.grupo_id]) {
-                materiasColor[materia.grupo_id] = colores[colorIndex % colores.length];
-                colorIndex++;
+                if (materia.obligatorio === true) {
+                  materiasColor[materia.grupo_id] = 'bg-secondary';
+                } else {
+                  materiasColor[materia.grupo_id] = colores[colorIndex % colores.length];
+                  colorIndex++;
+                }
             }
             
             let indexDia = 0;
@@ -452,8 +456,12 @@ async function agregar(event) {
             data.materias_resultado.forEach(materia => {
             // Asignar color único por materia
             if (!materiasColor[materia.grupo_id]) {
-                materiasColor[materia.grupo_id] = colores[colorIndex % colores.length];
-                colorIndex++;
+                if (materia.obligatorio === true) {
+                  materiasColor[materia.grupo_id] = 'bg-secondary';
+                } else {
+                  materiasColor[materia.grupo_id] = colores[colorIndex % colores.length];
+                  colorIndex++;
+                }
             }
             
             let indexDia = 0;

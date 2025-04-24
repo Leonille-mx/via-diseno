@@ -43,8 +43,12 @@
                     materias_resultado.forEach(materia => {
                       // Asignar color único por materia
                       if (!materiasColor[materia.grupo_id]) {
-                        materiasColor[materia.grupo_id] = colores[colorIndex % colores.length];
-                        colorIndex++;
+                        if (materia.obligatorio === true) {
+                            materiasColor[materia.grupo_id] = 'bg-secondary';
+                        } else {
+                          materiasColor[materia.grupo_id] = colores[colorIndex % colores.length];
+                          colorIndex++;
+                        }
                       }
                       horaPorGrp[materia.grupo_id] = {};
                       <!-- Procesa el dia de la materia -->

@@ -512,25 +512,31 @@ exports.post_cambiar_estatus = async (req, res, nxt) => {
 
 exports.get_alumno_modificar_horario = async (req, res, nxt) => {
     try {
-        const materias_resultado = await Alumno.fetchAllResultadoAlumno(req.params.id);
+        const materias_resultado = await Alumno.fetchAllResultadoAlumno2(req.params.id);
         const materias_disponibles_semestre = await Alumno.fetchAllMateriasDisponiblesCoordinador(req.params.id);
+        const bloque_tiempo = await BloqueTiempo.fetchAllHoras();
+        const bloqueTiempoMap = bloque_tiempo.rows[0]?.id_hora_map || {};
         res.status(200).json({
             isLoggedIn: req.session.isLoggedIn || false,
             matricula: req.session.matricula || '',
             materias_resultado: materias_resultado.rows,
             materias_disponibles_semestre: materias_disponibles_semestre.rows,
+            bloque_tiempo: bloqueTiempoMap
         });
     } catch (error){
         console.log(error);
     }
 };
 
-exports.get_materias_disponibles = (req, res, nxt) => {
+exports.get_materias_disponibles = async (req, res, nxt) => {
+    const bloque_tiempo = await BloqueTiempo.fetchAllHoras();
+    const bloqueTiempoMap = bloque_tiempo.rows[0]?.id_hora_map || {};
     if (req.params.semestre == 'semestre') {
         Alumno.fetchAllMateriasDisponiblesCoordinador(req.params.id)
         .then((materias_disponibles) => {
             res.status(200).json({
                 materias_disponibles: materias_disponibles.rows,
+                bloque_tiempo: bloqueTiempoMap
             });
         }).catch((error) => {
             console.log(error);
@@ -540,6 +546,7 @@ exports.get_materias_disponibles = (req, res, nxt) => {
         .then((materias_disponibles) => {
             res.status(200).json({
                 materias_disponibles: materias_disponibles.rows,
+                bloque_tiempo: bloqueTiempoMap
             });
         }).catch((error) => {
             console.log(error);
@@ -553,7 +560,9 @@ exports.post_eliminar_materia_del_resultado = async (req, res, nxt) => {
         const alumno_id = req.body.alumno_id;
         await ResultadoInscripcion.eliminarMateriaDelResultado(grupo_id, alumno_id);
 
-        const materias_resultado = await Alumno.fetchAllResultadoAlumno(alumno_id);
+        const materias_resultado = await Alumno.fetchAllResultadoAlumno2(alumno_id);
+        const bloque_tiempo = await BloqueTiempo.fetchAllHoras();
+        const bloqueTiempoMap = bloque_tiempo.rows[0]?.id_hora_map || {};
         const materias_disponibles = req.body.semestre == 'semestre'
             ? await Alumno.fetchAllMateriasDisponiblesCoordinador(alumno_id)
             : await Alumno.fetchAllMateriasDisponiblesDelAlumnoPorSemestre(req.body.semestre, alumno_id);
@@ -562,6 +571,7 @@ exports.post_eliminar_materia_del_resultado = async (req, res, nxt) => {
             matricula: req.session.matricula || '',
             materias_resultado: materias_resultado.rows,
             materias_disponibles: materias_disponibles.rows,
+            bloque_tiempo: bloqueTiempoMap
         });
     } catch (error) {
         console.log(error);
@@ -574,7 +584,9 @@ exports.post_agregar_materia_del_resultado = async (req, res, nxt) => {
         const alumno_id = req.body.alumno_id;
         await ResultadoInscripcion.agregarMateriaDelResultado(alumno_id, grupo_id);
 
-        const materias_resultado = await Alumno.fetchAllResultadoAlumno(alumno_id);
+        const materias_resultado = await Alumno.fetchAllResultadoAlumno2(alumno_id);
+        const bloque_tiempo = await BloqueTiempo.fetchAllHoras();
+        const bloqueTiempoMap = bloque_tiempo.rows[0]?.id_hora_map || {};
         const materias_disponibles = req.body.semestre == 'semestre'
             ? await Alumno.fetchAllMateriasDisponiblesCoordinador(alumno_id)
             : await Alumno.fetchAllMateriasDisponiblesDelAlumnoPorSemestre(req.body.semestre, alumno_id);
@@ -584,6 +596,7 @@ exports.post_agregar_materia_del_resultado = async (req, res, nxt) => {
             matricula: req.session.matricula || '',
             materias_resultado: materias_resultado.rows,
             materias_disponibles: materias_disponibles.rows,
+            bloque_tiempo: bloqueTiempoMap
         });
     } catch (error) {
         console.log(error);
@@ -597,12 +610,15 @@ exports.post_modificar_obligacion = async (req, res, nxt) => {
         const obligatorio = req.body.obligatorio;
 
         await ResultadoInscripcion.modificarObligacion(alumno_id, grupo_id, obligatorio);
-        const materias_resultado = await Alumno.fetchAllResultadoAlumno(alumno_id);
+        const materias_resultado = await Alumno.fetchAllResultadoAlumno2(alumno_id);
+        const bloque_tiempo = await BloqueTiempo.fetchAllHoras();
+        const bloqueTiempoMap = bloque_tiempo.rows[0]?.id_hora_map || {};
 
         res.status(200).json({
             isLoggedIn: req.session.isLoggedIn || false,
             matricula: req.session.matricula || '',
             materias_resultado: materias_resultado.rows,
+            bloque_tiempo: bloqueTiempoMap
         });
     } catch (error) {
         console.log(error);
