@@ -27,7 +27,7 @@ exports.get_prevista_de_horario = async (req, res, next) => {
             matricula: req.session.matricula || '',
             materias_resultado: materias_resultado.rows,
             inscripcion_completada: inscripcion_completada,
-            cicloEscolar: cicloInfo // Pasamos la info a la vista
+            cicloEscolar: cicloInfo 
         });
     } catch (error) {
         console.error('Error en get_prevista_de_horario:', error);

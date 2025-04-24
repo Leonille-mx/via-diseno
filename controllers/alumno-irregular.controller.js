@@ -1,19 +1,38 @@
 const Alumno = require('../models/alumno.model');
 const ResultadoInscripcion = require('../models/resultado_inscripcion.model');
 const Materia = require('../models/materia.model');
+const CicloEscolar = require('../models/ciclo-escolar.model')
 
 exports.get_modificar_horario = async (req, res, nxt) => {
     try {
-        const materias_resultado = await Alumno.fetchAllResultadoAlumnoIrregular(req.session.matricula);
-        const materias_disponibles_semestre = await Alumno.fetchAllMateriasDisponiblesDelAlumno(req.session.matricula);
+        const [materias_resultado, materias_disponibles_semestre, cicloActual] = await Promise.all([
+            Alumno.fetchAllResultadoAlumnoIrregular(req.session.matricula),
+            Alumno.fetchAllMateriasDisponiblesDelAlumno(req.session.matricula),
+            CicloEscolar.fetchMostRecent()
+        ]);
+
+        let cicloInfo = null;
+        if (cicloActual.rows.length > 0) {
+            const ciclo = cicloActual.rows[0];
+            const cicloObj = new CicloEscolar(ciclo.code, ciclo.fecha_inicio, ciclo.fecha_fin);
+            cicloInfo = {
+                periodo: cicloObj.getFormattedPeriod(),
+                fecha_inicio: new Date(ciclo.fecha_inicio).toLocaleDateString('es-ES'),
+                fecha_fin: new Date(ciclo.fecha_fin).toLocaleDateString('es-ES'),
+                raw: ciclo 
+            };
+        }
+
         res.render('modificar_horario_alumno_irregular', {
             isLoggedIn: req.session.isLoggedIn || false,
             matricula: req.session.matricula || '',
             materias_resultado: materias_resultado.rows,
             materias_disponibles_semestre: materias_disponibles_semestre.rows,
+            cicloEscolar: cicloInfo
         });
-    } catch (error){
-        console.log(error);
+    } catch (error) {
+        console.error('Error en get_modificar_horario:', error);
+        nxt(error);
     }
 };
 
