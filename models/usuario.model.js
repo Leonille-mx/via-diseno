@@ -41,7 +41,7 @@ module.exports = class Usuario {
                     (userDB.correo_institucional || "").trim() !== (uA.email || "").trim()
                 ) {
                     await client.query(
-                        `UPDATE usuario SET contrasena = NULL, nombre = $1, primer_apellido = $2, segundo_apellido = $3, correo_institucional = $4, role_id = $5 WHERE ivd_id = $6`,
+                        `UPDATE usuario SET nombre = $1, primer_apellido = $2, segundo_apellido = $3, correo_institucional = $4, role_id = $5 WHERE ivd_id = $6`,
                         [ uA.name, uA.first_surname, uA.second_surname, uA.email, 2, uA.ivd_id ]
                     );
                     updated++;
@@ -49,9 +49,14 @@ module.exports = class Usuario {
                 usersMap.delete(uA.ivd_id); 
             }
 
-            for (const [id] of usersMap) {
-                await client.query('DELETE FROM usuario WHERE ivd_id = $1', [id]);
-                deleted++;
+            for (const [id, userDB] of usersMap) {
+                if (userDB.role_id === 2) {
+                  await client.query(
+                    'DELETE FROM usuario WHERE ivd_id = $1 AND role_id = 2',
+                    [id]
+                  );
+                  deleted++;
+                }
             }
     
             return { inserted, updated, deleted };
