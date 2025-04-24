@@ -139,4 +139,4 @@ async function getAllAcademyHistory( ivd_id ) {
 }
 
 // Export the functions so they can be used in other files
-module.exports = { getAllCourses, getAllProfessors, getAllStudents, getCiclosEscolares, getAllDegree, getAllAcademyHistory };
+module.exports = { getToken, axiosAdminClient, getAllCourses, getAllProfessors, getAllStudents, getCiclosEscolares, getAllDegree, getAllAcademyHistory };

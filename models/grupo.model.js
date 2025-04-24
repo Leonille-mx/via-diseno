@@ -26,7 +26,7 @@ module.exports = class Grupo {
     static fetchAll() {
         return pool.query(`
             SELECT g.grupo_id,m.nombre AS materia, p.nombre, p.primer_apellido, 
-            p.segundo_apellido, s.numero, c.code, ms.semestre_id, ca.nombre AS carrera_nombre
+            p.segundo_apellido, s.numero, c.ciclo_escolar_id, c.code, ms.semestre_id, ca.nombre AS carrera_nombre 
             FROM grupo g
             JOIN materia m ON g.materia_id = m.materia_id
             JOIN profesor p ON g.profesor_id = p.ivd_id

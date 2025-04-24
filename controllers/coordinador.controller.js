@@ -13,7 +13,7 @@ const Carrera = require('../models/carrera.model.js');
 const Historial_Academico = require('../models/historial_academico.model.js');
 const Solicitud = require('../models/solicitudes-cambio.model.js');
 const ResultadoInscripcion = require('../models/resultado_inscripcion.model.js');
-const { getAllProfessors, getAllCourses, getAllStudents, getCiclosEscolares, getAllDegree, getAllAcademyHistory} = require('../util/adminApiClient.js');
+const { axiosAdminClient, getToken, getAllProfessors, getAllCourses, getAllStudents, getCiclosEscolares, getAllDegree, getAllAcademyHistory} = require('../util/adminApiClient.js');
 
 
 exports.get_dashboard = async (req, res) => {
@@ -770,5 +770,34 @@ exports.post_rechazar_solicitud = async (req, res, nxt) => {
     });
 };
     
-    
+exports.enviarGruposAPI = async (req, res) => {
+    try {
+        const token = await getToken();
+
+        const gruposResult = await Grupos.fetchAll();
+        const grupos = gruposResult.rows;
+
+        const gruposFormateados = grupos.map(grupo => ({
+            school_cycle_id: grupo.ciclo_escolar_id,            
+            professor_id: grupo.profesor_id,
+            course_id: grupo.materia_id,
+            name: grupo.nombre,
+            room: grupo.numero   
+        }));
+
+        for (const grupo of gruposFormateados) {
+            await axiosAdminClient.post('/v1/groups', grupo, {
+                headers: {
+                    Authorization: `Bearer ${token}`,
+                    'Content-Type': 'application/json'
+                }
+            });
+        }
+
+        res.status(200).send('Grupos enviados exitosamente.');
+    } catch (error) {
+        console.error('Error al enviar grupos a la API:', error.response?.data || error.message);
+        res.status(500).send('Error al enviar grupos.');
+    }
+};    
 
