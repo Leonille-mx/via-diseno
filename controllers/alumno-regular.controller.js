@@ -1,18 +1,37 @@
 const Alumno = require('../models/alumno.model');
 const ResultadoInscripcion = require('../models/resultado_inscripcion.model');
+const CicloEscolar = require('../models/ciclo-escolar.model')
 
-exports.get_prevista_de_horario = async (req, res, nxt) => {
+exports.get_prevista_de_horario = async (req, res, next) => {
     try {
-        const materias_resultado = await Alumno.fetchAllResultadoAlumno(req.session.matricula);
-        const inscripcion_completada = await Alumno.verificarInscripcionCompletada(req.session.matricula);
+        const [materias_resultado, inscripcion_completada, cicloActual] = await Promise.all([
+            Alumno.fetchAllResultadoAlumno(req.session.matricula),
+            Alumno.verificarInscripcionCompletada(req.session.matricula),
+            CicloEscolar.fetchMostRecent() 
+        ]);
+
+        let cicloInfo = null;
+        if (cicloActual.rows.length > 0) {
+            const ciclo = cicloActual.rows[0];
+            const cicloObj = new CicloEscolar(ciclo.code, ciclo.fecha_inicio, ciclo.fecha_fin);
+            cicloInfo = {
+                periodo: cicloObj.getFormattedPeriod(),
+                fecha_inicio: new Date(ciclo.fecha_inicio).toLocaleDateString('es-ES'),
+                fecha_fin: new Date(ciclo.fecha_fin).toLocaleDateString('es-ES'),
+                raw: ciclo 
+            };
+        }
+
         res.render('horario_alumno_regular', {
             isLoggedIn: req.session.isLoggedIn || false,
             matricula: req.session.matricula || '',
             materias_resultado: materias_resultado.rows,
-            inscripcion_completada: inscripcion_completada
+            inscripcion_completada: inscripcion_completada,
+            cicloEscolar: cicloInfo // Pasamos la info a la vista
         });
-    } catch (error){
-        console.log(error);
+    } catch (error) {
+        console.error('Error en get_prevista_de_horario:', error);
+        next(error);
     }
 };
 
