@@ -77,7 +77,11 @@
                 <th scope="row" class="text-center align-middle"><%= grupo.grupo_id %></th>
             <td class="text-center align-middle"><%= grupo.materia %></td>
             <td class="text-center align-middle"><%= grupo.nombre + ' ' + grupo.primer_apellido + ' ' + grupo.segundo_apellido %></td>
-            <td class="text-center align-middle"><%= grupo.numero %></td>
+            <% if (grupo.numero === 9999) { %>
+              <td class="text-center align-middle">No Asignado</td>
+            <% } else { %>
+              <td class="text-center align-middle"><%= grupo.numero %></td>
+            <% } %>
             <td class="text-center align-middle"><%= grupo.code %></td>
             <td class="text-center align-middle">
                   <button class="btn btn-sm p-0 d-flex align-items-center justify-content-center"
@@ -133,7 +137,11 @@
                 <th scope="row" class="text-center align-middle"><%= grupo.grupo_id %></th>
                 <td class="text-center align-middle"><%= grupo.materia %></td>
                 <td class="text-center align-middle"><%= grupo.nombre + ' ' + grupo.primer_apellido + ' ' + grupo.segundo_apellido %></td>
-                <td class="text-center align-middle"><%= grupo.numero %></td>
+                <% if (grupo.numero === 9999) { %>
+                  <td class="text-center align-middle">No Asignado</td>
+                <% } else { %>
+                  <td class="text-center align-middle"><%= grupo.numero %></td>
+                <% } %>
                 <td class="text-center align-middle"><%= grupo.code %></td>
                 <td class="text-center align-middle">
                   <button class="btn btn-sm p-0 d-flex align-items-center justify-content-center"
@@ -189,7 +197,11 @@
                 <th scope="row" class="text-center align-middle"><%= grupo.grupo_id %></th>
                 <td class="text-center align-middle"><%= grupo.materia %></td>
                 <td class="text-center align-middle"><%= grupo.nombre + ' ' + grupo.primer_apellido + ' ' + grupo.segundo_apellido %></td>
-                <td class="text-center align-middle"><%= grupo.numero %></td>
+                <% if (grupo.numero === 9999) { %>
+                  <td class="text-center align-middle">No Asignado</td>
+                <% } else { %>
+                  <td class="text-center align-middle"><%= grupo.numero %></td>
+                <% } %>
                 <td class="text-center align-middle"><%= grupo.code %></td>
                 <td class="text-center align-middle">
                   <button class="btn btn-sm p-0 d-flex align-items-center justify-content-center"
@@ -244,7 +256,11 @@
                 <th scope="row" class="text-center align-middle"><%= grupo.grupo_id %></th>
                 <td class="text-center align-middle"><%= grupo.materia %></td>
                 <td class="text-center align-middle"><%= grupo.nombre + ' ' + grupo.primer_apellido + ' ' + grupo.segundo_apellido %></td>
-                <td class="text-center align-middle"><%= grupo.numero %></td>
+                <% if (grupo.numero === 9999) { %>
+                  <td class="text-center align-middle">No Asignado</td>
+                <% } else { %>
+                  <td class="text-center align-middle"><%= grupo.numero %></td>
+                <% } %>
                 <td class="text-center align-middle"><%= grupo.code %></td>
                 <td class="text-center align-middle">
                   <button class="btn btn-sm p-0 d-flex align-items-center justify-content-center"
@@ -299,7 +315,11 @@
                 <th scope="row" class="text-center align-middle"><%= grupo.grupo_id %></th>
                 <td class="text-center align-middle"><%= grupo.materia %></td>
                 <td class="text-center align-middle"><%= grupo.nombre + ' ' + grupo.primer_apellido + ' ' + grupo.segundo_apellido %></td>
-                <td class="text-center align-middle"><%= grupo.numero %></td>
+                <% if (grupo.numero === 9999) { %>
+                  <td class="text-center align-middle">No Asignado</td>
+                <% } else { %>
+                  <td class="text-center align-middle"><%= grupo.numero %></td>
+                <% } %>
                 <td class="text-center align-middle"><%= grupo.code %></td>
                 <td class="text-center align-middle">
                   <button class="btn btn-sm p-0 d-flex align-items-center justify-content-center"
@@ -354,7 +374,11 @@
                 <th scope="row" class="text-center align-middle"><%= grupo.grupo_id %></th>
                 <td class="text-center align-middle"><%= grupo.materia %></td>
                 <td class="text-center align-middle"><%= grupo.nombre + ' ' + grupo.primer_apellido + ' ' + grupo.segundo_apellido %></td>
-                <td class="text-center align-middle"><%= grupo.numero %></td>
+                <% if (grupo.numero === 9999) { %>
+                  <td class="text-center align-middle">No Asignado</td>
+                <% } else { %>
+                  <td class="text-center align-middle"><%= grupo.numero %></td>
+                <% } %>
                 <td class="text-center align-middle"><%= grupo.code %></td>
                 <td class="text-center align-middle">
                   <button class="btn btn-sm p-0 d-flex align-items-center justify-content-center"
@@ -409,7 +433,11 @@
                 <th scope="row" class="text-center align-middle"><%= grupo.grupo_id %></th>
                 <td class="text-center align-middle"><%= grupo.materia %></td>
                 <td class="text-center align-middle"><%= grupo.nombre + ' ' + grupo.primer_apellido + ' ' + grupo.segundo_apellido %></td>
-                <td class="text-center align-middle"><%= grupo.numero %></td>
+                <% if (grupo.numero === 9999) { %>
+                  <td class="text-center align-middle">No Asignado</td>
+                <% } else { %>
+                  <td class="text-center align-middle"><%= grupo.numero %></td>
+                <% } %>
                 <td class="text-center align-middle"><%= grupo.code %></td>
                 <td class="text-center align-middle">
                   <button class="btn btn-sm p-0 d-flex align-items-center justify-content-center"
@@ -464,7 +492,11 @@
                 <th scope="row" class="text-center align-middle"><%= grupo.grupo_id %></th>
                 <td class="text-center align-middle"><%= grupo.materia %></td>
                 <td class="text-center align-middle"><%= grupo.nombre + ' ' + grupo.primer_apellido + ' ' + grupo.segundo_apellido %></td>
-                <td class="text-center align-middle"><%= grupo.numero %></td>
+                <% if (grupo.numero === 9999) { %>
+                  <td class="text-center align-middle">No Asignado</td>
+                <% } else { %>
+                  <td class="text-center align-middle"><%= grupo.numero %></td>
+                <% } %>
                 <td class="text-center align-middle"><%= grupo.code %></td>
                 <td class="text-center align-middle">
                   <button class="btn btn-sm p-0 d-flex align-items-center justify-content-center"
@@ -519,7 +551,11 @@
                 <th scope="row" class="text-center align-middle"><%= grupo.grupo_id %></th>
                 <td class="text-center align-middle"><%= grupo.materia %></td>
                 <td class="text-center align-middle"><%= grupo.nombre + ' ' + grupo.primer_apellido + ' ' + grupo.segundo_apellido %></td>
-                <td class="text-center align-middle"><%= grupo.numero %></td>
+                <% if (grupo.numero === 9999) { %>
+                  <td class="text-center align-middle">No Asignado</td>
+                <% } else { %>
+                  <td class="text-center align-middle"><%= grupo.numero %></td>
+                <% } %>
                 <td class="text-center align-middle"><%= grupo.code %></td>
                 <td class="text-center align-middle">
                   <button class="btn btn-sm p-0 d-flex align-items-center justify-content-center"
