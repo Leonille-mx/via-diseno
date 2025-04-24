@@ -40,7 +40,7 @@
   <div class="d-flex align-items-center justify-content-between me-5 mb-3 flex-wrap">
     <h3 class="ms-5 mb-0 text-decoration-underline ivd-text-red">Regulares</h3>
     <div class="d-flex align-items-center flex-grow-1" style="max-width: 200px;">
-      <input class="form-control rounded-pill" type="search" placeholder="Buscar alumno" aria-label="Search"
+      <input id="buscarAlumnoRegular" class="form-control rounded-pill" type="search" placeholder="Buscar alumno" aria-label="Search"
             style="background-image:url('/images/search.svg');
                     background-repeat:no-repeat;
                     background-position: 1rem center; 
@@ -109,7 +109,7 @@
   <div class="d-flex align-items-center justify-content-between me-5 mb-3 flex-wrap">
     <h3 class="ms-5 text-decoration-underline ivd-text-red">Irregulares</h3>
     <div class="d-flex align-items-center flex-grow-1" style="max-width: 200px;">
-      <input class="form-control rounded-pill" type="search" placeholder="Buscar alumno" aria-label="Search"
+      <input id="buscarAlumnoIrregular" class="form-control rounded-pill" type="search" placeholder="Buscar alumno" aria-label="Search"
             style="background-image:url('/images/search.svg');
                     background-repeat:no-repeat;
                     background-position: 1rem center; 
@@ -2186,6 +2186,52 @@ document.getElementById('alertaModal').addEventListener('show.bs.modal', functio
 
     document.querySelectorAll('input[name^="btnradio"]').forEach((radio) => {
           radio.addEventListener("change", obligacion);
+    });
+  });
+
+  // Barra de búsqueda para tabla de alumnos regulares
+  const searchInputAlumnoRegular = document.getElementById('buscarAlumnoRegular');
+  const alumnosRegularesBody = document.getElementById('alumnoRegularTablaBody');
+
+  // Escucha el evento de keyup (cuando el usuario escribe)
+  searchInputAlumnoRegular.addEventListener('keyup', function() {
+    const searchValue = this.value.toLowerCase().trim();
+    // Obtiene todas las filas de la tabla
+    const rows = alumnosRegularesBody.querySelectorAll('tr');
+    
+    rows.forEach(row => {
+      // Filtramos el contenido de búsqueda basándonos en todo el texto de la fila. 
+      const rowText = row.textContent.toLowerCase();
+      
+      // Si el término buscado se encuentra en el texto de la fila, se muestra, de lo contrario se oculta
+      if (rowText.includes(searchValue)) {
+        row.style.display = '';
+      } else {
+        row.style.display = 'none';
+      }
+    });
+  });
+
+  // Barra de búsqueda para tabla de alumnos irregulares
+  const searchInputAlumnoIrregular = document.getElementById('buscarAlumnoIrregular');
+  const alumnosIrregularesBody = document.getElementById('alumnoIrregularTablaBody');
+
+  // Escucha el evento de keyup (cuando el usuario escribe)
+  searchInputAlumnoIrregular.addEventListener('keyup', function() {
+    const searchValue = this.value.toLowerCase().trim();
+    // Obtiene todas las filas de la tabla
+    const rows = alumnosIrregularesBody.querySelectorAll('tr');
+    
+    rows.forEach(row => {
+      // Filtramos el contenido de búsqueda basándonos en todo el texto de la fila. 
+      const rowText = row.textContent.toLowerCase();
+      
+      // Si el término buscado se encuentra en el texto de la fila, se muestra, de lo contrario se oculta
+      if (rowText.includes(searchValue)) {
+        row.style.display = '';
+      } else {
+        row.style.display = 'none';
+      }
     });
   });
 </script>
