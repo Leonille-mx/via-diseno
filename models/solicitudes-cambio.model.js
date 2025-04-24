@@ -102,7 +102,7 @@ module.exports = class Solicitud {
   }
 
   //metodo para obtener el la solicitud, nombre y apellido de las solicitudes
-  static async dasboard_Solicitud() {
+  static async dasboard_Solicitud(carrera_id) {
     const result = await pool.query(`SELECT 
             sc.solicitud_cambio_id,
             sc.created_at,
@@ -112,8 +112,17 @@ module.exports = class Solicitud {
             solicitud_cambio sc
         JOIN 
             usuario u ON sc.ivd_id = u.ivd_id
-              ORDER BY
-                sc.created_at ASC`);
+        JOIN 
+            alumno a ON a.ivd_id = u.ivd_id
+        JOIN 
+            plan_estudio p ON p.plan_estudio_id = a.plan_estudio_id
+        WHERE 
+            sc.aprobada = false 
+            AND
+            p.carrera_id = $1
+        ORDER BY 
+            sc.created_at::timestamp ASC`
+        , [carrera_id]);
     return result.rows;
   }
 

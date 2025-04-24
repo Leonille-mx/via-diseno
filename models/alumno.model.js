@@ -125,7 +125,9 @@ module.exports = class Alumno {
               SELECT alumno_id
               FROM resultado_inscripcion
               GROUP BY alumno_id
-            ) AS sub;
+            ) AS sub
+            JOIN alumno a ON a.ivd_id = sub.alumno_id
+            WHERE a.inscripcion_completada = false;
       `);
       return parseInt(result.rows[0].count);
     }

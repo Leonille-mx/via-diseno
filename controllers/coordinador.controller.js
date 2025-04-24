@@ -22,6 +22,7 @@ exports.get_dashboard = async (req, res) => {
     try {
         const msg1 = req.query.msg1 || null; 
         const msg2 = req.query.msg2 || null; 
+        const carreraCoordinador = await Coordinador.getCarrera(req.session.usuario.id);
         //Consulta el total de profesores activos de la Base de Datos
         const alumnosConMaterias = await Alumno.fetchNumeroIrregularesConMaterias();
         const alumnosNoInscritos = await Alumno.totalNoInscritos();
@@ -32,7 +33,7 @@ exports.get_dashboard = async (req, res) => {
         const salones_Dashboard = await Salon.salonesDashboard();
         const grafica_Alumnos = await Alumno.alumnosComparacion();
         const materias_Abiertas  = await Materia.numeroMaterias();
-        const solicitud_Cambio_Dashboard = await Solicitud.dasboard_Solicitud();
+        const solicitud_Cambio_Dashboard = await Solicitud.dasboard_Solicitud(carreraCoordinador.rows[0].carrera_id);
         const total_Solicitudes = await Solicitud.numeroTotalSolicitudes();
 
         res.render('dashboard_coordinador', {
