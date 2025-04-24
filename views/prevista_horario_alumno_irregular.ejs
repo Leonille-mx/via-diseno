@@ -1,43 +1,106 @@
 <%- include('includes/_nav_alumno.ejs') %>
+<%
+  let horaPorGrp = {};
+  <!-- Colores de bloques -->
+  const colores = ['bg-primary-subtle', 'bg-success-subtle ','bg-warning-subtle ','bg-danger-subtle','bg-info-subtle','bg-secondary-subtle','bg-light'];
+  const materiasColor = {};
+  let colorIndex = 0;
 
+  <!-- Inicializa estructura de horario -->
+  const horario = { 
+    Lunes: {}, Martes: {}, Miércoles: {}, Jueves: {}, Viernes: {} 
+  };
+  <!--  Procesa las materia de resultado para construir el horario-->
+  if (typeof materias_resultado !== 'undefined' && Array.isArray(materias_resultado)) {
+    materias_resultado.forEach(materia => {
+      // Asignar color único por materia
+      if (!materiasColor[materia.grupo_id]) {
+        materiasColor[materia.grupo_id] = colores[colorIndex % colores.length];
+        colorIndex++;
+      }
+      horaPorGrp[materia.grupo_id] = {};
+      <!-- Procesa el dia de la materia -->
+      let indexDia = 0;
+      materia.dias.forEach(dia => {
+        horaPorGrp[materia.grupo_id][dia] = [];
+        const diaNombre = dia.charAt(0).toUpperCase() + dia.slice(1).toLowerCase();
+        const bloqueTiempoIds = [];
+        let indexBloque = 0;
+        for (let i = materia.bloque_tiempo_id[indexDia][0]; i <= materia.bloque_tiempo_id[indexDia][materia.bloque_tiempo_id[indexDia].length - 1]; i++) {
+          
+          if (i === materia.bloque_tiempo_id[indexDia][indexBloque]) {
+            bloqueTiempoIds.push(i);
+            indexBloque++;
+          } else {
+            bloqueTiempoIds.push(null);
+          }
+        }
+
+        <!-- Si el dia es valido -->
+        if (horario[diaNombre]) {
+          let inicioBloque = bloqueTiempoIds[0];
+          let rowSpan = 0;
+          for (let bloqueTiempoId of bloqueTiempoIds) {
+            if (bloqueTiempoId === null || bloqueTiempoId === bloqueTiempoIds[bloqueTiempoIds.length - 1]) {
+              if (rowSpan > 0) {
+                if (bloqueTiempoId === null) {
+                  rowSpan --;
+                }
+                horario[diaNombre][inicioBloque % 24 + 13] = {
+                  grupo_id: materia.grupo_id,
+                  rowspan: rowSpan,
+                  nombre: materia.materia_nombre,
+                  color: materiasColor[materia.grupo_id],
+                  salon: materia.salon_numero,
+                  profesor: `${materia.profesor_nombre} ${materia.profesor_primer_apellido} ${materia.profesor_segundo_apellido}`,
+                  hora: `${bloque_tiempo[inicioBloque][0].slice(0, 5)} - ${bloque_tiempo[inicioBloque + rowSpan][1].slice(0, 5)}`,
+                  seleccionado: materia.seleccionado
+                };
+                <!-- Bloques intermedios como ocupados -->
+                if (materia.seleccionado === true) {
+                  for (let b = inicioBloque + 1; b <= inicioBloque + rowSpan; b++) {
+                    horario[diaNombre][b % 24 + 13] = 'ocupar';
+                  }
+                }
+                rowSpan = 0;
+              }
+            } else {
+              if (rowSpan === 0) {
+                inicioBloque = bloqueTiempoId;
+              }
+              rowSpan ++;
+            }
+          }
+        }
+        indexDia ++;
+      });
+    });
+  }
+  
+  <!-- Filas de la tabla -->
+  for (let bloque = 14; bloque < 32; bloque++) {
+    ['Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes'].forEach(dia => {
+      if (horario[dia][bloque] === 'ocupar') return;
+      if (horario[dia][bloque]) {
+        horaPorGrp[horario[dia][bloque].grupo_id][dia].push(horario[dia][bloque].hora);
+      }
+    })
+  }
+%>
 <main class="bg-grey mx-2 mx-md-4 mb-3 p-3 p-md-4 alumno-scroll " style="border-radius: 1.5rem; height: 100%; overflow-y: auto; ">
-  <div class="row gx-2 gx-md-3 mt-2 mt-md-4 align-items-center">
-    <div class="col-12 col-md-6 col-lg-2 mb-3 mb-lg-0 ms-lg-4">
-      <div class="card rounded-5 ivd-bg-red bg-gradient text-white h-100">
-        <div class="card-body px-0 text-start">
-          <div class="d-flex align-items-center justify-content-between">
-            <p class="card-title ms-3">Clases Inscritas</p>
-          </div>
-          <div style="border-bottom: 3px solid #ffffff; width: 100%; margin-top: -7px;"></div>
-          <p class="card-text text-start ms-4" style="margin-top: 10px; font-size: calc(1rem + 1vw);"> <%= materias_inscritas %> </p>
-        </div>
-      </div>
-    </div>
-
-    <div class="col-12 col-md-6 col-lg-2 mb-3 mb-lg-0">
-      <div class="card rounded-5 ivd-bg-white bg-gradient text-black h-100">
-        <div class="card-body px-0 text-start">
-          <div class="d-flex align-items-center justify-content-between">
-            <p class="card-title ms-3">Clases Obligatorias</p>
-          </div>
-          <div style="border-bottom: 3px solid #84251c98; width: 100%; margin-top: -7px;"></div>
-          <p class="card-text text-start ms-4" style="margin-top: 10px; font-size: calc(1rem + 1vw);"> <%= obligatoriasTotales %> </p>
-        </div>
-      </div>
-    </div>
-
-    <div class="col-12 col-md-12 col-lg-3 offset-lg-3 mt-3 mt-lg-0">
-      <div class="card rounded-5 bg-transparent ivd-text-red border border-2 border-grey h-100">
-        <div class="card-body d-flex flex-column align-items-center justify-content-center text-center p-2 p-md-3">
-          <h2 class="card-title mb-2" style="font-size: calc(1.2rem + 0.8vw);">Vista previa del horario</h2>
-
-        </div>
-      </div>
-    </div>
-  </div>
-
   <div class="row gx-2 gx-md-3 mt-3">
     <div class="col-12 col-lg-5 mb-3 mb-lg-0">
+      <div class="px-3">
+        <div class="card rounded-5 ivd-bg-red bg-gradient text-white h-100">
+          <div class="card-body px-0 text-start">
+            <div class="d-flex align-items-center justify-content-between">
+              <p class="card-title ms-3">Clases Inscritas</p>
+            </div>
+            <div style="border-bottom: 3px solid #ffffff; width: 100%; margin-top: -7px;"></div>
+            <p class="card-text text-start ms-4" style="margin-top: 10px; font-size: calc(1rem + 1vw);"> <%= materias_inscritas %> </p>
+          </div>
+        </div>
+      </div>
       <div class="card rounded-5 bg-transparent border border-2 border-grey text-black h-100">
         <div class="card-body p-0 alumno-scroll" style="max-height: 200vh;">
           <div class="px-2 px-md-3 pt-2" style="overflow-x: hidden; overflow-y: auto;">
@@ -50,7 +113,7 @@
                     <div class="d-flex m-0 align-items-center justify-content-center" style="width: 100%; padding-left: 10%;">
                         <% for (let i = 0; i < materia_resultado.dias.length; i++) { %>
                           <p class="m-0 me-2">
-                            <%= materia_resultado.hora_inicio[i].substring(0, 5) %> - <%= materia_resultado.hora_fin[i].substring(0, 5) %>
+                            <%= Object.values(horaPorGrp[materia_resultado.grupo_id][materia_resultado.dias[i]]).join(", ") %>
                           </p>
                           <% if (i !== materia_resultado.dias.length - 1) { %>
                             <p class="m-0 me-3 ivd-text-red">
@@ -91,15 +154,24 @@
 
     
     <div class="col-lg-7">
+      <div class="col-12 col-md-12 col-lg-6 offset-lg-3 mt-3 mt-lg-0">
+        <div class="card rounded-5 bg-transparent ivd-text-red border border-2 border-grey h-100">
+          <div class="card-body d-flex flex-column align-items-center justify-content-center text-center p-2 p-md-3">
+            <h2 class="card-title mb-2" style="font-size: calc(1.2rem + 0.8vw);">Vista previa del horario</h2>
+  
+          </div>
+        </div>
+      </div>
       <div class="card rounded-5 bg-transparent border-grey text-black h-100">
         <div class="card-header bg-transparent border-0 p-0">
           <div class="px-3 pt-3">
-            <div class="d-flex align-items-center justify-content-center overflow-hidden rounded-4 ">
-              <table class="table custom-table p-3 table-striped table-bordered table-hover">
-                <thead class="table-danger">
-                  <tr class="text-center">
+            <div class="d-flex align-items-center justify-content-center overflow-hidden rounded-4 border">
+              <table class="table custom-table p-0 table-striped table-bordered table-hover mb-0 rounded-4"
+              style="font-size: 0.85rem; border-collapse: separate !important; border-spacing: 0; border-radius: 1rem;"">
+                <thead class="table-danger rounded-top">
+                  <tr class="text-center rounded-top">
                     <!-- Titulo de columnas -->
-                    <th class="hour-col " style= "min-width: 100px" >Hora</th>
+                    <th class="hour-col">Hora</th>
                     <th>Lunes</th>
                     <th>Martes</th>
                     <th>Miércoles</th>
@@ -107,90 +179,45 @@
                     <th>Viernes</th>
                   </tr>
                 </thead>
-                <tbody>
-                  <%
-                  <!-- Colores de bloques -->
-                  const colores = ['bg-primary-subtle', 'bg-success-subtle ','bg-warning-subtle ','bg-danger-subtle','bg-info-subtle','bg-secondary-subtle','bg-light'];
-                  const materiasColor = {};
-                  let colorIndex = 0;
-                  
-                  <!-- Inicializa estructura de horario -->
-                  const horario = { 
-                    Lunes: {}, Martes: {}, Miércoles: {}, Jueves: {}, Viernes: {} 
-                  };
-                  
-                  <!--  Procesa las materia de resultado para construir el horario-->
-                  if (typeof materias_resultado !== 'undefined' && Array.isArray(materias_resultado)) {
-                    materias_resultado.forEach(materia => {
-                      // Asignar color único por materia
-                      if (!materiasColor[materia.materia_nombre]) {
-                        materiasColor[materia.materia_nombre] = colores[colorIndex % colores.length];
-                        colorIndex++;
-                      }
-                      
-                      <!-- Procesa el dia de la materia -->
-                      let indexDia = 0;
-                      materia.dias.forEach(dia => {
-                        const diaNombre = dia.charAt(0).toUpperCase() + dia.slice(1).toLowerCase();
-                        
-                        <!-- Bloques de 30 min -->
-                        const [hi, mi] = materia.hora_inicio[indexDia].split(':').map(Number);
-                        const [hf, mf] = materia.hora_fin[indexDia].split(':').map(Number);
-                        
-                        const inicioBloque = hi * 2 + (mi >= 30 ? 1 : 0);
-                        const finBloque = hf * 2 + (mf >= 30 ? 1 : 0);
-                        
-                        <!-- Si el dia es valido -->
-                        if (horario[diaNombre]) {
-                          horario[diaNombre][inicioBloque] = {
-                            rowspan: finBloque - inicioBloque,
-                            nombre: materia.materia_nombre,
-                            color: materiasColor[materia.materia_nombre],
-                            salon: materia.salon_numero,
-                            profesor: `${materia.profesor_nombre} ${materia.profesor_primer_apellido}`,
-                            hora: `${materia.hora_inicio[indexDia]} - ${materia.hora_fin[indexDia]}`
-                          };
-                          
-                          <!-- Bloques intermedios como ocupados -->
-                          for (let b = inicioBloque + 1; b < finBloque; b++) {
-                            horario[diaNombre][b] = 'ocupar';
-                          }
-                        }
-                        indexDia ++;
-                      });
-                    });
-                  }
-                  
-                  <!-- Filas de la tabla -->
+                <tbody class="horario-body">
+                <%
                   for (let bloque = 14; bloque < 32; bloque++) {
-                    const horaInicio = Math.floor(bloque / 2);
-                    const minutosInicio = bloque % 2 === 0 ? '00' : '30';
-                    
-                    const horaFin = bloque % 2 === 0 ? horaInicio : horaInicio + 1;
-                    const minutosFin = bloque % 2 === 0 ? '30' : '00';
-                    
-                    const horaFormato = `${horaInicio}:${minutosInicio} - ${horaFin}:${minutosFin}`;
-                  %>
-                  <tr>
-                    <th class="hour-cell text-center align-middle"><%= horaFormato %></th>
-                    <% ['Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes'].forEach(dia => { %>
-                      <% if (horario[dia][bloque] === 'ocupar') return; %>
-                      <% if (horario[dia][bloque]) { 
-                        const clase = horario[dia][bloque];
-                      %>
-                        <td class="text-black text-center align-middle <%= clase.color %>" 
-                            rowspan="<%= clase.rowspan %>"
-                            data-bs-toggle="tooltip" 
-                            data-bs-placement="top" 
-                            title="<%= clase.hora %> | Salon: <%= clase.salon %> | Prof: <%= clase.profesor %>">
-                          <%= clase.nombre %>
-                        </td>
-                      <% } else { %>
-                        <td class="empty-slot"></td>
-                      <% } %>
-                    <% }) %>
-                  </tr>
-                <% } %>
+                    const hora = Math.floor(bloque / 2);
+                    const minutos = bloque % 2 === 0 ? '00' : '30';
+                    let horaFormato;
+                    if (bloque % 2 !== 0) {
+                      horaFormato = `${hora}:${minutos} - ${hora + 1}:00`;
+                    } else {
+                      horaFormato = `${hora}:${minutos} - ${hora}:30`;
+                    } 
+                %>
+                    <tr style="max-height: 1rem;">
+                      <th class="hour-cell text-center align-middle"><%= horaFormato %></th>
+                      <% ['Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes'].forEach(dia => { %>
+                        <% if (horario[dia][bloque] === 'ocupar') return; %>
+                        <% if (horario[dia][bloque]) {
+                          horaPorGrp[horario[dia][bloque].grupo_id][dia].push(horario[dia][bloque].hora);
+                        } %>
+                        <% if (horario[dia][bloque] && horario[dia][bloque].seleccionado === true) { 
+                          const clase = horario[dia][bloque];
+                        %>
+                          <td class="text-black text-center align-middle <%= clase.color %>" 
+                              rowspan="<%= clase.rowspan + 1 %>"
+                              data-bs-toggle="tooltip" 
+                              data-bs-placement="top" 
+                              <% if (clase.salon === 9999) { %>
+                                title="<%= clase.hora %> | Salon: No asignado | Prof: <%= clase.profesor %>">
+                              <% } else { %>
+                                title="<%= clase.hora %> | Salon: <%= clase.salon %> | Prof: <%= clase.profesor %>">
+                              <% } %>
+                            <%= clase.nombre %>
+                          </td>
+                        <% } else { %>
+                          <td class="empty-slot"></td>
+                        <% } %>
+                      <% }) %>
+                    </tr>
+                  <% } %>
                 </tbody>
               </table>
             </div>

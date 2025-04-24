@@ -297,12 +297,10 @@
       function filterClassesByDay(day) {
         classCards.forEach(card => {
           const horasStr = card.getAttribute("data-horas");
-          const horasObj = JSON.parse(horasStr);
-          const horasArray = card.getAttribute('data-horas');
+          const horasObj = JSON.parse(horasStr);;
           const indexDiaCard = card.getAttribute('data-days').split(',').indexOf(day);
           card.style.display = card.getAttribute('data-days').includes(day) ? 'block' : 'none';
           for (let horasArray of Object.values(horasObj)) {
-            console.log(horasArray);
             card.querySelector(".hora-card").textContent = horasArray.join(", ");
           }
         });
