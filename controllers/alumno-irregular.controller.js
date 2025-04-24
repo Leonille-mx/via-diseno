@@ -122,12 +122,57 @@ exports.get_prevista_horario = async (req, res, nxt) => {
     }
 };
 
-exports.get_resultado_de_horario = (req, res, nxt) => {
-    res.render('resultado_horario_alumno_irregular', {
-        isLoggedIn: req.session.isLoggedIn || false,
-        matricula: req.session.matricula || '',
-    });
+exports.get_resultado_de_horario = async (req, res, nxt) => {
+    try {
+        const isConfirmed = await AlumnoIrregular.verificarConfirmacion(req.session.matricula);
+        
+        if (!isConfirmed) {
+            return res.redirect('/alumno-irregular/modificar-horario');
+        }
+
+        const horario = await AlumnoIrregular.obtenerHorarioConfirmado(req.session.matricula);
+
+        res.render('resultado_horario_alumno_irregular', {
+            isLoggedIn: req.session.isLoggedIn || false,
+            matricula: req.session.matricula || '',
+            horario: horario,  
+            isConfirmed: true  
+        });
+    } catch (error) {
+        console.error("Error en get_resultado_de_horario:", error);
+        next(error);
+    }
 };
+
+exports.post_confirmar_horario = async (req, res) => {
+    try {
+        const matricula = req.session.matricula;
+        
+        if (!matricula) {
+            return res.status(400).json({ 
+                success: false, 
+                message: "Sesión inválida" 
+            });
+        }
+
+       
+        await Alumno.confirmar(matricula);
+
+        res.json({ 
+            success: true,
+            message: 'Horario confirmado exitosamente',
+            redirectUrl: '/alumno-irregular/resultado-de-horario'
+        });
+
+    } catch (error) {
+        console.error("Error en post_confirmar_horario:", error);
+        res.status(500).json({
+            success: false,
+            message: 'Error al confirmar horario: ' + error.message
+        });
+    }
+};
+
 
 exports.get_resultado_de_horario = (req, res, nxt) => {
     res.render('resultado_horario_alumno_irregular', {
