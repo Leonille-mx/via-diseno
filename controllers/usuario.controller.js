@@ -93,7 +93,7 @@ exports.enviarCorreoContrasena = async (req, res) => {
         expires_at: Date.now() + 30 * 60 * 1000 // 30 min
     };
 
-    const link = `http://localhost:3000/usuario/recuperar/${token}`;
+    const link = `https://ivd-inscripciones-leonille-97f95df993b3.herokuapp.com/usuario/recuperar/${token}`;
 
     const transporter = nodemailer.createTransport({
         service: 'gmail',
