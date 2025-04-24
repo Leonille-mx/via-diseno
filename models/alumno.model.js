@@ -131,209 +131,296 @@ module.exports = class Alumno {
     }
     static async fetchAllResultadoAlumnoIrregular2(id) {
       return pool.query(`
-          SELECT r.grupo_id AS grupo_id,
-
-                   (SELECT ARRAY_AGG(bloque_tiempo_id_por_dias)
-					  FROM (
-					    SELECT ARRAY_AGG(gb.bloque_tiempo_id) AS bloque_tiempo_id_por_dias
-					    FROM grupo_bloque_tiempo gb
-					    JOIN bloque_tiempo b ON b.bloque_tiempo_id = gb.bloque_tiempo_id
-					    WHERE gb.grupo_id = r.grupo_id
-					    GROUP BY b.dia
-					  ) sub
-					) AS bloque_tiempo_id,
-
-                 m.nombre AS materia_nombre,
-                 s.numero AS salon_numero,
-                 p.nombre AS profesor_nombre,
-                 p.primer_apellido AS profesor_primer_apellido,
-                 p.segundo_apellido AS profesor_segundo_apellido,
-                 r.obligatorio AS obligatorio,
-                 r.seleccionado AS seleccionado,
-
-                 (SELECT ARRAY_AGG(dia ORDER BY min_bloque_tiempo_id)
-          FROM (
-            SELECT b.dia, MIN(gb.bloque_tiempo_id) AS min_bloque_tiempo_id
-            FROM grupo_bloque_tiempo gb
-            JOIN bloque_tiempo b ON b.bloque_tiempo_id = gb.bloque_tiempo_id
-            WHERE gb.grupo_id = r.grupo_id
-            GROUP BY b.dia
-          ) sub
-        ) AS dias
-          FROM resultado_inscripcion r
-          JOIN grupo g ON r.grupo_id = g.grupo_id
-          JOIN materia m ON g.materia_id = m.materia_id
-          JOIN profesor p ON g.profesor_id = p.ivd_id
-          JOIN salon s ON g.salon_id = s.salon_id
-          JOIN grupo_bloque_tiempo gb ON g.grupo_id = gb.grupo_id
-          WHERE r.alumno_id = $1
-          GROUP BY r.grupo_id, m.nombre, s.numero, p.nombre, 
-              p.primer_apellido, p.segundo_apellido, r.obligatorio, r.seleccionado
-          ORDER BY (SELECT MIN(gb.bloque_tiempo_id)
-          FROM grupo_bloque_tiempo gb
-            WHERE gb.grupo_id = r.grupo_id
-    ) ASC;`
-          , [id]);
-  }
+        SELECT 
+          r.grupo_id AS grupo_id,
+    
+          ( -- JSONB agg de los bloques por día, ordenados internamente y luego por día
+            SELECT jsonb_agg(sub.bloques ORDER BY sub.min_bt)
+            FROM (
+              SELECT
+                jsonb_agg(gb.bloque_tiempo_id ORDER BY gb.bloque_tiempo_id) AS bloques,
+                MIN(gb.bloque_tiempo_id)                          AS min_bt
+              FROM grupo_bloque_tiempo gb
+              JOIN bloque_tiempo b ON b.bloque_tiempo_id = gb.bloque_tiempo_id
+              WHERE gb.grupo_id = r.grupo_id
+              GROUP BY b.dia
+            ) AS sub
+          ) AS bloque_tiempo_id,
+    
+          m.nombre               AS materia_nombre,
+          s.numero               AS salon_numero,
+          p.nombre               AS profesor_nombre,
+          p.primer_apellido      AS profesor_primer_apellido,
+          p.segundo_apellido     AS profesor_segundo_apellido,
+          r.obligatorio          AS obligatorio,
+          r.seleccionado         AS seleccionado,
+    
+          ( -- JSONB agg de los días en el mismo orden que los bloques
+            SELECT jsonb_agg(sub2.dia ORDER BY sub2.min_bt)
+            FROM (
+              SELECT
+                b.dia,
+                MIN(gb.bloque_tiempo_id) AS min_bt
+              FROM grupo_bloque_tiempo gb
+              JOIN bloque_tiempo b ON b.bloque_tiempo_id = gb.bloque_tiempo_id
+              WHERE gb.grupo_id = r.grupo_id
+              GROUP BY b.dia
+            ) AS sub2
+          ) AS dias
+    
+        FROM resultado_inscripcion r
+        JOIN grupo             g ON r.grupo_id    = g.grupo_id
+        JOIN materia           m ON g.materia_id  = m.materia_id
+        JOIN profesor          p ON g.profesor_id = p.ivd_id
+        JOIN salon             s ON g.salon_id    = s.salon_id
+        JOIN grupo_bloque_tiempo gb ON gb.grupo_id = g.grupo_id
+    
+        WHERE r.alumno_id = $1
+    
+        GROUP BY
+          r.grupo_id,
+          m.nombre,
+          s.numero,
+          p.nombre,
+          p.primer_apellido,
+          p.segundo_apellido,
+          r.obligatorio,
+          r.seleccionado
+    
+        ORDER BY (
+          SELECT MIN(gb2.bloque_tiempo_id)
+          FROM grupo_bloque_tiempo gb2
+          WHERE gb2.grupo_id = r.grupo_id
+        ) ASC;
+      `, [id]);
+    }
     static async fetchAllResultadoAlumnoIrregular(id) {
-        return pool.query(`
-            SELECT r.grupo_id AS grupo_id,
-
-                   (SELECT ARRAY_AGG(b.hora_inicio)
-					  FROM (
-					    SELECT MIN(gb.bloque_tiempo_id) AS min_bloque_tiempo_id
-					    FROM grupo_bloque_tiempo gb
-					    JOIN bloque_tiempo b ON b.bloque_tiempo_id = gb.bloque_tiempo_id
-					    WHERE gb.grupo_id = r.grupo_id
-					    GROUP BY b.dia
-					  ) sub
-					  JOIN bloque_tiempo b ON b.bloque_tiempo_id = min_bloque_tiempo_id
-					) AS hora_inicio,
-
-                   (SELECT ARRAY_AGG(b.hora_fin)
-					  FROM (
-					    SELECT MAX(gb.bloque_tiempo_id) AS min_bloque_tiempo_id
-					    FROM grupo_bloque_tiempo gb
-					    JOIN bloque_tiempo b ON b.bloque_tiempo_id = gb.bloque_tiempo_id
-					    WHERE gb.grupo_id = r.grupo_id
-					    GROUP BY b.dia
-					  ) sub
-					  JOIN bloque_tiempo b ON b.bloque_tiempo_id = min_bloque_tiempo_id
-					) AS hora_fin,
-
-                   m.nombre AS materia_nombre,
-                   s.numero AS salon_numero,
-                   p.nombre AS profesor_nombre,
-                   p.primer_apellido AS profesor_primer_apellido,
-                   p.segundo_apellido AS profesor_segundo_apellido,
-                   r.obligatorio AS obligatorio,
-
-                   (SELECT ARRAY_AGG(dia ORDER BY min_bloque_tiempo_id)
-					  FROM (
-					    SELECT b.dia, MIN(gb.bloque_tiempo_id) AS min_bloque_tiempo_id
-					    FROM grupo_bloque_tiempo gb
-					    JOIN bloque_tiempo b ON b.bloque_tiempo_id = gb.bloque_tiempo_id
-					    WHERE gb.grupo_id = r.grupo_id
-					    GROUP BY b.dia
-					  ) sub
-					) AS dias
-            FROM resultado_inscripcion r
-            JOIN grupo g ON r.grupo_id = g.grupo_id
-            JOIN materia m ON g.materia_id = m.materia_id
-            JOIN profesor p ON g.profesor_id = p.ivd_id
-            JOIN salon s ON g.salon_id = s.salon_id
-            JOIN grupo_bloque_tiempo gb ON g.grupo_id = gb.grupo_id
-            WHERE r.alumno_id = $1 AND r.seleccionado = true
-            GROUP BY r.grupo_id, m.nombre, s.numero, p.nombre, 
-                p.primer_apellido, p.segundo_apellido, r.obligatorio
-            ORDER BY (SELECT MIN(gb.bloque_tiempo_id)
-					  FROM grupo_bloque_tiempo gb
-				      WHERE gb.grupo_id = r.grupo_id
-			) ASC;`
-            , [id]);
+      return pool.query(`
+        SELECT 
+          r.grupo_id AS grupo_id,
+    
+          -- hora de inicio de cada día, como JSONB
+          (
+            SELECT jsonb_agg(sub.hora_inicio ORDER BY sub.min_bt)
+            FROM (
+              SELECT 
+                b.hora_inicio,
+                MIN(gb.bloque_tiempo_id) AS min_bt
+              FROM grupo_bloque_tiempo gb
+              JOIN bloque_tiempo b 
+                ON b.bloque_tiempo_id = gb.bloque_tiempo_id
+              WHERE gb.grupo_id = r.grupo_id
+              GROUP BY b.dia, b.hora_inicio
+            ) AS sub
+          ) AS hora_inicio,
+    
+          -- hora de fin de cada día, como JSONB
+          (
+            SELECT jsonb_agg(sub.hora_fin ORDER BY sub.max_bt)
+            FROM (
+              SELECT 
+                b.hora_fin,
+                MAX(gb.bloque_tiempo_id) AS max_bt
+              FROM grupo_bloque_tiempo gb
+              JOIN bloque_tiempo b 
+                ON b.bloque_tiempo_id = gb.bloque_tiempo_id
+              WHERE gb.grupo_id = r.grupo_id
+              GROUP BY b.dia, b.hora_fin
+            ) AS sub
+          ) AS hora_fin,
+    
+          m.nombre               AS materia_nombre,
+          s.numero               AS salon_numero,
+          p.nombre               AS profesor_nombre,
+          p.primer_apellido      AS profesor_primer_apellido,
+          p.segundo_apellido     AS profesor_segundo_apellido,
+          r.obligatorio          AS obligatorio,
+          r.seleccionado         AS seleccionado,
+    
+          -- días ordenados según su primer bloque
+          (
+            SELECT jsonb_agg(sub2.dia ORDER BY sub2.min_bt)
+            FROM (
+              SELECT 
+                b.dia,
+                MIN(gb.bloque_tiempo_id) AS min_bt
+              FROM grupo_bloque_tiempo gb
+              JOIN bloque_tiempo b 
+                ON b.bloque_tiempo_id = gb.bloque_tiempo_id
+              WHERE gb.grupo_id = r.grupo_id
+              GROUP BY b.dia
+            ) AS sub2
+          ) AS dias
+    
+        FROM resultado_inscripcion r
+        JOIN grupo             g ON r.grupo_id   = g.grupo_id
+        JOIN materia           m ON g.materia_id = m.materia_id
+        JOIN profesor          p ON g.profesor_id= p.ivd_id
+        JOIN salon             s ON g.salon_id   = s.salon_id
+        JOIN grupo_bloque_tiempo gb ON gb.grupo_id= r.grupo_id
+    
+        WHERE r.alumno_id = $1
+          AND r.seleccionado = true
+    
+        GROUP BY 
+          r.grupo_id,
+          m.nombre,
+          s.numero,
+          p.nombre,
+          p.primer_apellido,
+          p.segundo_apellido,
+          r.obligatorio,
+          r.seleccionado
+    
+        ORDER BY (
+          SELECT MIN(gb2.bloque_tiempo_id)
+          FROM grupo_bloque_tiempo gb2
+          WHERE gb2.grupo_id = r.grupo_id
+        ) ASC;
+      `, [id]);
     }
     static async fetchAllResultadoAlumno2(id) {
       return pool.query(`
-                    SELECT r.grupo_id AS grupo_id,
-
-                   (SELECT ARRAY_AGG(bloque_tiempo_id_por_dias)
-					  FROM (
-					    SELECT ARRAY_AGG(gb.bloque_tiempo_id) AS bloque_tiempo_id_por_dias
-					    FROM grupo_bloque_tiempo gb
-					    JOIN bloque_tiempo b ON b.bloque_tiempo_id = gb.bloque_tiempo_id
-					    WHERE gb.grupo_id = r.grupo_id
-					    GROUP BY b.dia
-					  ) sub
-					) AS bloque_tiempo_id,
-
-                   m.nombre AS materia_nombre,
-                   s.numero AS salon_numero,
-                   p.nombre AS profesor_nombre,
-                   p.primer_apellido AS profesor_primer_apellido,
-                   p.segundo_apellido AS profesor_segundo_apellido,
-                   r.obligatorio AS obligatorio,
-
-                   (SELECT ARRAY_AGG(dia ORDER BY min_bloque_tiempo_id)
-					  FROM (
-					    SELECT b.dia, MIN(gb.bloque_tiempo_id) AS min_bloque_tiempo_id
-					    FROM grupo_bloque_tiempo gb
-					    JOIN bloque_tiempo b ON b.bloque_tiempo_id = gb.bloque_tiempo_id
-					    WHERE gb.grupo_id = r.grupo_id
-					    GROUP BY b.dia
-					  ) sub
-					) AS dias
-            FROM resultado_inscripcion r
-            JOIN grupo g ON r.grupo_id = g.grupo_id
-            JOIN materia m ON g.materia_id = m.materia_id
-            JOIN profesor p ON g.profesor_id = p.ivd_id
-            JOIN salon s ON g.salon_id = s.salon_id
-            JOIN grupo_bloque_tiempo gb ON g.grupo_id = gb.grupo_id
-            WHERE r.alumno_id = $1
-            GROUP BY r.grupo_id, m.nombre, s.numero, p.nombre, 
-                p.primer_apellido, p.segundo_apellido, r.obligatorio
-            ORDER BY (SELECT MIN(gb.bloque_tiempo_id)
-					  FROM grupo_bloque_tiempo gb
-				      WHERE gb.grupo_id = r.grupo_id
-			) ASC;`
-      , [id]);
-    }
+        SELECT 
+          r.grupo_id AS grupo_id,
+    
+          ( -- Agrupa por día y dentro de cada día ordena los bloques, luego ordena los días
+            SELECT jsonb_agg(sub.bloques ORDER BY sub.min_bt)
+            FROM (
+              SELECT
+                jsonb_agg(gb.bloque_tiempo_id ORDER BY gb.bloque_tiempo_id) AS bloques,
+                MIN(gb.bloque_tiempo_id)                          AS min_bt
+              FROM grupo_bloque_tiempo gb
+              JOIN bloque_tiempo b ON b.bloque_tiempo_id = gb.bloque_tiempo_id
+              WHERE gb.grupo_id = r.grupo_id
+              GROUP BY b.dia
+            ) AS sub
+          ) AS bloque_tiempo_id,
+    
+          m.nombre               AS materia_nombre,
+          s.numero               AS salon_numero,
+          p.nombre               AS profesor_nombre,
+          p.primer_apellido      AS profesor_primer_apellido,
+          p.segundo_apellido     AS profesor_segundo_apellido,
+          r.obligatorio          AS obligatorio,
+    
+          ( -- Lista de días en el mismo orden que los bloques
+            SELECT jsonb_agg(sub2.dia ORDER BY sub2.min_bt)
+            FROM (
+              SELECT
+                b.dia,
+                MIN(gb.bloque_tiempo_id) AS min_bt
+              FROM grupo_bloque_tiempo gb
+              JOIN bloque_tiempo b ON b.bloque_tiempo_id = gb.bloque_tiempo_id
+              WHERE gb.grupo_id = r.grupo_id
+              GROUP BY b.dia
+            ) AS sub2
+          ) AS dias
+    
+        FROM resultado_inscripcion r
+        JOIN grupo             g ON r.grupo_id    = g.grupo_id
+        JOIN materia           m ON g.materia_id  = m.materia_id
+        JOIN profesor          p ON g.profesor_id = p.ivd_id
+        JOIN salon             s ON g.salon_id    = s.salon_id
+        JOIN grupo_bloque_tiempo gb ON gb.grupo_id = g.grupo_id
+    
+        WHERE r.alumno_id = $1
+    
+        GROUP BY
+          r.grupo_id,
+          m.nombre,
+          s.numero,
+          p.nombre,
+          p.primer_apellido,
+          p.segundo_apellido,
+          r.obligatorio
+    
+        ORDER BY (
+          SELECT MIN(gb2.bloque_tiempo_id)
+          FROM grupo_bloque_tiempo gb2
+          WHERE gb2.grupo_id = r.grupo_id
+        ) ASC;
+      `, [id]);
+    }    
 
     static async fetchAllResultadoAlumno(id) {
-        return pool.query(`
-            SELECT r.grupo_id AS grupo_id,
-
-                   (SELECT ARRAY_AGG(b.hora_inicio)
-					  FROM (
-					    SELECT MIN(gb.bloque_tiempo_id) AS min_bloque_tiempo_id
-					    FROM grupo_bloque_tiempo gb
-					    JOIN bloque_tiempo b ON b.bloque_tiempo_id = gb.bloque_tiempo_id
-					    WHERE gb.grupo_id = r.grupo_id
-					    GROUP BY b.dia
-					  ) sub
-					  JOIN bloque_tiempo b ON b.bloque_tiempo_id = min_bloque_tiempo_id
-					) AS hora_inicio,
-
-                   (SELECT ARRAY_AGG(b.hora_fin)
-					  FROM (
-					    SELECT MAX(gb.bloque_tiempo_id) AS min_bloque_tiempo_id
-					    FROM grupo_bloque_tiempo gb
-					    JOIN bloque_tiempo b ON b.bloque_tiempo_id = gb.bloque_tiempo_id
-					    WHERE gb.grupo_id = r.grupo_id
-					    GROUP BY b.dia
-					  ) sub
-					  JOIN bloque_tiempo b ON b.bloque_tiempo_id = min_bloque_tiempo_id
-					) AS hora_fin,
-
-                   m.nombre AS materia_nombre,
-                   s.numero AS salon_numero,
-                   p.nombre AS profesor_nombre,
-                   p.primer_apellido AS profesor_primer_apellido,
-                   p.segundo_apellido AS profesor_segundo_apellido,
-                   r.obligatorio AS obligatorio,
-
-                   (SELECT ARRAY_AGG(dia ORDER BY min_bloque_tiempo_id)
-					  FROM (
-					    SELECT b.dia, MIN(gb.bloque_tiempo_id) AS min_bloque_tiempo_id
-					    FROM grupo_bloque_tiempo gb
-					    JOIN bloque_tiempo b ON b.bloque_tiempo_id = gb.bloque_tiempo_id
-					    WHERE gb.grupo_id = r.grupo_id
-					    GROUP BY b.dia
-					  ) sub
-					) AS dias
-            FROM resultado_inscripcion r
-            JOIN grupo g ON r.grupo_id = g.grupo_id
-            JOIN materia m ON g.materia_id = m.materia_id
-            JOIN profesor p ON g.profesor_id = p.ivd_id
-            JOIN salon s ON g.salon_id = s.salon_id
-            JOIN grupo_bloque_tiempo gb ON g.grupo_id = gb.grupo_id
-            WHERE r.alumno_id = $1
-            GROUP BY r.grupo_id, m.nombre, s.numero, p.nombre, 
-                p.primer_apellido, p.segundo_apellido, r.obligatorio
-            ORDER BY (SELECT MIN(gb.bloque_tiempo_id)
-					  FROM grupo_bloque_tiempo gb
-				      WHERE gb.grupo_id = r.grupo_id
-			) ASC;`
-            , [id]);
+      return pool.query(`
+        SELECT 
+          r.grupo_id AS grupo_id,
+    
+          (
+            SELECT jsonb_agg(sub.hora_inicio ORDER BY sub.min_bt)
+            FROM (
+              SELECT 
+                b.hora_inicio,
+                MIN(gb.bloque_tiempo_id) AS min_bt
+              FROM grupo_bloque_tiempo gb
+              JOIN bloque_tiempo b 
+                ON b.bloque_tiempo_id = gb.bloque_tiempo_id
+              WHERE gb.grupo_id = r.grupo_id
+              GROUP BY b.dia, b.hora_inicio
+            ) AS sub
+          ) AS hora_inicio,
+    
+          (
+            SELECT jsonb_agg(sub.hora_fin ORDER BY sub.max_bt)
+            FROM (
+              SELECT 
+                b.hora_fin,
+                MAX(gb.bloque_tiempo_id) AS max_bt
+              FROM grupo_bloque_tiempo gb
+              JOIN bloque_tiempo b 
+                ON b.bloque_tiempo_id = gb.bloque_tiempo_id
+              WHERE gb.grupo_id = r.grupo_id
+              GROUP BY b.dia, b.hora_fin
+            ) AS sub
+          ) AS hora_fin,
+    
+          m.nombre               AS materia_nombre,
+          s.numero               AS salon_numero,
+          p.nombre               AS profesor_nombre,
+          p.primer_apellido      AS profesor_primer_apellido,
+          p.segundo_apellido     AS profesor_segundo_apellido,
+          r.obligatorio          AS obligatorio,
+    
+          (
+            SELECT jsonb_agg(sub2.dia ORDER BY sub2.min_bt)
+            FROM (
+              SELECT 
+                b.dia,
+                MIN(gb.bloque_tiempo_id) AS min_bt
+              FROM grupo_bloque_tiempo gb
+              JOIN bloque_tiempo b 
+                ON b.bloque_tiempo_id = gb.bloque_tiempo_id
+              WHERE gb.grupo_id = r.grupo_id
+              GROUP BY b.dia
+            ) AS sub2
+          ) AS dias
+    
+        FROM resultado_inscripcion r
+        JOIN grupo             g ON r.grupo_id   = g.grupo_id
+        JOIN materia           m ON g.materia_id = m.materia_id
+        JOIN profesor          p ON g.profesor_id= p.ivd_id
+        JOIN salon             s ON g.salon_id   = s.salon_id
+        JOIN grupo_bloque_tiempo gb ON gb.grupo_id= r.grupo_id
+    
+        WHERE r.alumno_id = $1
+    
+        GROUP BY 
+          r.grupo_id,
+          m.nombre,
+          s.numero,
+          p.nombre,
+          p.primer_apellido,
+          p.segundo_apellido,
+          r.obligatorio
+    
+        ORDER BY (
+          SELECT MIN(gb2.bloque_tiempo_id)
+          FROM grupo_bloque_tiempo gb2
+          WHERE gb2.grupo_id = r.grupo_id
+        ) ASC;
+      `, [id]);
     }
     
     static esRegular(alumno_id) {
@@ -369,219 +456,316 @@ module.exports = class Alumno {
     }
 
     static async fetchAllMateriasDisponiblesDelAlumno(id) {
-        return pool.query(`
-            SELECT r.grupo_id AS grupo_id,
-
-                   (SELECT ARRAY_AGG(b.hora_inicio)
-					  FROM (
-					    SELECT MIN(gb.bloque_tiempo_id) AS min_bloque_tiempo_id
-					    FROM grupo_bloque_tiempo gb
-					    JOIN bloque_tiempo b ON b.bloque_tiempo_id = gb.bloque_tiempo_id
-					    WHERE gb.grupo_id = r.grupo_id
-					    GROUP BY b.dia
-					  ) sub
-					  JOIN bloque_tiempo b ON b.bloque_tiempo_id = min_bloque_tiempo_id
-					) AS hora_inicio,
-
-                   (SELECT ARRAY_AGG(b.hora_fin)
-					  FROM (
-					    SELECT MAX(gb.bloque_tiempo_id) AS min_bloque_tiempo_id
-					    FROM grupo_bloque_tiempo gb
-					    JOIN bloque_tiempo b ON b.bloque_tiempo_id = gb.bloque_tiempo_id
-					    WHERE gb.grupo_id = r.grupo_id
-					    GROUP BY b.dia
-					  ) sub
-					  JOIN bloque_tiempo b ON b.bloque_tiempo_id = min_bloque_tiempo_id
-					) AS hora_fin,
-
-                   m.nombre AS materia_nombre,
-                   s.numero AS salon_numero,
-                   p.nombre AS profesor_nombre,
-                   p.primer_apellido AS profesor_primer_apellido,
-                   p.segundo_apellido AS profesor_segundo_apellido,
-                   r.obligatorio AS obligatorio,
-
-                   (SELECT ARRAY_AGG(dia ORDER BY min_bloque_tiempo_id)
-					  FROM (
-					    SELECT b.dia, MIN(gb.bloque_tiempo_id) AS min_bloque_tiempo_id
-					    FROM grupo_bloque_tiempo gb
-					    JOIN bloque_tiempo b ON b.bloque_tiempo_id = gb.bloque_tiempo_id
-					    WHERE gb.grupo_id = r.grupo_id
-					    GROUP BY b.dia
-					  ) sub
-					) AS dias
-            FROM resultado_inscripcion r
-            JOIN grupo g ON r.grupo_id = g.grupo_id
-            JOIN materia m ON g.materia_id = m.materia_id
-            JOIN profesor p ON g.profesor_id = p.ivd_id
-            JOIN salon s ON g.salon_id = s.salon_id
-            JOIN grupo_bloque_tiempo gb ON g.grupo_id = gb.grupo_id
-            WHERE r.alumno_id = $1 AND r.seleccionado = false
-            GROUP BY r.grupo_id, m.nombre, s.numero, p.nombre, 
-                p.primer_apellido, p.segundo_apellido, r.obligatorio
-            ORDER BY (SELECT MIN(gb.bloque_tiempo_id)
-					  FROM grupo_bloque_tiempo gb
-				      WHERE gb.grupo_id = r.grupo_id
-			) ASC;`
-            , [id]);
+      return pool.query(`
+        SELECT 
+          r.grupo_id AS grupo_id,
+    
+          -- hora_inicio como JSONB, ordenado por el primer bloque de cada día
+          (
+            SELECT jsonb_agg(sub.hora_inicio ORDER BY sub.min_bt)
+            FROM (
+              SELECT
+                b.hora_inicio,
+                MIN(gb.bloque_tiempo_id) AS min_bt
+              FROM grupo_bloque_tiempo gb
+              JOIN bloque_tiempo b ON b.bloque_tiempo_id = gb.bloque_tiempo_id
+              WHERE gb.grupo_id = r.grupo_id
+              GROUP BY b.dia, b.hora_inicio
+            ) AS sub
+          ) AS hora_inicio,
+    
+          -- hora_fin como JSONB, ordenado por el último bloque de cada día
+          (
+            SELECT jsonb_agg(sub.hora_fin ORDER BY sub.max_bt)
+            FROM (
+              SELECT
+                b.hora_fin,
+                MAX(gb.bloque_tiempo_id) AS max_bt
+              FROM grupo_bloque_tiempo gb
+              JOIN bloque_tiempo b ON b.bloque_tiempo_id = gb.bloque_tiempo_id
+              WHERE gb.grupo_id = r.grupo_id
+              GROUP BY b.dia, b.hora_fin
+            ) AS sub
+          ) AS hora_fin,
+    
+          -- bloques por día como JSONB matrices, con bloques internos ordenados y días ordenados
+          (
+            SELECT jsonb_agg(sub.bloques ORDER BY sub.min_bt)
+            FROM (
+              SELECT
+                jsonb_agg(gb.bloque_tiempo_id ORDER BY gb.bloque_tiempo_id) AS bloques,
+                MIN(gb.bloque_tiempo_id)                              AS min_bt
+              FROM grupo_bloque_tiempo gb
+              JOIN bloque_tiempo b ON b.bloque_tiempo_id = gb.bloque_tiempo_id
+              WHERE gb.grupo_id = r.grupo_id
+              GROUP BY b.dia
+            ) AS sub
+          ) AS bloque_tiempo_id,
+    
+          m.nombre               AS materia_nombre,
+          s.numero               AS salon_numero,
+          p.nombre               AS profesor_nombre,
+          p.primer_apellido      AS profesor_primer_apellido,
+          p.segundo_apellido     AS profesor_segundo_apellido,
+          r.obligatorio          AS obligatorio,
+    
+          -- días como JSONB, ordenados según el primer bloque de cada día
+          (
+            SELECT jsonb_agg(sub2.dia ORDER BY sub2.min_bt)
+            FROM (
+              SELECT
+                b.dia,
+                MIN(gb.bloque_tiempo_id) AS min_bt
+              FROM grupo_bloque_tiempo gb
+              JOIN bloque_tiempo b ON b.bloque_tiempo_id = gb.bloque_tiempo_id
+              WHERE gb.grupo_id = r.grupo_id
+              GROUP BY b.dia
+            ) AS sub2
+          ) AS dias
+    
+        FROM resultado_inscripcion r
+        JOIN grupo             g ON r.grupo_id    = g.grupo_id
+        JOIN materia           m ON g.materia_id  = m.materia_id
+        JOIN profesor          p ON g.profesor_id = p.ivd_id
+        JOIN salon             s ON g.salon_id    = s.salon_id
+        JOIN grupo_bloque_tiempo gb ON gb.grupo_id = g.grupo_id
+    
+        WHERE r.alumno_id = $1
+          AND r.seleccionado = false
+    
+        GROUP BY
+          r.grupo_id,
+          m.nombre,
+          s.numero,
+          p.nombre,
+          p.primer_apellido,
+          p.segundo_apellido,
+          r.obligatorio
+    
+        ORDER BY (
+          SELECT MIN(gb2.bloque_tiempo_id)
+          FROM grupo_bloque_tiempo gb2
+          WHERE gb2.grupo_id = r.grupo_id
+        ) ASC;
+      `, [id]);
     }
-
+    
     static async fetchAllMateriasDisponiblesDelAlumno2(id) {
       return pool.query(`
-          SELECT r.grupo_id AS grupo_id,
-
-                   (SELECT ARRAY_AGG(bloque_tiempo_id_por_dias)
-					  FROM (
-					    SELECT ARRAY_AGG(gb.bloque_tiempo_id) AS bloque_tiempo_id_por_dias
-					    FROM grupo_bloque_tiempo gb
-					    JOIN bloque_tiempo b ON b.bloque_tiempo_id = gb.bloque_tiempo_id
-					    WHERE gb.grupo_id = r.grupo_id
-					    GROUP BY b.dia
-					  ) sub
-					) AS bloque_tiempo_id,
-
-                 m.nombre AS materia_nombre,
-                 s.numero AS salon_numero,
-                 p.nombre AS profesor_nombre,
-                 p.primer_apellido AS profesor_primer_apellido,
-                 p.segundo_apellido AS profesor_segundo_apellido,
-                 r.obligatorio AS obligatorio,
-
-                 (SELECT ARRAY_AGG(dia ORDER BY min_bloque_tiempo_id)
-          FROM (
-            SELECT b.dia, MIN(gb.bloque_tiempo_id) AS min_bloque_tiempo_id
-            FROM grupo_bloque_tiempo gb
-            JOIN bloque_tiempo b ON b.bloque_tiempo_id = gb.bloque_tiempo_id
-            WHERE gb.grupo_id = r.grupo_id
-            GROUP BY b.dia
-          ) sub
-        ) AS dias
-          FROM resultado_inscripcion r
-          JOIN grupo g ON r.grupo_id = g.grupo_id
-          JOIN materia m ON g.materia_id = m.materia_id
-          JOIN profesor p ON g.profesor_id = p.ivd_id
-          JOIN salon s ON g.salon_id = s.salon_id
-          JOIN grupo_bloque_tiempo gb ON g.grupo_id = gb.grupo_id
-          WHERE r.alumno_id = $1 AND r.seleccionado = false
-          GROUP BY r.grupo_id, m.nombre, s.numero, p.nombre, 
-              p.primer_apellido, p.segundo_apellido, r.obligatorio
-          ORDER BY (SELECT MIN(gb.bloque_tiempo_id)
-          FROM grupo_bloque_tiempo gb
-            WHERE gb.grupo_id = r.grupo_id
-    ) ASC;`
-          , [id]);
-  }
-
+        SELECT 
+          r.grupo_id AS grupo_id,
+    
+          -- bloques por día como JSONB
+          (
+            SELECT jsonb_agg(sub.bloques ORDER BY sub.min_bt)
+            FROM (
+              SELECT
+                jsonb_agg(gb.bloque_tiempo_id ORDER BY gb.bloque_tiempo_id) AS bloques,
+                MIN(gb.bloque_tiempo_id)                              AS min_bt
+              FROM grupo_bloque_tiempo gb
+              JOIN bloque_tiempo b ON b.bloque_tiempo_id = gb.bloque_tiempo_id
+              WHERE gb.grupo_id = r.grupo_id
+              GROUP BY b.dia
+            ) AS sub
+          ) AS bloque_tiempo_id,
+    
+          m.nombre               AS materia_nombre,
+          s.numero               AS salon_numero,
+          p.nombre               AS profesor_nombre,
+          p.primer_apellido      AS profesor_primer_apellido,
+          p.segundo_apellido     AS profesor_segundo_apellido,
+          r.obligatorio          AS obligatorio,
+    
+          -- días como JSONB
+          (
+            SELECT jsonb_agg(sub2.dia ORDER BY sub2.min_bt)
+            FROM (
+              SELECT
+                b.dia,
+                MIN(gb.bloque_tiempo_id) AS min_bt
+              FROM grupo_bloque_tiempo gb
+              JOIN bloque_tiempo b ON b.bloque_tiempo_id = gb.bloque_tiempo_id
+              WHERE gb.grupo_id = r.grupo_id
+              GROUP BY b.dia
+            ) AS sub2
+          ) AS dias
+    
+        FROM resultado_inscripcion r
+        JOIN grupo             g ON r.grupo_id    = g.grupo_id
+        JOIN materia           m ON g.materia_id  = m.materia_id
+        JOIN profesor          p ON g.profesor_id = p.ivd_id
+        JOIN salon             s ON g.salon_id    = s.salon_id
+        JOIN grupo_bloque_tiempo gb ON gb.grupo_id = g.grupo_id
+    
+        WHERE r.alumno_id = $1
+          AND r.seleccionado = false
+    
+        GROUP BY
+          r.grupo_id,
+          m.nombre,
+          s.numero,
+          p.nombre,
+          p.primer_apellido,
+          p.segundo_apellido,
+          r.obligatorio
+    
+        ORDER BY (
+          SELECT MIN(gb2.bloque_tiempo_id)
+          FROM grupo_bloque_tiempo gb2
+          WHERE gb2.grupo_id = r.grupo_id
+        ) ASC;
+      `, [id]);
+    }
+    
     static async fetchAllMateriasDisponiblesCoordinador(id) {
       return pool.query(`
-          SELECT g.grupo_id AS grupo_id, 
-
-          (SELECT ARRAY_AGG(bloque_tiempo_id_por_dias)
-					  FROM (
-					    SELECT ARRAY_AGG(gb.bloque_tiempo_id) AS bloque_tiempo_id_por_dias
-					    FROM grupo_bloque_tiempo gb
-					    JOIN bloque_tiempo b ON b.bloque_tiempo_id = gb.bloque_tiempo_id
-					    WHERE gb.grupo_id = g.grupo_id
-					    GROUP BY b.dia
-					  ) sub
-					) AS bloque_tiempo_id,
-
-          m.nombre AS materia_nombre,
-          s.numero AS salon_numero,
-          p.nombre AS profesor_nombre,
-          p.primer_apellido AS profesor_primer_apellido,
-          p.segundo_apellido AS profesor_segundo_apellido,
-
-          (SELECT ARRAY_AGG(dia ORDER BY min_bloque_tiempo_id)
-          FROM (
-            SELECT b.dia, MIN(gb.bloque_tiempo_id) AS min_bloque_tiempo_id
-            FROM grupo_bloque_tiempo gb
-            JOIN bloque_tiempo b ON b.bloque_tiempo_id = gb.bloque_tiempo_id
-            WHERE gb.grupo_id = g.grupo_id
-            GROUP BY b.dia
-          ) sub
-        ) AS dias
-
-          FROM grupo g
-    JOIN materia_semestre ms ON ms.materia_id = g.materia_id
-          JOIN materia m ON ms.materia_id = m.materia_id
-          JOIN profesor p ON g.profesor_id = p.ivd_id
-          JOIN salon s ON g.salon_id = s.salon_id
-          JOIN grupo_bloque_tiempo gb ON g.grupo_id = gb.grupo_id
-          WHERE g.grupo_id NOT IN (
-        SELECT r.grupo_id
-        FROM resultado_inscripcion r
-        WHERE r.alumno_id = $1
-        ) AND
-          ms.materia_id IN (
-                  SELECT ha.materia_id
-                  FROM historial_academico ha
-                  WHERE ha.aprobado = false AND
-              ha.ivd_id = $1
-                )
-          GROUP BY g.grupo_id, m.nombre, s.numero, p.nombre, 
-              p.primer_apellido, p.segundo_apellido
-          ORDER BY (SELECT MIN(gb.bloque_tiempo_id)
-          FROM grupo_bloque_tiempo gb
-            WHERE gb.grupo_id = g.grupo_id
-    ) ASC;`
-          , [id]);
-  }
-
+        SELECT 
+          g.grupo_id AS grupo_id,
+    
+          -- bloques por día como JSONB
+          (
+            SELECT jsonb_agg(sub.bloques ORDER BY sub.min_bt)
+            FROM (
+              SELECT
+                jsonb_agg(gb.bloque_tiempo_id ORDER BY gb.bloque_tiempo_id) AS bloques,
+                MIN(gb.bloque_tiempo_id)                              AS min_bt
+              FROM grupo_bloque_tiempo gb
+              JOIN bloque_tiempo b ON b.bloque_tiempo_id = gb.bloque_tiempo_id
+              WHERE gb.grupo_id = g.grupo_id
+              GROUP BY b.dia
+            ) AS sub
+          ) AS bloque_tiempo_id,
+    
+          m.nombre               AS materia_nombre,
+          s.numero               AS salon_numero,
+          p.nombre               AS profesor_nombre,
+          p.primer_apellido      AS profesor_primer_apellido,
+          p.segundo_apellido     AS profesor_segundo_apellido,
+    
+          -- días como JSONB
+          (
+            SELECT jsonb_agg(sub2.dia ORDER BY sub2.min_bt)
+            FROM (
+              SELECT
+                b.dia,
+                MIN(gb.bloque_tiempo_id) AS min_bt
+              FROM grupo_bloque_tiempo gb
+              JOIN bloque_tiempo b ON b.bloque_tiempo_id = gb.bloque_tiempo_id
+              WHERE gb.grupo_id = g.grupo_id
+              GROUP BY b.dia
+            ) AS sub2
+          ) AS dias
+    
+        FROM grupo g
+        JOIN materia_semestre ms ON ms.materia_id = g.materia_id
+        JOIN materia           m  ON ms.materia_id = m.materia_id
+        JOIN profesor          p  ON g.profesor_id = p.ivd_id
+        JOIN salon             s  ON g.salon_id = s.salon_id
+        JOIN grupo_bloque_tiempo gb ON gb.grupo_id = g.grupo_id
+    
+        WHERE 
+          g.grupo_id NOT IN (
+            SELECT r.grupo_id
+            FROM resultado_inscripcion r
+            WHERE r.alumno_id = $1
+          )
+          AND ms.materia_id IN (
+            SELECT ha.materia_id
+            FROM historial_academico ha
+            WHERE ha.ivd_id = $1
+              AND ha.aprobado = false
+          )
+    
+        GROUP BY
+          g.grupo_id,
+          m.nombre,
+          s.numero,
+          p.nombre,
+          p.primer_apellido,
+          p.segundo_apellido
+    
+        ORDER BY (
+          SELECT MIN(gb2.bloque_tiempo_id)
+          FROM grupo_bloque_tiempo gb2
+          WHERE gb2.grupo_id = g.grupo_id
+        ) ASC;
+      `, [id]);
+    }
+    
     static async fetchAllMateriasDisponiblesDelAlumnoPorSemestre(semestre, id) {
-        return pool.query(`
-            SELECT g.grupo_id AS grupo_id, 
-            
-            (SELECT ARRAY_AGG(bloque_tiempo_id_por_dias)
-              FROM (
-                SELECT ARRAY_AGG(gb.bloque_tiempo_id) AS bloque_tiempo_id_por_dias
-                FROM grupo_bloque_tiempo gb
-                JOIN bloque_tiempo b ON b.bloque_tiempo_id = gb.bloque_tiempo_id
-                WHERE gb.grupo_id = g.grupo_id
-                GROUP BY b.dia
-              ) sub
-            ) AS bloque_tiempo_id,
-
-            m.nombre AS materia_nombre,
-            s.numero AS salon_numero,
-            p.nombre AS profesor_nombre,
-            p.primer_apellido AS profesor_primer_apellido,
-            p.segundo_apellido AS profesor_segundo_apellido,
-
-            (SELECT ARRAY_AGG(dia ORDER BY min_bloque_tiempo_id)
-					  FROM (
-					    SELECT b.dia, MIN(gb.bloque_tiempo_id) AS min_bloque_tiempo_id
-					    FROM grupo_bloque_tiempo gb
-					    JOIN bloque_tiempo b ON b.bloque_tiempo_id = gb.bloque_tiempo_id
-					    WHERE gb.grupo_id = g.grupo_id
-					    GROUP BY b.dia
-					  ) sub
-					) AS dias
-          FROM grupo g
-          JOIN materia_semestre ms ON ms.materia_id = g.materia_id
-          JOIN materia m ON ms.materia_id = m.materia_id
-          JOIN profesor p ON g.profesor_id = p.ivd_id
-          JOIN salon s ON g.salon_id = s.salon_id
-          JOIN grupo_bloque_tiempo gb ON g.grupo_id = gb.grupo_id
-          WHERE ms.semestre_id = $1 AND 
-				  g.grupo_id NOT IN (
-					SELECT r.grupo_id
-					FROM resultado_inscripcion r
-          WHERE r.alumno_id = $2
-				  ) AND
-			      ms.materia_id IN (
-                    SELECT ha.materia_id
-                    FROM historial_academico ha
-                    WHERE ha.aprobado = false AND
-					      ha.ivd_id = $2
-                  )
-            GROUP BY g.grupo_id, m.nombre, s.numero, p.nombre, 
-                p.primer_apellido, p.segundo_apellido
-            ORDER BY (SELECT MIN(gb.bloque_tiempo_id)
-					  FROM grupo_bloque_tiempo gb
-				      WHERE gb.grupo_id = g.grupo_id
-			) ASC;`
-            , [semestre, id]);
+      return pool.query(`
+        SELECT 
+          g.grupo_id AS grupo_id,
+    
+          -- bloques por día como JSONB
+          (
+            SELECT jsonb_agg(sub.bloques ORDER BY sub.min_bt)
+            FROM (
+              SELECT
+                jsonb_agg(gb.bloque_tiempo_id ORDER BY gb.bloque_tiempo_id) AS bloques,
+                MIN(gb.bloque_tiempo_id)                              AS min_bt
+              FROM grupo_bloque_tiempo gb
+              JOIN bloque_tiempo b ON b.bloque_tiempo_id = gb.bloque_tiempo_id
+              WHERE gb.grupo_id = g.grupo_id
+              GROUP BY b.dia
+            ) AS sub
+          ) AS bloque_tiempo_id,
+    
+          m.nombre               AS materia_nombre,
+          s.numero               AS salon_numero,
+          p.nombre               AS profesor_nombre,
+          p.primer_apellido      AS profesor_primer_apellido,
+          p.segundo_apellido     AS profesor_segundo_apellido,
+    
+          -- días como JSONB
+          (
+            SELECT jsonb_agg(sub2.dia ORDER BY sub2.min_bt)
+            FROM (
+              SELECT
+                b.dia,
+                MIN(gb.bloque_tiempo_id) AS min_bt
+              FROM grupo_bloque_tiempo gb
+              JOIN bloque_tiempo b ON b.bloque_tiempo_id = gb.bloque_tiempo_id
+              WHERE gb.grupo_id = g.grupo_id
+              GROUP BY b.dia
+            ) AS sub2
+          ) AS dias
+    
+        FROM grupo g
+        JOIN materia_semestre ms ON ms.materia_id = g.materia_id
+        JOIN materia           m  ON ms.materia_id = m.materia_id
+        JOIN profesor          p  ON g.profesor_id = p.ivd_id
+        JOIN salon             s  ON g.salon_id = s.salon_id
+        JOIN grupo_bloque_tiempo gb ON gb.grupo_id = g.grupo_id
+    
+        WHERE 
+          ms.semestre_id = $1
+          AND g.grupo_id NOT IN (
+            SELECT r.grupo_id
+            FROM resultado_inscripcion r
+            WHERE r.alumno_id = $2
+          )
+          AND ms.materia_id IN (
+            SELECT ha.materia_id
+            FROM historial_academico ha
+            WHERE ha.ivd_id = $2
+              AND ha.aprobado = false
+          )
+    
+        GROUP BY
+          g.grupo_id,
+          m.nombre,
+          s.numero,
+          p.nombre,
+          p.primer_apellido,
+          p.segundo_apellido
+    
+        ORDER BY (
+          SELECT MIN(gb2.bloque_tiempo_id)
+          FROM grupo_bloque_tiempo gb2
+          WHERE gb2.grupo_id = g.grupo_id
+        ) ASC;
+      `, [semestre, id]);
     }
     static confirmar(id) {
         return pool.query('UPDATE alumno SET inscripcion_completada = true WHERE ivd_id = $1', [id]);

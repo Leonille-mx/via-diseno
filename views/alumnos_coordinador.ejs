@@ -551,15 +551,22 @@
       const classCards = document.querySelectorAll('.class-card');  
 
       function filterClassesByDay(day) {
-        classCards.forEach(card => {
-          const horasStr = card.getAttribute("data-horas");
-          const horasObj = JSON.parse(horasStr);
-          const indexDiaCard = card.getAttribute('data-days').split(',').indexOf(day);
-          card.style.display = card.getAttribute('data-days').includes(day) ? 'block' : 'none';
-          for (let horasArray of Object.values(horasObj)) {
+          classCards.forEach(card => {
+            const diasCorto = card.getAttribute("data-days")       // ej. "LU,JU"
+                                .split(",");
+            const horasObj  = JSON.parse(card.getAttribute("data-horas"));
+            const idx       = diasCorto.indexOf(day);              // 0 para LU, 1 para JU, etc.
+
+            if (idx === -1) {
+              card.style.display = "none";
+              return;
+            }
+
+            card.style.display = "block";
+            const horasArray = Object.values(horasObj)[idx] || [];
             card.querySelector(".hora-card").textContent = horasArray.join(", ");
-          }
-        });
+          });
+
         //Hover cuando se selecciona
         dayButtons.forEach(btn => {
           if (btn.getAttribute('data-day') === day) {

@@ -116,32 +116,42 @@ module.exports = class GenerarGruposGA {
             const profs = this.profesorMaterias[g.materia_id] || [];
             const validProf = profs.includes(profesor);
             const validBlocks = Array.isArray(bloques) && bloques.length === k && this.validarSesion(bloques);
+            const noOverlap = validBlocks && bloques.every(b => {
+                const profConflict = usedProf[profesor] && usedProf[profesor].has(b);
+                const semConflict = g.semestres.some(s => usedSem[s] && usedSem[s].has(b));
+                return !profConflict && !semConflict;
+            });
 
-            if (!validProf || !validBlocks) {
+            if (!validProf || !noOverlap) {
                 let best = null;
-                let bestDisp = [];
+                let bestFree = [];
                 for (const p of profs) {
                     const disp = this.profesorHorarios[p] || [];
                     if (!usedProf[p]) usedProf[p] = new Set();
-                    const free = disp.filter(b => !usedProf[p].has(b));
-                    if (free.length >= k && free.length > bestDisp.length) {
+                    const free = disp.filter(b => !usedProf[p].has(b) && !g.semestres.some(s => usedSem[s] && usedSem[s].has(b)));
+                    if (free.length >= k && free.length > bestFree.length) {
                         best = p;
-                        bestDisp = free;
+                        bestFree = free;
                     }
                 }
                 profesor = best;
-                bloques = profesor
-                    ? this.randomBloquesConsecutivos(bestDisp, k)
-                    : [];
+                bloques = profesor ? this.randomBloquesConsecutivos(bestFree, k) : [];
             }
 
-            if (profesor && bloques.length === k && this.validarSesion(bloques)) {
+            if (profesor && bloques.length === k && this.validarSesion(bloques) && bloques.every(b => {
+                const profConflict = usedProf[profesor] && usedProf[profesor].has(b);
+                const semConflict = g.semestres.some(s => usedSem[s] && usedSem[s].has(b));
+                return !profConflict && !semConflict;
+            })) {
                 if (!usedProf[profesor]) usedProf[profesor] = new Set();
                 bloques.forEach(b => usedProf[profesor].add(b));
                 for (const s of g.semestres) {
                     if (!usedSem[s]) usedSem[s] = new Set();
                     bloques.forEach(b => usedSem[s].add(b));
                 }
+            } else {
+                profesor = null;
+                bloques = [];
             }
 
             repaired.push({ ...g, profesor, bloques });
