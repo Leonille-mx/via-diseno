@@ -13,4 +13,6 @@ router.post('/olvido-contrasena', usuario_controller.enviarCorreoContrasena);
 router.get('/recuperar/:token', usuario_controller.mostrarFormularioNuevaContrasena);
 router.post('/recuperar', usuario_controller.guardarNuevaContrasena);
 
+router.post('/cerrar-sesion', usuario_controller.post_cerrar_session);
+
 module.exports = router;

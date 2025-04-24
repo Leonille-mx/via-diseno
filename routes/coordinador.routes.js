@@ -33,72 +33,35 @@ router.post('/grupos/eliminar/:id', coordinador_controller.post_eliminar_grupo);
 router.get('/grupos/modificar/:id', coordinador_controller.get_modificar_grupo);
 router.post('/grupos/modificar/:id', coordinador_controller.post_modificar_grupo);
 
-router.post('/profesores/modificar/:id', isAuth, coordinador_controller.post_modificar_profesor);
+router.get('/alumnos', coordinador_controller.get_alumnos);
+router.post('/alumnos/sincronizar', coordinador_controller.post_sincronizar_alumnos);
+router.get('/alumnos/consultar-horario/:id', coordinador_controller.get_alumno_horario);
+router.post('/alumnos/cambiar-estatus', coordinador_controller.post_cambiar_estatus);
+router.get('/alumnos/modificar-horario/:id', coordinador_controller.get_alumno_modificar_horario);
+router.get('/alumnos/modificar-horario/materias-disponibles/:semestre/:id', coordinador_controller.get_materias_disponibles);
+router.post('/alumnos/modificar-horario/eliminar-resultado', coordinador_controller.post_eliminar_materia_del_resultado);
+router.post('/alumnos/modificar-horario/agregar-resultado', coordinador_controller.post_agregar_materia_del_resultado);
+router.post('/alumnos/modificar-horario/modificar-obligacion', coordinador_controller.post_modificar_obligacion);
 
-router.get('/alumnos', isAuth, coordinador_controller.get_alumnos);
+router.get('/salones', coordinador_controller.get_salones);
+router.post('/salones', coordinador_controller.post_salones);
+router.post('/salones/eliminar/:id', coordinador_controller.post_eliminar_salon);
 
-router.post('/alumnos/sincronizar', isAuth, coordinador_controller.post_sincronizar_alumnos);
-
-router.get('/alumnos/consultar-horario/:id', isAuth, coordinador_controller.get_alumno_horario);
-
-router.post('/alumnos/cambiar-estatus', isAuth, coordinador_controller.post_cambiar_estatus);
-
-router.get('/alumnos/modificar-horario/:id', isAuth, coordinador_controller.get_alumno_modificar_horario);
-
-router.get('/alumnos/modificar-horario/materias-disponibles/:semestre/:id', isAuth, coordinador_controller.get_materias_disponibles);
-
-router.post('/alumnos/modificar-horario/eliminar-resultado', isAuth, coordinador_controller.post_eliminar_materia_del_resultado);
-
-router.post('/alumnos/modificar-horario/agregar-resultado', isAuth, coordinador_controller.post_agregar_materia_del_resultado);
-
-router.post('/alumnos/modificar-horario/modificar-obligacion', isAuth, coordinador_controller.post_modificar_obligacion);
-
-router.get('/salones', isAuth, coordinador_controller.get_salones);
-
-router.post('/salones', isAuth, coordinador_controller.post_salones);
-
-router.post('/salones/eliminar/:id', isAuth, coordinador_controller.post_eliminar_salon);
-
-router.get('/grupos', isAuth, coordinador_controller.get_grupos);
-
-router.post('/grupos', isAuth, coordinador_controller.post_grupos);
-
-router.get('/grupos/generar', isAuth, coordinador_controller.get_generar_grupos);
-
-router.post('/grupos/eliminar/:id', isAuth, coordinador_controller.post_eliminar_grupo);
-
-router.get('/grupos/modificar/:id', isAuth, coordinador_controller.get_modificar_grupo);
-
-router.post('/grupos/modificar/:id', isAuth, coordinador_controller.post_modificar_grupo);
-
-router.get('/alumnos', isAuth, coordinador_controller.get_alumnos);
-
-router.get('/solicitudes-cambio', isAuth, coordinador_controller.get_solicitudes_cambio);
-
-router.post('/solicitudes-cambio/aprobar/:id', isAuth, coordinador_controller.post_aprobar_solicitud);
-
-router.post('/solicitudes-cambio/rechazar/:id', isAuth, coordinador_controller.post_rechazar_solicitud);
-
-router.get('/ayuda', isAuth, coordinador_controller.get_ayuda);
-
-router.get('/ciclo-escolar', isAuth, coordinador_controller.get_cicloescolar);
-
-router.post('/ciclo-escolar/sincronizar', isAuth, coordinador_controller.postSincronizarCicloEscolar);
-
-router.post('/dashboard/sincronizar-planes-de-estudio', isAuth, coordinador_controller.post_sincronizar_planes_de_estudio);
+router.get('/grupos', coordinador_controller.get_grupos);
+router.post('/grupos', coordinador_controller.post_grupos);
+router.get('/grupos/generar', coordinador_controller.get_generar_grupos);
+router.post('/grupos/eliminar/:id', coordinador_controller.post_eliminar_grupo);
+router.get('/grupos/modificar/:id', coordinador_controller.get_modificar_grupo);
+router.post('/grupos/modificar/:id', coordinador_controller.post_modificar_grupo);
 
 router.get('/solicitudes-cambio', coordinador_controller.get_solicitudes_cambio);
-
 router.post('/solicitudes-cambio/aprobar/:id', coordinador_controller.post_aprobar_solicitud);
-
 router.post('/solicitudes-cambio/rechazar/:id', coordinador_controller.post_rechazar_solicitud);
 
 router.get('/ayuda', coordinador_controller.get_ayuda);
 
 router.get('/ciclo-escolar', coordinador_controller.get_cicloescolar);
-
 router.post('/ciclo-escolar/sincronizar', coordinador_controller.postSincronizarCicloEscolar);
-
 router.post('/dashboard/sincronizar-planes-de-estudio', coordinador_controller.post_sincronizar_planes_de_estudio);
 
 module.exports = router;

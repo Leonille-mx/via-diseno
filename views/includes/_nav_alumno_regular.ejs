@@ -29,15 +29,15 @@
                 </ul>
                 <div class="navbar-nav d-p-nav me-5">
                     <p class="m-0">
-                        <strong>
-                            Juan Alejandro Martínez Guerrero
-                        </strong>
-                        <a href="/usuario/iniciar-sesion">
-                            <img class="ms-2 me-3 img-exit" 
-                                src="/images/box-arrow-right.svg" 
-                                alt="Un logo para salir de la sesión"
-                            >
-                        </a>
+                        <strong class="text-center"><%= usuario?.nombre || 'Nombre no disponible' %></strong>
+                        <span>&nbsp|&nbsp</span>
+                        <form action="/usuario/cerrar-sesion" method="POST" style="display: inline;">
+                            <button type="submit" style="background: none; border: none; padding: 0;">
+                                <img class="ms-2 me-3 img-exit" 
+                                     src="/images/box-arrow-right.svg" 
+                                     alt="Un logo para salir de la sesión">
+                            </button>
+                        </form>
                     </p>
                 </div>
             </div>

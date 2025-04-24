@@ -5,10 +5,10 @@ const BloqueTiempo = require('../models/bloque_tiempo.model');
 
 exports.get_prevista_de_horario = async (req, res, next) => {
     try {
-        const materias_resultado = await Alumno.fetchAllResultadoAlumno2(req.session.matricula);
+        const materias_resultado = await Alumno.fetchAllResultadoAlumno2(req.session.usuario.id);
         const bloque_tiempo = await BloqueTiempo.fetchAllHoras();
         const bloqueTiempoMap = bloque_tiempo.rows[0]?.id_hora_map || {};
-        const inscripcion_completada = await Alumno.verificarInscripcionCompletada(req.session.matricula);
+        const inscripcion_completada = await Alumno.verificarInscripcionCompletada(req.session.usuario.id);
         const cicloActual = await CicloEscolar.fetchMostRecent();
 
         let cicloInfo = null;
@@ -24,7 +24,7 @@ exports.get_prevista_de_horario = async (req, res, next) => {
         }
         res.render('horario_alumno_regular', {
             isLoggedIn: req.session.isLoggedIn || false,
-            matricula: req.session.matricula || '',
+            matricula: req.session.usuario.id || '',
             materias_resultado: materias_resultado.rows,
             inscripcion_completada: inscripcion_completada,
             cicloEscolar: cicloInfo,
@@ -40,12 +40,12 @@ exports.get_prevista_de_horario = async (req, res, next) => {
 exports.get_ayuda = (req, res, nxt) => {
     res.render('ayuda_alumno_regular', {
         isLoggedIn: req.session.isLoggedIn || false,
-        matricula: req.session.matricula || '',
+        matricula: req.session.usuario.id || '',
     });
 };
 
 exports.post_confirmar_horario= async (req, res, nxt) => {
-    Alumno.confirmar(req.session.matricula)
+    Alumno.confirmar(req.session.usuario.id)
     .then (( ) => {
         res.redirect('/alumno-regular/horario');
     })
@@ -56,7 +56,7 @@ exports.post_confirmar_horario= async (req, res, nxt) => {
 
 exports.post_solicitud_cambio = async (req, res, nxt) => {
     const { descripcion } = req.body;  
-    Alumno.solicitudCambio(req.session.matricula, descripcion)
+    Alumno.solicitudCambio(req.session.usuario.id, descripcion)
     .then(() => {
         res.redirect('/alumno-regular/horario');
     })

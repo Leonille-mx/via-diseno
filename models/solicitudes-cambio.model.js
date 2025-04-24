@@ -55,6 +55,34 @@ module.exports = class Solicitud {
             sc.created_at::timestamp ASC
     `);
   }
+  
+  static fetchActivosPorCarrera(carrera_id) {
+    return pool.query(`
+        SELECT 
+            sc.solicitud_cambio_id, 
+            sc.descripcion, 
+            sc.aprobada, 
+            sc.created_at, 
+            sc.ivd_id,
+            u.nombre, 
+            u.primer_apellido,
+            u.correo_institucional
+        FROM 
+            solicitud_cambio sc
+        JOIN 
+            usuario u ON sc.ivd_id = u.ivd_id
+        JOIN 
+            alumno a ON a.ivd_id = u.ivd_id
+        JOIN 
+            plan_estudio p ON p.plan_estudio_id = a.plan_estudio_id
+        WHERE 
+            sc.aprobada = false 
+            AND
+            p.carrera_id = $1
+        ORDER BY 
+            sc.created_at::timestamp ASC
+    `, [carrera_id]);
+  }
 
   static aprobar(id) {
     return Promise.all([

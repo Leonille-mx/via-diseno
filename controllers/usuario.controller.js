@@ -49,7 +49,7 @@ exports.post_login = async (req, res, nxt) => {
         req.session.usuario = {
             id: usuario.ivd_id,
             rol_id: usuario.role_id,
-            nombre: `${usuario.nombre} ${usuario.primer_apellido} ${usuario.segundo_apellido}`,
+            nombre: `${usuario.nombre} ${usuario.primer_apellido} ${usuario.segundo_apellido ? usuario.segundo_apellido : ''}`,
             correo: usuario.correo_institucional
         };
           
@@ -140,4 +140,9 @@ exports.guardarNuevaContrasena = async (req, res) => {
     res.redirect('/usuario/iniciar-sesion');
 };
 
-
+exports.post_cerrar_session = (req, res) => {
+    req.session.destroy(err => {
+        if (err) return res.redirect('/');
+        res.redirect('/usuario/iniciar-sesion');
+    });
+};

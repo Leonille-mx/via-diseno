@@ -73,6 +73,19 @@ module.exports = class Alumno {
         return await pool.query(query);
     }
 
+    static async fetchAllRegularesPorCarrera(carrera_id) {
+      const query = `
+          SELECT *
+          FROM alumno a
+          JOIN usuario u ON a.ivd_id = u.ivd_id
+          JOIN plan_estudio p ON p.plan_estudio_id = a.plan_estudio_id
+          WHERE a.regular = true AND
+                p.carrera_id = $1
+          ORDER BY a.ivd_id ASC
+      `;
+      return await pool.query(query, [carrera_id]);
+    }
+
     static async fetchAllIrregulares() {
         const query = `
             SELECT *,
@@ -80,12 +93,29 @@ module.exports = class Alumno {
                    FROM resultado_inscripcion
                    WHERE alumno_id = a.ivd_id)
                   AS asignada
-            FROM alumno a, usuario u
+            FROM alumno a
             WHERE a.ivd_id = u.ivd_id AND
                   a.regular = false
             ORDER BY a.ivd_id ASC
         `;
         return await pool.query(query);
+    }
+    
+    static async fetchAllIrregularesPorCarrera(carrera_id) {
+      const query = `
+          SELECT *,
+                (SELECT COUNT(alumno_id) > 0 AS result
+                  FROM resultado_inscripcion
+                  WHERE alumno_id = a.ivd_id)
+                AS asignada
+          FROM alumno a
+          JOIN usuario u ON a.ivd_id = u.ivd_id
+          JOIN plan_estudio p ON p.plan_estudio_id = a.plan_estudio_id
+          WHERE a.regular = false AND
+                p.carrera_id = $1
+          ORDER BY a.ivd_id ASC
+      `;
+      return await pool.query(query, [carrera_id]);
     }
 
     static async fetchNumeroIrregularesConMaterias() {

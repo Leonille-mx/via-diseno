@@ -15,9 +15,9 @@ router.post('/modificar-horario/eliminar-resultado', irregular_controller.post_e
 
 router.post('/modificar-horario/agregar-resultado', irregular_controller.post_agregar_materia_del_resultado);
 
-router.get('/resultado-de-inscripcion', isAuth, irregular_controller.get_resultado_de_horario);
+router.get('/resultado-de-inscripcion', irregular_controller.get_resultado_de_horario);
 
-router.post('/confirmar-horario', isAuth, irregular_controller.post_confirmar_horario);
+router.post('/confirmar-horario', irregular_controller.post_confirmar_horario);
 
 router.get('/prevista-horario', irregular_controller.get_prevista_horario);
 

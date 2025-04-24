@@ -14,6 +14,7 @@ const Historial_Academico = require('../models/historial_academico.model.js');
 const Solicitud = require('../models/solicitudes-cambio.model.js');
 const ResultadoInscripcion = require('../models/resultado_inscripcion.model.js');
 const BloqueTiempo = require('../models/bloque_tiempo.model.js');
+const Coordinador = require('../models/coordinador.model.js');
 const { getAllProfessors, getAllCourses, getAllStudents, getCiclosEscolares, getAllDegree, getAllAcademyHistory} = require('../util/adminApiClient.js');
 
 
@@ -62,7 +63,8 @@ exports.get_dashboard = async (req, res) => {
 
 exports.get_materias = async (req, res, nxt) => {
     try {
-        const materiasSemestreDB = await MateriaSemestre.fetchMateriasSemestre();
+        const carreraCoordinador = await Coordinador.getCarrera(req.session.usuario.id);
+        const materiasSemestreDB = await MateriaSemestre.fetchMateriasSemestrePorCarrera(carreraCoordinador.rows[0].carrera_id);
         
         // Si hay query string, lo guarda en la variable msg
         const msg = req.query.msg || null;
@@ -419,9 +421,10 @@ exports.post_modificar_grupo = async (req, res, next) => {
 
 
 exports.get_alumnos = async (req, res, nxt) => {
+    const carreraCoordinador = await Coordinador.getCarrera(req.session.usuario.id);
     try {
-        const alumnosRegularesDB = await Alumno.fetchAllRegulares(); 
-        const alumnosIrregularesDB = await Alumno.fetchAllIrregulares();
+        const alumnosRegularesDB = await Alumno.fetchAllRegularesPorCarrera(carreraCoordinador.rows[0].carrera_id); 
+        const alumnosIrregularesDB = await Alumno.fetchAllIrregularesPorCarrera(carreraCoordinador.rows[0].carrera_id);
         const msg = req.query.msg || null;
         res.render('alumnos_coordinador', {
             alumnosRegulares: alumnosRegularesDB.rows,
@@ -752,8 +755,9 @@ exports.post_sincronizar_planes_de_estudio = async (req, res) => {
 }
 
 exports.get_solicitudes_cambio = async (req, res, next) => {
+    const carreraCoordinador = await Coordinador.getCarrera(req.session.usuario.id);
     try {
-        const solicitudesActivas = await Solicitud.fetchActivos();
+        const solicitudesActivas = await Solicitud.fetchActivosPorCarrera(carreraCoordinador.rows[0].carrera_id);
         const msg = req.query.msg || null;
 
         res.render('solicitudes_cambio_coordinador', {
