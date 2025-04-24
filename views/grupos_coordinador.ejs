@@ -63,10 +63,11 @@
           <thead class="table-light">
             <tr>
               <th scope="col" style="width: 15%; min-width: 100px;" class="text-center align-middle">Grupo</th>
-              <th scope="col" style="width: 25%; min-width: 100px;" class="text-center align-middle">Materia</th>
-              <th scope="col" style="width: 25%; min-width: 100px;" class="text-center align-middle">Profesor</th>
-              <th scope="col" style="width: 14%; min-width: 150px;" class="text-center align-middle">Salón</th>
-              <th scope="col" style="width: 14%; min-width: 100px;" class="text-center align-middle">Ciclo Escolar</th>
+              <th scope="col" style="width: 20%; min-width: 100px;" class="text-center align-middle">Materia</th>
+              <th scope="col" style="width: 20%; min-width: 100px;" class="text-center align-middle">Carrera</th>
+              <th scope="col" style="width: 20%; min-width: 100px;" class="text-center align-middle">Profesor</th>
+              <th scope="col" style="width: 12%; min-width: 150px;" class="text-center align-middle">Salón</th>
+              <th scope="col" style="width: 12%; min-width: 100px;" class="text-center align-middle">Ciclo Escolar</th>
               <th scope="col" style="width: 4%; min-width: 50px;" class="text-center align-middle"></th>
               <th scope="col" style="width: 4%; min-width: 50px;" class="text-center align-middle"></th>
             </tr>
@@ -75,15 +76,16 @@
             <% for (let grupo of grupos.filter(g => g.semestre_id === 's1')) { %>
               <tr>
                 <th scope="row" class="text-center align-middle"><%= grupo.grupo_id %></th>
-            <td class="text-center align-middle"><%= grupo.materia %></td>
-            <td class="text-center align-middle"><%= grupo.nombre + ' ' + grupo.primer_apellido + ' ' + grupo.segundo_apellido %></td>
-            <% if (grupo.numero === 9999) { %>
-              <td class="text-center align-middle">No Asignado</td>
-            <% } else { %>
-              <td class="text-center align-middle"><%= grupo.numero %></td>
-            <% } %>
-            <td class="text-center align-middle"><%= grupo.code %></td>
-            <td class="text-center align-middle">
+                <td class="text-center align-middle"><%= grupo.materia %></td>
+                <td class="text-center align-middle"><%= grupo.carrera_nombre %></td>
+                <td class="text-center align-middle"><%= grupo.nombre + ' ' + grupo.primer_apellido + ' ' + grupo.segundo_apellido %></td>
+                <% if (grupo.numero === 9999) { %>
+                  <td class="text-center align-middle">No Asignado</td>
+                <% } else { %>
+                  <td class="text-center align-middle"><%= grupo.numero %></td>
+                <% } %>
+                <td class="text-center align-middle"><%= grupo.code %></td>
+                <td class="text-center align-middle">
                   <button class="btn btn-sm p-0 d-flex align-items-center justify-content-center"
                           style="width: 1.5rem; height: 1.5rem; border-radius: 50%; background-color: #84251c; color: white; border: none;"
                           data-bs-toggle="modal" data-bs-target="#viewModal"
@@ -123,10 +125,11 @@
           <thead class="table-light">
             <tr>
               <th scope="col" style="width: 15%; min-width: 100px;" class="text-center align-middle">Grupo</th>
-              <th scope="col" style="width: 25%; min-width: 100px;" class="text-center align-middle">Materia</th>
-              <th scope="col" style="width: 25%; min-width: 100px;" class="text-center align-middle">Profesor</th>
-              <th scope="col" style="width: 14%; min-width: 150px;" class="text-center align-middle">Salón</th>
-              <th scope="col" style="width: 14%; min-width: 100px;" class="text-center align-middle">Ciclo Escolar</th>
+              <th scope="col" style="width: 20%; min-width: 100px;" class="text-center align-middle">Materia</th>
+              <th scope="col" style="width: 20%; min-width: 100px;" class="text-center align-middle">Carrera</th>
+              <th scope="col" style="width: 20%; min-width: 100px;" class="text-center align-middle">Profesor</th>
+              <th scope="col" style="width: 12%; min-width: 150px;" class="text-center align-middle">Salón</th>
+              <th scope="col" style="width: 12%; min-width: 100px;" class="text-center align-middle">Ciclo Escolar</th>
               <th scope="col" style="width: 4%; min-width: 50px;" class="text-center align-middle"></th>
               <th scope="col" style="width: 4%; min-width: 50px;" class="text-center align-middle"></th>
             </tr>
@@ -136,6 +139,7 @@
               <tr>
                 <th scope="row" class="text-center align-middle"><%= grupo.grupo_id %></th>
                 <td class="text-center align-middle"><%= grupo.materia %></td>
+                <td class="text-center align-middle"><%= grupo.carrera_nombre %></td>
                 <td class="text-center align-middle"><%= grupo.nombre + ' ' + grupo.primer_apellido + ' ' + grupo.segundo_apellido %></td>
                 <% if (grupo.numero === 9999) { %>
                   <td class="text-center align-middle">No Asignado</td>
@@ -183,10 +187,11 @@
           <thead class="table-light">
             <tr>
               <th scope="col" style="width: 15%; min-width: 100px;" class="text-center align-middle">Grupo</th>
-              <th scope="col" style="width: 25%; min-width: 100px;" class="text-center align-middle">Materia</th>
-              <th scope="col" style="width: 25%; min-width: 100px;" class="text-center align-middle">Profesor</th>
-              <th scope="col" style="width: 14%; min-width: 150px;" class="text-center align-middle">Salón</th>
-              <th scope="col" style="width: 14%; min-width: 100px;" class="text-center align-middle">Ciclo Escolar</th>
+              <th scope="col" style="width: 20%; min-width: 100px;" class="text-center align-middle">Materia</th>
+              <th scope="col" style="width: 20%; min-width: 100px;" class="text-center align-middle">Carrera</th>
+              <th scope="col" style="width: 20%; min-width: 100px;" class="text-center align-middle">Profesor</th>
+              <th scope="col" style="width: 12%; min-width: 150px;" class="text-center align-middle">Salón</th>
+              <th scope="col" style="width: 12%; min-width: 100px;" class="text-center align-middle">Ciclo Escolar</th>
               <th scope="col" style="width: 4%; min-width: 50px;" class="text-center align-middle"></th>
               <th scope="col" style="width: 4%; min-width: 50px;" class="text-center align-middle"></th>
             </tr>
@@ -196,6 +201,7 @@
               <tr>
                 <th scope="row" class="text-center align-middle"><%= grupo.grupo_id %></th>
                 <td class="text-center align-middle"><%= grupo.materia %></td>
+                <td class="text-center align-middle"><%= grupo.carrera_nombre %></td>
                 <td class="text-center align-middle"><%= grupo.nombre + ' ' + grupo.primer_apellido + ' ' + grupo.segundo_apellido %></td>
                 <% if (grupo.numero === 9999) { %>
                   <td class="text-center align-middle">No Asignado</td>
@@ -242,10 +248,11 @@
           <thead class="table-light">
             <tr>
               <th scope="col" style="width: 15%; min-width: 100px;" class="text-center align-middle">Grupo</th>
-              <th scope="col" style="width: 25%; min-width: 100px;" class="text-center align-middle">Materia</th>
-              <th scope="col" style="width: 25%; min-width: 100px;" class="text-center align-middle">Profesor</th>
-              <th scope="col" style="width: 14%; min-width: 150px;" class="text-center align-middle">Salón</th>
-              <th scope="col" style="width: 14%; min-width: 100px;" class="text-center align-middle">Ciclo Escolar</th>
+              <th scope="col" style="width: 20%; min-width: 100px;" class="text-center align-middle">Materia</th>
+              <th scope="col" style="width: 20%; min-width: 100px;" class="text-center align-middle">Carrera</th>
+              <th scope="col" style="width: 20%; min-width: 100px;" class="text-center align-middle">Profesor</th>
+              <th scope="col" style="width: 12%; min-width: 150px;" class="text-center align-middle">Salón</th>
+              <th scope="col" style="width: 12%; min-width: 100px;" class="text-center align-middle">Ciclo Escolar</th>
               <th scope="col" style="width: 4%; min-width: 50px;" class="text-center align-middle"></th>
               <th scope="col" style="width: 4%; min-width: 50px;" class="text-center align-middle"></th>
             </tr>
@@ -255,6 +262,7 @@
               <tr>
                 <th scope="row" class="text-center align-middle"><%= grupo.grupo_id %></th>
                 <td class="text-center align-middle"><%= grupo.materia %></td>
+                <td class="text-center align-middle"><%= grupo.carrera_nombre %></td>
                 <td class="text-center align-middle"><%= grupo.nombre + ' ' + grupo.primer_apellido + ' ' + grupo.segundo_apellido %></td>
                 <% if (grupo.numero === 9999) { %>
                   <td class="text-center align-middle">No Asignado</td>
@@ -301,10 +309,11 @@
           <thead class="table-light">
             <tr>
               <th scope="col" style="width: 15%; min-width: 100px;" class="text-center align-middle">Grupo</th>
-              <th scope="col" style="width: 25%; min-width: 100px;" class="text-center align-middle">Materia</th>
-              <th scope="col" style="width: 25%; min-width: 100px;" class="text-center align-middle">Profesor</th>
-              <th scope="col" style="width: 14%; min-width: 150px;" class="text-center align-middle">Salón</th>
-              <th scope="col" style="width: 14%; min-width: 100px;" class="text-center align-middle">Ciclo Escolar</th>
+              <th scope="col" style="width: 20%; min-width: 100px;" class="text-center align-middle">Materia</th>
+              <th scope="col" style="width: 20%; min-width: 100px;" class="text-center align-middle">Carrera</th>
+              <th scope="col" style="width: 20%; min-width: 100px;" class="text-center align-middle">Profesor</th>
+              <th scope="col" style="width: 12%; min-width: 150px;" class="text-center align-middle">Salón</th>
+              <th scope="col" style="width: 12%; min-width: 100px;" class="text-center align-middle">Ciclo Escolar</th>
               <th scope="col" style="width: 4%; min-width: 50px;" class="text-center align-middle"></th>
               <th scope="col" style="width: 4%; min-width: 50px;" class="text-center align-middle"></th>
             </tr>
@@ -314,6 +323,7 @@
               <tr>
                 <th scope="row" class="text-center align-middle"><%= grupo.grupo_id %></th>
                 <td class="text-center align-middle"><%= grupo.materia %></td>
+                <td class="text-center align-middle"><%= grupo.carrera_nombre %></td>
                 <td class="text-center align-middle"><%= grupo.nombre + ' ' + grupo.primer_apellido + ' ' + grupo.segundo_apellido %></td>
                 <% if (grupo.numero === 9999) { %>
                   <td class="text-center align-middle">No Asignado</td>
@@ -360,10 +370,11 @@
           <thead class="table-light">
             <tr>
               <th scope="col" style="width: 15%; min-width: 100px;" class="text-center align-middle">Grupo</th>
-              <th scope="col" style="width: 25%; min-width: 100px;" class="text-center align-middle">Materia</th>
-              <th scope="col" style="width: 25%; min-width: 100px;" class="text-center align-middle">Profesor</th>
-              <th scope="col" style="width: 14%; min-width: 150px;" class="text-center align-middle">Salón</th>
-              <th scope="col" style="width: 14%; min-width: 100px;" class="text-center align-middle">Ciclo Escolar</th>
+              <th scope="col" style="width: 20%; min-width: 100px;" class="text-center align-middle">Materia</th>
+              <th scope="col" style="width: 20%; min-width: 100px;" class="text-center align-middle">Carrera</th>
+              <th scope="col" style="width: 20%; min-width: 100px;" class="text-center align-middle">Profesor</th>
+              <th scope="col" style="width: 12%; min-width: 150px;" class="text-center align-middle">Salón</th>
+              <th scope="col" style="width: 12%; min-width: 100px;" class="text-center align-middle">Ciclo Escolar</th>
               <th scope="col" style="width: 4%; min-width: 50px;" class="text-center align-middle"></th>
               <th scope="col" style="width: 4%; min-width: 50px;" class="text-center align-middle"></th>
             </tr>
@@ -373,6 +384,7 @@
               <tr>
                 <th scope="row" class="text-center align-middle"><%= grupo.grupo_id %></th>
                 <td class="text-center align-middle"><%= grupo.materia %></td>
+                <td class="text-center align-middle"><%= grupo.carrera_nombre %></td>
                 <td class="text-center align-middle"><%= grupo.nombre + ' ' + grupo.primer_apellido + ' ' + grupo.segundo_apellido %></td>
                 <% if (grupo.numero === 9999) { %>
                   <td class="text-center align-middle">No Asignado</td>
@@ -419,10 +431,11 @@
           <thead class="table-light">
             <tr>
               <th scope="col" style="width: 15%; min-width: 100px;" class="text-center align-middle">Grupo</th>
-              <th scope="col" style="width: 25%; min-width: 100px;" class="text-center align-middle">Materia</th>
-              <th scope="col" style="width: 25%; min-width: 100px;" class="text-center align-middle">Profesor</th>
-              <th scope="col" style="width: 14%; min-width: 150px;" class="text-center align-middle">Salón</th>
-              <th scope="col" style="width: 14%; min-width: 100px;" class="text-center align-middle">Ciclo Escolar</th>
+              <th scope="col" style="width: 20%; min-width: 100px;" class="text-center align-middle">Materia</th>
+              <th scope="col" style="width: 20%; min-width: 100px;" class="text-center align-middle">Carrera</th>
+              <th scope="col" style="width: 20%; min-width: 100px;" class="text-center align-middle">Profesor</th>
+              <th scope="col" style="width: 12%; min-width: 150px;" class="text-center align-middle">Salón</th>
+              <th scope="col" style="width: 12%; min-width: 100px;" class="text-center align-middle">Ciclo Escolar</th>
               <th scope="col" style="width: 4%; min-width: 50px;" class="text-center align-middle"></th>
               <th scope="col" style="width: 4%; min-width: 50px;" class="text-center align-middle"></th>
             </tr>
@@ -432,6 +445,7 @@
               <tr>
                 <th scope="row" class="text-center align-middle"><%= grupo.grupo_id %></th>
                 <td class="text-center align-middle"><%= grupo.materia %></td>
+                <td class="text-center align-middle"><%= grupo.carrera_nombre %></td>
                 <td class="text-center align-middle"><%= grupo.nombre + ' ' + grupo.primer_apellido + ' ' + grupo.segundo_apellido %></td>
                 <% if (grupo.numero === 9999) { %>
                   <td class="text-center align-middle">No Asignado</td>
@@ -478,10 +492,11 @@
           <thead class="table-light">
             <tr>
               <th scope="col" style="width: 15%; min-width: 100px;" class="text-center align-middle">Grupo</th>
-              <th scope="col" style="width: 25%; min-width: 100px;" class="text-center align-middle">Materia</th>
-              <th scope="col" style="width: 25%; min-width: 100px;" class="text-center align-middle">Profesor</th>
-              <th scope="col" style="width: 14%; min-width: 150px;" class="text-center align-middle">Salón</th>
-              <th scope="col" style="width: 14%; min-width: 100px;" class="text-center align-middle">Ciclo Escolar</th>
+              <th scope="col" style="width: 20%; min-width: 100px;" class="text-center align-middle">Materia</th>
+              <th scope="col" style="width: 20%; min-width: 100px;" class="text-center align-middle">Carrera</th>
+              <th scope="col" style="width: 20%; min-width: 100px;" class="text-center align-middle">Profesor</th>
+              <th scope="col" style="width: 12%; min-width: 150px;" class="text-center align-middle">Salón</th>
+              <th scope="col" style="width: 12%; min-width: 100px;" class="text-center align-middle">Ciclo Escolar</th>
               <th scope="col" style="width: 4%; min-width: 50px;" class="text-center align-middle"></th>
               <th scope="col" style="width: 4%; min-width: 50px;" class="text-center align-middle"></th>
             </tr>
@@ -491,6 +506,7 @@
               <tr>
                 <th scope="row" class="text-center align-middle"><%= grupo.grupo_id %></th>
                 <td class="text-center align-middle"><%= grupo.materia %></td>
+                <td class="text-center align-middle"><%= grupo.carrera_nombre %></td>
                 <td class="text-center align-middle"><%= grupo.nombre + ' ' + grupo.primer_apellido + ' ' + grupo.segundo_apellido %></td>
                 <% if (grupo.numero === 9999) { %>
                   <td class="text-center align-middle">No Asignado</td>
@@ -537,10 +553,11 @@
           <thead class="table-light">
             <tr>
               <th scope="col" style="width: 15%; min-width: 100px;" class="text-center align-middle">Grupo</th>
-              <th scope="col" style="width: 25%; min-width: 100px;" class="text-center align-middle">Materia</th>
-              <th scope="col" style="width: 25%; min-width: 100px;" class="text-center align-middle">Profesor</th>
-              <th scope="col" style="width: 14%; min-width: 150px;" class="text-center align-middle">Salón</th>
-              <th scope="col" style="width: 14%; min-width: 100px;" class="text-center align-middle">Ciclo Escolar</th>
+              <th scope="col" style="width: 20%; min-width: 100px;" class="text-center align-middle">Materia</th>
+              <th scope="col" style="width: 20%; min-width: 100px;" class="text-center align-middle">Carrera</th>
+              <th scope="col" style="width: 20%; min-width: 100px;" class="text-center align-middle">Profesor</th>
+              <th scope="col" style="width: 12%; min-width: 150px;" class="text-center align-middle">Salón</th>
+              <th scope="col" style="width: 12%; min-width: 100px;" class="text-center align-middle">Ciclo Escolar</th>
               <th scope="col" style="width: 4%; min-width: 50px;" class="text-center align-middle"></th>
               <th scope="col" style="width: 4%; min-width: 50px;" class="text-center align-middle"></th>
             </tr>
@@ -550,6 +567,7 @@
               <tr>
                 <th scope="row" class="text-center align-middle"><%= grupo.grupo_id %></th>
                 <td class="text-center align-middle"><%= grupo.materia %></td>
+                <td class="text-center align-middle"><%= grupo.carrera_nombre %></td>
                 <td class="text-center align-middle"><%= grupo.nombre + ' ' + grupo.primer_apellido + ' ' + grupo.segundo_apellido %></td>
                 <% if (grupo.numero === 9999) { %>
                   <td class="text-center align-middle">No Asignado</td>
