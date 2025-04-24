@@ -26,7 +26,6 @@ exports.get_modificar_horario = async (req, res, nxt) => {
             isLoggedIn: req.session.isLoggedIn || false,
             matricula: req.session.matricula || '',
             materias_resultado: materias_resultado.rows,
-            materias_disponibles_semestre: materias_disponibles_semestre.rows,
             cicloEscolar: cicloInfo,
             bloque_tiempo: bloqueTiempoMap
         });
@@ -137,7 +136,7 @@ exports.get_resultado_de_horario = async (req, res, nxt) => {
 
         const horario = await AlumnoIrregular.obtenerHorarioConfirmado(req.session.matricula);
 
-        res.render('resultado_horario_alumno_irregular', {
+        res.render('resultado_inscripcion_alumno_irregular', {
             isLoggedIn: req.session.isLoggedIn || false,
             matricula: req.session.matricula || '',
             horario: horario,  
@@ -166,7 +165,7 @@ exports.post_confirmar_horario = async (req, res) => {
         res.json({ 
             success: true,
             message: 'Horario confirmado exitosamente',
-            redirectUrl: '/alumno-irregular/resultado-de-horario'
+            redirectUrl: '/alumno-irregular/resultado-de-inscripcion'
         });
 
     } catch (error) {
@@ -178,10 +177,35 @@ exports.post_confirmar_horario = async (req, res) => {
     }
 };
 
+exports.get_resultado_de_horario = async (req, res, next) => {
+    try {
+        const materias_resultado = await Alumno.fetchAllResultadoAlumno2(req.session.matricula);
+        const bloque_tiempo = await BloqueTiempo.fetchAllHoras();
+        const bloqueTiempoMap = bloque_tiempo.rows[0]?.id_hora_map || {};
+        const inscripcion_completada = await Alumno.verificarInscripcionCompletada(req.session.matricula);
+        const cicloActual = await CicloEscolar.fetchMostRecent();
 
-exports.get_resultado_de_horario = (req, res, nxt) => {
-    res.render('resultado_horario_alumno_irregular', {
-        isLoggedIn: req.session.isLoggedIn || false,
-        matricula: req.session.matricula || '',
-    });
+        let cicloInfo = null;
+        if (cicloActual.rows.length > 0) {
+            const ciclo = cicloActual.rows[0];
+            const cicloObj = new CicloEscolar(ciclo.code, ciclo.fecha_inicio, ciclo.fecha_fin);
+            cicloInfo = {
+                periodo: cicloObj.getFormattedPeriod(),
+                fecha_inicio: new Date(ciclo.fecha_inicio).toLocaleDateString('es-ES'),
+                fecha_fin: new Date(ciclo.fecha_fin).toLocaleDateString('es-ES'),
+                raw: ciclo 
+            };
+        }
+        res.render('resultado_inscripcion_alumno_irregular', {
+            isLoggedIn: req.session.isLoggedIn || false,
+            matricula: req.session.matricula || '',
+            materias_resultado: materias_resultado.rows,
+            inscripcion_completada: inscripcion_completada,
+            cicloEscolar: cicloInfo,
+            bloque_tiempo: bloqueTiempoMap
+        });
+    } catch (error) {
+        console.error('Error en get_prevista_de_horario:', error);
+        next(error);
+    }
 };

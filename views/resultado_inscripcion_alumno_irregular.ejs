@@ -1,29 +1,18 @@
-<%- include('includes/_nav_alumno_regular.ejs') %>
+<%- include('includes/_nav_alumno_irregular.ejs') %>
 <% let horaPorGrp = {}; %>
 <main class="bg-grey mx-2 mb-2 alumno-scroll" style="height: 85%; border-radius: 1.5rem;">
       <div class="d-flex" style="height: fit-content;">
         <!-- Columna de la izquierda -->
         <div class="p-3 ps-0 flex-grow-1" style="width: 66.66%; height: fit-content;">
           <div class="mb-4" style="min-height: fit-content;">
-            <% if (!inscripcion_completada) { %>
-              <div class="mt-2 mb-4">
+            <div class="mt-2 mb-4">
                 <div class="d-flex align-items-end" style="border-bottom: 3px solid #84251C; width: fit-content; margin-top: -10px;">
-                  <h1 class="m-0 ms-3">Horario</h1>
-                  <p class="fs-5 m-0 ms-4 me-3 ivd-text-red">
+                <h1 class="m-0 ms-3">Resultado de inscripción</h1>
+                <p class="fs-5 m-0 ms-4 me-3 ivd-text-red">
                     <%= cicloEscolar.periodo %> <br>
                 </p>
                 </div>
-              </div>
-            <% } else { %>
-                <div class="mt-2 mb-4">
-                  <div class="d-flex align-items-end" style="border-bottom: 3px solid #84251C; width: fit-content; margin-top: -10px;">
-                    <h1 class="m-0 ms-3">Resultado de inscripción</h1>
-                    <p class="fs-5 m-0 ms-4 me-3 ivd-text-red">
-                      <%= cicloEscolar.periodo %> <br>
-                  </p>
-                  </div>
-                </div>
-            <% } %>
+            </div>
             <div class="bg-white rounded-5 p-0 flex-grow-1 ms-4" style=" display: block; height: fit-content; overflow-y: auto;">
               <!-- Contenido del horario principal -->
               <table class="table custom-table p-0 table-striped table-bordered table-hover mb-0"
