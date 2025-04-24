@@ -400,6 +400,8 @@
       const materiasColor = {};
       let colorIndex = 0;
       let html_container_tabla = '';
+      let horaPorGrp = {};
+      const bloque_tiempo = data.bloque_tiempo;
       
       const horario = { 
         Lunes: {}, Martes: {}, Miércoles: {}, Jueves: {}, Viernes: {} 
@@ -408,33 +410,58 @@
       if (typeof data.materias_resultado !== 'undefined' && Array.isArray(data.materias_resultado)) {
         data.materias_resultado.forEach(materia => {
           // Asignar color único por materia
-          if (!materiasColor[materia.materia_nombre]) {
-            materiasColor[materia.materia_nombre] = colores[colorIndex % colores.length];
+          if (!materiasColor[materia.grupo_id]) {
+            materiasColor[materia.grupo_id] = colores[colorIndex % colores.length];
             colorIndex++;
           }
-          
+          horaPorGrp[materia.grupo_id] = {};
+
           let indexDia = 0;
           materia.dias.forEach(dia => {
+            horaPorGrp[materia.grupo_id][dia] = [];
             const diaNombre = dia.charAt(0).toUpperCase() + dia.slice(1).toLowerCase();
-          
-            const [hi, mi] = materia.hora_inicio[indexDia].split(':').map(Number);
-            const [hf, mf] = materia.hora_fin[indexDia].split(':').map(Number);
-            
-            const inicioBloque = hi * 2 + (mi >= 30 ? 1 : 0);
-            const finBloque = hf * 2 + (mf >= 30 ? 1 : 0);
+            const bloqueTiempoIds = [];
+            let indexBloque = 0;
+            for (let i = materia.bloque_tiempo_id[indexDia][0]; i <= materia.bloque_tiempo_id[indexDia][materia.bloque_tiempo_id[indexDia].length - 1]; i++) {
+              
+              if (i === materia.bloque_tiempo_id[indexDia][indexBloque]) {
+                bloqueTiempoIds.push(i);
+                indexBloque++;
+              } else {
+                bloqueTiempoIds.push(null);
+              }
+            }
             
             if (horario[diaNombre]) {
-              horario[diaNombre][inicioBloque] = {
-                rowspan: finBloque - inicioBloque,
-                nombre: materia.materia_nombre,
-                color: materiasColor[materia.materia_nombre],
-                salon: materia.salon_numero,
-                profesor: `${materia.profesor_nombre} ${materia.profesor_primer_apellido}`,
-                hora: `${materia.hora_inicio[indexDia]} - ${materia.hora_fin[indexDia]}`
-              };
-              
-              for (let b = inicioBloque + 1; b < finBloque; b++) {
-                horario[diaNombre][b] = 'ocupar';
+              let inicioBloque = bloqueTiempoIds[0];
+              let rowSpan = 0;
+              for (let bloqueTiempoId of bloqueTiempoIds) {
+                if (bloqueTiempoId === null || bloqueTiempoId === bloqueTiempoIds[bloqueTiempoIds.length - 1]) {
+                  if (rowSpan > 0) {
+                    if (bloqueTiempoId === null) {
+                      rowSpan --;
+                    }
+                    horario[diaNombre][inicioBloque % 24 + 13] = {
+                      grupo_id: materia.grupo_id,
+                      rowspan: rowSpan,
+                      nombre: materia.materia_nombre,
+                      color: materiasColor[materia.grupo_id],
+                      salon: materia.salon_numero,
+                      profesor: `${materia.profesor_nombre} ${materia.profesor_primer_apellido} ${materia.profesor_segundo_apellido}`,
+                      hora: `${bloque_tiempo[inicioBloque][0].slice(0, 5)} - ${bloque_tiempo[inicioBloque + rowSpan][1].slice(0, 5)}`
+                    };
+                    <!-- Bloques intermedios como ocupados -->
+                    for (let b = inicioBloque + 1; b <= inicioBloque + rowSpan; b++) {
+                      horario[diaNombre][b % 24 + 13] = 'ocupar';
+                    }
+                    rowSpan = 0;
+                  }
+                } else {
+                  if (rowSpan === 0) {
+                    inicioBloque = bloqueTiempoId;
+                  }
+                  rowSpan ++;
+                }
               }
             }
             indexDia ++;
@@ -457,9 +484,10 @@
               if (horario[dia][bloque] === 'ocupar') return;
               if (horario[dia][bloque]) { 
                 const clase = horario[dia][bloque];
+                horaPorGrp[clase.grupo_id][dia].push(clase.hora); 
                 html_container_tabla += `
                   <td class="text-black text-center align-middle ${clase.color}" 
-                      rowspan="${clase.rowspan}"
+                      rowspan="${clase.rowspan + 1}"
                       data-bs-toggle="tooltip" 
                       data-bs-placement="top"`;
                       if (clase.salon === 9999) {
@@ -489,8 +517,7 @@
         html_container_materias += `
         <div class="bg-white rounded-5 py-2 mb-3 class-card border ivd-border-red" 
           data-days="${materia_resultado.dias.map(dia => dia.substring(0,2).toUpperCase()).join(',')}"
-          data-hora-inicio="${materia_resultado.hora_inicio.join(',')}"
-          data-hora-fin="${materia_resultado.hora_fin.join(',')}"
+          data-horas="${JSON.stringify(horaPorGrp[materia_resultado.grupo_id]).replace(/"/g, '&quot;')}"
         >
           <div class="d-flex m-0 align-items-center justify-content-center" style="width: 100%;">
             <p class="m-0 me-3 hora-card"></p>
@@ -523,14 +550,12 @@
 
       function filterClassesByDay(day) {
         classCards.forEach(card => {
-          const horaInicioArray = card.getAttribute('data-hora-inicio').split(',');
-          const horaFinArray = card.getAttribute('data-hora-fin').split(','); 
+          const horasStr = card.getAttribute("data-horas");
+          const horasObj = JSON.parse(horasStr);
           const indexDiaCard = card.getAttribute('data-days').split(',').indexOf(day);
           card.style.display = card.getAttribute('data-days').includes(day) ? 'block' : 'none';
-          if (indexDiaCard !== -1) {
-            card.querySelector(".hora-card").textContent = `${horaInicioArray[indexDiaCard].substring(0, 5)} - ${horaFinArray[indexDiaCard].substring(0, 5)}`;
-          } else {
-            card.querySelector(".hora-card").textContent = `${horaInicioArray[0].substring(0, 5)} - ${horaFinArray[0].substring(0, 5)}`;
+          for (let horasArray of Object.values(horasObj)) {
+            card.querySelector(".hora-card").textContent = horasArray.join(", ");
           }
         });
         //Hover cuando se selecciona

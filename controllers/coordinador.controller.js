@@ -13,6 +13,7 @@ const Carrera = require('../models/carrera.model.js');
 const Historial_Academico = require('../models/historial_academico.model.js');
 const Solicitud = require('../models/solicitudes-cambio.model.js');
 const ResultadoInscripcion = require('../models/resultado_inscripcion.model.js');
+const BloqueTiempo = require('../models/bloque_tiempo.model.js');
 const { getAllProfessors, getAllCourses, getAllStudents, getCiclosEscolares, getAllDegree, getAllAcademyHistory} = require('../util/adminApiClient.js');
 
 
@@ -468,22 +469,26 @@ exports.post_sincronizar_alumnos = async (req, res, nxt) => {
 
 exports.get_alumno_horario = async (req, res, nxt) => {
     const esRegular = await Alumno.esRegular(req.params.id);
+    const bloque_tiempo = await BloqueTiempo.fetchAllHoras();
+    const bloqueTiempoMap = bloque_tiempo.rows[0]?.id_hora_map || {};
     if (esRegular.rows[0].regular === true) {
-        Alumno.fetchAllResultadoAlumno(req.params.id)
+        Alumno.fetchAllResultadoAlumno2(req.params.id)
         .then((data) => {
             res.status(200).json({
                 isLoggedIn: req.session.isLoggedIn || false,
                 matricula: req.session.matricula || '',
                 materias_resultado: data.rows,
+                bloque_tiempo: bloqueTiempoMap
             });
         });
     } else {
-        Alumno.fetchAllResultadoAlumnoIrregular(req.params.id)
+        Alumno.fetchAllResultadoAlumno2(req.params.id)
         .then((data) => {
             res.status(200).json({
                 isLoggedIn: req.session.isLoggedIn || false,
                 matricula: req.session.matricula || '',
                 materias_resultado: data.rows,
+                bloque_tiempo: bloqueTiempoMap
             });
         });
     }
