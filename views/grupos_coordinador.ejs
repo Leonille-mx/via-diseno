@@ -1,8 +1,24 @@
 <%- include('includes/_nav_coordinador.ejs') %>
 <%- include('includes/_header_coordinador.ejs') %>
+  <main class="bg-grey flex-grow-1 rounded-5 p-0 d-flex flex-column" style="height: 100vh;">
 
-<main class="bg-grey flex-grow-1 rounded-5 p-0 d-flex flex-column" style="height: 100vh;">
-
+    <% if (msg) { %>
+      <div class="modal fade" id="msgModal" tabindex="-1" aria-labelledby="msgModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered modal-sm">
+          <div class="modal-content align-items-center rounded-5">
+            <div class="modal-header border border-0">
+              <h5 class="modal-title ivd-text-red" id="msgModalLabel"><%- msgTitle %></h5>
+            </div>
+            <div class="modal-body bg-grey rounded-5 text-center mx-4">
+              <%- msg %>
+            </div>
+            <div class="modal-footer">
+              <button type="button" class="btn ivd-bg-red text-white rounded-5" data-bs-dismiss="modal">Aceptar</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    <% } %>
   <!-- Título de la sección -->
   <div class="mb-4">
     <h1 class="ms-3 mt-2">Grupos</h1>
@@ -12,18 +28,19 @@
   <!-- Barra de búsqueda y botones para generar y agregar grupo -->
   <div class="d-flex align-items-center justify-content-between mx-5 mb-3 gap-3 flex-wrap">
     <div class="d-flex align-items-center flex-grow-1" style="max-width: 200px;">
-      <input class="form-control me-2 rounded-pill" type="search" placeholder="Buscar grupo" aria-label="Search"
+      <input id="buscarGrupo" class="form-control me-2 rounded-pill" type="search" placeholder="Buscar grupo" aria-label="Search"
              style="background-image:url('/images/search.svg'); background-repeat:no-repeat; background-position: 1rem center; padding-left: 3rem; font-size: 1rem; width: 100%; border: 1px solid #84251C;">
     </div>
     <div class="d-flex gap-3">
       <!-- Botón Generar Grupos -->
-      <a href="/coordinador/grupos/generar" class="btn btn-primary d-flex align-items-center gap-2 rounded-pill px-3 py-2"
-         style="background-color: #84251C; border: none;">
+      <button type="button" class="btn btn-primary d-flex align-items-center gap-2 rounded-pill px-3 py-2"
+              style="background-color: #84251C; border: none;"
+              data-bs-toggle="modal" data-bs-target="#generateModal" data-href="/coordinador/grupos/generar">
         <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-plus-lg" viewBox="0 0 16 16">
           <path fill-rule="evenodd" d="M8 2a.5.5 0 0 1 .5.5v5h5a.5.5 0 0 1 0 1h-5v5a.5.5 0 0 1-1 0v-5h-5a.5.5 0 0 1 0-1h5v-5A.5.5 0 0 1 8 2"/>
         </svg>
         Generar Grupos
-      </a>
+      </button>
       <!-- Botón Agregar Grupo -->
       <button class="btn btn-primary d-flex align-items-center gap-2 rounded-pill px-3 py-2"
               style="background-color: #84251C; border: none;"
@@ -539,6 +556,292 @@
   </div>
 </main>
 
+<!-- Modal de confirmación de eliminación -->
+<div class="modal fade" id="deleteModal" tabindex="-1" aria-labelledby="deleteModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
+    <div class="modal-content rounded-5" style="max-width: 95vw;">
+      <!-- Encabezado del modal -->
+      <div class="modal-header justify-content-center" style="background-color: #f0f0f0">
+        <h5 class="modal-title" id="deleteModalLabel" style="color: #84251C;"><b>¿Está seguro de eliminar el siguiente grupo?</b></h5>
+      </div>
+      <!-- Cuerpo del modal -->
+      <div class="modal-body" style="max-height: 60vh; overflow-y: auto;">
+        <div class="table-responsive">
+          <table class="table table-bordered m-0">
+            <thead class="table-light">
+              <tr>
+                <th style="min-width: 80px;" class="text-center align-middle">Grupo</th>
+                <th style="min-width: 100px;" class="text-center align-middle">Materia</th>
+                <th style="min-width: 80px;" class="text-center align-middle">Ciclo</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td id="modalGrupoId" class="text-center align-middle"></td>
+                <td id="modalMateria" class="text-center align-middle"></td>
+                <td id="modalCiclo" class="text-center align-middle"></td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+      <!-- Pie del modal -->
+      <div class="modal-footer justify-content-center" style="background-color: #f0f0f0">
+        <button type="button" class="btn btn-secondary rounded-pill px-4 mx-4" 
+                style="background-color: white; border: 1px solid #84251C; color: #84251C;" 
+                data-bs-dismiss="modal">Cancelar</button>
+        <form id="deleteGrupoForm" method="POST" action="">
+          <button type="submit" class="btn btn-danger rounded-pill px-4 mx-4" 
+                  style="background-color: #84251C; border: none;">Eliminar</button>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Modal para agregar un nuevo grupo (Registro) -->
+<div class="modal fade" id="scheduleModal" tabindex="-1" aria-labelledby="scheduleModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-xl modal-dialog-centered modal-dialog-scrollable">
+    <div class="modal-content rounded-5" style="background-color: #f0f0f0; max-width: 95vw;">
+      <!-- Encabezado del modal -->
+      <div class="modal-header justify-content-center">
+        <h5 class="modal-title" id="scheduleModalLabel" style="color: #84251C;"><b>Estás agregando un nuevo grupo</b></h5>
+      </div>
+      <!-- Cuerpo del modal -->
+      <div class="modal-body px-4">
+        <div class="rounded-5 p-4" style="background-color: white;">
+          <form id="scheduleForm" method="POST" action="/coordinador/grupos">
+            <!-- Campo de Materia -->
+            <div class="mb-3">
+              <label for="materia" class="form-label ms-1"><b>Materia</b></label>
+              <div style="border-bottom: 3px solid #84251C; width: 10rem; margin-top: -5px; margin-bottom: 10px;"></div>
+              <select class="form-select rounded-5 mx-auto" id="materia" name="materia" required style="background-color: #f0f0f0;">
+                <option value="">Seleccione una materia</option>
+                <% for (let materia of materias) { %>
+                  <option value="<%= materia.materia_id %>"><%= materia.nombre %></option>
+                <% } %>
+              </select>
+            </div>
+            <!-- Campo de Profesor -->
+            <div class="mb-3">
+              <label for="profesor" class="form-label ms-1"><b>Profesor</b></label>
+              <div style="border-bottom: 3px solid #84251C; width: 10rem; margin-top: -5px; margin-bottom: 10px;"></div>
+              <select class="form-select rounded-5 mx-auto" id="profesor" name="profesor" required style="background-color: #f0f0f0;">
+                <option value="">Seleccione un profesor</option>
+                <% for (let profesor of profesores) { %>
+                  <option value="<%= profesor.ivd_id %>"><%= profesor.nombre + ' ' + profesor.primer_apellido + ' ' + profesor.segundo_apellido %></option>
+                <% } %>
+              </select>
+            </div>
+            <!-- Campo de Salón -->
+            <div class="mb-3">
+              <label for="salon" class="form-label ms-1"><b>Salón</b></label>
+              <div style="border-bottom: 3px solid #84251C; width: 10rem; margin-top: -5px; margin-bottom: 10px;"></div>
+              <select class="form-select rounded-5 mx-auto" id="salon" name="salon" required style="background-color: #f0f0f0;">
+                <option value="">Seleccione un salón</option>
+                <% for (let salon of salones) { %>
+                  <% if (salon.salon_id !== 9999) { %>
+                    <option value="<%= salon.salon_id %>"><%= salon.numero %></option>
+                    <% } %>
+                <% } %>
+              </select>
+            </div>
+            <!-- Tabla para seleccionar horario del grupo (Modo Editable) -->
+            <h6 class="ms-1"><b>Horario</b></h6>
+            <div style="border-bottom: 3px solid #84251C; width: 10rem; margin-top: -5px; margin-bottom: 10px;"></div>
+            <div class="table-responsive">
+              <table id="schedule" class="table table-bordered">
+                <thead class="table-light">
+                  <tr>
+                    <th class="text-center align-middle">Hora</th>
+                    <th class="text-center align-middle">Lunes</th>
+                    <th class="text-center align-middle">Martes</th>
+                    <th class="text-center align-middle">Miércoles</th>
+                    <th class="text-center align-middle">Jueves</th>
+                    <th class="text-center align-middle">Viernes</th>
+                  </tr>
+                </thead>
+                <tbody id="scheduleTable">
+                  <!-- La tabla se genera dinámicamente con JavaScript -->
+                </tbody>
+              </table>
+              <input type="hidden" name="selectedBlocks" id="selectedBlocks">
+            </div>
+          </form>
+        </div>
+      </div>
+      <!-- Pie del modal -->
+      <div class="modal-footer justify-content-center" style="background-color: #f0f0f0;">
+        <button type="button" class="btn btn-secondary rounded-pill px-4 mx-4" 
+                style="background-color: white; border: 1px solid #84251C; color: #84251C;" 
+                data-bs-dismiss="modal">Cancelar</button>
+        <button type="submit" form="scheduleForm" class="btn btn-primary rounded-pill px-4 mx-4" 
+                style="background-color: #84251C; border: none;">Agregar</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Modal de Consulta de Grupo (Solo Lectura) -->
+<div class="modal fade" id="viewModal" tabindex="-1" aria-labelledby="viewGroupModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-xl modal-dialog-centered modal-dialog-scrollable">
+    <div class="modal-content rounded-5" style="background-color: #f0f0f0;">
+      <!-- Encabezado -->
+      <div class="modal-header justify-content-center">
+        <h5 class="modal-title" id="viewGroupModalLabel" style="color: #84251C;"><b>Estás viendo los detalles del grupo</b></h5>
+      </div>
+      <!-- Cuerpo -->
+      <div class="modal-body px-4">
+        <div class="rounded-5 p-4" style="background-color: white;">
+          <!-- Información general del grupo -->
+          <h6 class="ms-1"><b>Grupo</b></h6>
+          <div style="border-bottom: 3px solid #84251C; width: 10rem; margin-top: -5px; margin-bottom: 10px;"></div>
+          <div class="table-responsive">
+            <table class="table table-bordered">
+              <thead class="table-light">
+                <tr>
+                  <th class="text-center align-middle" style="width: 13%; min-width: 100px;">Grupo</th>
+                  <th class="text-center align-middle" style="width: 30%; min-width: 100px;">Materia</th>
+                  <th class="text-center align-middle" style="width: 30%; min-width: 100px;">Profesor</th>
+                  <th class="text-center align-middle" style="width: 14%; min-width: 150px;">Salón</th>
+                  <th class="text-center align-middle" style="width: 14%; min-width: 100px;">Ciclo Escolar</th>
+                </tr>
+              </thead>
+              <tbody id="viewGroupInfoBody">
+                <!-- Se llenará dinámicamente -->
+              </tbody>
+            </table>
+          </div>
+          <!-- Horario del grupo (Solo Lectura) -->
+          <h6 class="ms-1 mt-4"><b>Horario</b></h6>
+          <div style="border-bottom: 3px solid #84251C; width: 10rem; margin-top: -5px; margin-bottom: 10px;"></div>
+          <div class="table-responsive">
+            <table id="viewGroupScheduleTable" class="table table-bordered" style="min-width: 800px; width: 100%;">
+              <thead class="table-light">
+                <tr>
+                  <th class="text-center align-middle">Hora</th>
+                  <th class="text-center align-middle">Lunes</th>
+                  <th class="text-center align-middle">Martes</th>
+                  <th class="text-center align-middle">Miércoles</th>
+                  <th class="text-center align-middle">Jueves</th>
+                  <th class="text-center align-middle">Viernes</th>
+                </tr>
+              </thead>
+              <tbody id="viewGroupScheduleBody">
+                <!-- Se generará dinámicamente -->
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+      <!-- Pie del modal -->
+      <div class="modal-footer justify-content-center" style="background-color: #f0f0f0;">
+        <button type="button" class="btn btn-secondary rounded-pill px-4 mx-4" data-bs-dismiss="modal"
+                style="background-color: white; border: 1px solid #84251C; color: #84251C;">Cerrar</button>
+        <button type="button" class="btn btn-primary rounded-pill px-4 mx-4" id="switchToEditGroupBtn" onclick="abrirEditModal()"
+                style="background-color: #84251C; border: none;">Modificar</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Modal de Edición de Grupo (Editable) -->
+<div class="modal fade" id="editModal" tabindex="-1" aria-labelledby="editGroupModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-xl modal-dialog-centered modal-dialog-scrollable">
+    <div class="modal-content rounded-5" style="background-color: #f0f0f0; max-width: 95vw;">
+      <div class="modal-header justify-content-center">
+        <h5 class="modal-title" id="editGroupModalLabel" style="color: #84251C;"><b>Estás modificando los detalles del grupo</b></h5>
+      </div>
+      <div class="modal-body px-4">
+        <div class="rounded-5 p-4" style="background-color: white;">
+          <form id="editGroupForm" method="POST" action="/coordinador/grupos/modificar">
+            <!-- Campo de Materia -->
+            <div class="mb-3">
+              <label for="editMateria" class="form-label ms-1"><b>Materia</b></label>
+              <div style="border-bottom: 3px solid #84251C; width: 10rem; margin-top: -5px; margin-bottom: 10px;"></div>
+              <select class="form-select rounded-5" id="editMateria" name="materia" required style="background-color: #f0f0f0;">
+                <option value="">Seleccione una materia</option>
+                <% materias.forEach(materia => { %>
+                  <option value="<%= materia.materia_id %>"><%= materia.nombre %></option>
+                <% }) %>
+              </select>
+            </div>
+            <!-- Campo de Profesor -->
+            <div class="mb-3">
+              <label for="editProfesor" class="form-label ms-1"><b>Profesor</b></label>
+              <div style="border-bottom: 3px solid #84251C; width: 10rem; margin-top: -5px; margin-bottom: 10px;"></div>
+              <select class="form-select rounded-5" id="editProfesor" name="profesor" required style="background-color: #f0f0f0;">
+                <option value="">Seleccione un profesor</option>
+                <% profesores.forEach(profesor => { %>
+                  <option value="<%= profesor.ivd_id %>"><%= profesor.nombre + ' ' + profesor.primer_apellido + ' ' + profesor.segundo_apellido %></option>
+                <% }) %>
+              </select>
+            </div>
+            <!-- Campo de Salón -->
+            <div class="mb-3">
+              <label for="editSalon" class="form-label ms-1"><b>Salón</b></label>
+              <div style="border-bottom: 3px solid #84251C; width: 10rem; margin-top: -5px; margin-bottom: 10px;"></div>
+              <select class="form-select rounded-5" id="editSalon" name="salon" required style="background-color: #f0f0f0;">
+                <option value="">Seleccione un salón</option>
+                <% salones.forEach(salon => { %>
+                  <% if (salon.salon_id !== 9999) { %>
+                  <option value="<%= salon.salon_id %>"><%= salon.numero %></option>
+                  <% } %>
+                <% }) %>
+              </select>
+            </div>
+            <!-- Tabla para seleccionar horario editable -->
+            <h6 class="ms-1"><b>Horario</b></h6>
+            <div style="border-bottom: 3px solid #84251C; width: 10rem; margin-top: -5px; margin-bottom: 10px;"></div>
+            <div class="table-responsive">
+              <table id="editSchedule" class="table table-bordered">
+                <thead class="table-light">
+                  <tr>
+                    <th class="text-center align-middle">Hora</th>
+                    <th class="text-center align-middle">Lunes</th>
+                    <th class="text-center align-middle">Martes</th>
+                    <th class="text-center align-middle">Miércoles</th>
+                    <th class="text-center align-middle">Jueves</th>
+                    <th class="text-center align-middle">Viernes</th>
+                  </tr>
+                </thead>
+                <tbody id="editScheduleTable">
+                  <!-- Se generará dinámicamente con JavaScript -->
+                </tbody>
+              </table>
+              <input type="hidden" name="selectedBlocks" id="editSelectedBlocks">
+            </div>
+          </form>
+        </div>
+      </div>
+      <div class="modal-footer justify-content-center" style="background-color: #f0f0f0;">
+        <button type="button" class="btn btn-secondary rounded-pill px-4 mx-4" data-bs-dismiss="modal"
+                style="background-color: white; border: 1px solid #84251C; color: #84251C;">Cancelar</button>
+        <button type="submit" form="editGroupForm" class="btn btn-primary rounded-pill px-4 mx-4"
+                style="background-color: #84251C; border: none;">Guardar</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Modal de confirmación para Generar Grupos -->
+<div class="modal fade" id="generateModal" tabindex="-1" aria-labelledby="generateModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered modal-sm">
+    <div class="modal-content rounded-5" style="background-color: #f0f0f0">
+      <div class="modal-header border-0 justify-content-center">
+        <h5 class="modal-title ivd-text-red" id="generateModalLabel">Generar Grupos</h5>
+      </div>
+      <div class="modal-body text-center mx-4 rounded-5" style="background-color: white">
+        <p>El proceso de generar grupos <b>eliminará</b> la asignación de grupos actuales. ¿Está seguro que desea continuar?</p>
+      </div>
+      <div class="modal-footer justify-content-center mt-3">
+        <button type="button" class="btn btn-secondary rounded-pill px-4 mx-4" data-bs-dismiss="modal"
+                style="background-color: white; border: 1px solid #84251C; color: #84251C;">Cancelar</button>
+        <a id="confirmGenerateBtn" href="#" class="btn ivd-bg-red text-white rounded-pill px-4">Aceptar</a>
+      </div>
+    </div>
+  </div>
+</div>
 <!-- Modal de confirmación de eliminación -->
 <div class="modal fade" id="deleteModal" tabindex="-1" aria-labelledby="deleteModalLabel" aria-hidden="true">
   <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
