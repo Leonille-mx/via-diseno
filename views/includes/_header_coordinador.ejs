@@ -1,6 +1,7 @@
 <div class="col-lg-10 py-3 d-flex flex-column gap-3">
     <header class="bg-grey d-flex justify-content-end px-4 py-4 rounded-5">
-        <div class="d-flex align-items-center justify-content-between mx-4">
+        <div class="d-flex align-items-center justify-content-between mx-4 w-100">
+            <p class="mb-0 border ivd-border-red rounded-5 bg-white py-2 px-3"><%= cicloInfo.periodo %></p>
             <div class="d-flex flex-column align-items-center header-user-info">
                 <strong class="text-center"><%= usuario?.nombre || 'Nombre no disponible' %></strong>
                 <span class="text-center"><%= usuario?.correo || 'Correo no disponible' %></span>
