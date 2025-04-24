@@ -63,9 +63,35 @@ module.exports = class Usuario {
             client.release();
         }
     }
+
     static async fetchAll() {
         const query = `SELECT * FROM usuario.`;
         return await pool.query(query);
+    }
+    // Función para buscar usuario por su correo institucional
+    static async findUsuarioById(usuarioId) {
+        const client = await pool.connect();
+        try {
+            const result = await client.query('SELECT * FROM usuario WHERE ivd_id = $1', [usuarioId]);
+            return result.rows[0];
+        } catch (error) {
+            console.error('Error al buscar usuario:', error);
+            throw error;
+        } finally {
+            client.release();
+        }
+    }
+
+    static async actualizarContrasena(ivd_id, nuevaContrasenaHash) {
+        const client = await pool.connect();
+        try {
+            await client.query('UPDATE usuario SET contrasena = $1 WHERE ivd_id = $2', [nuevaContrasenaHash, ivd_id]);
+        } catch (error) {
+            console.error('Error al actualizar contraseña:', error);
+            throw error;
+        } finally {
+            client.release();
+        }
     }
 
 };

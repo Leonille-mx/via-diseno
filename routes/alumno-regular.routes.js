@@ -5,12 +5,14 @@ const isAuth = require('../util/isAuth');
 
 const regular_controller = require('../controllers/alumno-regular.controller');
 
-router.get('/horario', isAuth, regular_controller.get_prevista_de_horario);
+router.use(isAuth.estaAutenticado, isAuth.esAlumnoRegular);
 
-router.post('/horario/confirmar', isAuth, regular_controller.post_confirmar_horario);
+router.get('/horario', regular_controller.get_prevista_de_horario);
 
-router.post('/horario/solitud', isAuth, regular_controller.post_solicitud_cambio);
+router.post('/horario/confirmar', regular_controller.post_confirmar_horario);
 
-router.get('/ayuda', isAuth, regular_controller.get_ayuda);
+router.post('/horario/solitud', regular_controller.post_solicitud_cambio);
+
+router.get('/ayuda', regular_controller.get_ayuda);
 
 module.exports = router;
