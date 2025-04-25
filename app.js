@@ -33,6 +33,10 @@ app.use((req, res, nxt) => {
     nxt();
 });  
 
+const rutasIndex = require('./routes/index.routes');
+
+app.get('/', rutasIndex);
+
 const rutasUsuario = require('./routes/usuario.routes');
 app.use('/usuario', rutasUsuario);
 
@@ -46,10 +50,6 @@ const rutasAlumnoIrregular = require('./routes/alumno-irregular.routes');
 app.use('/alumno-irregular', rutasAlumnoIrregular);
 
 app.use((req, res) => { res.status(404).render('404'); });
-
-const rutasIndex = require('./routes/index.routes');
-
-app.get('/', rutasIndex);
 
 app.use((request, response, next) => {  
     response.status(404).send('Recurso No Encontrado'); 
