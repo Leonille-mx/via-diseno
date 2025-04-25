@@ -125,4 +125,28 @@ ORDER BY
         return result.rows;
     };
 
+
+    static async resetDatosGrupos() {
+        try {
+            // Transicion
+            await pool.query('BEGIN');
+    
+            // Se ejecutan las consultas
+            await pool.query('DELETE FROM resultado_inscripcion');
+            await pool.query('DELETE FROM grupo_bloque_tiempo');
+            await pool.query('DELETE FROM grupo');
+    
+            // Se hace commit de lo hecho
+            await pool.query('COMMIT');
+            
+            return { success: true, message: 'Los datos de los grupos han sido eliminados' };
+        } catch (error) {
+            // Rollback por si hay algun error
+            await pool.query('ROLLBACK');
+            console.error('Error al reset de los datos:', error);
+            return { success: false, message: 'El reset ha fallado' };
+        }
+    }
+    
+
 };

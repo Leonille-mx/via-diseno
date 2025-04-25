@@ -5,411 +5,474 @@
       <div class="mb-4">
         <h1 class="ms-3 mt-2">Dashboard</h1>
         <div style="border-bottom: 3px solid #84251C; width: 15rem; margin-top: -10px;"></div>
-          <% if (msg1) { %>
-            <div class="modal fade" id="msgModal" tabindex="-1" aria-labelledby="msgModalLabel" aria-hidden="true">
-              <div class="modal-dialog modal-dialog-centered modal-sm">
-                <div class="modal-content align-items-center rounded-5">
-                  <div class="modal-header border border-0">
-                    <h5 class="modal-title ivd-text-red" id="msgModalLabel">Sincronizar Ciclos Escolares</h5>
-                  </div>
-                  <div class="modal-body bg-grey rounded-5 text-center px-5">
-                    <%- msg1 %>
-                  </div>
-                  <div class="modal-footer">
-                    <button type="button" class="btn ivd-bg-red text-white rounded-5" data-bs-dismiss="modal">Aceptar</button>
-                  </div>
+        <% if (msg1) { %>
+          <div class="modal fade" id="msgModal" tabindex="-1" aria-labelledby="msgModalLabel" aria-hidden="true">
+            <div class="modal-dialog modal-dialog-centered modal-sm">
+              <div class="modal-content align-items-center rounded-5">
+                <div class="modal-header border border-0">
+                  <h5 class="modal-title ivd-text-red" id="msgModalLabel">Sincronizar Ciclos Escolares</h5>
+                </div>
+                <div class="modal-body bg-grey rounded-5 text-center px-5">
+                  <%- msg1 %>
+                </div>
+                <div class="modal-footer">
+                  <button type="button" class="btn ivd-bg-red text-white rounded-5"
+                    data-bs-dismiss="modal">Aceptar</button>
                 </div>
               </div>
             </div>
-          <% } %>
-  
-          <% if (msg2) { %>
-            <div class="modal fade" id="msgModal" tabindex="-1" aria-labelledby="msgModalLabel" aria-hidden="true">
-              <div class="modal-dialog modal-dialog-centered modal-sm">
-                <div class="modal-content align-items-center rounded-5">
-                  <div class="modal-header border border-0">
-                    <h5 class="modal-title ivd-text-red" id="msgModalLabel">Sincronizar Planes de Estudio</h5>
-                  </div>
-                  <div class="modal-body bg-grey rounded-5 text-center px-5">
-                    <%- msg2 %>
-                  </div>
-                  <div class="modal-footer">
-                    <button type="button" class="btn ivd-bg-red text-white rounded-5" data-bs-dismiss="modal">Aceptar</button>
-                  </div>
-                </div>
-              </div>
-            </div>
+          </div>
           <% } %>
 
-            <div class="d-grid gap-2 d-md-flex justify-content-md-end position-relative" style="margin-top: -40px;">
-              <form action="/coordinador/ciclo-escolar/sincronizar" method="POST">
-                <button
-                  class="btn rounded-pill px-3 py-2 ivd-bg-red text-white d-flex align-items-center justify-content-end me-3 mt-3"
-                  type="submit">
-                  <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"
-                    class="bi bi-arrow-clockwise" viewBox="0 0 16 16" style="margin-left: -2px">
-                    <path fill-rule="evenodd" d="M8 3a5 5 0 1 0 4.546 2.914.5.5 0 0 1 .908-.417A6 6 0 1 1 8 2z" />
-                    <path
-                      d="M8 4.466V.534a.25.25 0 0 1 .41-.192l2.36 1.966c.12.1.12.284 0 .384L8.41 4.658A.25.25 0 0 1 8 4.466" />
-                  </svg>
-                  Sincronizar Ciclos Escolares
-                </button>
-              </form>
-              <form action="/coordinador/dashboard/sincronizar-planes-de-estudio" method="POST">
-                <button type="submit"
-                  class="btn btn-primary d-flex align-items-center gap-2 rounded-pill px-3 py-2 me-5 mt-3 ivd-bg-red"
-                  style="border: none;">
-                  <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"
-                    class="bi bi-arrow-clockwise" viewBox="0 0 16 16">
-                    <path fill-rule="evenodd" d="M8 3a5 5 0 1 0 4.546 2.914.5.5 0 0 1 .908-.417A6 6 0 1 1 8 2z" />
-                    <path
-                      d="M8 4.466V.534a.25.25 0 0 1 .41-.192l2.36 1.966c.12.1.12.284 0 .384L8.41 4.658A.25.25 0 0 1 8 4.466" />
-                  </svg>
-                  Sincronizar Planes de estudio
-                </button>
-              </form>
-            </div>
-
-            <div class="d-flex flex-wrap justify-content-start w-100 mt-4" style="gap: 10px;">
-              <div class="card rounded-5 ivd-bg-red bg-gradient text-white flex-grow-1 ms-3"
-                style="min-width: 173.5px; flex-basis: 17.4%;">
-                <div class="card-body px-0 text-start w-100" style="margin-top: -5px;">
-                  <div class="d-flex align-items-center justify-content-between">
-                    <p class="card-title ms-3">Materias Abiertas</p>
-                    <button class="ratio ratio-1x1 rounded-circle overflow-hidden me-2" type="button"
-                      onclick="window.location.href='/coordinador/materias';"
-                      style="width: 20px; height: 20px; margin-top: -10px;">
-                      <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" fill="black"
-                        class="bi bi-arrow-up-right bi-arrow-up-right-sm" viewBox="0 0 16 16">
-                        <path fill-rule="evenodd"
-                          d="M14 2.5a.5.5 0 00-.5-.5h-6a.5.5 0 0 0 0 1h4.793L2.146 13.146a.5.5 0 0 0 .708.708L13 3.707V8.5a.5.5 0 0 0 1 0z" />
-                      </svg>
-                    </button>
+            <% if (msg2) { %>
+              <div class="modal fade" id="msgModal" tabindex="-1" aria-labelledby="msgModalLabel" aria-hidden="true">
+                <div class="modal-dialog modal-dialog-centered modal-sm">
+                  <div class="modal-content align-items-center rounded-5">
+                    <div class="modal-header border border-0">
+                      <h5 class="modal-title ivd-text-red" id="msgModalLabel">Sincronizar Planes de Estudio</h5>
+                    </div>
+                    <div class="modal-body bg-grey rounded-5 text-center px-5">
+                      <%- msg2 %>
+                    </div>
+                    <div class="modal-footer">
+                      <button type="button" class="btn ivd-bg-red text-white rounded-5"
+                        data-bs-dismiss="modal">Aceptar</button>
+                    </div>
                   </div>
-                  <div style="border-bottom: 3px solid #ffffff; min-width: 100%; margin-top: -7px;"></div>
-                  <p class="card-text text-start ms-4" style="margin-top: 10px; font-size: 2rem;">
-                    <%= materias_Abiertas %>
-                  </p>
                 </div>
               </div>
+              <% } %>
 
-              <div class="card rounded-5 ivd-bg-white bg-gradient text-black flex-grow-1"
-                style="min-width: 173.5px; flex-basis: 17.4%;">
-                <div class="card-body px-0 text-start w-100" style="margin-top: -5px;">
-                  <div class="d-flex align-items-center justify-content-between">
-                    <p class="card-title ms-3">Grupos Abiertos</p>
-                    <button class="ratio ratio-1x1 rounded-circle overflow-hidden me-2" type="button"
-                      onclick="window.location.href='/coordinador/grupos';"
-                      style="width: 20px; height: 20px; margin-top: -10px;">
-                      <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" fill="black"
-                        class="bi bi-arrow-up-right bi-arrow-up-right-sm  " viewBox="0 0 16 16">
-                        <path fill-rule="evenodd"
-                          d="M14 2.5a.5.5 0 00-.5-.5h-6a.5.5 0 0 0 0 1h4.793L2.146 13.146a.5.5 0 0 0 .708.708L13 3.707V8.5a.5.5 0 0 0 1 0z" />
+
+
+
+                <div class="d-grid gap-2 d-md-flex justify-content-md-end position-relative" style="margin-top: -40px;">
+
+                  <button
+                    class="btn btn-primary d-flex align-items-center gap-2 rounded-pill px-3 py-1 me-3 mt-3 ivd-bg-red"
+                    data-bs-toggle="modal" data-bs-target="#resetGroupsModal" style="border: none;">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"
+                      class="bi bi-trash" viewBox="0 0 16 16">
+                      <path
+                        d="M5.5 5.5A.5.5 0 0 1 6 6v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5m2.5 0a.5.5 0 0 1 .5.5v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5m3 .5a.5.5 0 0 0-1 0v6a.5.5 0 0 0 1 0z" />
+                      <path
+                        d="M14.5 3a1 1 0 0 1-1 1H13v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V4h-.5a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1H6a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1h3.5a1 1 0 0 1 1 1zM4.118 4 4 4.059V13a1 1 0 0 0 1 1h6a1 1 0 0 0 1-1V4.059L11.882 4zM2.5 3h11V2h-11z" />
+                    </svg>
+                    Eliminar Inscripción
+                  </button>
+
+
+                  <form action="/coordinador/ciclo-escolar/sincronizar" method="POST">
+                    <button
+                      class="btn rounded-pill px-3 py-2 ivd-bg-red text-white d-flex align-items-center justify-content-end me-3 mt-3"
+                      type="submit">
+                      <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"
+                        class="bi bi-arrow-clockwise" viewBox="0 0 16 16" style="margin-left: -2px">
+                        <path fill-rule="evenodd" d="M8 3a5 5 0 1 0 4.546 2.914.5.5 0 0 1 .908-.417A6 6 0 1 1 8 2z" />
+                        <path
+                          d="M8 4.466V.534a.25.25 0 0 1 .41-.192l2.36 1.966c.12.1.12.284 0 .384L8.41 4.658A.25.25 0 0 1 8 4.466" />
                       </svg>
+                      Sincronizar Ciclos Escolares
                     </button>
-                  </div>
-                  <div style="border-bottom: 3px solid #84251c98; width: 100%; margin-top: -7px;"></div>
-                  <p class="card-text text-start ms-4" style="margin-top: 10px; font-size: 2rem;">
-                    <%= grupos_Totales %>
-                  </p>
-                </div>
-              </div>
-
-
-              <div class="card rounded-5 ivd-bg-white bg-gradient text-black flex-grow-1"
-                style="min-width: 173.5px; flex-basis: 17.4%;">
-                <div class="card-body px-0 text-start w-100" style="margin-top: -5px;">
-                  <div class="d-flex align-items-center justify-content-between">
-                    <p class="card-title ms-3">Alumnos Inscritos</p>
-                    <button class="ratio ratio-1x1 rounded-circle overflow-hidden me-2" type="button"
-                      onclick="window.location.href='/coordinador/alumnos';"
-                      style="width: 20px; height: 20px; margin-top: -10px;">
-                      <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" fill="black"
-                        class="bi bi-arrow-up-right bi-arrow-up-right-sm  " viewBox="0 0 16 16">
-                        <path fill-rule="evenodd"
-                          d="M14 2.5a.5.5 0 00-.5-.5h-6a.5.5 0 0 0 0 1h4.793L2.146 13.146a.5.5 0 0 0 .708.708L13 3.707V8.5a.5.5 0 0 0 1 0z" />
+                  </form>
+                  <form action="/coordinador/dashboard/sincronizar-planes-de-estudio" method="POST">
+                    <button type="submit"
+                      class="btn btn-primary d-flex align-items-center gap-2 rounded-pill px-3 py-2 me-5 mt-3 ivd-bg-red"
+                      style="border: none;">
+                      <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"
+                        class="bi bi-arrow-clockwise" viewBox="0 0 16 16">
+                        <path fill-rule="evenodd" d="M8 3a5 5 0 1 0 4.546 2.914.5.5 0 0 1 .908-.417A6 6 0 1 1 8 2z" />
+                        <path
+                          d="M8 4.466V.534a.25.25 0 0 1 .41-.192l2.36 1.966c.12.1.12.284 0 .384L8.41 4.658A.25.25 0 0 1 8 4.466" />
                       </svg>
+                      Sincronizar Planes de estudio
                     </button>
-                  </div>
-                  <div style="border-bottom: 3px solid #84251c98; width: 100%; margin-top: -7px;"></div>
-                  <p class="card-text text-start ms-4" style="margin-top: 10px; font-size: 2rem;">
-                    <%= alumnosInscritos %>
-                  </p>
-                </div>
-              </div>
-
-              <div class="card rounded-5 ivd-bg-white bg-gradient text-black flex-grow-1"
-                style="min-width: 173.5px; flex-basis: 17.4%;">
-                <div class="card-body px-0 text-start w-100" style="margin-top: -5px;">
-                  <div class="d-flex align-items-center justify-content-between">
-                    <p class="card-title ms-3">Alumnos No Inscritos</p>
-                    <button class="ratio ratio-1x1 rounded-circle overflow-hidden me-2" type="button"
-                      onclick="window.location.href='/coordinador/alumnos';"
-                      style="width: 20px; height: 20px; margin-top: -10px;">
-                      <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" fill="black"
-                        class="bi bi-arrow-up-right bi-arrow-up-right-sm  " viewBox="0 0 16 16">
-                        <path fill-rule="evenodd"
-                          d="M14 2.5a.5.5 0 00-.5-.5h-6a.5.5 0 0 0 0 1h4.793L2.146 13.146a.5.5 0 0 0 .708.708L13 3.707V8.5a.5.5 0 0 0 1 0z" />
-                      </svg>
-                    </button>
-                  </div>
-                  <div style="border-bottom: 3px solid #84251c98; width: 100%; margin-top: -7px;"></div>
-                  <p class="card-text text-start ms-4" style="margin-top: 10px; font-size: 2rem;">
-                    <%= alumnosNoInscritos %>
-                  </p>
-                </div>
-              </div>
-
-              <div class="card rounded-5 ivd-bg-white bg-gradient text-black flex-grow-1 me-3"
-                style="min-width: 173.5px; flex-basis: 17.4%;">
-                <div class="card-body px-0 text-start w-100" style="margin-top: -5px;">
-                  <div class="d-flex align-items-center justify-content-between">
-                    <p class="card-title ms-3">Alumnos Sin Materias</p>
-
-                    <button class="ratio ratio-1x1 rounded-circle overflow-hidden me-2" type="button"
-                      onclick="window.location.href='/coordinador/alumnos';"
-                      style="width: 20px; height: 20px; margin-top: -10px;">
-                      <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" fill="black"
-                        class="bi bi-arrow-up-right bi-arrow-up-right-sm  " viewBox="0 0 16 16">
-                        <path fill-rule="evenodd"
-                          d="M14 2.5a.5.5 0 00-.5-.5h-6a.5.5 0 0 0 0 1h4.793L2.146 13.146a.5.5 0 0 0 .708.708L13 3.707V8.5a.5.5 0 0 0 1 0z" />
-                      </svg>
-                    </button>
-                  </div>
-                  <div style="border-bottom: 3px solid #84251c98; width: 100%; margin-top: -7px;"></div>
-                  <p class="card-text text-start ms-4" style="margin-top: 10px; font-size: 2rem;">
-                    <%= alumnosSinMaterias %>
-                  </p>
-                </div>
-              </div>
-
-            </div>
-
-            <div class="d-flex flex-wrap justify-content-start w-100 mt-4" style="gap: 10px;">
-              <div class="card rounded-5 ivd-bg-white bg-gradient text-black d-flex flex-column ms-3 col-lg-4"
-                style="max-width: 37.5%; flex-grow: 1;">
-                <div class="card-header bg-transparent border-0 px-3 pt-3 pb-0">
-
-                  <div class="d-flex align-items-center justify-content-between">
-                    <p class="card-title m-0">Grupos</p>
-
-                    <button class="ratio ratio-1x1 rounded-circle overflow-hidden me-2" type="button"
-                      onclick="window.location.href='/coordinador/grupos';"
-                      style="width: 20px; height: 20px; margin-top: -1px;">
-                      <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" fill="black"
-                        class="bi bi-arrow-up-right bi-arrow-up-right-sm  " viewBox="0 0 16 16">
-                        <path fill-rule="evenodd"
-                          d="M14 2.5a.5.5 0 00-.5-.5h-6a.5.5 0 0 0 0 1h4.793L2.146 13.146a.5.5 0 0 0 .708.708L13 3.707V8.5a.5.5 0 0 0 1 0z" />
-                      </svg>
-                    </button>
-                  </div>
-                  <div class="border-bottom border-3 mt-2" style="border-color: #84251c98 !important;"></div>
+                  </form>
                 </div>
 
-                <div class="card-body p-0 dashboard-scroll" style="max-height: 150px;">
-                  <div class="px-3 pt-2"
-                    style="width: auto; min-width: 600px; overflow-x: auto !important; overflow-y: hidden !important;">
-                    <div class="table-responsive">
-                      <table class="table table-sm">
-                        <thead>
-                          <th scope="col" style="width: 20%; min-width: 100px;" class="align-middle">Nombre
-                          </th>
-                          <th scope="col" style="width: 15%; min-width: 100px;" class="align-middle">Hora
-                            Inicio</th>
-                          <th scope="col" style="width: 15%; min-width: 100px;" class="align-middle">Hora
-                            Fin</th>
-                          <th scope="col" style="width: 15%; min-width: 100px;" class="align-middle">Dia
-                          </th>
-                          <th scope="col" style="width: 15%; min-width: 100px;" class="align-middle">
-                            Profesor</th>
-                        </thead>
-                        <tbody>
-                          <% if (grupos_Dashboard && grupos_Dashboard.length> 0) { %>
-                            <% grupos_Dashboard.forEach(bloque=> { %>
-                              <tr>
-                                <td style="max-width: 300px; white-space: normal; word-break: break-word;">
-                                  <%= bloque.materia_nombre %>
-                                </td>
-                                <td> [<%= bloque.hora_inicio %>
-                                </td>
-                                <td>
-                                  <%= bloque.hora_fin %>]
-                                </td>
-                                <td>
-                                  <%= bloque.dia %>
-                                </td>
+                <div class="modal fade" id="resetGroupsModal" tabindex="-1" aria-labelledby="resetGroupsModalLabel"
+                  aria-hidden="true">
+                  <div class="modal-dialog modal-dialog-centered modal-sm">
+                    <div class="modal-content align-items-center rounded-5">
+                      <div class="modal-header border border-0">
+                        <h5 class="modal-title ivd-text-red" id="resetGroupsModalLabel">Eliminar Inscripción</h5>
+                      </div>
+                      <div class="modal-body bg-grey rounded-5 text-center py-4 px-3">
+                        Usted esta eliminado las Inscripciones. <br>
+                        Esta acción no se puede deshacer.
+                      </div>
+                      <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary rounded-pill me-3 "
+                          style="background-color: white; border: 1px solid #84251C; color: #84251C;"
+                          data-bs-dismiss="modal"> Cancelar</button>
+                        <button id="confirmResetBtn" class="btn ivd-bg-red text-white rounded-5">
+                          Aceptar
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+                </div>
 
-                                <td style="max-width: 300px; white-space: normal; word-break: break-word;">
-                                  <%= bloque.profesor_nombre %>
-                                </td>
-                              </tr>
-                              <% }); %>
-                                <% } else { %>
+                <div class="modal fade" id="successModal" tabindex="-1" aria-hidden="true">
+                  <div class="modal-dialog modal-dialog-centered modal-sm">
+                    <div class="modal-content align-items-center rounded-5">
+                      <div class="modal-header border border-0">
+                        <h5 class="modal-title ivd-text-red">Eliminar Inscripción</h5>
+                      </div>
+                      <div class="modal-body bg-grey rounded-5 text-center py-4 px-4">
+                        Los datos han sido eliminados <br> correctamente.
+                      </div>
+                      <div class="modal-footer">
+                        <button type="button" class="btn ivd-bg-red text-white rounded-5"
+                          id="successConfirmBtn">Aceptar</button>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="d-flex flex-wrap justify-content-start w-100 mt-4" style="gap: 10px;">
+                  <div class="card rounded-5 ivd-bg-red bg-gradient text-white flex-grow-1 ms-3"
+                    style="min-width: 173.5px; flex-basis: 17.4%;">
+                    <div class="card-body px-0 text-start w-100" style="margin-top: -5px;">
+                      <div class="d-flex align-items-center justify-content-between">
+                        <p class="card-title ms-3">Materias Abiertas</p>
+                        <button class="ratio ratio-1x1 rounded-circle overflow-hidden me-2" type="button"
+                          onclick="window.location.href='/coordinador/materias';"
+                          style="width: 20px; height: 20px; margin-top: -10px;">
+                          <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" fill="black"
+                            class="bi bi-arrow-up-right bi-arrow-up-right-sm" viewBox="0 0 16 16">
+                            <path fill-rule="evenodd"
+                              d="M14 2.5a.5.5 0 00-.5-.5h-6a.5.5 0 0 0 0 1h4.793L2.146 13.146a.5.5 0 0 0 .708.708L13 3.707V8.5a.5.5 0 0 0 1 0z" />
+                          </svg>
+                        </button>
+                      </div>
+                      <div style="border-bottom: 3px solid #ffffff; min-width: 100%; margin-top: -7px;"></div>
+                      <p class="card-text text-start ms-4" style="margin-top: 10px; font-size: 2rem;">
+                        <%= materias_Abiertas %>
+                      </p>
+                    </div>
+                  </div>
+
+                  <div class="card rounded-5 ivd-bg-white bg-gradient text-black flex-grow-1"
+                    style="min-width: 173.5px; flex-basis: 17.4%;">
+                    <div class="card-body px-0 text-start w-100" style="margin-top: -5px;">
+                      <div class="d-flex align-items-center justify-content-between">
+                        <p class="card-title ms-3">Grupos Abiertos</p>
+                        <button class="ratio ratio-1x1 rounded-circle overflow-hidden me-2" type="button"
+                          onclick="window.location.href='/coordinador/grupos';"
+                          style="width: 20px; height: 20px; margin-top: -10px;">
+                          <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" fill="black"
+                            class="bi bi-arrow-up-right bi-arrow-up-right-sm  " viewBox="0 0 16 16">
+                            <path fill-rule="evenodd"
+                              d="M14 2.5a.5.5 0 00-.5-.5h-6a.5.5 0 0 0 0 1h4.793L2.146 13.146a.5.5 0 0 0 .708.708L13 3.707V8.5a.5.5 0 0 0 1 0z" />
+                          </svg>
+                        </button>
+                      </div>
+                      <div style="border-bottom: 3px solid #84251c98; width: 100%; margin-top: -7px;"></div>
+                      <p class="card-text text-start ms-4" style="margin-top: 10px; font-size: 2rem;">
+                        <%= grupos_Totales %>
+                      </p>
+                    </div>
+                  </div>
+
+
+                  <div class="card rounded-5 ivd-bg-white bg-gradient text-black flex-grow-1"
+                    style="min-width: 173.5px; flex-basis: 17.4%;">
+                    <div class="card-body px-0 text-start w-100" style="margin-top: -5px;">
+                      <div class="d-flex align-items-center justify-content-between">
+                        <p class="card-title ms-3">Alumnos Inscritos</p>
+                        <button class="ratio ratio-1x1 rounded-circle overflow-hidden me-2" type="button"
+                          onclick="window.location.href='/coordinador/alumnos';"
+                          style="width: 20px; height: 20px; margin-top: -10px;">
+                          <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" fill="black"
+                            class="bi bi-arrow-up-right bi-arrow-up-right-sm  " viewBox="0 0 16 16">
+                            <path fill-rule="evenodd"
+                              d="M14 2.5a.5.5 0 00-.5-.5h-6a.5.5 0 0 0 0 1h4.793L2.146 13.146a.5.5 0 0 0 .708.708L13 3.707V8.5a.5.5 0 0 0 1 0z" />
+                          </svg>
+                        </button>
+                      </div>
+                      <div style="border-bottom: 3px solid #84251c98; width: 100%; margin-top: -7px;"></div>
+                      <p class="card-text text-start ms-4" style="margin-top: 10px; font-size: 2rem;">
+                        <%= alumnosInscritos %>
+                      </p>
+                    </div>
+                  </div>
+
+                  <div class="card rounded-5 ivd-bg-white bg-gradient text-black flex-grow-1"
+                    style="min-width: 173.5px; flex-basis: 17.4%;">
+                    <div class="card-body px-0 text-start w-100" style="margin-top: -5px;">
+                      <div class="d-flex align-items-center justify-content-between">
+                        <p class="card-title ms-3">Alumnos No Inscritos</p>
+                        <button class="ratio ratio-1x1 rounded-circle overflow-hidden me-2" type="button"
+                          onclick="window.location.href='/coordinador/alumnos';"
+                          style="width: 20px; height: 20px; margin-top: -10px;">
+                          <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" fill="black"
+                            class="bi bi-arrow-up-right bi-arrow-up-right-sm  " viewBox="0 0 16 16">
+                            <path fill-rule="evenodd"
+                              d="M14 2.5a.5.5 0 00-.5-.5h-6a.5.5 0 0 0 0 1h4.793L2.146 13.146a.5.5 0 0 0 .708.708L13 3.707V8.5a.5.5 0 0 0 1 0z" />
+                          </svg>
+                        </button>
+                      </div>
+                      <div style="border-bottom: 3px solid #84251c98; width: 100%; margin-top: -7px;"></div>
+                      <p class="card-text text-start ms-4" style="margin-top: 10px; font-size: 2rem;">
+                        <%= alumnosNoInscritos %>
+                      </p>
+                    </div>
+                  </div>
+
+                  <div class="card rounded-5 ivd-bg-white bg-gradient text-black flex-grow-1 me-3"
+                    style="min-width: 173.5px; flex-basis: 17.4%;">
+                    <div class="card-body px-0 text-start w-100" style="margin-top: -5px;">
+                      <div class="d-flex align-items-center justify-content-between">
+                        <p class="card-title ms-3">Alumnos Sin Materias</p>
+
+                        <button class="ratio ratio-1x1 rounded-circle overflow-hidden me-2" type="button"
+                          onclick="window.location.href='/coordinador/alumnos';"
+                          style="width: 20px; height: 20px; margin-top: -10px;">
+                          <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" fill="black"
+                            class="bi bi-arrow-up-right bi-arrow-up-right-sm  " viewBox="0 0 16 16">
+                            <path fill-rule="evenodd"
+                              d="M14 2.5a.5.5 0 00-.5-.5h-6a.5.5 0 0 0 0 1h4.793L2.146 13.146a.5.5 0 0 0 .708.708L13 3.707V8.5a.5.5 0 0 0 1 0z" />
+                          </svg>
+                        </button>
+                      </div>
+                      <div style="border-bottom: 3px solid #84251c98; width: 100%; margin-top: -7px;"></div>
+                      <p class="card-text text-start ms-4" style="margin-top: 10px; font-size: 2rem;">
+                        <%= alumnosSinMaterias %>
+                      </p>
+                    </div>
+                  </div>
+
+                </div>
+
+                <div class="d-flex flex-wrap justify-content-start w-100 mt-4" style="gap: 10px;">
+                  <div class="card rounded-5 ivd-bg-white bg-gradient text-black d-flex flex-column ms-3 col-lg-4"
+                    style="max-width: 37.5%; flex-grow: 1;">
+                    <div class="card-header bg-transparent border-0 px-3 pt-3 pb-0">
+
+                      <div class="d-flex align-items-center justify-content-between">
+                        <p class="card-title m-0">Grupos</p>
+
+                        <button class="ratio ratio-1x1 rounded-circle overflow-hidden me-2" type="button"
+                          onclick="window.location.href='/coordinador/grupos';"
+                          style="width: 20px; height: 20px; margin-top: -1px;">
+                          <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" fill="black"
+                            class="bi bi-arrow-up-right bi-arrow-up-right-sm  " viewBox="0 0 16 16">
+                            <path fill-rule="evenodd"
+                              d="M14 2.5a.5.5 0 00-.5-.5h-6a.5.5 0 0 0 0 1h4.793L2.146 13.146a.5.5 0 0 0 .708.708L13 3.707V8.5a.5.5 0 0 0 1 0z" />
+                          </svg>
+                        </button>
+                      </div>
+                      <div class="border-bottom border-3 mt-2" style="border-color: #84251c98 !important;"></div>
+                    </div>
+
+                    <div class="card-body p-0 dashboard-scroll" style="max-height: 150px;">
+                      <div class="px-3 pt-2"
+                        style="width: auto; min-width: 600px; overflow-x: auto !important; overflow-y: hidden !important;">
+                        <div class="table-responsive">
+                          <table class="table table-sm">
+                            <thead>
+                              <th scope="col" style="width: 20%; min-width: 100px;" class="align-middle">Nombre
+                              </th>
+                              <th scope="col" style="width: 15%; min-width: 100px;" class="align-middle">Hora
+                                Inicio</th>
+                              <th scope="col" style="width: 15%; min-width: 100px;" class="align-middle">Hora
+                                Fin</th>
+                              <th scope="col" style="width: 15%; min-width: 100px;" class="align-middle">Dia
+                              </th>
+                              <th scope="col" style="width: 15%; min-width: 100px;" class="align-middle">
+                                Profesor</th>
+                            </thead>
+                            <tbody>
+                              <% if (grupos_Dashboard && grupos_Dashboard.length> 0) { %>
+                                <% grupos_Dashboard.forEach(bloque=> { %>
                                   <tr>
-                                    <td colspan="2">No hay grupos disponibles</td>
+                                    <td style="max-width: 300px; white-space: normal; word-break: break-word;">
+                                      <%= bloque.materia_nombre %>
+                                    </td>
+                                    <td> [<%= bloque.hora_inicio %>
+                                    </td>
+                                    <td>
+                                      <%= bloque.hora_fin %>]
+                                    </td>
+                                    <td>
+                                      <%= bloque.dia %>
+                                    </td>
+
+                                    <td style="max-width: 300px; white-space: normal; word-break: break-word;">
+                                      <%= bloque.profesor_nombre %>
+                                    </td>
                                   </tr>
-                                  <% } %>
-                        </tbody>
-                      </table>
-                    </div>
-                  </div>
-                </div>
-
-                <div class="card-footer bg-transparent border-0 py-2 px-3">
-                  <small class="text-muted">Total: <%= grupos_Totales %> grupos</small>
-                </div>
-              </div>
-
-
-
-              <div class="card rounded-5 ivd-bg-white bg-gradient text-black d-flex flex-column"
-                style="max-width: 22%; flex-grow: 1;">
-                <div class="card-header bg-transparent border-0 p-0">
-                  <div class="px-3 pt-3">
-                    <div class="d-flex align-items-center justify-content-between">
-                      <p class="card-title m-0">Salones Asignados</p>
-                      <button class="ratio ratio-1x1 rounded-circle overflow-hidden me-2" type="button"
-                        onclick="window.location.href='/coordinador/salones';"
-                        style="width: 20px; height: 20px; margin-top: -1px;">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" fill="black" viewBox="0 0 16 16">
-                          <path fill-rule="evenodd"
-                            d="M14 2.5a.5.5 0 00-.5-.5h-6a.5.5 0 0 0 0 1h4.793L2.146 13.146a.5.5 0 0 0 .708.708L13 3.707V8.5a.5.5 0 0 0 1 0z" />
-                        </svg>
-                      </button>
-                    </div>
-                  </div>
-                  <div class="border-bottom border-3 mt-2 w-100" style="border-color: #84251c98 !important;"></div>
-                </div>
-                <div class="card-body dashboard-scroll p-0" style="max-height: 150px; overflow-x: auto;">
-                  <div class="px-3 pt-2">
-                    <div class="table-responsive">
-                      <table class="table table-sm">
-                        <thead>
-                          <th scope="col" style="width: 15%; min-width: 100px;" class="align-middle">Numero
-                          </th>
-                          <th scope="col" style="width: 15%; min-width: 100px;" class="align-middle">
-                            Capacidad</th>
-                        </thead>
-                        <tbody>
-                          <% if (salones_Dashboard && salones_Dashboard.length> 0) { %>
-                            <% salones_Dashboard.forEach(function(salon) { %>
-                              <tr>
-                                <td>
-                                  <%= salon.numero %>
-                                </td>
-                                <td>
-                                  <%= salon.capacidad || '0' %>
-                                </td>
-                              </tr>
-                              <% }); %>
-                                <% } else { %>
-                                  <tr>
-                                    <td colspan="2">No hay salones disponibles</td>
-                                  </tr>
-                                  <% } %>
-                        </tbody>
-                      </table>
-                    </div>
-                  </div>
-                </div>
-
-                <div class="card-footer bg-transparent border-0 py-2 px-3">
-                  <small class="text-muted">Total: <%= salon_Totales %> salones</small>
-                </div>
-              </div>
-
-              <div class="card rounded-5 ivd-bg-white bg-gradient text-black d-flex flex-column me-3 col-lg-4"
-                style="max-width: 37.5%; flex-grow: 1;">
-                <div class="card-header bg-transparent border-0 px-3 pt-3 pb-0">
-
-                  <div class="d-flex align-items-center justify-content-between">
-                    <p class="card-title m-0">Solicitudes de Cambio de Horario </p>
-
-                    <button class="ratio ratio-1x1 rounded-circle overflow-hidden me-2" type="button"
-                      onclick="window.location.href='/coordinador/solicitudes-cambio';"
-                      style="width: 20px; height: 20px; margin-top: -1px;">
-                      <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" fill="black"
-                        class="bi bi-arrow-up-right bi-arrow-up-right-sm  " viewBox="0 0 16 16">
-                        <path fill-rule="evenodd"
-                          d="M14 2.5a.5.5 0 00-.5-.5h-6a.5.5 0 0 0 0 1h4.793L2.146 13.146a.5.5 0 0 0 .708.708L13 3.707V8.5a.5.5 0 0 0 1 0z" />
-                      </svg>
-                    </button>
-                  </div>
-                  <div class="border-bottom border-3 mt-2" style="border-color: #84251c98 !important;"></div>
-                </div>
-
-                <div class="card-body dashboard-scroll p-0" style="max-height: 150px;">
-                  <div class="px-3 pt-2">
-                    <div class="table-responsive">
-                      <table class="table table-sm">
-                        <thead>
-                          <th scope="col" style="width: 15%; min-width: 100px;" class="align-middle">
-                            ID
-                          </th>
-                          <th scope="col" style="width: 15%; min-width: 100px;" class="align-middle">
-                            Nombre
-                          </th>
-                          <th scope="col" style="width: 15%; min-width: 100px;" class="align-middle">
-                            Fecha
-                          </th>
-                        </thead>
-                        <tbody>
-                          <% if (solicitud_Cambio_Dashboard && solicitud_Cambio_Dashboard.length> 0) { %>
-                            <% solicitud_Cambio_Dashboard.forEach(solicitud=> { %>
-                              <tr>
-                                <td>
-                                  <%= solicitud.solicitud_cambio_id %>
-                                </td>
-                                <td style="max-width: 300px; white-space: normal; word-break: break-word;">
-                                  <%= solicitud.nombre %>
-                                    <%= solicitud.primer_apellido %>
-                                </td>
-                                <td style="max-width: 300px; white-space: normal; word-break: break-word;">
-                                  <%= new Date(solicitud.created_at).toLocaleString('es-ES', { year: 'numeric' ,
-                                    month: '2-digit' , day: '2-digit' , hour: '2-digit' , minute: '2-digit' , hour12:
-                                    false }).replace(',', '' ) %>
-                                </td> %>
-                                </td>
-                              </tr>
-                              <% }); %>
-                                <% } else { %>
-                                  <tr>
-                                    <td colspan="2">No hay solicitudes de cambio disponibles</td>
-                                  </tr>
-                                  <% } %>
-                        </tbody>
-                      </table>
-                    </div>
-                  </div>
-                </div>
-
-                <div class="card-footer bg-transparent border-0 py-2 px-3">
-                  <small class="text-muted">Total: <%= total_Solicitudes%> solicitudes</small>
-                </div>
-              </div>
-            </div>
-
-            <div class="container" style="min-width: 100%;">
-
-              <div class="row justify-content-center mt-3 mb-4">
-                <div class="px-3">
-                  <div id="chart-data" data-json='<%= JSON.stringify(grafica_Alumnos || []) %>' style="display:none;">
-                  </div>
-                  <div class="card rounded-5 ivd-bg-white bg-gradient text-black ">
-                    <div class="card-header bg-transparent border-0 p-0">
-                      <div class="px-3 pt-3">
-                        <div class="d-flex align-items-center justify-content-between">
-                          <p class="card-title m-0 w-100 text-center">Comparación de Alumnos por semestre
-                          </p>
+                                  <% }); %>
+                                    <% } else { %>
+                                      <tr>
+                                        <td colspan="2">No hay grupos disponibles</td>
+                                      </tr>
+                                      <% } %>
+                            </tbody>
+                          </table>
                         </div>
                       </div>
                     </div>
-                    <div class="card-body">
-                      <canvas id="grafica_Alumnos" height="50" width="300"></canvas>
+
+                    <div class="card-footer bg-transparent border-0 py-2 px-3">
+                      <small class="text-muted">Total: <%= grupos_Totales %> grupos</small>
+                    </div>
+                  </div>
+
+
+
+                  <div class="card rounded-5 ivd-bg-white bg-gradient text-black d-flex flex-column"
+                    style="max-width: 22%; flex-grow: 1;">
+                    <div class="card-header bg-transparent border-0 p-0">
+                      <div class="px-3 pt-3">
+                        <div class="d-flex align-items-center justify-content-between">
+                          <p class="card-title m-0">Salones Asignados</p>
+                          <button class="ratio ratio-1x1 rounded-circle overflow-hidden me-2" type="button"
+                            onclick="window.location.href='/coordinador/salones';"
+                            style="width: 20px; height: 20px; margin-top: -1px;">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" fill="black"
+                              viewBox="0 0 16 16">
+                              <path fill-rule="evenodd"
+                                d="M14 2.5a.5.5 0 00-.5-.5h-6a.5.5 0 0 0 0 1h4.793L2.146 13.146a.5.5 0 0 0 .708.708L13 3.707V8.5a.5.5 0 0 0 1 0z" />
+                            </svg>
+                          </button>
+                        </div>
+                      </div>
+                      <div class="border-bottom border-3 mt-2 w-100" style="border-color: #84251c98 !important;">
+                      </div>
+                    </div>
+                    <div class="card-body dashboard-scroll p-0" style="max-height: 150px; overflow-x: auto;">
+                      <div class="px-3 pt-2">
+                        <div class="table-responsive">
+                          <table class="table table-sm">
+                            <thead>
+                              <th scope="col" style="width: 15%; min-width: 100px;" class="align-middle">Numero
+                              </th>
+                              <th scope="col" style="width: 15%; min-width: 100px;" class="align-middle">
+                                Capacidad</th>
+                            </thead>
+                            <tbody>
+                              <% if (salones_Dashboard && salones_Dashboard.length> 0) { %>
+                                <% salones_Dashboard.forEach(function(salon) { %>
+                                  <tr>
+                                    <td>
+                                      <%= salon.numero %>
+                                    </td>
+                                    <td>
+                                      <%= salon.capacidad || '0' %>
+                                    </td>
+                                  </tr>
+                                  <% }); %>
+                                    <% } else { %>
+                                      <tr>
+                                        <td colspan="2">No hay salones disponibles</td>
+                                      </tr>
+                                      <% } %>
+                            </tbody>
+                          </table>
+                        </div>
+                      </div>
+                    </div>
+
+                    <div class="card-footer bg-transparent border-0 py-2 px-3">
+                      <small class="text-muted">Total: <%= salon_Totales %> salones</small>
+                    </div>
+                  </div>
+
+                  <div class="card rounded-5 ivd-bg-white bg-gradient text-black d-flex flex-column me-3 col-lg-4"
+                    style="max-width: 37.5%; flex-grow: 1;">
+                    <div class="card-header bg-transparent border-0 px-3 pt-3 pb-0">
+
+                      <div class="d-flex align-items-center justify-content-between">
+                        <p class="card-title m-0">Solicitudes de Cambio de Horario </p>
+
+                        <button class="ratio ratio-1x1 rounded-circle overflow-hidden me-2" type="button"
+                          onclick="window.location.href='/coordinador/solicitudes-cambio';"
+                          style="width: 20px; height: 20px; margin-top: -1px;">
+                          <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" fill="black"
+                            class="bi bi-arrow-up-right bi-arrow-up-right-sm  " viewBox="0 0 16 16">
+                            <path fill-rule="evenodd"
+                              d="M14 2.5a.5.5 0 00-.5-.5h-6a.5.5 0 0 0 0 1h4.793L2.146 13.146a.5.5 0 0 0 .708.708L13 3.707V8.5a.5.5 0 0 0 1 0z" />
+                          </svg>
+                        </button>
+                      </div>
+                      <div class="border-bottom border-3 mt-2" style="border-color: #84251c98 !important;"></div>
+                    </div>
+
+                    <div class="card-body dashboard-scroll p-0" style="max-height: 150px;">
+                      <div class="px-3 pt-2">
+                        <div class="table-responsive">
+                          <table class="table table-sm">
+                            <thead>
+                              <th scope="col" style="width: 15%; min-width: 100px;" class="align-middle">
+                                ID
+                              </th>
+                              <th scope="col" style="width: 15%; min-width: 100px;" class="align-middle">
+                                Nombre
+                              </th>
+                              <th scope="col" style="width: 15%; min-width: 100px;" class="align-middle">
+                                Fecha
+                              </th>
+                            </thead>
+                            <tbody>
+                              <% if (solicitud_Cambio_Dashboard && solicitud_Cambio_Dashboard.length> 0) { %>
+                                <% solicitud_Cambio_Dashboard.forEach(solicitud=> { %>
+                                  <tr>
+                                    <td>
+                                      <%= solicitud.solicitud_cambio_id %>
+                                    </td>
+                                    <td style="max-width: 300px; white-space: normal; word-break: break-word;">
+                                      <%= solicitud.nombre %>
+                                        <%= solicitud.primer_apellido %>
+                                    </td>
+                                    <td style="max-width: 300px; white-space: normal; word-break: break-word;">
+                                      <%= new Date(solicitud.created_at).toLocaleString('es-ES', { year: 'numeric' ,
+                                        month: '2-digit' , day: '2-digit' , hour: '2-digit' , minute: '2-digit' ,
+                                        hour12: false }).replace(',', '' ) %>
+                                    </td> %>
+                                    </td>
+                                  </tr>
+                                  <% }); %>
+                                    <% } else { %>
+                                      <tr>
+                                        <td colspan="2">No hay solicitudes de cambio disponibles</td>
+                                      </tr>
+                                      <% } %>
+                            </tbody>
+                          </table>
+                        </div>
+                      </div>
+                    </div>
+
+                    <div class="card-footer bg-transparent border-0 py-2 px-3">
+                      <small class="text-muted">Total: <%= total_Solicitudes%> solicitudes</small>
                     </div>
                   </div>
                 </div>
-              </div>
+
+                <div class="container" style="min-width: 100%;">
+
+                  <div class="row justify-content-center mt-3 mb-4">
+                    <div class="px-3">
+                      <div id="chart-data" data-json='<%= JSON.stringify(grafica_Alumnos || []) %>'
+                        style="display:none;">
+                      </div>
+                      <div class="card rounded-5 ivd-bg-white bg-gradient text-black ">
+                        <div class="card-header bg-transparent border-0 p-0">
+                          <div class="px-3 pt-3">
+                            <div class="d-flex align-items-center justify-content-between">
+                              <p class="card-title m-0 w-100 text-center">Comparación de Alumnos por semestre
+                              </p>
+                            </div>
+                          </div>
+                        </div>
+                        <div class="card-body">
+                          <canvas id="grafica_Alumnos" height="50" width="300"></canvas>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
     </main>
     </div>
     </div>
@@ -484,22 +547,46 @@
         }
       });
     </script>
-
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
     <script src="/js/coordinador.js"></script>
-    <script>
-      // Automatically show modal when message exists
-      document.addEventListener('DOMContentLoaded', function () {
-        const msgModal = document.getElementById('msgModal');
-        if (msgModal) {
-          const modal = new bootstrap.Modal(msgModal);
-          modal.show();
 
-          // Optional: Clear URL query after showing modal
-          history.replaceState(null, '', window.location.pathname);
+    <script>
+      document.getElementById('confirmResetBtn').addEventListener('click', async () => {
+        const btn = document.getElementById('confirmResetBtn');
+        const resetModal = bootstrap.Modal.getInstance(document.getElementById('resetGroupsModal'));
+
+        try {
+          btn.disabled = true;
+          btn.innerHTML = '<span class="spinner-border spinner-border-sm"></span> Procesando...';
+
+          const response = await fetch('/coordinador/dashboard/reset-grupos', {
+            method: 'POST'
+          });
+
+          if (!response.ok) throw new Error('Server error');
+          const result = await response.json();
+          if (result.error) throw new Error(result.error);
+
+          resetModal.hide();
+
+          const successModal = new bootstrap.Modal(document.getElementById('successModal'));
+          successModal.show();
+
+          document.getElementById('successConfirmBtn').onclick = () => {
+            successModal.hide();
+            window.location.reload(true);
+          };
+
+        } catch (error) {
+          console.error('Error:', error);
+          alert('Error: ' + (error.message || 'No se pudo completar la operación'));
+        } finally {
+          btn.disabled = false;
+          btn.textContent = 'Aceptar';
         }
       });
     </script>
+
     </body>
 
     </html>
