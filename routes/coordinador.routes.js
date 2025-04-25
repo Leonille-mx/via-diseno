@@ -8,6 +8,8 @@ const coordinador_controller = require('../controllers/coordinador.controller');
 router.use(isAuth.estaAutenticado, isAuth.esCoordinador);
 
 router.get('/dashboard', coordinador_controller.get_dashboard);
+router.post('/dashboard/reset-grupos', coordinador_controller.post_reset_grupos);
+
 
 router.get('/materias', coordinador_controller.get_materias);
 router.post('/materias/sincronizar', coordinador_controller.post_sincronizar_materias);

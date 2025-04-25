@@ -38,6 +38,7 @@ exports.get_dashboard = async (req, res) => {
         res.render('dashboard_coordinador', {
             msg1: msg1,
             msg2: msg2,
+            showResetModal: true, 
             isLoggedIn: req.session.isLoggedIn || false,
             matricula: req.session.matricula || '',
             //Total de profesores para mostrar en el dashboard
@@ -51,7 +52,8 @@ exports.get_dashboard = async (req, res) => {
             grafica_Alumnos: grafica_Alumnos,
             materias_Abiertas: materias_Abiertas,
             solicitud_Cambio_Dashboard: solicitud_Cambio_Dashboard,
-            total_Solicitudes: total_Solicitudes
+            total_Solicitudes: total_Solicitudes,
+
             
         });
     } catch (error) {
@@ -60,6 +62,18 @@ exports.get_dashboard = async (req, res) => {
     }
 };
 
+exports.post_reset_grupos = async (req, res) => {
+    try {
+        const resultado = await Grupos.resetDatosGrupos();
+        res.json(resultado);
+    } catch (error) {
+        console.error('Error:', error);
+        res.status(500).json({ 
+            success: false,
+            message: 'Error del servidor' 
+        });
+    }
+};
 
 exports.get_materias = async (req, res, nxt) => {
     try {
