@@ -24,17 +24,17 @@ exports.get_dashboard = async (req, res) => {
         const msg2 = req.query.msg2 || null; 
         const carreraCoordinador = await Coordinador.getCarrera(req.session.usuario.id);
         //Consulta el total de profesores activos de la Base de Datos
-        const alumnosConMaterias = await Alumno.fetchNumeroIrregularesConMaterias();
-        const alumnosNoInscritos = await Alumno.totalNoInscritos();
-        const alumnosInscritos = await Alumno.numero_TotalAlumnoInscritos();
+        const alumnosConMaterias = await Alumno.fetchNumeroIrregularesConMaterias(carreraCoordinador.rows[0].carrera_id);
+        const alumnosNoInscritos = await Alumno.totalNoInscritos(carreraCoordinador.rows[0].carrera_id);
+        const alumnosInscritos = await Alumno.numero_TotalAlumnoInscritos(carreraCoordinador.rows[0].carrera_id);
         const salon_Totales = await Salon.numero_TotalSalones();
         const grupos_Totales = await Grupos.numeroTotalGrupos();
         const grupos_Dashboard = await Grupos.grupoDashboard();
         const salones_Dashboard = await Salon.salonesDashboard();
-        const grafica_Alumnos = await Alumno.alumnosComparacion();
-        const materias_Abiertas  = await Materia.numeroMaterias();
+        const grafica_Alumnos = await Alumno.alumnosComparacion(carreraCoordinador.rows[0].carrera_id);
+        const materias_Abiertas  = await Materia.numeroMaterias(carreraCoordinador.rows[0].carrera_id);
         const solicitud_Cambio_Dashboard = await Solicitud.dasboard_Solicitud(carreraCoordinador.rows[0].carrera_id);
-        const total_Solicitudes = await Solicitud.numeroTotalSolicitudes();
+        const total_Solicitudes = await Solicitud.numeroTotalSolicitudes(carreraCoordinador.rows[0].carrera_id);
 
         res.render('dashboard_coordinador', {
             msg1: msg1,

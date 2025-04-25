@@ -127,8 +127,15 @@ module.exports = class Solicitud {
   }
 
   // Método para obtener número total de solicitudes de cambio
-  static async numeroTotalSolicitudes() {
-    const result = await pool.query("SELECT count(*) FROM public.solicitud_cambio");
+  static async numeroTotalSolicitudes(carrera_id) {
+    const result = await pool.query(`
+      SELECT count(*) 
+      FROM solicitud_cambio sc
+      JOIN alumno a ON a.ivd_id = sc.ivd_id
+      JOIN plan_estudio p ON p.plan_estudio_id = a.plan_estudio_id
+      WHERE p.carrera_id = $1 AND sc.aprobada = false`
+      , [carrera_id]
+    );
     return parseInt(result.rows[0].count);
   }
 };

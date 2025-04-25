@@ -118,7 +118,7 @@ module.exports = class Alumno {
       return await pool.query(query, [carrera_id]);
     }
 
-    static async fetchNumeroIrregularesConMaterias() {
+    static async fetchNumeroIrregularesConMaterias(carrera_id) {
       const result = await pool.query(`
             SELECT COUNT(*)
             FROM (
@@ -127,8 +127,9 @@ module.exports = class Alumno {
               GROUP BY alumno_id
             ) AS sub
             JOIN alumno a ON a.ivd_id = sub.alumno_id
-            WHERE a.inscripcion_completada = false;
-      `);
+            JOIN plan_estudio p ON p.plan_estudio_id = a.plan_estudio_id
+            WHERE a.inscripcion_completada = false AND p.carrera_id = $1;
+      `, [carrera_id]);
       return parseInt(result.rows[0].count);
     }
     static async fetchAllResultadoAlumnoIrregular2(id) {
@@ -435,25 +436,40 @@ module.exports = class Alumno {
     }
 
     // Método para obtener número total de alumnos no inscritos
-    static async totalNoInscritos() {
-        const result = await pool.query('SELECT count(*) FROM public.alumno WHERE inscripcion_completada = false');
+    static async totalNoInscritos(carrera_id) {
+        const result = await pool.query(`
+          SELECT count(*) 
+          FROM alumno a
+          JOIN plan_estudio p ON p.plan_estudio_id = a.plan_estudio_id
+          WHERE a.inscripcion_completada = false AND p.carrera_id = $1`
+        , [carrera_id]);
         return parseInt(result.rows[0].count);
     };
 
     // Método para obtener número total de alumnos no inscritos
-    static async numero_TotalAlumnoInscritos() {
-        const result = await pool.query('SELECT count(*) FROM public.alumno WHERE inscripcion_completada = true');
+    static async numero_TotalAlumnoInscritos(carrera_id) {
+        const result = await pool.query(`
+          SELECT count(*) 
+          FROM alumno a
+          JOIN plan_estudio p ON p.plan_estudio_id = a.plan_estudio_id
+          WHERE a.inscripcion_completada = true AND p.carrera_id = $1`
+        , [carrera_id]);
         return parseInt(result.rows[0].count);
     };
 
     //metodo para obtener el numero de alumnos no inscritos e inscritos, agrupado por semestres
-    static async alumnosComparacion(){
-        const result = await pool.query (`SELECT 
-            semestre, count(CASE WHEN inscripcion_completada = TRUE THEN 1 END) AS inscritos, 
-            COUNT(CASE WHEN inscripcion_completada = FALSE THEN 1 END) AS no_inscritos 
-            FROM public.alumno
+    static async alumnosComparacion(carrera_id){
+        const result = await pool.query (`
+            SELECT 
+            a.semestre, count(CASE WHEN a.inscripcion_completada = TRUE THEN 1 END) AS inscritos, 
+            COUNT(CASE WHEN a.inscripcion_completada = FALSE THEN 1 END) AS no_inscritos 
+            FROM public.alumno a
+            JOIN plan_estudio p ON p.plan_estudio_id = a.plan_estudio_id
+            WHERE p.carrera_id = $1
             group by semestre
-            order by semestre ASC;`);
+            order by semestre ASC;`
+            , [carrera_id]
+          );
         return result.rows;
     }
 

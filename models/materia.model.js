@@ -233,8 +233,20 @@ module.exports = class Materia {
 
     
      // Método para obtener número total de materias abiertas
-     static async numeroMaterias() {
-        const result = await pool.query('SELECT COUNT(*) FROM public.materia_semestre');
+     static async numeroMaterias(carrera_id) {
+        const result = await pool.query(`
+                SELECT COUNT(*)
+                FROM (
+                    SELECT ms.materia_id
+                    FROM materia_semestre ms
+                    GROUP BY ms.materia_id
+                    HAVING COUNT(DISTINCT ms.semestre_id) = 1
+                ) AS m
+                JOIN plan_materia pm ON pm.materia_id = m.materia_id
+                JOIN plan_estudio p ON p.plan_estudio_id = pm.plan_estudio_id
+                WHERE p.carrera_id = $1`
+            ,[carrera_id]
+        );
         return parseInt(result.rows[0].count);
     }; 
 }
