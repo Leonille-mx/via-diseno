@@ -25,7 +25,7 @@ module.exports = class Grupo {
 
     static fetchAll() {
         return pool.query(`
-            SELECT g.grupo_id,m.nombre AS materia, p.nombre, p.primer_apellido, 
+            SELECT g.grupo_id,m.nombre AS materia, g.materia_id, g.profesor_id, p.nombre, p.primer_apellido, 
             p.segundo_apellido, s.numero, c.ciclo_escolar_id, c.code, ms.semestre_id, ca.nombre AS carrera_nombre 
             FROM grupo g
             JOIN materia m ON g.materia_id = m.materia_id
@@ -124,5 +124,7 @@ ORDER BY
             );
         return result.rows;
     };
+
+    
 
 };
