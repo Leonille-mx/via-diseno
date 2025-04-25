@@ -91,6 +91,7 @@ async function getCiclosEscolares() {
     }
 
     return responseData.map(cycle => ({
+      id: cycle.school_cycle_id,
       code: cycle.code,  // Use actual code field from response
       start_date: new Date(cycle.start_date),
       end_date: new Date(cycle.end_date)
@@ -138,5 +139,24 @@ async function getAllAcademyHistory( ivd_id ) {
   return response.data;
 }
 
+const getExternalGroups = async (token) => {
+  const response = await axiosAdminClient.get('/v1/groups', {
+    headers: {
+      Authorization: `Bearer ${token}`
+    }
+  });
+  return response.data;
+};
+
+async function getExternalCycles() {
+  const token = await getToken();
+  const headers = await getHeaders(token);
+
+  const response = await axiosAdminClient.get("v1/school_cycles/index", {
+    headers,
+  });
+  return response.data;
+}
+
 // Export the functions so they can be used in other files
-module.exports = { getAllCourses, getAllProfessors, getAllStudents, getCiclosEscolares, getAllDegree, getAllAcademyHistory };
+module.exports = { getExternalCycles, getExternalGroups,getHeaders, getToken, axiosAdminClient, getAllCourses, getAllProfessors, getAllStudents, getCiclosEscolares, getAllDegree, getAllAcademyHistory };

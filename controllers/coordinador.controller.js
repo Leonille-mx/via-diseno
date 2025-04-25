@@ -15,7 +15,7 @@ const Solicitud = require('../models/solicitudes-cambio.model.js');
 const ResultadoInscripcion = require('../models/resultado_inscripcion.model.js');
 const BloqueTiempo = require('../models/bloque_tiempo.model.js');
 const Coordinador = require('../models/coordinador.model.js');
-const { getAllProfessors, getAllCourses, getAllStudents, getCiclosEscolares, getAllDegree, getAllAcademyHistory} = require('../util/adminApiClient.js');
+const { getExternalGroups, axiosAdminClient, getToken, getHeaders, getAllProfessors, getAllCourses, getAllStudents, getCiclosEscolares, getAllDegree, getAllAcademyHistory, getExternalCycles} = require('../util/adminApiClient.js');
 
 
 exports.get_dashboard = async (req, res) => {
@@ -815,6 +815,246 @@ exports.post_rechazar_solicitud = async (req, res, nxt) => {
         console.log(error);
     });
 };
-    
-    
 
+exports.enviarGruposAPI = async (req, res, isInternal = false) => {
+    try {
+        const token = await getToken();
+        const headers = await getHeaders(token);
+        const [gruposResult, ciclosLocalesResult, profesoresExternosResponse, ciclosExternosResponse] = await Promise.all([
+          Grupos.fetchAll(),
+          CicloEscolar.fetchAll(),
+          getAllProfessors(token),
+          getExternalCycles()
+        ]);
+        
+        const grupos = gruposResult.rows;
+        const ciclosLocales = ciclosLocalesResult.rows;
+        const profesoresExternos = profesoresExternosResponse.data || [];
+        const ciclosExternos = ciclosExternosResponse.data || [];
+
+        const mapaProfesores = {};
+        for (const p of profesoresExternos) {
+            if (p.ivd_id) {
+                mapaProfesores[String(p.ivd_id)] = p.id;
+            }
+        }
+        
+        const mapaCiclos = {};
+        for (const ciclo of ciclosExternos) {
+            mapaCiclos[ciclo.code] = ciclo.id;
+        }
+        
+        const mapaIdToCode = {};
+        for (const ciclo of ciclosLocales) {
+            mapaIdToCode[ciclo.ciclo_escolar_id] = ciclo.code;
+        }
+        
+
+        const gruposFormateados = grupos
+        .map(grupo => {
+            const id_externo_profesor = mapaProfesores[String(grupo.profesor_id)];
+            const codeCiclo = mapaIdToCode[grupo.ciclo_escolar_id];
+            const id_externo_ciclo = mapaCiclos[codeCiclo];
+        
+        
+            return {
+                school_cycle_id: id_externo_ciclo,
+                course_id: grupo.materia_id,
+                professor_id: id_externo_profesor,
+                name: grupo.nombre,
+                room: String(grupo.numero)
+            };
+        })
+        .filter(grupo => grupo !== null);
+      
+  
+        console.log('Enviando grupo a API:', JSON.stringify(gruposFormateados, null, 2));
+    
+        for (const grupo of gruposFormateados) {
+            console.log(grupo);
+            await axiosAdminClient.post('/v1/groups', grupo, {
+            headers,
+            });
+        }
+    
+        if (!isInternal) {
+            res.status(200).send('Grupos enviados exitosamente.');
+        }
+        } catch (error) {
+        console.error('Error al enviar grupos a la API:', error.response?.data || error.message);
+        if (!isInternal) {
+            res.status(500).send('Error al enviar grupos.');
+        }
+    }
+};
+
+exports.enviarAlumnosAPI = async (req, res, isInternal = false) => {
+    try {
+      const token = await getToken();
+      const gruposExternos = await getExternalGroups(token);
+  
+      const resultado = await pool.query(`
+        SELECT ri.alumno_id, ri.grupo_id, 
+               g.materia_id, g.profesor_id, g.salon_id, g.ciclo_escolar_id,
+               s.numero AS room, g.nombre
+        FROM resultado_inscripcion ri
+        JOIN grupo g ON ri.grupo_id = g.grupo_id
+        JOIN salon s ON g.salon_id = s.salon_id
+      `);
+  
+      const inscripciones = resultado.rows;
+  
+      for (const inscripcion of inscripciones) {
+        const grupoCoincidente = gruposExternos.find(ge =>
+          ge.school_cycle_id === inscripcion.ciclo_escolar_id &&
+          ge.course_id === inscripcion.materia_id &&
+          ge.professor_id === inscripcion.profesor_id &&
+          ge.room === inscripcion.room &&
+          ge.name === inscripcion.nombre
+        );
+  
+        if (!grupoCoincidente) {
+          console.warn(`Grupo no encontrado para alumno ${inscripcion.alumno_id}`);
+          continue;
+        }
+  
+        const data = {
+          group_id: grupoCoincidente.id,
+          student_ivd_id: inscripcion.alumno_id
+        };
+  
+        await axiosAdminClient.post('/v1/group_students', data, {
+          headers: {
+            Authorization: `Bearer ${token}`
+          }
+        });
+      }
+  
+      if (!isInternal) {
+        res.status(200).send('Inscripciones enviadas exitosamente.');
+      }
+    } catch (error) {
+      console.error('Error al enviar inscripciones:', error.response?.data || error.message);
+      if (!isInternal) {
+        res.status(500).send('Error al enviar inscripciones.');
+      }
+    }
+};
+  
+exports.enviarHorariosAPI = async (req, res, isInternal = false) => {
+    try {
+      const token = await getToken();
+      const gruposExternos = await getExternalGroups(token);
+  
+      const resultado = await pool.query(`
+        SELECT 
+          gbt.grupo_id, 
+          bt.bloque_tiempo_id,
+          bt.dia,
+          bt.hora_inicio,
+          bt.hora_fin,
+          g.profesor_id,
+          g.materia_id,
+          g.ciclo_escolar_id,
+          s.numero AS room,
+          g.nombre AS grupo_nombre
+        FROM grupo_bloque_tiempo gbt
+        JOIN bloque_tiempo bt ON gbt.bloque_tiempo_id = bt.bloque_tiempo_id
+        JOIN grupo g ON gbt.grupo_id = g.grupo_id
+        JOIN salon s ON g.salon_id = s.salon_id
+        ORDER BY g.grupo_id, bt.dia, bt.bloque_tiempo_id
+      `);
+  
+      const bloques = resultado.rows;
+  
+      const grupos = {};
+      for (const bloque of bloques) {
+        const key = `${bloque.grupo_id}-${bloque.dia}`;
+        if (!grupos[key]) grupos[key] = [];
+        grupos[key].push(bloque);
+      }
+  
+      for (const key in grupos) {
+        const bloquesDia = grupos[key];
+        const grupoLocal = bloquesDia[0];
+  
+        const externalMatch = gruposExternos.find(ge =>
+          ge.school_cycle_id === grupoLocal.ciclo_escolar_id &&
+          ge.course_id === grupoLocal.materia_id &&
+          ge.professor_id === grupoLocal.profesor_id &&
+          ge.room === grupoLocal.room &&
+          ge.name === grupoLocal.grupo_nombre
+        );
+  
+        if (!externalMatch) {
+          console.warn(`No se encontró group_id externo para grupo local ID ${grupoLocal.grupo_id}`);
+          continue;
+        }
+  
+        const group_id_externo = externalMatch.id;
+        let tempGroup = [bloquesDia[0]];
+  
+        for (let i = 1; i < bloquesDia.length; i++) {
+          const actual = bloquesDia[i];
+          const anterior = bloquesDia[i - 1];
+  
+          if (actual.bloque_tiempo_id === anterior.bloque_tiempo_id + 1) {
+            tempGroup.push(actual);
+          } else {
+            await enviarBloqueHorario(group_id_externo, grupoLocal.dia, tempGroup, token);
+            tempGroup = [actual];
+          }
+        }
+  
+        if (tempGroup.length > 0) {
+          await enviarBloqueHorario(group_id_externo, grupoLocal.dia, tempGroup, token);
+        }
+      }
+  
+      if (!isInternal) {
+        res.status(200).send('Horarios enviados exitosamente.');
+      }
+    } catch (error) {
+      console.error('Error al enviar horarios:', error.response?.data || error.message);
+      if (!isInternal) {
+        res.status(500).send('Error al enviar horarios.');
+      }
+    }
+};
+  
+const enviarBloqueHorario = async (group_id, dia, bloques, token) => {
+    const startHour = bloques[0].hora_inicio.toISOString();
+    const endHour = bloques[bloques.length - 1].hora_fin.toISOString();
+  
+    const data = {
+      group_id: group_id,
+      weekday: dia,
+      start_hour: startHour,
+      end_hour: endHour
+    };
+  
+    await axiosAdminClient.post('/v1/group_schedules', data, {
+      headers: {
+        Authorization: `Bearer ${token}`
+      }
+    });
+};
+  
+exports.enviarDatos = async (req, res) => {
+    try {
+      await exports.enviarGruposAPI(req, res, true);
+      await exports.enviarAlumnosAPI(req, res, true);
+      await exports.enviarHorariosAPI(req, res, true);
+  
+      // Verifica que no se haya respondido antes
+      if (!res.headersSent) {
+        res.redirect('/coordinador/grupos?msg=Datos enviados exitosamente&msgTitle=Enviar Grupos');
+      }
+    } catch (error) {
+      console.error('Error al enviar todo:', error);
+      if (!res.headersSent) {
+        res.status(500).send('Error al enviar datos');
+      }
+    }
+};
+  

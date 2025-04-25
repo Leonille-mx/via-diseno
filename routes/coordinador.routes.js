@@ -56,6 +56,7 @@ router.get('/grupos/generar', agregarCicloInfo, coordinador_controller.get_gener
 router.post('/grupos/eliminar/:id', agregarCicloInfo, coordinador_controller.post_eliminar_grupo);
 router.get('/grupos/modificar/:id', agregarCicloInfo, coordinador_controller.get_modificar_grupo);
 router.post('/grupos/modificar/:id', agregarCicloInfo, coordinador_controller.post_modificar_grupo);
+router.post('/grupos/enviar', agregarCicloInfo, coordinador_controller.enviarDatos);
 
 router.get('/solicitudes-cambio', agregarCicloInfo, coordinador_controller.get_solicitudes_cambio);
 router.post('/solicitudes-cambio/aprobar/:id', agregarCicloInfo, coordinador_controller.post_aprobar_solicitud);
