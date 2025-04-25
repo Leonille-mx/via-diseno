@@ -370,6 +370,35 @@ exports.get_grupos = (req, res, next) => {
     });
 };
 
+exports.get_grupos_carrera = (req, res, nxt) => {
+    Grupos.fetchAll()
+    .then((grupos) => {
+        res.status(200).json({
+            isLoggedIn: req.session.isLoggedIn || false,
+            matricula: req.session.matricula || '',
+            grupos: grupos.rows
+        });
+    }).catch((error) => {
+        console.error('Error fetching data:', error);
+        res.status(500).send('Error al obtener los datos');
+    });
+};
+
+exports.get_grupos_por_id = (req, res, nxt) => {
+    const carrera_id = req.params.id;
+    Grupos.fetchAllPorId(carrera_id)
+    .then((grupos) => {
+        res.status(200).json({
+            isLoggedIn: req.session.isLoggedIn || false,
+            matricula: req.session.matricula || '',
+            grupos: grupos.rows
+        });
+    }).catch((error) => {
+        console.error('Error fetching data:', error);
+        res.status(500).send('Error al obtener los datos');
+    });
+};
+
 exports.post_grupos = async (req, res, next) => {
     try {
         const msgTitle = `Agregar Grupo`;

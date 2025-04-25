@@ -35,6 +35,8 @@ router.get('/grupos/generar', agregarCicloInfo, coordinador_controller.get_gener
 router.post('/grupos/eliminar/:id', agregarCicloInfo, coordinador_controller.post_eliminar_grupo);
 router.get('/grupos/modificar/:id', agregarCicloInfo, coordinador_controller.get_modificar_grupo);
 router.post('/grupos/modificar/:id', agregarCicloInfo, coordinador_controller.post_modificar_grupo);
+router.get('/grupos/get/:id', agregarCicloInfo, coordinador_controller.get_grupos_por_id);
+router.get('/grupos/get-carrera', agregarCicloInfo, coordinador_controller.get_grupos_carrera);
 
 router.get('/alumnos', agregarCicloInfo, coordinador_controller.get_alumnos);
 router.post('/alumnos/sincronizar', agregarCicloInfo, coordinador_controller.post_sincronizar_alumnos);
