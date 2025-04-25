@@ -89,4 +89,16 @@ module.exports = class Salon {
         return result.rows;
     };
 
+    static async existeSalon(numero, campus_id) {
+        return await pool.query(`
+            SELECT EXISTS (
+            SELECT 1
+            FROM salon
+            WHERE numero = $1 AND campus_id = $2
+            ) AS result;
+            `
+            , [numero, campus_id]
+        );
+    }
+
 }      

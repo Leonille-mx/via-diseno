@@ -290,20 +290,25 @@ exports.get_salones = (req, res, nxt) => {
     });
 };
 
-exports.post_salones = (req, res, nxt) => {
+exports.post_salones = async (req, res, nxt) => {
     msgTitle = `Agregar Salón`
-
-    const salon = new Salon(req.body.numero, req.body.capacidad, req.body.tipo, req.body.nota, req.body.campus);
-    salon.save()
-    .then(() => {
-        res.redirect(`/coordinador/salones?msg=${encodeURIComponent('El salón fue registrado exitosamente.')}
-                                          &msgTitle=${encodeURIComponent(msgTitle)}`);
-    })
-    .catch((error) => {
-        console.error(error);
-        res.redirect(`/coordinador/salones?msg=${encodeURIComponent('La operación fue fracasada. Intente de nuevo.')}
-                                          &msgTitle=${encodeURIComponent(msgTitle)}`); 
-    });
+    const existeSalon = await Salon.existeSalon(req.body.numero, req.body.campus);
+    if (existeSalon.rows[0].result === true) {
+        res.redirect(`/coordinador/salones?msg=${encodeURIComponent('Ya existe un salón con el mismo número en este campus. Intente de nuevo.')}
+                                        &msgTitle=${encodeURIComponent(msgTitle)}`);     
+    } else {
+        const salon = new Salon(req.body.numero, req.body.capacidad, req.body.tipo, req.body.nota, req.body.campus);
+        salon.save()
+        .then(() => {
+            res.redirect(`/coordinador/salones?msg=${encodeURIComponent('El salón fue registrado exitosamente.')}
+                                              &msgTitle=${encodeURIComponent(msgTitle)}`);
+        })
+        .catch((error) => {
+            console.error(error);
+            res.redirect(`/coordinador/salones?msg=${encodeURIComponent('La operación fue fracasada. Intente de nuevo.')}
+                                              &msgTitle=${encodeURIComponent(msgTitle)}`); 
+        });
+    }
 };
 
 exports.post_eliminar_salon = (req, res, nxt) => {
