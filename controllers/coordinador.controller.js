@@ -820,12 +820,8 @@ exports.enviarGruposAPI = async (req, res, isInternal = false) => {
             };
         })
         .filter(grupo => grupo !== null);
-      
-  
-        console.log('Enviando grupo a API:', JSON.stringify(gruposFormateados, null, 2));
     
         for (const grupo of gruposFormateados) {
-            console.log(grupo);
             await axiosAdminClient.post('/v1/groups', grupo, {
             headers,
             });
