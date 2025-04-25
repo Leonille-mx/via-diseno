@@ -6,11 +6,11 @@
         <h1 class="ms-3 mt-2">Dashboard</h1>
         <div style="border-bottom: 3px solid #84251C; width: 15rem; margin-top: -10px;"></div>
         <% if (msg1) { %>
-          <div class="modal fade" id="msgModal" tabindex="-1" aria-labelledby="msgModalLabel" aria-hidden="true">
+          <div class="modal fade" id="msg1Modal" tabindex="-1" aria-labelledby="msg1ModalLabel" aria-hidden="true">
             <div class="modal-dialog modal-dialog-centered modal-sm">
               <div class="modal-content align-items-center rounded-5">
                 <div class="modal-header border border-0">
-                  <h5 class="modal-title ivd-text-red" id="msgModalLabel">Sincronizar Ciclos Escolares</h5>
+                  <h5 class="modal-title ivd-text-red" id="msg1ModalLabel">Sincronizar Ciclos Escolares</h5>
                 </div>
                 <div class="modal-body bg-grey rounded-5 text-center px-5">
                   <%- msg1 %>
@@ -25,11 +25,11 @@
           <% } %>
 
             <% if (msg2) { %>
-              <div class="modal fade" id="msgModal" tabindex="-1" aria-labelledby="msgModalLabel" aria-hidden="true">
+              <div class="modal fade" id="msg2Modal" tabindex="-1" aria-labelledby="msg2ModalLabel" aria-hidden="true">
                 <div class="modal-dialog modal-dialog-centered modal-sm">
                   <div class="modal-content align-items-center rounded-5">
                     <div class="modal-header border border-0">
-                      <h5 class="modal-title ivd-text-red" id="msgModalLabel">Sincronizar Planes de Estudio</h5>
+                      <h5 class="modal-title ivd-text-red" id="msg2ModalLabel">Sincronizar Planes de Estudio</h5>
                     </div>
                     <div class="modal-body bg-grey rounded-5 text-center px-5">
                       <%- msg2 %>
@@ -64,7 +64,7 @@
 
                   <form action="/coordinador/ciclo-escolar/sincronizar" method="POST">
                     <button
-                      class="btn rounded-pill px-3 py-2 ivd-bg-red text-white d-flex align-items-center justify-content-end me-3 mt-3"
+                      class="btn rounded-pill px-3 py-2 ivd-bg-red text-white d-flex align-items-center gap-2 me-3 mt-3"
                       type="submit">
                       <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"
                         class="bi bi-arrow-clockwise" viewBox="0 0 16 16" style="margin-left: -2px">
@@ -93,12 +93,12 @@
                 <div class="modal fade" id="resetGroupsModal" tabindex="-1" aria-labelledby="resetGroupsModalLabel"
                   aria-hidden="true">
                   <div class="modal-dialog modal-dialog-centered modal-sm">
-                    <div class="modal-content align-items-center rounded-5">
-                      <div class="modal-header border border-0">
+                    <div class="modal-content align-items-center rounded-5 px-4">
+                      <div class="modal-header border border-0 py-3">
                         <h5 class="modal-title ivd-text-red" id="resetGroupsModalLabel">Eliminar Inscripción</h5>
                       </div>
                       <div class="modal-body bg-grey rounded-5 text-center py-4 px-3">
-                        Usted esta eliminado las Inscripciones. <br>
+                        Usted está eliminado los datos del registro de la inscripción anterior. <br>
                         Esta acción no se puede deshacer.
                       </div>
                       <div class="modal-footer">
@@ -486,6 +486,22 @@
       // A cuestiones de vulnabilidad y porque el JSON 
       //Antes de ejecutar el codigo se espera para que exista la variable ctx
       document.addEventListener('DOMContentLoaded', () => {
+
+        const msg1Modal = document.getElementById('msg1Modal');
+        const msg2Modal = document.getElementById('msg2Modal');
+
+        if (msg1Modal) {
+           const modal = new bootstrap.Modal(msg1Modal);
+           modal.show();
+           history.replaceState(null, '', window.location.pathname);
+        }
+        
+        if (msg2Modal) {
+           const modal = new bootstrap.Modal(msg2Modal);
+           modal.show();
+           history.replaceState(null, '', window.location.pathname);
+        }
+
         try {
           //Obtenemos el json de chart-data
           const rawData = document.getElementById('chart-data').dataset.json;

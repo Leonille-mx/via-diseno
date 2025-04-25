@@ -135,16 +135,17 @@ ORDER BY
             await pool.query('DELETE FROM resultado_inscripcion');
             await pool.query('DELETE FROM grupo_bloque_tiempo');
             await pool.query('DELETE FROM grupo');
+            await pool.query('UPDATE alumno SET inscripcion_completada = false')
     
             // Se hace commit de lo hecho
             await pool.query('COMMIT');
             
-            return { success: true, message: 'Los datos de los grupos han sido eliminados' };
+            return { success: true, message: 'Los datos del registro de la inscripción anterior han sido eliminados' };
         } catch (error) {
             // Rollback por si hay algun error
             await pool.query('ROLLBACK');
             console.error('Error al reset de los datos:', error);
-            return { success: false, message: 'El reset ha fallado' };
+            return { success: false, message: 'La eliminación de los datos del registro de la inscripción anterior ha fallado' };
         }
     }
     
