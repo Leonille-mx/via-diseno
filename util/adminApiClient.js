@@ -139,14 +139,6 @@ async function getAllAcademyHistory( ivd_id ) {
   return response.data;
 }
 
-const getExternalGroups = async (token) => {
-  const response = await axiosAdminClient.get('/v1/groups', {
-    headers: {
-      Authorization: `Bearer ${token}`
-    }
-  });
-  return response.data;
-};
 
 async function getExternalCycles() {
   const token = await getToken();
@@ -159,4 +151,4 @@ async function getExternalCycles() {
 }
 
 // Export the functions so they can be used in other files
-module.exports = { getExternalCycles, getExternalGroups,getHeaders, getToken, axiosAdminClient, getAllCourses, getAllProfessors, getAllStudents, getCiclosEscolares, getAllDegree, getAllAcademyHistory };
+module.exports = { getExternalCycles, getHeaders, getToken, axiosAdminClient, getAllCourses, getAllProfessors, getAllStudents, getCiclosEscolares, getAllDegree, getAllAcademyHistory };

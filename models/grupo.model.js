@@ -25,7 +25,7 @@ module.exports = class Grupo {
 
     static fetchAll() {
         return pool.query(`
-            SELECT g.grupo_id,m.nombre AS materia, g.materia_id, g.profesor_id, p.nombre, p.primer_apellido, 
+            SELECT g.grupo_id, m.nombre AS materia, g.materia_id, g.profesor_id, p.nombre, p.primer_apellido, 
             p.segundo_apellido, s.numero, c.ciclo_escolar_id, c.code, ms.semestre_id, ca.nombre AS carrera_nombre 
             FROM grupo g
             JOIN materia m ON g.materia_id = m.materia_id
@@ -149,5 +149,38 @@ ORDER BY
         }
     }
     
-
+    static async guardarIdExternoGrupoPorId(grupo_api_id, grupo_id) {
+        return pool.query(
+          `UPDATE grupo SET grupo_api_id = $1 WHERE grupo_id = $2`,
+          [grupo_api_id, grupo_id]
+        );
+    }
+      
+  
+    // Obtener inscripciones que ya tienen grupo_api_id asignado
+    static async getInscripcionesConApiId() {
+      return pool.query(`
+        SELECT ri.alumno_id, g.grupo_api_id
+        FROM resultado_inscripcion ri
+        JOIN grupo g ON ri.grupo_id = g.grupo_id
+        WHERE g.grupo_api_id IS NOT NULL
+      `);
+    }
+  
+    // Obtener bloques de horario por grupo con grupo_api_id
+    static async getHorariosConApiId() {
+      return pool.query(`
+        SELECT 
+          gbt.grupo_id, 
+          g.grupo_api_id,
+          bt.dia,
+          bt.hora_inicio,
+          bt.hora_fin
+        FROM grupo_bloque_tiempo gbt
+        JOIN grupo g ON gbt.grupo_id = g.grupo_id
+        JOIN bloque_tiempo bt ON gbt.bloque_tiempo_id = bt.bloque_tiempo_id
+        WHERE g.grupo_api_id IS NOT NULL
+        ORDER BY g.grupo_id, bt.dia, bt.bloque_tiempo_id
+      `);
+    }
 };
