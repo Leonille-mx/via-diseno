@@ -13,29 +13,33 @@ const Carrera = require('../models/carrera.model.js');
 const Historial_Academico = require('../models/historial_academico.model.js');
 const Solicitud = require('../models/solicitudes-cambio.model.js');
 const ResultadoInscripcion = require('../models/resultado_inscripcion.model.js');
-const { getAllProfessors, getAllCourses, getAllStudents, getCiclosEscolares, getAllDegree, getAllAcademyHistory} = require('../util/adminApiClient.js');
+const BloqueTiempo = require('../models/bloque_tiempo.model.js');
+const Coordinador = require('../models/coordinador.model.js');
+const { axiosAdminClient, getToken, getHeaders, getAllProfessors, getAllCourses, getAllStudents, getCiclosEscolares, getAllDegree, getAllAcademyHistory, getExternalCycles} = require('../util/adminApiClient.js');
 
 
 exports.get_dashboard = async (req, res) => {
     try {
         const msg1 = req.query.msg1 || null; 
         const msg2 = req.query.msg2 || null; 
+        const carreraCoordinador = await Coordinador.getCarrera(req.session.usuario.id);
         //Consulta el total de profesores activos de la Base de Datos
-        const alumnosConMaterias = await Alumno.fetchNumeroIrregularesConMaterias();
-        const alumnosNoInscritos = await Alumno.totalNoInscritos();
-        const alumnosInscritos = await Alumno.numero_TotalAlumnoInscritos();
+        const alumnosConMaterias = await Alumno.fetchNumeroIrregularesConMaterias(carreraCoordinador.rows[0].carrera_id);
+        const alumnosNoInscritos = await Alumno.totalNoInscritos(carreraCoordinador.rows[0].carrera_id);
+        const alumnosInscritos = await Alumno.numero_TotalAlumnoInscritos(carreraCoordinador.rows[0].carrera_id);
         const salon_Totales = await Salon.numero_TotalSalones();
         const grupos_Totales = await Grupos.numeroTotalGrupos();
         const grupos_Dashboard = await Grupos.grupoDashboard();
         const salones_Dashboard = await Salon.salonesDashboard();
-        const grafica_Alumnos = await Alumno.alumnosComparacion();
-        const materias_Abiertas  = await Materia.numeroMaterias();
-        const solicitud_Cambio_Dashboard = await Solicitud.dasboard_Solicitud();
-        const total_Solicitudes = await Solicitud.numeroTotalSolicitudes();
+        const grafica_Alumnos = await Alumno.alumnosComparacion(carreraCoordinador.rows[0].carrera_id);
+        const materias_Abiertas  = await Materia.numeroMaterias(carreraCoordinador.rows[0].carrera_id);
+        const solicitud_Cambio_Dashboard = await Solicitud.dasboard_Solicitud(carreraCoordinador.rows[0].carrera_id);
+        const total_Solicitudes = await Solicitud.numeroTotalSolicitudes(carreraCoordinador.rows[0].carrera_id);
 
         res.render('dashboard_coordinador', {
             msg1: msg1,
             msg2: msg2,
+            showResetModal: true, 
             isLoggedIn: req.session.isLoggedIn || false,
             matricula: req.session.matricula || '',
             //Total de profesores para mostrar en el dashboard
@@ -49,7 +53,8 @@ exports.get_dashboard = async (req, res) => {
             grafica_Alumnos: grafica_Alumnos,
             materias_Abiertas: materias_Abiertas,
             solicitud_Cambio_Dashboard: solicitud_Cambio_Dashboard,
-            total_Solicitudes: total_Solicitudes
+            total_Solicitudes: total_Solicitudes,
+
             
         });
     } catch (error) {
@@ -58,13 +63,27 @@ exports.get_dashboard = async (req, res) => {
     }
 };
 
+exports.post_reset_grupos = async (req, res) => {
+    try {
+        const resultado = await Grupos.resetDatosGrupos();
+        res.json(resultado);
+    } catch (error) {
+        console.error('Error:', error);
+        res.status(500).json({ 
+            success: false,
+            message: 'Error del servidor' 
+        });
+    }
+};
 
 exports.get_materias = async (req, res, nxt) => {
     try {
-        const materiasSemestreDB = await MateriaSemestre.fetchMateriasSemestre();
+        const carreraCoordinador = await Coordinador.getCarrera(req.session.usuario.id);
+        const materiasSemestreDB = await MateriaSemestre.fetchMateriasSemestrePorCarrera(carreraCoordinador.rows[0].carrera_id);
         
         // Si hay query string, lo guarda en la variable msg
         const msg = req.query.msg || null;
+        const msgTitle = req.query.msgTitle;
         const allMaterias = materiasSemestreDB.rows;
         // Creamos un nuevo objeto que tienen key-value relación y están separados
         // por semestre
@@ -94,6 +113,7 @@ exports.get_materias = async (req, res, nxt) => {
             materiasPorSemestre: materiasPorSemestre,
             materiasNoAbiertasPorSemestre,
             msg,
+            msgTitle
         });
     } catch(error) {
         console.log(error);
@@ -118,12 +138,12 @@ exports.post_sincronizar_materias = async (req, res, nxt) => {
 
         // Redirige a la siguiente ruta con el mensaje en query string 
         // con la función para encodificarlo
-        res.redirect(`/coordinador/materias?msg=${encodeURIComponent(msg)}`);
+        res.redirect(`/coordinador/materias?msg=${encodeURIComponent(msg)}&msgTitle=${encodeURIComponent('Sincronizar Materias')}`);
     } catch (error) {
         console.error(error);
         // Redirige a la siguiente ruta con un mensaje de error en query string 
         // con la función para encodificarlo
-        res.redirect(`/coordinador/materias?msg=${encodeURIComponent('La operación fue fracasada')}`);
+        res.redirect(`/coordinador/materias?msg=${encodeURIComponent('La operación fue fracasada')}&msgTitle=${encodeURIComponent('Sincronizar Materias')}`);
     }
 };
 
@@ -139,10 +159,10 @@ exports.post_abrir_materia = async (req, res) => {
             await MateriaSemestre.eliminar(materiaId, semestre_id);
         }
 
-        res.redirect('/coordinador/materias?msg=Materias abiertas exitosamente');
+        res.redirect(`/coordinador/materias?msg=${encodeURIComponent('Materias abiertas exitosamente')}&msgTitle=${encodeURIComponent('Abrir Materias')}`);
     } catch (error) {
         console.error(error);
-        res.redirect('/coordinador/materias?msg=Error al abrir materias');
+        res.redirect(`/coordinador/materias?msg=${encodeURIComponent('Error al abrir materias')}&msgTitle=${encodeURIComponent('Abrir Materias')}`);
     }
 };
 
@@ -284,20 +304,25 @@ exports.get_salones = (req, res, nxt) => {
     });
 };
 
-exports.post_salones = (req, res, nxt) => {
+exports.post_salones = async (req, res, nxt) => {
     msgTitle = `Agregar Salón`
-
-    const salon = new Salon(req.body.numero, req.body.capacidad, req.body.tipo, req.body.nota, req.body.campus);
-    salon.save()
-    .then(() => {
-        res.redirect(`/coordinador/salones?msg=${encodeURIComponent('El salón fue registrado exitosamente.')}
-                                          &msgTitle=${encodeURIComponent(msgTitle)}`);
-    })
-    .catch((error) => {
-        console.error(error);
-        res.redirect(`/coordinador/salones?msg=${encodeURIComponent('La operación fue fracasada. Intente de nuevo.')}
-                                          &msgTitle=${encodeURIComponent(msgTitle)}`); 
-    });
+    const existeSalon = await Salon.existeSalon(req.body.numero, req.body.campus);
+    if (existeSalon.rows[0].result === true) {
+        res.redirect(`/coordinador/salones?msg=${encodeURIComponent('Ya existe un salón con el mismo número en este campus. Intente de nuevo.')}
+                                        &msgTitle=${encodeURIComponent(msgTitle)}`);     
+    } else {
+        const salon = new Salon(req.body.numero, req.body.capacidad, req.body.tipo, req.body.nota, req.body.campus);
+        salon.save()
+        .then(() => {
+            res.redirect(`/coordinador/salones?msg=${encodeURIComponent('El salón fue registrado exitosamente.')}
+                                              &msgTitle=${encodeURIComponent(msgTitle)}`);
+        })
+        .catch((error) => {
+            console.error(error);
+            res.redirect(`/coordinador/salones?msg=${encodeURIComponent('La operación fue fracasada. Intente de nuevo.')}
+                                              &msgTitle=${encodeURIComponent(msgTitle)}`); 
+        });
+    }
 };
 
 exports.post_eliminar_salon = (req, res, nxt) => {
@@ -340,6 +365,35 @@ exports.get_grupos = (req, res, next) => {
         });
     })
     .catch((error) => {
+        console.error('Error fetching data:', error);
+        res.status(500).send('Error al obtener los datos');
+    });
+};
+
+exports.get_grupos_carrera = (req, res, nxt) => {
+    Grupos.fetchAll()
+    .then((grupos) => {
+        res.status(200).json({
+            isLoggedIn: req.session.isLoggedIn || false,
+            matricula: req.session.matricula || '',
+            grupos: grupos.rows
+        });
+    }).catch((error) => {
+        console.error('Error fetching data:', error);
+        res.status(500).send('Error al obtener los datos');
+    });
+};
+
+exports.get_grupos_por_id = (req, res, nxt) => {
+    const carrera_id = req.params.id;
+    Grupos.fetchAllPorId(carrera_id)
+    .then((grupos) => {
+        res.status(200).json({
+            isLoggedIn: req.session.isLoggedIn || false,
+            matricula: req.session.matricula || '',
+            grupos: grupos.rows
+        });
+    }).catch((error) => {
         console.error('Error fetching data:', error);
         res.status(500).send('Error al obtener los datos');
     });
@@ -416,9 +470,10 @@ exports.post_modificar_grupo = async (req, res, next) => {
 
 
 exports.get_alumnos = async (req, res, nxt) => {
+    const carreraCoordinador = await Coordinador.getCarrera(req.session.usuario.id);
     try {
-        const alumnosRegularesDB = await Alumno.fetchAllRegulares(); 
-        const alumnosIrregularesDB = await Alumno.fetchAllIrregulares();
+        const alumnosRegularesDB = await Alumno.fetchAllRegularesPorCarrera(carreraCoordinador.rows[0].carrera_id); 
+        const alumnosIrregularesDB = await Alumno.fetchAllIrregularesPorCarrera(carreraCoordinador.rows[0].carrera_id);
         const msg = req.query.msg || null;
         res.render('alumnos_coordinador', {
             alumnosRegulares: alumnosRegularesDB.rows,
@@ -468,22 +523,26 @@ exports.post_sincronizar_alumnos = async (req, res, nxt) => {
 
 exports.get_alumno_horario = async (req, res, nxt) => {
     const esRegular = await Alumno.esRegular(req.params.id);
+    const bloque_tiempo = await BloqueTiempo.fetchAllHoras();
+    const bloqueTiempoMap = bloque_tiempo.rows[0]?.id_hora_map || {};
     if (esRegular.rows[0].regular === true) {
-        Alumno.fetchAllResultadoAlumno(req.params.id)
+        Alumno.fetchAllResultadoAlumno2(req.params.id)
         .then((data) => {
             res.status(200).json({
                 isLoggedIn: req.session.isLoggedIn || false,
                 matricula: req.session.matricula || '',
                 materias_resultado: data.rows,
+                bloque_tiempo: bloqueTiempoMap
             });
         });
     } else {
-        Alumno.fetchAllResultadoAlumnoIrregular(req.params.id)
+        Alumno.fetchAllResultadoAlumno2(req.params.id)
         .then((data) => {
             res.status(200).json({
                 isLoggedIn: req.session.isLoggedIn || false,
                 matricula: req.session.matricula || '',
                 materias_resultado: data.rows,
+                bloque_tiempo: bloqueTiempoMap
             });
         });
     }
@@ -492,8 +551,9 @@ exports.get_alumno_horario = async (req, res, nxt) => {
 exports.post_cambiar_estatus = async (req, res, nxt) => {
     try {
         await Solicitud.aprobar(req.body.alumno_id);
-        const alumnosRegularesDB = await Alumno.fetchAllRegulares(); 
-        const alumnosIrregularesDB = await Alumno.fetchAllIrregulares();
+        const carreraCoordinador = await Coordinador.getCarrera(req.session.usuario.id);
+        const alumnosRegularesDB = await Alumno.fetchAllRegularesPorCarrera(carreraCoordinador.rows[0].carrera_id); 
+        const alumnosIrregularesDB = await Alumno.fetchAllIrregularesPorCarrera(carreraCoordinador.rows[0].carrera_id);
         res.status(200).json({
             isLoggedIn: req.session.isLoggedIn || false,
             matricula: req.session.matricula || '',
@@ -507,25 +567,31 @@ exports.post_cambiar_estatus = async (req, res, nxt) => {
 
 exports.get_alumno_modificar_horario = async (req, res, nxt) => {
     try {
-        const materias_resultado = await Alumno.fetchAllResultadoAlumno(req.params.id);
+        const materias_resultado = await Alumno.fetchAllResultadoAlumno2(req.params.id);
         const materias_disponibles_semestre = await Alumno.fetchAllMateriasDisponiblesCoordinador(req.params.id);
+        const bloque_tiempo = await BloqueTiempo.fetchAllHoras();
+        const bloqueTiempoMap = bloque_tiempo.rows[0]?.id_hora_map || {};
         res.status(200).json({
             isLoggedIn: req.session.isLoggedIn || false,
             matricula: req.session.matricula || '',
             materias_resultado: materias_resultado.rows,
             materias_disponibles_semestre: materias_disponibles_semestre.rows,
+            bloque_tiempo: bloqueTiempoMap
         });
     } catch (error){
         console.log(error);
     }
 };
 
-exports.get_materias_disponibles = (req, res, nxt) => {
+exports.get_materias_disponibles = async (req, res, nxt) => {
+    const bloque_tiempo = await BloqueTiempo.fetchAllHoras();
+    const bloqueTiempoMap = bloque_tiempo.rows[0]?.id_hora_map || {};
     if (req.params.semestre == 'semestre') {
         Alumno.fetchAllMateriasDisponiblesCoordinador(req.params.id)
         .then((materias_disponibles) => {
             res.status(200).json({
                 materias_disponibles: materias_disponibles.rows,
+                bloque_tiempo: bloqueTiempoMap
             });
         }).catch((error) => {
             console.log(error);
@@ -535,6 +601,7 @@ exports.get_materias_disponibles = (req, res, nxt) => {
         .then((materias_disponibles) => {
             res.status(200).json({
                 materias_disponibles: materias_disponibles.rows,
+                bloque_tiempo: bloqueTiempoMap
             });
         }).catch((error) => {
             console.log(error);
@@ -548,7 +615,9 @@ exports.post_eliminar_materia_del_resultado = async (req, res, nxt) => {
         const alumno_id = req.body.alumno_id;
         await ResultadoInscripcion.eliminarMateriaDelResultado(grupo_id, alumno_id);
 
-        const materias_resultado = await Alumno.fetchAllResultadoAlumno(alumno_id);
+        const materias_resultado = await Alumno.fetchAllResultadoAlumno2(alumno_id);
+        const bloque_tiempo = await BloqueTiempo.fetchAllHoras();
+        const bloqueTiempoMap = bloque_tiempo.rows[0]?.id_hora_map || {};
         const materias_disponibles = req.body.semestre == 'semestre'
             ? await Alumno.fetchAllMateriasDisponiblesCoordinador(alumno_id)
             : await Alumno.fetchAllMateriasDisponiblesDelAlumnoPorSemestre(req.body.semestre, alumno_id);
@@ -557,6 +626,7 @@ exports.post_eliminar_materia_del_resultado = async (req, res, nxt) => {
             matricula: req.session.matricula || '',
             materias_resultado: materias_resultado.rows,
             materias_disponibles: materias_disponibles.rows,
+            bloque_tiempo: bloqueTiempoMap
         });
     } catch (error) {
         console.log(error);
@@ -569,7 +639,9 @@ exports.post_agregar_materia_del_resultado = async (req, res, nxt) => {
         const alumno_id = req.body.alumno_id;
         await ResultadoInscripcion.agregarMateriaDelResultado(alumno_id, grupo_id);
 
-        const materias_resultado = await Alumno.fetchAllResultadoAlumno(alumno_id);
+        const materias_resultado = await Alumno.fetchAllResultadoAlumno2(alumno_id);
+        const bloque_tiempo = await BloqueTiempo.fetchAllHoras();
+        const bloqueTiempoMap = bloque_tiempo.rows[0]?.id_hora_map || {};
         const materias_disponibles = req.body.semestre == 'semestre'
             ? await Alumno.fetchAllMateriasDisponiblesCoordinador(alumno_id)
             : await Alumno.fetchAllMateriasDisponiblesDelAlumnoPorSemestre(req.body.semestre, alumno_id);
@@ -579,6 +651,7 @@ exports.post_agregar_materia_del_resultado = async (req, res, nxt) => {
             matricula: req.session.matricula || '',
             materias_resultado: materias_resultado.rows,
             materias_disponibles: materias_disponibles.rows,
+            bloque_tiempo: bloqueTiempoMap
         });
     } catch (error) {
         console.log(error);
@@ -592,12 +665,15 @@ exports.post_modificar_obligacion = async (req, res, nxt) => {
         const obligatorio = req.body.obligatorio;
 
         await ResultadoInscripcion.modificarObligacion(alumno_id, grupo_id, obligatorio);
-        const materias_resultado = await Alumno.fetchAllResultadoAlumno(alumno_id);
+        const materias_resultado = await Alumno.fetchAllResultadoAlumno2(alumno_id);
+        const bloque_tiempo = await BloqueTiempo.fetchAllHoras();
+        const bloqueTiempoMap = bloque_tiempo.rows[0]?.id_hora_map || {};
 
         res.status(200).json({
             isLoggedIn: req.session.isLoggedIn || false,
             matricula: req.session.matricula || '',
             materias_resultado: materias_resultado.rows,
+            bloque_tiempo: bloqueTiempoMap
         });
     } catch (error) {
         console.log(error);
@@ -729,8 +805,9 @@ exports.post_sincronizar_planes_de_estudio = async (req, res) => {
 }
 
 exports.get_solicitudes_cambio = async (req, res, next) => {
+    const carreraCoordinador = await Coordinador.getCarrera(req.session.usuario.id);
     try {
-        const solicitudesActivas = await Solicitud.fetchActivos();
+        const solicitudesActivas = await Solicitud.fetchActivosPorCarrera(carreraCoordinador.rows[0].carrera_id);
         const msg = req.query.msg || null;
 
         res.render('solicitudes_cambio_coordinador', {
@@ -767,6 +844,189 @@ exports.post_rechazar_solicitud = async (req, res, nxt) => {
         console.log(error);
     });
 };
-    
-    
 
+exports.enviarGruposAPI = async (req, res, isInternal = false) => {
+    try {
+        const token = await getToken();
+        const headers = getHeaders(token);
+    
+        const [gruposResult, profesoresExternosResponse, ciclosLocalesResult, ciclosExternosResponse] = await Promise.all([
+            Grupos.fetchAll(),
+            getAllProfessors(token),
+            CicloEscolar.fetchAll(),
+            getExternalCycles()
+        ]);
+    
+        const grupos = gruposResult.rows;
+        const profesoresExternos = profesoresExternosResponse.data || [];
+        const ciclosLocales = ciclosLocalesResult.rows;
+        const ciclosExternos = ciclosExternosResponse.data || [];
+    
+        const mapaProfesores = Object.fromEntries(
+            profesoresExternos.map(p => [String(p.ivd_id), p.id])
+        );
+      
+      
+        // Mapa de ciclos locales (id interno → code)
+        const mapaIdToCode = {};
+        for (const ciclo of ciclosLocales) {
+        mapaIdToCode[ciclo.ciclo_escolar_id] = ciclo.code;
+        }
+
+        // Mapa de ciclos externos (code → id externo)
+        const mapaCiclosExternos = {};
+        for (const ciclo of ciclosExternos) {
+        mapaCiclosExternos[ciclo.code] = ciclo.id;
+        }
+
+        for (const grupo of grupos) {
+            const profesor_api_id = mapaProfesores[String(grupo.profesor_id)];
+            const code_local = mapaIdToCode[grupo.ciclo_escolar_id];
+            const ciclo_api_id = mapaCiclosExternos[code_local];
+
+            const body = {
+            school_cycle_id: ciclo_api_id,
+            course_id: grupo.materia_id,
+            professor_id: profesor_api_id,
+            name: String(grupo.grupo_id),
+            room: grupo.numero === 9999 ? "No asignado" : String(grupo.numero)
+            };
+
+            console.log('Enviando grupo:', body);
+    
+            const response = await axiosAdminClient.post('/v1/groups', body, { headers });
+            const grupo_api_id = response.data?.data?.id;
+    
+            if (grupo_api_id) {
+                await Grupos.guardarIdExternoGrupoPorId(grupo_api_id, grupo.grupo_id);
+            }
+        }
+    
+        if (!isInternal) {
+            res.status(200).send('Grupos enviados y guardados exitosamente.');
+        }
+        } catch (error) {
+        console.error('Error al enviar grupos:', error.response?.data || error.message);
+        if (!isInternal) {
+            res.status(500).send('Error al enviar grupos.');
+        }
+    }
+};  
+
+exports.enviarAlumnosAPI = async (req, res, isInternal = false) => {
+    try {
+      const token = await getToken();
+      const headers = getHeaders(token);
+  
+      const resultado = await Grupos.getInscripcionesConApiId();
+  
+      for (const inscripcion of resultado.rows) {
+        await axiosAdminClient.post('/v1/students_groups', {
+          group_id: inscripcion.grupo_api_id,
+          student_ivd_id: inscripcion.alumno_id
+        }, { headers });
+      }
+  
+      if (!isInternal) {
+        res.status(200).send('Inscripciones enviadas exitosamente.');
+      }
+    } catch (error) {
+      console.error('Error al enviar inscripciones:', error.response?.data || error.message);
+      if (!isInternal) {
+        res.status(500).send('Error al enviar inscripciones.');
+      }
+    }
+};
+  
+exports.enviarHorariosAPI = async (req, res, isInternal = false) => {
+    try {
+      const token = await getToken();
+      const headers = getHeaders(token);
+  
+      const resultado = await Grupos.getHorariosConApiId();
+      const bloques = resultado.rows;
+  
+      const gruposPorDia = {};
+      for (const bloque of bloques) {
+        const key = `${bloque.grupo_api_id}-${bloque.dia}`;
+        if (!gruposPorDia[key]) gruposPorDia[key] = [];
+        gruposPorDia[key].push(bloque);
+      }
+  
+      for (const key in gruposPorDia) {
+        const bloquesDia = gruposPorDia[key];
+        const dia = bloquesDia[0].dia;
+        const group_id = bloquesDia[0].grupo_api_id;
+  
+        let tempGroup = [bloquesDia[0]];
+  
+        for (let i = 1; i < bloquesDia.length; i++) {
+          const actual = bloquesDia[i];
+          const anterior = bloquesDia[i - 1];
+  
+          if (actual.bloque_tiempo_id === anterior.bloque_tiempo_id + 1) {
+            tempGroup.push(actual);
+          } else {
+            await enviarBloqueHorario(group_id, dia, tempGroup, token);
+            tempGroup = [actual];
+          }
+        }
+  
+        if (tempGroup.length > 0) {
+          await enviarBloqueHorario(group_id, dia, tempGroup, token);
+        }
+        console.log(`Grupo ${group_id}, Día ${dia} → ${bloquesDia.length} bloques`);
+      }
+  
+      if (!isInternal) {
+        res.status(200).send('Horarios enviados exitosamente.');
+      }
+    } catch (error) {
+      console.error('Error al enviar horarios:', error.response?.data || error.message);
+      if (!isInternal) {
+        res.status(500).send('Error al enviar horarios.');
+      }
+    }
+};  
+  
+const enviarBloqueHorario = async (group_id, dia, bloques, token) => {
+    const buildDateTime = (hora) => {
+      return new Date(`2000-01-01T${hora}-06:00`);
+    };
+  
+    const start = buildDateTime(bloques[0].hora_inicio);
+    const end = buildDateTime(bloques[bloques.length - 1].hora_fin);
+  
+    const data = {
+      group_id,
+      weekday: dia,
+      start_hour: start.toISOString(),
+      end_hour: end.toISOString()
+    };
+  
+    await axiosAdminClient.post('/v1/schedules', data, {
+      headers: {
+        Authorization: `Bearer ${token}`
+      }
+    });
+  };
+  
+  
+exports.enviarDatos = async (req, res) => {
+    try {
+      await exports.enviarGruposAPI(req, res, true);
+      await exports.enviarAlumnosAPI(req, res, true);
+      await exports.enviarHorariosAPI(req, res, true);
+  
+      // Verifica que no se haya respondido antes
+      if (!res.headersSent) {
+        res.redirect('/coordinador/grupos?msg=Datos enviados exitosamente&msgTitle=Enviar Grupos');
+      }
+    } catch (error) {
+      console.error('Error al enviar todo:', error);
+      if (!res.headersSent) {
+        res.status(500).send('Error al enviar datos');
+      }
+    }
+};
+  

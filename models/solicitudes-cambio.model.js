@@ -55,6 +55,34 @@ module.exports = class Solicitud {
             sc.created_at::timestamp ASC
     `);
   }
+  
+  static fetchActivosPorCarrera(carrera_id) {
+    return pool.query(`
+        SELECT 
+            sc.solicitud_cambio_id, 
+            sc.descripcion, 
+            sc.aprobada, 
+            sc.created_at, 
+            sc.ivd_id,
+            u.nombre, 
+            u.primer_apellido,
+            u.correo_institucional
+        FROM 
+            solicitud_cambio sc
+        JOIN 
+            usuario u ON sc.ivd_id = u.ivd_id
+        JOIN 
+            alumno a ON a.ivd_id = u.ivd_id
+        JOIN 
+            plan_estudio p ON p.plan_estudio_id = a.plan_estudio_id
+        WHERE 
+            sc.aprobada = false 
+            AND
+            p.carrera_id = $1
+        ORDER BY 
+            sc.created_at::timestamp ASC
+    `, [carrera_id]);
+  }
 
   static aprobar(id) {
     return Promise.all([
@@ -74,7 +102,7 @@ module.exports = class Solicitud {
   }
 
   //metodo para obtener el la solicitud, nombre y apellido de las solicitudes
-  static async dasboard_Solicitud() {
+  static async dasboard_Solicitud(carrera_id) {
     const result = await pool.query(`SELECT 
             sc.solicitud_cambio_id,
             sc.created_at,
@@ -84,14 +112,30 @@ module.exports = class Solicitud {
             solicitud_cambio sc
         JOIN 
             usuario u ON sc.ivd_id = u.ivd_id
-              ORDER BY
-                sc.created_at ASC`);
+        JOIN 
+            alumno a ON a.ivd_id = u.ivd_id
+        JOIN 
+            plan_estudio p ON p.plan_estudio_id = a.plan_estudio_id
+        WHERE 
+            sc.aprobada = false 
+            AND
+            p.carrera_id = $1
+        ORDER BY 
+            sc.created_at::timestamp ASC`
+        , [carrera_id]);
     return result.rows;
   }
 
   // Método para obtener número total de solicitudes de cambio
-  static async numeroTotalSolicitudes() {
-    const result = await pool.query("SELECT count(*) FROM public.solicitud_cambio");
+  static async numeroTotalSolicitudes(carrera_id) {
+    const result = await pool.query(`
+      SELECT count(*) 
+      FROM solicitud_cambio sc
+      JOIN alumno a ON a.ivd_id = sc.ivd_id
+      JOIN plan_estudio p ON p.plan_estudio_id = a.plan_estudio_id
+      WHERE p.carrera_id = $1 AND sc.aprobada = false`
+      , [carrera_id]
+    );
     return parseInt(result.rows[0].count);
   }
 };

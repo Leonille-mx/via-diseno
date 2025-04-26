@@ -28,6 +28,15 @@ const bodyParser = require('body-parser');
 app.use(bodyParser.urlencoded({extended: false}));
 app.use(express.json());
 
+app.use((req, res, nxt) => {
+    res.locals.usuario = req.session.usuario || null;
+    nxt();
+});  
+
+const rutasIndex = require('./routes/index.routes');
+
+app.get('/', rutasIndex);
+
 const rutasUsuario = require('./routes/usuario.routes');
 app.use('/usuario', rutasUsuario);
 
@@ -40,8 +49,7 @@ app.use('/alumno-regular', rutasAlumnoRegular);
 const rutasAlumnoIrregular = require('./routes/alumno-irregular.routes');
 app.use('/alumno-irregular', rutasAlumnoIrregular);
 
-const rutasIndex = require('./routes/index.routes');
-app.get('/', rutasIndex);
+app.use((req, res) => { res.status(404).render('404'); });
 
 app.use((request, response, next) => {  
     response.status(404).send('Recurso No Encontrado'); 

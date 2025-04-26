@@ -138,5 +138,16 @@ async function getAllAcademyHistory( ivd_id ) {
   return response.data;
 }
 
+
+async function getExternalCycles() {
+  const token = await getToken();
+  const headers = await getHeaders(token);
+
+  const response = await axiosAdminClient.get("v1/school_cycles/index", {
+    headers,
+  });
+  return response.data;
+}
+
 // Export the functions so they can be used in other files
-module.exports = { getAllCourses, getAllProfessors, getAllStudents, getCiclosEscolares, getAllDegree, getAllAcademyHistory };
+module.exports = { getExternalCycles, getHeaders, getToken, axiosAdminClient, getAllCourses, getAllProfessors, getAllStudents, getCiclosEscolares, getAllDegree, getAllAcademyHistory };

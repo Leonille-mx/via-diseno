@@ -1,4 +1,3 @@
-
 const pool = require('../util/database');
 
 module.exports = class cicloescolar {
@@ -8,7 +7,6 @@ module.exports = class cicloescolar {
         this.fecha_fin = mi_fecha_fin; 
     }
 
-
     save() {
         return pool.query(
             'INSERT INTO ciclo_escolar (code, fecha_inicio, fecha_fin) VALUES ($1, $2, $3) RETURNING *',
@@ -16,11 +14,9 @@ module.exports = class cicloescolar {
         );
     }
 
-
     static fetchAll() {
         return pool.query('SELECT * FROM ciclo_escolar');
     }
-
 
     static fetchById(ciclo_escolar_id) {
         return pool.query(
@@ -28,6 +24,12 @@ module.exports = class cicloescolar {
             [ciclo_escolar_id]
         );
     }
+
+    static fetchMostRecent() {
+      return pool.query(
+          'SELECT * FROM ciclo_escolar ORDER BY fecha_inicio DESC LIMIT 1'
+      );
+  }
 
     static update(ciclo_escolar_id, code, fecha_inicio, fecha_fin) {
         return pool.query(
@@ -47,16 +49,16 @@ module.exports = class cicloescolar {
         const client = await pool.connect();
         try {
           await client.query('BEGIN');
-      
+
           // Get existing cycles and max ID
           const localResult = await client.query('SELECT * FROM ciclo_escolar');
           const localCycles = localResult.rows;
           const maxIdResult = await client.query('SELECT MAX(ciclo_escolar_id) as max_id FROM ciclo_escolar');
           let nextId = maxIdResult.rows[0].max_id ? maxIdResult.rows[0].max_id + 1 : 1;
-      
+
           let inserted = 0, updated = 0, deleted = 0;
           const invalidRecords = [];
-      
+
           // Process external data
           for (const extCycle of externalData) {      
             // Validate date constraint
@@ -68,10 +70,10 @@ module.exports = class cicloescolar {
               });
               continue; // Skip invalid record
             }
-      
+
             // Rest of synchronization logic...
             const existing = localCycles.find(lc => lc.code === extCycle.code);
-            
+
             if (existing) {
               // forma una fecha a un string de YYYY-MM-DD
               const formatDate = (date) => {
@@ -79,7 +81,7 @@ module.exports = class cicloescolar {
                     // Convierte a YYYY-MM-DD
                     return new Date(date).toLocaleDateString('en-US'); 
                 };
-  
+
               if (formatDate(existing.fecha_inicio) !== formatDate(extCycle.start_date) ||
                   formatDate(existing.fecha_fin) !== formatDate(extCycle.end_date) ||
                   (existing.code || "").trim() !== (extCycle.code || "").trim()
@@ -104,11 +106,11 @@ module.exports = class cicloescolar {
               inserted++;
             }
           }
-      
+
           // Delete missing cycles
           const externalCodes = externalData.map(ec => ec.code);
           const toDelete = localCycles.filter(lc => !externalCodes.includes(lc.code));
-          
+
           for (const cycle of toDelete) {
             await client.query(
               'DELETE FROM ciclo_escolar WHERE ciclo_escolar_id = $1',
@@ -125,11 +127,26 @@ module.exports = class cicloescolar {
             deleted,
             invalid: invalidRecords
           };
-      
+
         } catch (error) {
           throw error;
         } finally {
           client.release();
         }
       }
+
+    getFormattedPeriod() {
+        const startDate = new Date(this.fecha_inicio);
+        const endDate = new Date(this.fecha_fin);
+        
+        const startMonth = startDate.toLocaleString('es-ES', { month: 'long' });
+        const endMonth = endDate.toLocaleString('es-ES', { month: 'long' });
+        const year = startDate.getFullYear();
+        
+        return `Semestre ${this.capitalizeFirstLetter(startMonth)} - ${this.capitalizeFirstLetter(endMonth)} ${year}`;
+    }
+
+    capitalizeFirstLetter(string) {
+        return string.charAt(0).toUpperCase() + string.slice(1);
+    }
 };

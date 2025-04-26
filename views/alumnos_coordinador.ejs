@@ -1,7 +1,7 @@
 <%- include('includes/_nav_coordinador.ejs') %>
 <%- include('includes/_header_coordinador.ejs') %>
 
-<main class="bg-grey flex-grow-1 rounded-5 p-0 d-flex flex-column alumno-scroll" style="height: 100vh;">
+<main class="bg-grey flex-grow-1 rounded-5 p-0 d-flex flex-column materia-scroll" style="height: 100vh;">
   <div class="d-flex justify-content-between">
     <div class="mb-4">
       <h1 class="ms-3 mt-2">Alumnos</h1>
@@ -40,7 +40,7 @@
   <div class="d-flex align-items-center justify-content-between me-5 mb-3 flex-wrap">
     <h3 class="ms-5 mb-0 text-decoration-underline ivd-text-red">Regulares</h3>
     <div class="d-flex align-items-center flex-grow-1" style="max-width: 200px;">
-      <input class="form-control rounded-pill" type="search" placeholder="Buscar alumno" aria-label="Search"
+      <input id="buscarAlumnoRegular" class="form-control rounded-pill" type="search" placeholder="Buscar alumno" aria-label="Search"
             style="background-image:url('/images/search.svg');
                     background-repeat:no-repeat;
                     background-position: 1rem center; 
@@ -66,7 +66,7 @@
       <tbody id="alumnoRegularTablaBody">
         <% for (let alumnoRegular of alumnosRegulares) { %>
           <tr>
-            <td class="text-center align-middle"><%= alumnoRegular.ivd_id %></td>
+            <th scope="row" class="text-center align-middle"><%= alumnoRegular.ivd_id %></th>
             <td class="text-center align-middle"><%= alumnoRegular.nombre %> <%= alumnoRegular.primer_apellido %> <%= alumnoRegular.segundo_apellido|| '' %></td>
             <td class="text-center align-middle"><%= alumnoRegular.semestre %></td>
             <td class="text-center align-middle"><%= alumnoRegular.correo_institucional %></td>
@@ -109,7 +109,7 @@
   <div class="d-flex align-items-center justify-content-between me-5 mb-3 flex-wrap">
     <h3 class="ms-5 text-decoration-underline ivd-text-red">Irregulares</h3>
     <div class="d-flex align-items-center flex-grow-1" style="max-width: 200px;">
-      <input class="form-control rounded-pill" type="search" placeholder="Buscar alumno" aria-label="Search"
+      <input id="buscarAlumnoIrregular" class="form-control rounded-pill" type="search" placeholder="Buscar alumno" aria-label="Search"
             style="background-image:url('/images/search.svg');
                     background-repeat:no-repeat;
                     background-position: 1rem center; 
@@ -135,7 +135,7 @@
       <tbody id="alumnoIrregularTablaBody">
         <% for (let alumnoIrregular of alumnosIrregulares) { %>
           <tr>
-            <td class="text-center align-middle"><%= alumnoIrregular.ivd_id %></td>
+            <th scope="row" class="text-center align-middle"><%= alumnoIrregular.ivd_id %></th>
             <td class="text-center align-middle"><%= alumnoIrregular.nombre %> <%= alumnoIrregular.primer_apellido %> <%= alumnoIrregular.segundo_apellido|| '' %></td>
             <td class="text-center align-middle"><%= alumnoIrregular.semestre %></td>
             <td class="text-center align-middle"><%= alumnoIrregular.correo_institucional %></td>
@@ -285,7 +285,7 @@
       <div class="modal-header justify-content-center">
         <h5 class="modal-title ivd-text-red" id="editModalLabel"><b>Estás modificando el horario de un alumno</b></h5>
       </div>
-      <div class="modal-body px-4">
+      <div class="modal-body px-4 materia-scroll">
         <div class="mt-4">
           <div class="d-flex align-items-end" style="border-bottom: 3px solid #84251C; width: fit-content; margin-top: -10px;">
             <p class="fs-5 m-0 ms-2 me-3" id="editModalAlumnoNombre"></p>
@@ -343,14 +343,6 @@
                     <li class="dropdown-item" data-semestre="s9">9°no</li>
                   </ul>
                 </div>
-                <form class="d-flex" role="search" style="width: 70%;">
-                  <input class="form-control rounded-pill" type="search" 
-                        placeholder="Buscar Materia" aria-label="Search"
-                        style="background-image:url('/images/search.svg'); color: black;
-                        background-repeat:no-repeat;
-                        background-position: 1rem center; 
-                        padding-left: 3rem; font-size: 1rem;">
-                </form>
               </div>
               <div id="materiasDisponibles" class="w-100 pb-3 alumno-scroll-gris">
                 <!-- materias disponibles -->
@@ -389,17 +381,21 @@
     const button = event.relatedTarget;
     const alumno_id = button.getAttribute('data-alumno-id');
     const alumno_nombre = button.getAttribute('data-alumno-nombre');
+    console.log(alumno_id);
     document.getElementById('viewModalAlumnoNombre').innerHTML = alumno_nombre;
     fetch(`/coordinador/alumnos/consultar-horario/${alumno_id}`, {
       method: 'GET',
     }).then((res) => {
       return res.json();
     }).then((data) => {
+      console.log(data.materias_resultado);
       // Tabla de horario
       const colores = ['bg-primary-subtle', 'bg-success-subtle ','bg-warning-subtle ','bg-danger-subtle','bg-info-subtle','bg-secondary-subtle','bg-light'];
       const materiasColor = {};
       let colorIndex = 0;
       let html_container_tabla = '';
+      let horaPorGrp = {};
+      const bloque_tiempo = data.bloque_tiempo;
       
       const horario = { 
         Lunes: {}, Martes: {}, Miércoles: {}, Jueves: {}, Viernes: {} 
@@ -408,33 +404,58 @@
       if (typeof data.materias_resultado !== 'undefined' && Array.isArray(data.materias_resultado)) {
         data.materias_resultado.forEach(materia => {
           // Asignar color único por materia
-          if (!materiasColor[materia.materia_nombre]) {
-            materiasColor[materia.materia_nombre] = colores[colorIndex % colores.length];
+          if (!materiasColor[materia.grupo_id]) {
+            materiasColor[materia.grupo_id] = colores[colorIndex % colores.length];
             colorIndex++;
           }
-          
+          horaPorGrp[materia.grupo_id] = {};
+
           let indexDia = 0;
           materia.dias.forEach(dia => {
+            horaPorGrp[materia.grupo_id][dia] = [];
             const diaNombre = dia.charAt(0).toUpperCase() + dia.slice(1).toLowerCase();
-          
-            const [hi, mi] = materia.hora_inicio[indexDia].split(':').map(Number);
-            const [hf, mf] = materia.hora_fin[indexDia].split(':').map(Number);
-            
-            const inicioBloque = hi * 2 + (mi >= 30 ? 1 : 0);
-            const finBloque = hf * 2 + (mf >= 30 ? 1 : 0);
+            const bloqueTiempoIds = [];
+            let indexBloque = 0;
+            for (let i = materia.bloque_tiempo_id[indexDia][0]; i <= materia.bloque_tiempo_id[indexDia][materia.bloque_tiempo_id[indexDia].length - 1]; i++) {
+              
+              if (i === materia.bloque_tiempo_id[indexDia][indexBloque]) {
+                bloqueTiempoIds.push(i);
+                indexBloque++;
+              } else {
+                bloqueTiempoIds.push(null);
+              }
+            }
             
             if (horario[diaNombre]) {
-              horario[diaNombre][inicioBloque] = {
-                rowspan: finBloque - inicioBloque,
-                nombre: materia.materia_nombre,
-                color: materiasColor[materia.materia_nombre],
-                salon: materia.salon_numero,
-                profesor: `${materia.profesor_nombre} ${materia.profesor_primer_apellido}`,
-                hora: `${materia.hora_inicio[indexDia]} - ${materia.hora_fin[indexDia]}`
-              };
-              
-              for (let b = inicioBloque + 1; b < finBloque; b++) {
-                horario[diaNombre][b] = 'ocupar';
+              let inicioBloque = bloqueTiempoIds[0];
+              let rowSpan = 0;
+              for (let bloqueTiempoId of bloqueTiempoIds) {
+                if (bloqueTiempoId === null || bloqueTiempoId === bloqueTiempoIds[bloqueTiempoIds.length - 1]) {
+                  if (rowSpan > 0) {
+                    if (bloqueTiempoId === null) {
+                      rowSpan --;
+                    }
+                    horario[diaNombre][inicioBloque % 24 + 13] = {
+                      grupo_id: materia.grupo_id,
+                      rowspan: rowSpan,
+                      nombre: materia.materia_nombre,
+                      color: materiasColor[materia.grupo_id],
+                      salon: materia.salon_numero,
+                      profesor: `${materia.profesor_nombre} ${materia.profesor_primer_apellido} ${materia.profesor_segundo_apellido}`,
+                      hora: `${bloque_tiempo[inicioBloque][0].slice(0, 5)} - ${bloque_tiempo[inicioBloque + rowSpan][1].slice(0, 5)}`
+                    };
+                    <!-- Bloques intermedios como ocupados -->
+                    for (let b = inicioBloque + 1; b <= inicioBloque + rowSpan; b++) {
+                      horario[diaNombre][b % 24 + 13] = 'ocupar';
+                    }
+                    rowSpan = 0;
+                  }
+                } else {
+                  if (rowSpan === 0) {
+                    inicioBloque = bloqueTiempoId;
+                  }
+                  rowSpan ++;
+                }
               }
             }
             indexDia ++;
@@ -457,9 +478,10 @@
               if (horario[dia][bloque] === 'ocupar') return;
               if (horario[dia][bloque]) { 
                 const clase = horario[dia][bloque];
+                horaPorGrp[clase.grupo_id][dia].push(clase.hora); 
                 html_container_tabla += `
                   <td class="text-black text-center align-middle ${clase.color}" 
-                      rowspan="${clase.rowspan}"
+                      rowspan="${clase.rowspan + 1}"
                       data-bs-toggle="tooltip" 
                       data-bs-placement="top"`;
                       if (clase.salon === 9999) {
@@ -489,8 +511,7 @@
         html_container_materias += `
         <div class="bg-white rounded-5 py-2 mb-3 class-card border ivd-border-red" 
           data-days="${materia_resultado.dias.map(dia => dia.substring(0,2).toUpperCase()).join(',')}"
-          data-hora-inicio="${materia_resultado.hora_inicio.join(',')}"
-          data-hora-fin="${materia_resultado.hora_fin.join(',')}"
+          data-horas="${JSON.stringify(horaPorGrp[materia_resultado.grupo_id]).replace(/"/g, '&quot;')}"
         >
           <div class="d-flex m-0 align-items-center justify-content-center" style="width: 100%;">
             <p class="m-0 me-3 hora-card"></p>
@@ -522,17 +543,22 @@
       const classCards = document.querySelectorAll('.class-card');  
 
       function filterClassesByDay(day) {
-        classCards.forEach(card => {
-          const horaInicioArray = card.getAttribute('data-hora-inicio').split(',');
-          const horaFinArray = card.getAttribute('data-hora-fin').split(','); 
-          const indexDiaCard = card.getAttribute('data-days').split(',').indexOf(day);
-          card.style.display = card.getAttribute('data-days').includes(day) ? 'block' : 'none';
-          if (indexDiaCard !== -1) {
-            card.querySelector(".hora-card").textContent = `${horaInicioArray[indexDiaCard].substring(0, 5)} - ${horaFinArray[indexDiaCard].substring(0, 5)}`;
-          } else {
-            card.querySelector(".hora-card").textContent = `${horaInicioArray[0].substring(0, 5)} - ${horaFinArray[0].substring(0, 5)}`;
-          }
-        });
+          classCards.forEach(card => {
+            const diasCorto = card.getAttribute("data-days")       // ej. "LU,JU"
+                                .split(",");
+            const horasObj  = JSON.parse(card.getAttribute("data-horas"));
+            const idx       = diasCorto.indexOf(day);              // 0 para LU, 1 para JU, etc.
+
+            if (idx === -1) {
+              card.style.display = "none";
+              return;
+            }
+
+            card.style.display = "block";
+            const horasArray = Object.values(horasObj)[idx] || [];
+            card.querySelector(".hora-card").textContent = horasArray.join(", ");
+          });
+
         //Hover cuando se selecciona
         dayButtons.forEach(btn => {
           if (btn.getAttribute('data-day') === day) {
@@ -588,7 +614,7 @@ document.getElementById('alertaModal').addEventListener('show.bs.modal', functio
       for (let alumnoRegular of data.alumnosRegulares) {
         html_container_alumnos_regulares += `
           <tr>
-            <td class="text-center align-middle">${alumnoRegular.ivd_id}</td>
+            <th scope="row" class="text-center align-middle">${alumnoRegular.ivd_id}</th>
             <td class="text-center align-middle">${alumnoRegular.nombre} ${alumnoRegular.primer_apellido} ${alumnoRegular.segundo_apellido|| ''}</td>
             <td class="text-center align-middle">${alumnoRegular.semestre}</td>
             <td class="text-center align-middle">${alumnoRegular.correo_institucional}</td>
@@ -642,7 +668,7 @@ document.getElementById('alertaModal').addEventListener('show.bs.modal', functio
         for (let alumnoIrregular of data.alumnosIrregulares) {
           html_container_alumnos_irregulares += `
             <tr>
-              <td class="text-center align-middle">${alumnoIrregular.ivd_id}</td>
+              <th scope="row" class="text-center align-middle">${alumnoIrregular.ivd_id}</th>
               <td class="text-center align-middle">${alumnoIrregular.nombre} ${alumnoIrregular.primer_apellido} ${alumnoIrregular.segundo_apellido|| ''}</td>
               <td class="text-center align-middle">${alumnoIrregular.semestre}</td>
               <td class="text-center align-middle">${alumnoIrregular.correo_institucional}</td>
@@ -721,6 +747,8 @@ document.getElementById('alertaModal').addEventListener('show.bs.modal', functio
       const materiasColor = {};
       let html_container_tabla = '';
       let colorIndex = 0;
+      let horaPorGrp = {};
+      const bloque_tiempo = data.bloque_tiempo;
       
       const horario = { 
         Lunes: {}, Martes: {}, Miércoles: {}, Jueves: {}, Viernes: {} 
@@ -729,37 +757,61 @@ document.getElementById('alertaModal').addEventListener('show.bs.modal', functio
       if (typeof data.materias_resultado !== 'undefined' && Array.isArray(data.materias_resultado)) {
         data.materias_resultado.forEach(materia => {
           // Asignar color único por materia
-          if (!materiasColor[materia.materia_nombre]) {
-              if (materia.obligatorio === true) {
-                materiasColor[materia.materia_nombre] = 'bg-secondary';
-              } else {
-                materiasColor[materia.materia_nombre] = colores[colorIndex % colores.length];
-                colorIndex++;
-              }
+          if (!materiasColor[materia.grupo_id]) {
+            if (materia.obligatorio === true) {
+                materiasColor[materia.grupo_id] = 'bg-secondary';
+            } else {
+              materiasColor[materia.grupo_id] = colores[colorIndex % colores.length];
+              colorIndex++;
+            }
           }
-          
+          horaPorGrp[materia.grupo_id] = {};
+
           let indexDia = 0;
           materia.dias.forEach(dia => {
+            horaPorGrp[materia.grupo_id][dia] = [];
             const diaNombre = dia.charAt(0).toUpperCase() + dia.slice(1).toLowerCase();
-          
-            const [hi, mi] = materia.hora_inicio[indexDia].split(':').map(Number);
-            const [hf, mf] = materia.hora_fin[indexDia].split(':').map(Number);
-            
-            const inicioBloque = hi * 2 + (mi >= 30 ? 1 : 0);
-            const finBloque = hf * 2 + (mf >= 30 ? 1 : 0);
+            const bloqueTiempoIds = [];
+            let indexBloque = 0;
+            for (let i = materia.bloque_tiempo_id[indexDia][0]; i <= materia.bloque_tiempo_id[indexDia][materia.bloque_tiempo_id[indexDia].length - 1]; i++) {
+              
+              if (i === materia.bloque_tiempo_id[indexDia][indexBloque]) {
+                bloqueTiempoIds.push(i);
+                indexBloque++;
+              } else {
+                bloqueTiempoIds.push(null);
+              }
+            }
             
             if (horario[diaNombre]) {
-              horario[diaNombre][inicioBloque] = {
-                rowspan: finBloque - inicioBloque,
-                nombre: materia.materia_nombre,
-                color: materiasColor[materia.materia_nombre],
-                salon: materia.salon_numero,
-                profesor: `${materia.profesor_nombre} ${materia.profesor_primer_apellido}`,
-                hora: `${materia.hora_inicio[indexDia]} - ${materia.hora_fin[indexDia]}`
-              };
-              
-              for (let b = inicioBloque + 1; b < finBloque; b++) {
-                horario[diaNombre][b] = 'ocupar';
+              let inicioBloque = bloqueTiempoIds[0];
+              let rowSpan = 0;
+              for (let bloqueTiempoId of bloqueTiempoIds) {
+                if (bloqueTiempoId === null || bloqueTiempoId === bloqueTiempoIds[bloqueTiempoIds.length - 1]) {
+                  if (rowSpan > 0) {
+                    if (bloqueTiempoId === null) {
+                      rowSpan --;
+                    }
+                    horario[diaNombre][inicioBloque % 24 + 13] = {
+                      grupo_id: materia.grupo_id,
+                      rowspan: rowSpan,
+                      nombre: materia.materia_nombre,
+                      color: materiasColor[materia.grupo_id],
+                      salon: materia.salon_numero,
+                      profesor: `${materia.profesor_nombre} ${materia.profesor_primer_apellido} ${materia.profesor_segundo_apellido}`,
+                      hora: `${bloque_tiempo[inicioBloque][0].slice(0, 5)} - ${bloque_tiempo[inicioBloque + rowSpan][1].slice(0, 5)}`
+                    };
+                    for (let b = inicioBloque + 1; b <= inicioBloque + rowSpan; b++) {
+                      horario[diaNombre][b % 24 + 13] = 'ocupar';
+                    }
+                    rowSpan = 0;
+                  }
+                } else {
+                  if (rowSpan === 0) {
+                    inicioBloque = bloqueTiempoId;
+                  }
+                  rowSpan ++;
+                }
               }
             }
             indexDia ++;
@@ -782,9 +834,10 @@ document.getElementById('alertaModal').addEventListener('show.bs.modal', functio
               if (horario[dia][bloque] === 'ocupar') return;
               if (horario[dia][bloque]) { 
                 const clase = horario[dia][bloque];
+                horaPorGrp[clase.grupo_id][dia].push(clase.hora); 
                 html_container_tabla += `
                   <td class="text-black text-center align-middle ${clase.color}" 
-                      rowspan="${clase.rowspan}"
+                      rowspan="${clase.rowspan + 1}"
                       data-bs-toggle="tooltip" 
                       data-bs-placement="top"`;
                       if (clase.salon === 9999) {
@@ -808,39 +861,6 @@ document.getElementById('alertaModal').addEventListener('show.bs.modal', functio
 
       document.getElementById('editModalTableBody').innerHTML = html_container_tabla;
       
-      // Tarjetas de materias
-      let html_container_materias = '';
-      for (let materia_resultado of data.materias_resultado) {
-        html_container_materias += `
-        <div class="bg-white rounded-5 py-2 mb-3 class-card border ivd-border-red" 
-          data-days="${materia_resultado.dias.map(dia => dia.substring(0,2).toUpperCase()).join(',')}"
-          data-hora-inicio="${materia_resultado.hora_inicio.join(',')}"
-          data-hora-fin="${materia_resultado.hora_fin.join(',')}"
-        >
-          <div class="d-flex m-0 align-items-center justify-content-center" style="width: 100%;">
-            <p class="m-0 me-3 hora-card"></p>
-            <p class="m-0" style="color: #84251C;">(${materia_resultado.dias.join(', ')})</p>
-          </div>
-          <div class="d-flex justify-content-center my-3">
-            <div style="border-bottom: 3px solid #84251C; width: 100%;"></div>
-          </div>
-          <p class="fw-semibold text-center">${materia_resultado.materia_nombre}</p>
-          <p class="text-center mb-3">
-            Salón: `;
-            if (materia_resultado.salon_numero === 9999) {
-              html_container_materias += `
-              No asignado |`;
-            } else {
-              html_container_materias += `
-              ${materia_resultado.salon_numero} |`
-            }
-            html_container_materias += ` 
-            ${materia_resultado.profesor_nombre} 
-            ${materia_resultado.profesor_primer_apellido}
-            ${materia_resultado.profesor_segundo_apellido}
-          </p>
-        </div>`;
-      }
       // Para materias seleccionadas
       let html_container_materias_seleccionadas = ``;
       let numMateria = 1;
@@ -852,7 +872,7 @@ document.getElementById('alertaModal').addEventListener('show.bs.modal', functio
             for (let i = 0; i < materia_resultado.dias.length; i++) { 
                 html_container_materias_seleccionadas += `
                           <p class="m-0 me-2">
-                            ${materia_resultado.hora_inicio[i].substring(0, 5)} - ${materia_resultado.hora_fin[i].substring(0, 5)}
+                            ${Object.values(horaPorGrp[materia_resultado.grupo_id][materia_resultado.dias[i]]).join(", ")}
                           </p>`;
                 if (i !== materia_resultado.dias.length - 1) {
                     html_container_materias_seleccionadas += `
@@ -879,6 +899,7 @@ document.getElementById('alertaModal').addEventListener('show.bs.modal', functio
                             border: none;
                             "
                             data-grupo-id="${materia_resultado.grupo_id}"
+                            data-horas="${JSON.stringify(horaPorGrp).replace(/"/g, '&quot;')}"
                             data-alumno-id="${alumno_id}"
                             >
                             <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" fill="currentColor" class="bi bi-x-lg" viewBox="0 0 16 16">
@@ -925,6 +946,73 @@ document.getElementById('alertaModal').addEventListener('show.bs.modal', functio
       document.getElementById('materiasSeleccionadas').innerHTML = html_container_materias_seleccionadas;
 
       // Para materias disponibles
+      let horaPorGrp2 = {};
+      const horario2 = { 
+        Lunes: {}, Martes: {}, Miércoles: {}, Jueves: {}, Viernes: {} 
+      };
+      
+      if (typeof data.materias_disponibles_semestre !== 'undefined' && Array.isArray(data.materias_disponibles_semestre)) {
+        data.materias_disponibles_semestre.forEach(materia => {
+          horaPorGrp2[materia.grupo_id] = {};
+          let indexDia = 0;
+          materia.dias.forEach(dia => {
+            horaPorGrp2[materia.grupo_id][dia] = [];
+            const diaNombre = dia.charAt(0).toUpperCase() + dia.slice(1).toLowerCase();
+            const bloqueTiempoIds = [];
+            let indexBloque = 0;
+            for (let i = materia.bloque_tiempo_id[indexDia][0]; i <= materia.bloque_tiempo_id[indexDia][materia.bloque_tiempo_id[indexDia].length - 1]; i++) {
+              
+              if (i === materia.bloque_tiempo_id[indexDia][indexBloque]) {
+                bloqueTiempoIds.push(i);
+                indexBloque++;
+              } else {
+                bloqueTiempoIds.push(null);
+              }
+            }
+            
+            if (horario2[diaNombre]) {
+              let inicioBloque = bloqueTiempoIds[0];
+              let rowSpan = 0;
+              for (let bloqueTiempoId of bloqueTiempoIds) {
+                if (bloqueTiempoId === null || bloqueTiempoId === bloqueTiempoIds[bloqueTiempoIds.length - 1]) {
+                  if (rowSpan > 0) {
+                    if (bloqueTiempoId === null) {
+                      rowSpan --;
+                    }
+                    horario2[diaNombre][inicioBloque % 24 + 13] = {
+                      grupo_id: materia.grupo_id,
+                      rowspan: rowSpan,
+                      nombre: materia.materia_nombre,
+                      salon: materia.salon_numero,
+                      profesor: `${materia.profesor_nombre} ${materia.profesor_primer_apellido} ${materia.profesor_segundo_apellido}`,
+                      hora: `${bloque_tiempo[inicioBloque][0].slice(0, 5)} - ${bloque_tiempo[inicioBloque + rowSpan][1].slice(0, 5)}`
+                    };
+                    for (let b = inicioBloque + 1; b <= inicioBloque + rowSpan; b++) {
+                      horario2[diaNombre][b % 24 + 13] = 'ocupar';
+                    }
+                    rowSpan = 0;
+                  }
+                } else {
+                  if (rowSpan === 0) {
+                    inicioBloque = bloqueTiempoId;
+                  }
+                  rowSpan ++;
+                }
+              }
+            }
+            indexDia ++;
+          });
+        });
+      }
+      for (let bloque = 14; bloque < 32; bloque++) {
+            ['Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes'].forEach(dia => {
+              if (horario2[dia][bloque] === 'ocupar') return;
+              if (horario2[dia][bloque]) { 
+                const clase = horario2[dia][bloque];
+                horaPorGrp2[clase.grupo_id][dia].push(clase.hora); 
+              }
+            })
+      }
       let html_container_materias_disponibles = ``;
         for (let materia_disponible of data.materias_disponibles_semestre) { 
             html_container_materias_disponibles += `
@@ -934,7 +1022,7 @@ document.getElementById('alertaModal').addEventListener('show.bs.modal', functio
             for (let i = 0; i < materia_disponible.dias.length; i++) { 
                 html_container_materias_disponibles += `
                           <p class="m-0 me-2">
-                            ${materia_disponible.hora_inicio[i].substring(0, 5)} - ${materia_disponible.hora_fin[i].substring(0, 5)}
+                            ${Object.values(horaPorGrp2[materia_disponible.grupo_id][materia_disponible.dias[i]]).join(", ")}
                           </p>`;
                 if (i !== materia_disponible.dias.length - 1) {
                     html_container_materias_disponibles += `
@@ -962,6 +1050,7 @@ document.getElementById('alertaModal').addEventListener('show.bs.modal', functio
                     "
                     data-grupo-id="${materia_disponible.grupo_id}"
                     data-alumno-id="${alumno_id}"
+                    data-horas="${JSON.stringify(horaPorGrp2).replace(/"/g, '&quot;')}"
                     >
                         <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-plus" viewBox="0 0 16 16">
                         <path d="M8 4a.5.5 0 0 1 .5.5v3h3a.5.5 0 0 1 0 1h-3v3a.5.5 0 0 1-1 0v-3h-3a.5.5 0 0 1 0-1h3v-3A.5.5 0 0 1 8 4"/>
@@ -1025,6 +1114,74 @@ document.getElementById('alertaModal').addEventListener('show.bs.modal', functio
                     document.getElementById('btnSemestre').innerHTML = 'Semestre';
                 }
                 let html_container = ``;
+                let horaPorGrp2 = {};
+                const bloque_tiempo = data.bloque_tiempo;
+                const horario2 = { 
+                  Lunes: {}, Martes: {}, Miércoles: {}, Jueves: {}, Viernes: {} 
+                };
+                
+                if (typeof data.materias_disponibles !== 'undefined' && Array.isArray(data.materias_disponibles)) {
+                  data.materias_disponibles.forEach(materia => {
+                    horaPorGrp2[materia.grupo_id] = {};
+                    let indexDia = 0;
+                    materia.dias.forEach(dia => {
+                      horaPorGrp2[materia.grupo_id][dia] = [];
+                      const diaNombre = dia.charAt(0).toUpperCase() + dia.slice(1).toLowerCase();
+                      const bloqueTiempoIds = [];
+                      let indexBloque = 0;
+                      for (let i = materia.bloque_tiempo_id[indexDia][0]; i <= materia.bloque_tiempo_id[indexDia][materia.bloque_tiempo_id[indexDia].length - 1]; i++) {
+                        
+                        if (i === materia.bloque_tiempo_id[indexDia][indexBloque]) {
+                          bloqueTiempoIds.push(i);
+                          indexBloque++;
+                        } else {
+                          bloqueTiempoIds.push(null);
+                        }
+                      }
+                      
+                      if (horario2[diaNombre]) {
+                        let inicioBloque = bloqueTiempoIds[0];
+                        let rowSpan = 0;
+                        for (let bloqueTiempoId of bloqueTiempoIds) {
+                          if (bloqueTiempoId === null || bloqueTiempoId === bloqueTiempoIds[bloqueTiempoIds.length - 1]) {
+                            if (rowSpan > 0) {
+                              if (bloqueTiempoId === null) {
+                                rowSpan --;
+                              }
+                              horario2[diaNombre][inicioBloque % 24 + 13] = {
+                                grupo_id: materia.grupo_id,
+                                rowspan: rowSpan,
+                                nombre: materia.materia_nombre,
+                                salon: materia.salon_numero,
+                                profesor: `${materia.profesor_nombre} ${materia.profesor_primer_apellido} ${materia.profesor_segundo_apellido}`,
+                                hora: `${bloque_tiempo[inicioBloque][0].slice(0, 5)} - ${bloque_tiempo[inicioBloque + rowSpan][1].slice(0, 5)}`
+                              };
+                              for (let b = inicioBloque + 1; b <= inicioBloque + rowSpan; b++) {
+                                horario2[diaNombre][b % 24 + 13] = 'ocupar';
+                              }
+                              rowSpan = 0;
+                            }
+                          } else {
+                            if (rowSpan === 0) {
+                              inicioBloque = bloqueTiempoId;
+                            }
+                            rowSpan ++;
+                          }
+                        }
+                      }
+                      indexDia ++;
+                    });
+                  });
+                }
+                for (let bloque = 14; bloque < 32; bloque++) {
+                      ['Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes'].forEach(dia => {
+                        if (horario2[dia][bloque] === 'ocupar') return;
+                        if (horario2[dia][bloque]) { 
+                          const clase = horario2[dia][bloque];
+                          horaPorGrp2[clase.grupo_id][dia].push(clase.hora); 
+                        }
+                      })
+                }
                 for (let materia_disponible of data.materias_disponibles) { 
                     html_container += `
                     <div class="w-100 d-flex flex-column align-items-center rounded-5 mt-3" style="background-color: white;">
@@ -1034,7 +1191,7 @@ document.getElementById('alertaModal').addEventListener('show.bs.modal', functio
                     for (let i = 0; i < materia_disponible.dias.length; i++) { 
                         html_container += `
                                 <p class="m-0 me-2">
-                                    ${materia_disponible.hora_inicio[i].substring(0, 5)} - ${materia_disponible.hora_fin[i].substring(0, 5)}
+                                    ${Object.values(horaPorGrp2[materia_disponible.grupo_id][materia_disponible.dias[i]]).join(", ")}
                                 </p>`;
                         if (i !== materia_disponible.dias.length - 1) {
                             html_container += `
@@ -1062,6 +1219,7 @@ document.getElementById('alertaModal').addEventListener('show.bs.modal', functio
                             "
                             data-grupo-id="${materia_disponible.grupo_id}"
                             data-alumno-id="${alumno_id}"
+                            data-horas="${JSON.stringify(horaPorGrp2).replace(/"/g, '&quot;')}"
                             >
                                 <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-plus" viewBox="0 0 16 16">
                                 <path d="M8 4a.5.5 0 0 1 .5.5v3h3a.5.5 0 0 1 0 1h-3v3a.5.5 0 0 1-1 0v-3h-3a.5.5 0 0 1 0-1h3v-3A.5.5 0 0 1 8 4"/>
@@ -1113,6 +1271,8 @@ document.getElementById('alertaModal').addEventListener('show.bs.modal', functio
       const idSeleccionado = radioSeleccionado.id;
       const grupo_id = radioSeleccionado.getAttribute("data-grupo-id");
       const alumno_id = radioSeleccionado.getAttribute("data-alumno-id");
+      const horasStr = button.getAttribute("data-horas");
+      const horasObj = JSON.parse(horasStr);
       let obligatorio;
       if (idSeleccionado.startsWith("btnObligatorio")) {
         obligatorio = true;
@@ -1137,6 +1297,8 @@ document.getElementById('alertaModal').addEventListener('show.bs.modal', functio
         const materiasColor = {};
         let html_container_tabla = '';
         let colorIndex = 0;
+        let horaPorGrp = {};
+        const bloque_tiempo = data.bloque_tiempo;
         
         const horario = { 
           Lunes: {}, Martes: {}, Miércoles: {}, Jueves: {}, Viernes: {} 
@@ -1145,62 +1307,87 @@ document.getElementById('alertaModal').addEventListener('show.bs.modal', functio
         if (typeof data.materias_resultado !== 'undefined' && Array.isArray(data.materias_resultado)) {
           data.materias_resultado.forEach(materia => {
             // Asignar color único por materia
-            if (!materiasColor[materia.materia_nombre]) {
+            if (!materiasColor[materia.grupo_id]) {
                 if (materia.obligatorio === true) {
-                  materiasColor[materia.materia_nombre] = 'bg-secondary';
+                  materiasColor[materia.grupo_id] = 'bg-secondary';
                 } else {
-                  materiasColor[materia.materia_nombre] = colores[colorIndex % colores.length];
+                  materiasColor[materia.grupo_id] = colores[colorIndex % colores.length];
                   colorIndex++;
                 }
             }
             
+            horaPorGrp[materia.grupo_id] = {};
             let indexDia = 0;
             materia.dias.forEach(dia => {
+              horaPorGrp[materia.grupo_id][dia] = [];
               const diaNombre = dia.charAt(0).toUpperCase() + dia.slice(1).toLowerCase();
-            
-              const [hi, mi] = materia.hora_inicio[indexDia].split(':').map(Number);
-              const [hf, mf] = materia.hora_fin[indexDia].split(':').map(Number);
-              
-              const inicioBloque = hi * 2 + (mi >= 30 ? 1 : 0);
-              const finBloque = hf * 2 + (mf >= 30 ? 1 : 0);
+              const bloqueTiempoIds = [];
+              let indexBloque = 0;
+              for (let i = materia.bloque_tiempo_id[indexDia][0]; i <= materia.bloque_tiempo_id[indexDia][materia.bloque_tiempo_id[indexDia].length - 1]; i++) {
+                
+                if (i === materia.bloque_tiempo_id[indexDia][indexBloque]) {
+                  bloqueTiempoIds.push(i);
+                  indexBloque++;
+                } else {
+                  bloqueTiempoIds.push(null);
+                }
+              }
               
               if (horario[diaNombre]) {
-                horario[diaNombre][inicioBloque] = {
-                  rowspan: finBloque - inicioBloque,
-                  nombre: materia.materia_nombre,
-                  color: materiasColor[materia.materia_nombre],
-                  salon: materia.salon_numero,
-                  profesor: `${materia.profesor_nombre} ${materia.profesor_primer_apellido}`,
-                  hora: `${materia.hora_inicio[indexDia]} - ${materia.hora_fin[indexDia]}`
-                };
-                
-                for (let b = inicioBloque + 1; b < finBloque; b++) {
-                  horario[diaNombre][b] = 'ocupar';
+                let inicioBloque = bloqueTiempoIds[0];
+                let rowSpan = 0;
+                for (let bloqueTiempoId of bloqueTiempoIds) {
+                  if (bloqueTiempoId === null || bloqueTiempoId === bloqueTiempoIds[bloqueTiempoIds.length - 1]) {
+                    if (rowSpan > 0) {
+                      if (bloqueTiempoId === null) {
+                        rowSpan --;
+                      }
+                      horario[diaNombre][inicioBloque % 24 + 13] = {
+                        grupo_id: materia.grupo_id,
+                        rowspan: rowSpan,
+                        nombre: materia.materia_nombre,
+                        color: materiasColor[materia.grupo_id],
+                        salon: materia.salon_numero,
+                        profesor: `${materia.profesor_nombre} ${materia.profesor_primer_apellido} ${materia.profesor_segundo_apellido}`,
+                        hora: `${bloque_tiempo[inicioBloque][0].slice(0, 5)} - ${bloque_tiempo[inicioBloque + rowSpan][1].slice(0, 5)}`
+                      };
+                      for (let b = inicioBloque + 1; b <= inicioBloque + rowSpan; b++) {
+                        horario[diaNombre][b % 24 + 13] = 'ocupar';
+                      }
+                      rowSpan = 0;
+                    }
+                  } else {
+                    if (rowSpan === 0) {
+                      inicioBloque = bloqueTiempoId;
+                    }
+                    rowSpan ++;
+                  }
                 }
               }
               indexDia ++;
             });
-          });
-        }
-        for (let bloque = 14; bloque < 32; bloque++) {
-          const hora = Math.floor(bloque / 2);
-          const minutos = bloque % 2 === 0 ? '00' : '30';
-          let horaFormato;
-          if (bloque % 2 !== 0) {
+            });
+            }
+            for (let bloque = 14; bloque < 32; bloque++) {
+            const hora = Math.floor(bloque / 2);
+            const minutos = bloque % 2 === 0 ? '00' : '30';
+            let horaFormato;
+            if (bloque % 2 !== 0) {
             horaFormato = `${hora}:${minutos} - ${hora + 1}:00`;
-          } else {
+            } else {
             horaFormato = `${hora}:${minutos} - ${hora}:30`;
-          }
-          html_container_tabla += `
+            }
+            html_container_tabla += `
             <tr style="max-height: 1rem;">
               <th class="hour-cell text-center align-middle">${horaFormato}</th>`;
               ['Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes'].forEach(dia => {
                 if (horario[dia][bloque] === 'ocupar') return;
                 if (horario[dia][bloque]) { 
                   const clase = horario[dia][bloque];
+                  horaPorGrp[clase.grupo_id][dia].push(clase.hora); 
                   html_container_tabla += `
                     <td class="text-black text-center align-middle ${clase.color}" 
-                        rowspan="${clase.rowspan}"
+                        rowspan="${clase.rowspan + 1}"
                         data-bs-toggle="tooltip" 
                         data-bs-placement="top"`;
                         if (clase.salon === 9999) {
@@ -1218,9 +1405,9 @@ document.getElementById('alertaModal').addEventListener('show.bs.modal', functio
                     <td class="empty-slot"></td>`;
                 }
               })
-          html_container_tabla += `
+            html_container_tabla += `
             </tr>`;
-        }
+            }
 
         document.getElementById('editModalTableBody').innerHTML = html_container_tabla;
         
@@ -1230,8 +1417,6 @@ document.getElementById('alertaModal').addEventListener('show.bs.modal', functio
           html_container_materias += `
           <div class="bg-white rounded-5 py-2 mb-3 class-card border ivd-border-red" 
             data-days="${materia_resultado.dias.map(dia => dia.substring(0,2).toUpperCase()).join(',')}"
-            data-hora-inicio="${materia_resultado.hora_inicio.join(',')}"
-            data-hora-fin="${materia_resultado.hora_fin.join(',')}"
           >
             <div class="d-flex m-0 align-items-center justify-content-center" style="width: 100%;">
               <p class="m-0 me-3 hora-card"></p>
@@ -1268,6 +1453,8 @@ document.getElementById('alertaModal').addEventListener('show.bs.modal', functio
         const button = event.currentTarget;
         const grupo_id = button.getAttribute("data-grupo-id");
         const alumno_id = button.getAttribute("data-alumno-id");
+        const horasStr = button.getAttribute("data-horas");
+        const horasObj = JSON.parse(horasStr);
         fetch(`/coordinador/alumnos/modificar-horario/eliminar-resultado`, {
             method: 'POST',
             headers: {
@@ -1292,7 +1479,7 @@ document.getElementById('alertaModal').addEventListener('show.bs.modal', functio
                 for (let i = 0; i < materia_resultado.dias.length; i++) { 
                     html_container_materias_seleccionadas += `
                               <p class="m-0 me-2">
-                                ${materia_resultado.hora_inicio[i].substring(0, 5)} - ${materia_resultado.hora_fin[i].substring(0, 5)}
+                                ${Object.values(horasObj[materia_resultado.grupo_id][materia_resultado.dias[i]]).join(", ")}
                               </p>`;
                     if (i !== materia_resultado.dias.length - 1) {
                         html_container_materias_seleccionadas += `
@@ -1320,6 +1507,7 @@ document.getElementById('alertaModal').addEventListener('show.bs.modal', functio
                                 "
                                 data-grupo-id="${materia_resultado.grupo_id}"
                                 data-alumno-id="${alumno_id}"
+                                data-horas="${JSON.stringify(horasObj).replace(/"/g, '&quot;')}"
                                 >
                                 <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" fill="currentColor" class="bi bi-x-lg" viewBox="0 0 16 16">
                                     <path d="M2.146 2.854a.5.5 0 1 1 .708-.708L8 7.293l5.146-5.147a.5.5 0 0 1 .708.708L8.707 8l5.147 5.146a.5.5 0 0 1-.708.708L8 8.707l-5.146 5.147a.5.5 0 0 1-.708-.708L7.293 8z"/>
@@ -1365,6 +1553,73 @@ document.getElementById('alertaModal').addEventListener('show.bs.modal', functio
             document.getElementById('materiasSeleccionadas').innerHTML = html_container_materias_seleccionadas;
 
             // Para las materias disponibles
+            let horaPorGrp2 = {};
+            const bloque_tiempo = data.bloque_tiempo;
+            const horario2 = { 
+              Lunes: {}, Martes: {}, Miércoles: {}, Jueves: {}, Viernes: {} 
+            };
+            if (typeof data.materias_disponibles !== 'undefined' && Array.isArray(data.materias_disponibles)) {
+              data.materias_disponibles.forEach(materia => {
+                horaPorGrp2[materia.grupo_id] = {};
+                let indexDia = 0;
+                materia.dias.forEach(dia => {
+                  horaPorGrp2[materia.grupo_id][dia] = [];
+                  const diaNombre = dia.charAt(0).toUpperCase() + dia.slice(1).toLowerCase();
+                  const bloqueTiempoIds = [];
+                  let indexBloque = 0;
+                  for (let i = materia.bloque_tiempo_id[indexDia][0]; i <= materia.bloque_tiempo_id[indexDia][materia.bloque_tiempo_id[indexDia].length - 1]; i++) {
+                    
+                    if (i === materia.bloque_tiempo_id[indexDia][indexBloque]) {
+                      bloqueTiempoIds.push(i);
+                      indexBloque++;
+                    } else {
+                      bloqueTiempoIds.push(null);
+                    }
+                  }
+                  
+                  if (horario2[diaNombre]) {
+                    let inicioBloque = bloqueTiempoIds[0];
+                    let rowSpan = 0;
+                    for (let bloqueTiempoId of bloqueTiempoIds) {
+                      if (bloqueTiempoId === null || bloqueTiempoId === bloqueTiempoIds[bloqueTiempoIds.length - 1]) {
+                        if (rowSpan > 0) {
+                          if (bloqueTiempoId === null) {
+                            rowSpan --;
+                          }
+                          horario2[diaNombre][inicioBloque % 24 + 13] = {
+                            grupo_id: materia.grupo_id,
+                            rowspan: rowSpan,
+                            nombre: materia.materia_nombre,
+                            salon: materia.salon_numero,
+                            profesor: `${materia.profesor_nombre} ${materia.profesor_primer_apellido} ${materia.profesor_segundo_apellido}`,
+                            hora: `${bloque_tiempo[inicioBloque][0].slice(0, 5)} - ${bloque_tiempo[inicioBloque + rowSpan][1].slice(0, 5)}`
+                          };
+                          for (let b = inicioBloque + 1; b <= inicioBloque + rowSpan; b++) {
+                            horario2[diaNombre][b % 24 + 13] = 'ocupar';
+                          }
+                          rowSpan = 0;
+                        }
+                      } else {
+                        if (rowSpan === 0) {
+                          inicioBloque = bloqueTiempoId;
+                        }
+                        rowSpan ++;
+                      }
+                    }
+                  }
+                  indexDia ++;
+                });
+              });
+            }
+            for (let bloque = 14; bloque < 32; bloque++) {
+                  ['Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes'].forEach(dia => {
+                    if (horario2[dia][bloque] === 'ocupar') return;
+                    if (horario2[dia][bloque]) { 
+                      const clase = horario2[dia][bloque];
+                      horaPorGrp2[clase.grupo_id][dia].push(clase.hora); 
+                    }
+                  })
+            }
             let html_container_materias_disponibles = ``;
             for (let materia_disponible of data.materias_disponibles) { 
                 html_container_materias_disponibles += `
@@ -1374,7 +1629,7 @@ document.getElementById('alertaModal').addEventListener('show.bs.modal', functio
                 for (let i = 0; i < materia_disponible.dias.length; i++) { 
                     html_container_materias_disponibles += `
                               <p class="m-0 me-2">
-                                ${materia_disponible.hora_inicio[i].substring(0, 5)} - ${materia_disponible.hora_fin[i].substring(0, 5)}
+                                ${Object.values(horaPorGrp2[materia_disponible.grupo_id][materia_disponible.dias[i]]).join(", ")}
                               </p>`;
                     if (i !== materia_disponible.dias.length - 1) {
                         html_container_materias_disponibles += `
@@ -1402,6 +1657,7 @@ document.getElementById('alertaModal').addEventListener('show.bs.modal', functio
                         "
                         data-grupo-id="${materia_disponible.grupo_id}"
                         data-alumno-id="${alumno_id}"
+                        data-horas="${JSON.stringify(horaPorGrp2).replace(/"/g, '&quot;')}"
                         >
                             <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-plus" viewBox="0 0 16 16">
                             <path d="M8 4a.5.5 0 0 1 .5.5v3h3a.5.5 0 0 1 0 1h-3v3a.5.5 0 0 1-1 0v-3h-3a.5.5 0 0 1 0-1h3v-3A.5.5 0 0 1 8 4"/>
@@ -1429,98 +1685,120 @@ document.getElementById('alertaModal').addEventListener('show.bs.modal', functio
             }
             document.getElementById('materiasDisponibles').innerHTML = html_container_materias_disponibles;
             // Recargar la tabla del horario
-            const colores = ['bg-primary-subtle', 'bg-success-subtle ','bg-warning-subtle ','bg-danger-subtle','bg-info-subtle'];
-            const materiasColor = {};
-            let colorIndex = 0;
-            let html_container_tabla = ``;
-            
-            const horario = { 
-              Lunes: {}, Martes: {}, Miércoles: {}, Jueves: {}, Viernes: {} 
-            };
-            
-            if (typeof data.materias_resultado !== 'undefined' && Array.isArray(data.materias_resultado)) {
-                data.materias_resultado.forEach(materia => {
-                // Asignar color único por materia
-                if (!materiasColor[materia.materia_nombre]) {
-                    if (materia.obligatorio === true) {
-                      materiasColor[materia.materia_nombre] = 'bg-secondary';
-                    } else {
-                      materiasColor[materia.materia_nombre] = colores[colorIndex % colores.length];
-                      colorIndex++;
-                    }
+          // Tabla de horario
+          const colores = ['bg-primary-subtle', 'bg-success-subtle ','bg-warning-subtle ','bg-danger-subtle','bg-info-subtle'];
+          const materiasColor = {};
+          let html_container_tabla = '';
+          let colorIndex = 0;
+          let horaPorGrp = {};
+          
+          const horario = { 
+            Lunes: {}, Martes: {}, Miércoles: {}, Jueves: {}, Viernes: {} 
+          };
+          
+          if (typeof data.materias_resultado !== 'undefined' && Array.isArray(data.materias_resultado)) {
+            data.materias_resultado.forEach(materia => {
+              // Asignar color único por materia
+              if (!materiasColor[materia.grupo_id]) {
+                  if (materia.obligatorio === true) {
+                    materiasColor[materia.grupo_id] = 'bg-secondary';
+                  } else {
+                    materiasColor[materia.grupo_id] = colores[colorIndex % colores.length];
+                    colorIndex++;
+                  }
+              }
+              
+              horaPorGrp[materia.grupo_id] = {};
+              let indexDia = 0;
+              materia.dias.forEach(dia => {
+                horaPorGrp[materia.grupo_id][dia] = [];
+                const diaNombre = dia.charAt(0).toUpperCase() + dia.slice(1).toLowerCase();
+                const bloqueTiempoIds = [];
+                let indexBloque = 0;
+                for (let i = materia.bloque_tiempo_id[indexDia][0]; i <= materia.bloque_tiempo_id[indexDia][materia.bloque_tiempo_id[indexDia].length - 1]; i++) {
+                  
+                  if (i === materia.bloque_tiempo_id[indexDia][indexBloque]) {
+                    bloqueTiempoIds.push(i);
+                    indexBloque++;
+                  } else {
+                    bloqueTiempoIds.push(null);
+                  }
                 }
                 
-                let indexDia = 0;
-                materia.dias.forEach(dia => {
-                  const diaNombre = dia.charAt(0).toUpperCase() + dia.slice(1).toLowerCase();
-                  
-                  const [hi, mi] = materia.hora_inicio[indexDia].split(':').map(Number);
-                  const [hf, mf] = materia.hora_fin[indexDia].split(':').map(Number);
-                  
-                  const inicioBloque = hi * 2 + (mi >= 30 ? 1 : 0);
-                  const finBloque = hf * 2 + (mf >= 30 ? 1 : 0);
-                  
-                  if (horario[diaNombre]) {
-                    horario[diaNombre][inicioBloque] = {
-                      rowspan: finBloque - inicioBloque,
-                      nombre: materia.materia_nombre,
-                      color: materiasColor[materia.materia_nombre],
-                      salon: materia.salon_numero,
-                      profesor: `${materia.profesor_nombre} ${materia.profesor_primer_apellido}`,
-                      hora: `${materia.hora_inicio[indexDia]} - ${materia.hora_fin[indexDia]}`
-                    };
-                    
-                    for (let b = inicioBloque + 1; b < finBloque; b++) {
-                      horario[diaNombre][b] = 'ocupar';
+                if (horario[diaNombre]) {
+                  let inicioBloque = bloqueTiempoIds[0];
+                  let rowSpan = 0;
+                  for (let bloqueTiempoId of bloqueTiempoIds) {
+                    if (bloqueTiempoId === null || bloqueTiempoId === bloqueTiempoIds[bloqueTiempoIds.length - 1]) {
+                      if (rowSpan > 0) {
+                        if (bloqueTiempoId === null) {
+                          rowSpan --;
+                        }
+                        horario[diaNombre][inicioBloque % 24 + 13] = {
+                          grupo_id: materia.grupo_id,
+                          rowspan: rowSpan,
+                          nombre: materia.materia_nombre,
+                          color: materiasColor[materia.grupo_id],
+                          salon: materia.salon_numero,
+                          profesor: `${materia.profesor_nombre} ${materia.profesor_primer_apellido} ${materia.profesor_segundo_apellido}`,
+                          hora: `${bloque_tiempo[inicioBloque][0].slice(0, 5)} - ${bloque_tiempo[inicioBloque + rowSpan][1].slice(0, 5)}`
+                        };
+                        for (let b = inicioBloque + 1; b <= inicioBloque + rowSpan; b++) {
+                          horario[diaNombre][b % 24 + 13] = 'ocupar';
+                        }
+                        rowSpan = 0;
+                      }
+                    } else {
+                      if (rowSpan === 0) {
+                        inicioBloque = bloqueTiempoId;
+                      }
+                      rowSpan ++;
                     }
                   }
-                  indexDia ++;
-                });
-              });
-            }
-
-            for (let bloque = 14; bloque < 32; bloque++) {
-                const hora = Math.floor(bloque / 2);
-                const minutos = bloque % 2 === 0 ? '00' : '30';
-                let horaFormato;
-                if (bloque % 2 !== 0) {
-                    horaFormato = `${hora}:${minutos} - ${hora + 1}:00`;
-                } else {
-                    horaFormato = `${hora}:${minutos} - ${hora}:30`;
                 }
-              
-                html_container_tabla += `
-                    <tr style="max-height: 1rem;">
-                        <th class="hour-cell text-center align-middle">${horaFormato}</th>`;
-
+                indexDia ++;
+              });
+              });
+              }
+              for (let bloque = 14; bloque < 32; bloque++) {
+              const hora = Math.floor(bloque / 2);
+              const minutos = bloque % 2 === 0 ? '00' : '30';
+              let horaFormato;
+              if (bloque % 2 !== 0) {
+              horaFormato = `${hora}:${minutos} - ${hora + 1}:00`;
+              } else {
+              horaFormato = `${hora}:${minutos} - ${hora}:30`;
+              }
+              html_container_tabla += `
+              <tr style="max-height: 1rem;">
+                <th class="hour-cell text-center align-middle">${horaFormato}</th>`;
                 ['Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes'].forEach(dia => {
-                    if (horario[dia][bloque] === 'ocupar') return;
-                    if (horario[dia][bloque]) { 
-                        const clase = horario[dia][bloque];
+                  if (horario[dia][bloque] === 'ocupar') return;
+                  if (horario[dia][bloque]) { 
+                    const clase = horario[dia][bloque];
+                    horaPorGrp[clase.grupo_id][dia].push(clase.hora); 
+                    html_container_tabla += `
+                      <td class="text-black text-center align-middle ${clase.color}" 
+                          rowspan="${clase.rowspan + 1}"
+                          data-bs-toggle="tooltip" 
+                          data-bs-placement="top"`;
+                          if (clase.salon === 9999) {
+                            html_container_tabla += `
+                              title="${clase.hora} | Salon: No asignado | Prof: ${clase.profesor}">`;
+                          } else {
+                            html_container_tabla += `
+                              title="${clase.hora} | Salon: ${clase.salon} | Prof: ${clase.profesor}">`
+                          }
                         html_container_tabla += `
-                            <td class="text-black text-center align-middle ${clase.color} p-0" 
-                                rowspan="${clase.rowspan}"
-                                data-bs-toggle="tooltip" 
-                                data-bs-placement="top" `
-                                if (clase.salon === 9999) {
-                                    html_container_tabla += `
-                                        title="${clase.hora} | Salon: No asignado | Prof: ${clase.profesor}"`;
-                                } else {
-                                    html_container_tabla += `
-                                        title="${clase.hora} | Salon: ${clase.salon} | Prof: ${clase.profesor}"`;
-                                }
-                                html_container_tabla += `
-                                style="height: 2rem">
-                            ${clase.nombre}
-                            </td>`;
-
-                    } else {
-                        html_container_tabla +=`
-                            <td class="empty-slot p-0" style="height: 2rem"></td>`;
-                    }
+                        ${clase.nombre}
+                      </td>`;
+                  } else {
+                    html_container_tabla += `
+                      <td class="empty-slot"></td>`;
+                  }
                 })
-                html_container_tabla += `
-                    </tr>`;
+              html_container_tabla += `
+              </tr>`;
             }
             document.getElementById('editModalTableBody').innerHTML = html_container_tabla;
             // Reagregar los evenlisteners para que funcionen los botones
@@ -1534,6 +1812,8 @@ document.getElementById('alertaModal').addEventListener('show.bs.modal', functio
         const button = event.currentTarget;
         const grupo_id = button.getAttribute("data-grupo-id");
         const alumno_id = button.getAttribute("data-alumno-id");
+        const horasStr = button.getAttribute("data-horas");
+        const horasObj = JSON.parse(horasStr);
         fetch(`/coordinador/alumnos/modificar-horario/agregar-resultado`, {
             method: 'POST',
             headers: {
@@ -1550,6 +1830,73 @@ document.getElementById('alertaModal').addEventListener('show.bs.modal', functio
             // Para las materias seleccionadas
             let html_container_materias_seleccionadas = ``;
             let numMateria = 1;
+            let horaPorGrp2 = {};
+            const bloque_tiempo = data.bloque_tiempo;
+            const horario2 = { 
+              Lunes: {}, Martes: {}, Miércoles: {}, Jueves: {}, Viernes: {} 
+            };
+            if (typeof data.materias_resultado !== 'undefined' && Array.isArray(data.materias_resultado)) {
+              data.materias_resultado.forEach(materia => {
+                horaPorGrp2[materia.grupo_id] = {};
+                let indexDia = 0;
+                materia.dias.forEach(dia => {
+                  horaPorGrp2[materia.grupo_id][dia] = [];
+                  const diaNombre = dia.charAt(0).toUpperCase() + dia.slice(1).toLowerCase();
+                  const bloqueTiempoIds = [];
+                  let indexBloque = 0;
+                  for (let i = materia.bloque_tiempo_id[indexDia][0]; i <= materia.bloque_tiempo_id[indexDia][materia.bloque_tiempo_id[indexDia].length - 1]; i++) {
+                    
+                    if (i === materia.bloque_tiempo_id[indexDia][indexBloque]) {
+                      bloqueTiempoIds.push(i);
+                      indexBloque++;
+                    } else {
+                      bloqueTiempoIds.push(null);
+                    }
+                  }
+                  
+                  if (horario2[diaNombre]) {
+                    let inicioBloque = bloqueTiempoIds[0];
+                    let rowSpan = 0;
+                    for (let bloqueTiempoId of bloqueTiempoIds) {
+                      if (bloqueTiempoId === null || bloqueTiempoId === bloqueTiempoIds[bloqueTiempoIds.length - 1]) {
+                        if (rowSpan > 0) {
+                          if (bloqueTiempoId === null) {
+                            rowSpan --;
+                          }
+                          horario2[diaNombre][inicioBloque % 24 + 13] = {
+                            grupo_id: materia.grupo_id,
+                            rowspan: rowSpan,
+                            nombre: materia.materia_nombre,
+                            salon: materia.salon_numero,
+                            profesor: `${materia.profesor_nombre} ${materia.profesor_primer_apellido} ${materia.profesor_segundo_apellido}`,
+                            hora: `${bloque_tiempo[inicioBloque][0].slice(0, 5)} - ${bloque_tiempo[inicioBloque + rowSpan][1].slice(0, 5)}`
+                          };
+                          for (let b = inicioBloque + 1; b <= inicioBloque + rowSpan; b++) {
+                            horario2[diaNombre][b % 24 + 13] = 'ocupar';
+                          }
+                          rowSpan = 0;
+                        }
+                      } else {
+                        if (rowSpan === 0) {
+                          inicioBloque = bloqueTiempoId;
+                        }
+                        rowSpan ++;
+                      }
+                    }
+                  }
+                  indexDia ++;
+                });
+              });
+            }
+            for (let bloque = 14; bloque < 32; bloque++) {
+                  ['Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes'].forEach(dia => {
+                    if (horario2[dia][bloque] === 'ocupar') return;
+                    if (horario2[dia][bloque]) { 
+                      const clase = horario2[dia][bloque];
+                      horaPorGrp2[clase.grupo_id][dia].push(clase.hora); 
+                    }
+                  })
+            }
             for (let materia_resultado of data.materias_resultado) {
                 html_container_materias_seleccionadas += `
                     <div class="w-100 d-flex flex-column align-items-center rounded-5 mt-3" style="background-color: white;">
@@ -1558,7 +1905,7 @@ document.getElementById('alertaModal').addEventListener('show.bs.modal', functio
                 for (let i = 0; i < materia_resultado.dias.length; i++) { 
                     html_container_materias_seleccionadas += `
                               <p class="m-0 me-2">
-                                ${materia_resultado.hora_inicio[i].substring(0, 5)} - ${materia_resultado.hora_fin[i].substring(0, 5)}
+                                ${Object.values(horaPorGrp2[materia_resultado.grupo_id][materia_resultado.dias[i]]).join(", ")}
                               </p>`;
                     if (i !== materia_resultado.dias.length - 1) {
                         html_container_materias_seleccionadas += `
@@ -1586,6 +1933,7 @@ document.getElementById('alertaModal').addEventListener('show.bs.modal', functio
                                 "
                                 data-grupo-id="${materia_resultado.grupo_id}"
                                 data-alumno-id="${alumno_id}"
+                                data-horas="${JSON.stringify(horaPorGrp2).replace(/"/g, '&quot;')}"
                                 >
                                 <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" fill="currentColor" class="bi bi-x-lg" viewBox="0 0 16 16">
                                     <path d="M2.146 2.854a.5.5 0 1 1 .708-.708L8 7.293l5.146-5.147a.5.5 0 0 1 .708.708L8.707 8l5.147 5.146a.5.5 0 0 1-.708.708L8 8.707l-5.146 5.147a.5.5 0 0 1-.708-.708L7.293 8z"/>
@@ -1640,7 +1988,7 @@ document.getElementById('alertaModal').addEventListener('show.bs.modal', functio
                 for (let i = 0; i < materia_disponible.dias.length; i++) { 
                     html_container_materias_disponibles += `
                               <p class="m-0 me-2">
-                                ${materia_disponible.hora_inicio[i].substring(0, 5)} - ${materia_disponible.hora_fin[i].substring(0, 5)}
+                                ${Object.values(horasObj[materia_disponible.grupo_id][materia_disponible.dias[i]]).join(", ")}
                               </p>`;
                     if (i !== materia_disponible.dias.length - 1) {
                         html_container_materias_disponibles += `
@@ -1668,6 +2016,7 @@ document.getElementById('alertaModal').addEventListener('show.bs.modal', functio
                         "
                         data-grupo-id="${materia_disponible.grupo_id}"
                         data-alumno-id="${alumno_id}"
+                        data-horas="${JSON.stringify(horasObj).replace(/"/g, '&quot;')}"
                         >
                             <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-plus" viewBox="0 0 16 16">
                             <path d="M8 4a.5.5 0 0 1 .5.5v3h3a.5.5 0 0 1 0 1h-3v3a.5.5 0 0 1-1 0v-3h-3a.5.5 0 0 1 0-1h3v-3A.5.5 0 0 1 8 4"/>
@@ -1694,99 +2043,120 @@ document.getElementById('alertaModal').addEventListener('show.bs.modal', functio
                 </div>`;
             }
             document.getElementById('materiasDisponibles').innerHTML = html_container_materias_disponibles;
-            // Recargar la tabla del horario
+            // Tabla de horario
             const colores = ['bg-primary-subtle', 'bg-success-subtle ','bg-warning-subtle ','bg-danger-subtle','bg-info-subtle'];
             const materiasColor = {};
+            let html_container_tabla = '';
             let colorIndex = 0;
-            let html_container_tabla = ``;
+            let horaPorGrp = {};
             
             const horario = { 
               Lunes: {}, Martes: {}, Miércoles: {}, Jueves: {}, Viernes: {} 
             };
             
             if (typeof data.materias_resultado !== 'undefined' && Array.isArray(data.materias_resultado)) {
-                data.materias_resultado.forEach(materia => {
+              data.materias_resultado.forEach(materia => {
                 // Asignar color único por materia
-                if (!materiasColor[materia.materia_nombre]) {
+                if (!materiasColor[materia.grupo_id]) {
                     if (materia.obligatorio === true) {
-                      materiasColor[materia.materia_nombre] = 'bg-secondary';
+                      materiasColor[materia.grupo_id] = 'bg-secondary';
                     } else {
-                      materiasColor[materia.materia_nombre] = colores[colorIndex % colores.length];
+                      materiasColor[materia.grupo_id] = colores[colorIndex % colores.length];
                       colorIndex++;
                     }
                 }
                 
+                horaPorGrp[materia.grupo_id] = {};
                 let indexDia = 0;
                 materia.dias.forEach(dia => {
+                  horaPorGrp[materia.grupo_id][dia] = [];
                   const diaNombre = dia.charAt(0).toUpperCase() + dia.slice(1).toLowerCase();
-                  
-                  const [hi, mi] = materia.hora_inicio[indexDia].split(':').map(Number);
-                  const [hf, mf] = materia.hora_fin[indexDia].split(':').map(Number);
-                  
-                  const inicioBloque = hi * 2 + (mi >= 30 ? 1 : 0);
-                  const finBloque = hf * 2 + (mf >= 30 ? 1 : 0);
+                  const bloqueTiempoIds = [];
+                  let indexBloque = 0;
+                  for (let i = materia.bloque_tiempo_id[indexDia][0]; i <= materia.bloque_tiempo_id[indexDia][materia.bloque_tiempo_id[indexDia].length - 1]; i++) {
+                    
+                    if (i === materia.bloque_tiempo_id[indexDia][indexBloque]) {
+                      bloqueTiempoIds.push(i);
+                      indexBloque++;
+                    } else {
+                      bloqueTiempoIds.push(null);
+                    }
+                  }
                   
                   if (horario[diaNombre]) {
-                    horario[diaNombre][inicioBloque] = {
-                      rowspan: finBloque - inicioBloque,
-                      nombre: materia.materia_nombre,
-                      color: materiasColor[materia.materia_nombre],
-                      salon: materia.salon_numero,
-                      profesor: `${materia.profesor_nombre} ${materia.profesor_primer_apellido}`,
-                      hora: `${materia.hora_inicio[indexDia]} - ${materia.hora_fin[indexDia]}`
-                    };
-                    
-                    for (let b = inicioBloque + 1; b < finBloque; b++) {
-                      horario[diaNombre][b] = 'ocupar';
+                    let inicioBloque = bloqueTiempoIds[0];
+                    let rowSpan = 0;
+                    for (let bloqueTiempoId of bloqueTiempoIds) {
+                      if (bloqueTiempoId === null || bloqueTiempoId === bloqueTiempoIds[bloqueTiempoIds.length - 1]) {
+                        if (rowSpan > 0) {
+                          if (bloqueTiempoId === null) {
+                            rowSpan --;
+                          }
+                          horario[diaNombre][inicioBloque % 24 + 13] = {
+                            grupo_id: materia.grupo_id,
+                            rowspan: rowSpan,
+                            nombre: materia.materia_nombre,
+                            color: materiasColor[materia.grupo_id],
+                            salon: materia.salon_numero,
+                            profesor: `${materia.profesor_nombre} ${materia.profesor_primer_apellido} ${materia.profesor_segundo_apellido}`,
+                            hora: `${bloque_tiempo[inicioBloque][0].slice(0, 5)} - ${bloque_tiempo[inicioBloque + rowSpan][1].slice(0, 5)}`
+                          };
+                          for (let b = inicioBloque + 1; b <= inicioBloque + rowSpan; b++) {
+                            horario[diaNombre][b % 24 + 13] = 'ocupar';
+                          }
+                          rowSpan = 0;
+                        }
+                      } else {
+                        if (rowSpan === 0) {
+                          inicioBloque = bloqueTiempoId;
+                        }
+                        rowSpan ++;
+                      }
                     }
                   }
                   indexDia ++;
+                  });
                 });
-              });
-            }
-
-            for (let bloque = 14; bloque < 32; bloque++) {
-                const hora = Math.floor(bloque / 2);
-                const minutos = bloque % 2 === 0 ? '00' : '30';
-                let horaFormato;
-                if (bloque % 2 !== 0) {
-                    horaFormato = `${hora}:${minutos} - ${hora + 1}:00`;
-                } else {
-                    horaFormato = `${hora}:${minutos} - ${hora}:30`;
-                }
-              
-                html_container_tabla += `
-                    <tr style="max-height: 1rem;">
-                        <th class="hour-cell text-center align-middle">${horaFormato}</th>`;
-
+              }
+              for (let bloque = 14; bloque < 32; bloque++) {
+              const hora = Math.floor(bloque / 2);
+              const minutos = bloque % 2 === 0 ? '00' : '30';
+              let horaFormato;
+              if (bloque % 2 !== 0) {
+              horaFormato = `${hora}:${minutos} - ${hora + 1}:00`;
+              } else {
+              horaFormato = `${hora}:${minutos} - ${hora}:30`;
+              }
+              html_container_tabla += `
+              <tr style="max-height: 1rem;">
+                <th class="hour-cell text-center align-middle">${horaFormato}</th>`;
                 ['Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes'].forEach(dia => {
-                    if (horario[dia][bloque] === 'ocupar') return;
-                    if (horario[dia][bloque]) { 
-                        const clase = horario[dia][bloque];
+                  if (horario[dia][bloque] === 'ocupar') return;
+                  if (horario[dia][bloque]) { 
+                    const clase = horario[dia][bloque];
+                    horaPorGrp[clase.grupo_id][dia].push(clase.hora); 
+                    html_container_tabla += `
+                      <td class="text-black text-center align-middle ${clase.color}" 
+                          rowspan="${clase.rowspan + 1}"
+                          data-bs-toggle="tooltip" 
+                          data-bs-placement="top"`;
+                          if (clase.salon === 9999) {
+                            html_container_tabla += `
+                              title="${clase.hora} | Salon: No asignado | Prof: ${clase.profesor}">`;
+                          } else {
+                            html_container_tabla += `
+                              title="${clase.hora} | Salon: ${clase.salon} | Prof: ${clase.profesor}">`
+                          }
                         html_container_tabla += `
-                            <td class="text-black text-center align-middle ${clase.color} p-0" 
-                                rowspan="${clase.rowspan}"
-                                data-bs-toggle="tooltip" 
-                                data-bs-placement="top" `
-                                if (clase.salon === 9999) {
-                                    html_container_tabla += `
-                                        title="${clase.hora} | Salon: No asignado | Prof: ${clase.profesor}"`;
-                                } else {
-                                    html_container_tabla += `
-                                        title="${clase.hora} | Salon: ${clase.salon} | Prof: ${clase.profesor}"`;
-                                }
-                                html_container_tabla += `
-                                style="height: 2rem">
-                            ${clase.nombre}
-                            </td>`;
-
-                    } else {
-                        html_container_tabla +=`
-                            <td class="empty-slot p-0" style="height: 2rem"></td>`;
-                    }
+                        ${clase.nombre}
+                      </td>`;
+                  } else {
+                    html_container_tabla += `
+                      <td class="empty-slot"></td>`;
+                  }
                 })
-                html_container_tabla += `
-                    </tr>`;
+              html_container_tabla += `
+              </tr>`;
             }
             document.getElementById('editModalTableBody').innerHTML = html_container_tabla;
             // Reagregar los evenlisteners para que funcionen los botones
@@ -1808,6 +2178,52 @@ document.getElementById('alertaModal').addEventListener('show.bs.modal', functio
 
     document.querySelectorAll('input[name^="btnradio"]').forEach((radio) => {
           radio.addEventListener("change", obligacion);
+    });
+  });
+
+  // Barra de búsqueda para tabla de alumnos regulares
+  const searchInputAlumnoRegular = document.getElementById('buscarAlumnoRegular');
+  const alumnosRegularesBody = document.getElementById('alumnoRegularTablaBody');
+
+  // Escucha el evento de keyup (cuando el usuario escribe)
+  searchInputAlumnoRegular.addEventListener('keyup', function() {
+    const searchValue = this.value.toLowerCase().trim();
+    // Obtiene todas las filas de la tabla
+    const rows = alumnosRegularesBody.querySelectorAll('tr');
+    
+    rows.forEach(row => {
+      // Filtramos el contenido de búsqueda basándonos en todo el texto de la fila. 
+      const rowText = row.textContent.toLowerCase();
+      
+      // Si el término buscado se encuentra en el texto de la fila, se muestra, de lo contrario se oculta
+      if (rowText.includes(searchValue)) {
+        row.style.display = '';
+      } else {
+        row.style.display = 'none';
+      }
+    });
+  });
+
+  // Barra de búsqueda para tabla de alumnos irregulares
+  const searchInputAlumnoIrregular = document.getElementById('buscarAlumnoIrregular');
+  const alumnosIrregularesBody = document.getElementById('alumnoIrregularTablaBody');
+
+  // Escucha el evento de keyup (cuando el usuario escribe)
+  searchInputAlumnoIrregular.addEventListener('keyup', function() {
+    const searchValue = this.value.toLowerCase().trim();
+    // Obtiene todas las filas de la tabla
+    const rows = alumnosIrregularesBody.querySelectorAll('tr');
+    
+    rows.forEach(row => {
+      // Filtramos el contenido de búsqueda basándonos en todo el texto de la fila. 
+      const rowText = row.textContent.toLowerCase();
+      
+      // Si el término buscado se encuentra en el texto de la fila, se muestra, de lo contrario se oculta
+      if (rowText.includes(searchValue)) {
+        row.style.display = '';
+      } else {
+        row.style.display = 'none';
+      }
     });
   });
 </script>
