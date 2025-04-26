@@ -227,7 +227,7 @@ module.exports = class Materia {
 
     // Método para obtener número total de materias obligatorias
     static async totalInscritas(id) {
-        const result = await pool.query('SELECT count(*) FROM public.resultado_inscripcion WHERE alumno_id = $1', [id]);
+        const result = await pool.query('SELECT count(*) FROM public.resultado_inscripcion WHERE alumno_id = $1 AND seleccionado = true', [id]);
         return parseInt(result.rows[0].count);
     };
 

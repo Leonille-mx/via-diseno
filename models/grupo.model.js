@@ -39,6 +39,23 @@ module.exports = class Grupo {
             ORDER BY ms.semestre_id, g.grupo_id
         `);
     }
+    static fetchAllPorId(carrera_id) {
+        return pool.query(`
+            SELECT g.grupo_id,m.nombre AS materia, p.nombre, p.primer_apellido, 
+            p.segundo_apellido, s.numero, c.code, ms.semestre_id, ca.nombre AS carrera_nombre
+            FROM grupo g
+            JOIN materia m ON g.materia_id = m.materia_id
+            JOIN profesor p ON g.profesor_id = p.ivd_id
+            LEFT JOIN salon s ON g.salon_id = s.salon_id
+            JOIN ciclo_escolar c ON g.ciclo_escolar_id = c.ciclo_escolar_id
+            LEFT JOIN materia_semestre ms ON m.materia_id = ms.materia_id
+            JOIN plan_materia pm ON m.materia_id = pm.materia_id
+            JOIN plan_estudio pe ON pm.plan_estudio_id = pe.plan_estudio_id
+            JOIN  carrera ca ON pe.carrera_id = ca.carrera_id
+            WHERE pe.carrera_id = $1
+            ORDER BY ms.semestre_id, g.grupo_id
+        `, [carrera_id]);
+    }
     static fetchOne(id) {
         return pool.query(`SELECT g.grupo_id, m.materia_id, m.nombre materia, p.nombre, p.primer_apellido, p.segundo_apellido, 
                            p.ivd_id, s.numero, s.salon_id, c.code

@@ -140,8 +140,7 @@ exports.get_ayuda = (req, res, nxt) => {
 
 exports.get_prevista_horario = async (req, res, nxt) => {  
     try {
-        const materias_resultado = await Alumno.fetchAllResultadoAlumnoIrregular2(req.session.usuario.id);
-        const obligatoriasTotales = await Materia.numero_TotalObligatorias();
+        const materias_resultado = await Alumno.fetchAllResultadoAlumnoIrregular3(req.session.usuario.id);
         const materias_inscritas = await Materia.totalInscritas(req.session.usuario.id);
         const bloque_tiempo = await BloqueTiempo.fetchAllHoras();
         const bloqueTiempoMap = bloque_tiempo.rows[0]?.id_hora_map || {};
@@ -150,7 +149,6 @@ exports.get_prevista_horario = async (req, res, nxt) => {
             isLoggedIn: req.session.isLoggedIn || false,
             matricula: req.session.usuario.id || '',
             materias_resultado: materias_resultado.rows,
-            obligatoriasTotales: obligatoriasTotales,
             materias_inscritas: materias_inscritas,
             bloque_tiempo: bloqueTiempoMap
         });
