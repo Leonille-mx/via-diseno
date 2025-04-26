@@ -860,7 +860,7 @@ exports.enviarGruposAPI = async (req, res, isInternal = false) => {
             course_id: grupo.materia_id,
             professor_id: profesor_api_id,
             name: String(grupo.grupo_id),
-            room: String(grupo.numero)
+            room: grupo.numero === 9999 ? "No asignado" : String(grupo.numero)
             };
 
             console.log('Enviando grupo:', body);
