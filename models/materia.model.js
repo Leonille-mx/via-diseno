@@ -1,15 +1,16 @@
 const pool = require('../util/database');
 
 module.exports = class Materia {
-    constructor(mi_materia_id, mi_sep_id, mi_nombre, mi_creditos, mi_semestre_plan, mi_horas_profesor, mi_tipo_salon) {
-        this.materia_id = mi_materia_id;
-        this.sep_id = mi_sep_id;
-        this.nombre = mi_nombre;
-        this.creditos = mi_creditos;
-        this.semestre_plan = mi_semestre_plan;
-        this.horas_profesor = mi_horas_profesor;
-        this.tipo_salon = mi_tipo_salon;
-    }
+    constructor(mi_materia_id, mi_sep_id, mi_nombre, mi_creditos, mi_semestre_plan, mi_horas_profesor, mi_tipo_salon, mi_carrera_nombre) {
+    this.materia_id = mi_materia_id;
+    this.sep_id = mi_sep_id;
+    this.nombre = mi_nombre;
+    this.creditos = mi_creditos;
+    this.semestre_plan = mi_semestre_plan;
+    this.horas_profesor = mi_horas_profesor;
+    this.tipo_salon = mi_tipo_salon;
+    this.carrera_nombre = mi_carrera_nombre; 
+}
     // Para sincronizar materias
     static async sincronizarMaterias(materiasApi) {
         // Establece la conexión con nuestra base de datos
