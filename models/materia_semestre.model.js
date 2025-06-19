@@ -22,13 +22,15 @@ module.exports = class MateriaSemestre {
     static async fetchMateriasSemestrePorCarrera (carrera_id) {
         return pool.query(`
             SELECT 
-            m.materia_id, m.sep_id, nombre, creditos,
+            m.materia_id, m.sep_id, m.nombre, creditos,
             semestre_plan, horas_profesor, 
-            tipo_salon, semestre_id
+            tipo_salon, semestre_id, 
+            c.nombre as carrera_nombre
             FROM materia m
             JOIN materia_semestre ms ON m.materia_id = ms.materia_id
             JOIN plan_materia pm ON m.materia_id = pm.materia_id
             JOIN plan_estudio p ON pm.plan_estudio_id = p.plan_estudio_id
+            JOIN carrera c ON c.carrera_id = p.carrera_id
             WHERE p.carrera_id = $1
             ORDER BY m.sep_id ASC`
             , [carrera_id]
