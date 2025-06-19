@@ -160,33 +160,51 @@ module.exports = class GenerarGruposGA {
     }
 
     randomBloquesConsecutivos(disponibilidad, k) {
+        // Genera segmentos consecutivos agrupados por día
+        const segmentos = [];
         const byDay = disponibilidad.reduce((acc, b) => {
             const day = Math.floor((b - 1) / 24);
             (acc[day] = acc[day] || []).push(b);
             return acc;
         }, {});
-        const segmentos = [];
-        Object.values(byDay).forEach(bloques => {
-            bloques.sort((a, b) => a - b);
+
+        for (const day in byDay) {
+            const bloques = byDay[day].sort((a, b) => a - b);
             for (let i = 0; i < bloques.length; i++) {
                 const seq = [bloques[i]];
                 for (let j = i + 1; j < bloques.length && bloques[j] === bloques[j - 1] + 1; j++) seq.push(bloques[j]);
-                if (seq.length >= 2) segmentos.push(seq);
+                if (seq.length >= 2) segmentos.push({ day: parseInt(day), seq });
             }
-        });
+        }
+
         segmentos.sort(() => 0.5 - Math.random());
         const result = [];
         let sum = 0;
-        for (const seg of segmentos) {
-            if (sum + seg.length <= k) { result.push(...seg); sum += seg.length; }
-            if (sum === k) break;
+        const usedDays = new Set();
+
+        for (const { day, seq } of segmentos) {
+            if (usedDays.has(day)) continue;
+            if (sum + seq.length <= k) {
+                result.push(...seq);
+                sum += seq.length;
+                usedDays.add(day);
+                if (sum === k) break;
+            }
         }
+
         if (sum < k) {
-            [...new Set(disponibilidad)].sort(() => 0.5 - Math.random()).some(b => {
-                if (!result.includes(b) && sum < k) { result.push(b); sum++; }
-                return sum === k;
-            });
+            const singles = [...new Set(disponibilidad)].sort(() => 0.5 - Math.random());
+            for (const b of singles) {
+                const day = Math.floor((b - 1) / 24);
+                if (usedDays.has(day)) continue;
+                if (!result.includes(b)) {
+                    result.push(b);
+                    sum++;
+                }
+                if (sum === k) break;
+            }
         }
+
         return result;
     }
 
@@ -213,13 +231,35 @@ module.exports = class GenerarGruposGA {
 
     validarSesion(bloques) {
         if (!Array.isArray(bloques) || bloques.length < 2) return false;
-        bloques.sort((a, b) => a - b);
-        let cnt = 1;
-        for (let i = 1; i < bloques.length; i++) {
-            if (bloques[i] === bloques[i - 1] + 1) cnt++;
-            else { if (cnt < 2) return false; cnt = 1; }
+
+        // Agrupa por día y asegura un solo segmento mínimo de longitud ≥2 por día
+        const byDay = bloques.reduce((acc, b) => {
+            const d = Math.floor((b - 1) / 24);
+            (acc[d] = acc[d] || []).push(b);
+            return acc;
+        }, {});
+
+        for (const day in byDay) {
+            const arr = byDay[day].sort((a, b) => a - b);
+            let segments = 0;
+            let run = 1;
+
+            for (let i = 1; i < arr.length; i++) {
+                if (arr[i] === arr[i - 1] + 1) {
+                    run++;
+                } else {
+                    if (run < 2) return false;
+                    segments++;
+                    run = 1;
+                }
+            }
+            if (run < 2) return false;
+            segments++;
+
+            if (segments > 1) return false;
         }
-        return cnt >= 2;
+
+        return true;
     }
 
     selectParent() {
