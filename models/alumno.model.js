@@ -1,13 +1,15 @@
 const pool = require('../util/database')
 
 module.exports = class Alumno {
-    constructor(mi_ivd_id, mi_semestre, mi_regular, mi_inscripcion_completa, mi_plan_estudio_id, mi_plan_estudio_version, usuarioData = null) {
+    constructor(mi_ivd_id, mi_semestre, mi_regular, mi_inscripcion_completa, mi_plan_estudio_id, mi_plan_estudio_version, mi_carrera_id = null, mi_carrera_nombre = null, usuarioData = null) {
         this.ivd_id = mi_ivd_id;
         this.semestre = mi_semestre;
         this.regular = mi_regular;
         this.inscripcion_completada = mi_inscripcion_completa;
         this.plan_estudio_id = mi_plan_estudio_id;
         this.plan_estudio_version = mi_plan_estudio_version;
+        this.carrera_id = mi_carrera_id; 
+        this.nombre = mi_carrera_nombre; 
         this.usuario = usuarioData ? new Usuario(...Object.values(usuarioData)) : null;
     }
 
@@ -74,15 +76,16 @@ module.exports = class Alumno {
     }
 
     static async fetchAllRegularesPorCarrera(carrera_id) {
-      const query = `
-          SELECT *
+        const query = `
+          SELECT a.*, u.*, c.carrera_id, c.nombre as carrera_nombre
           FROM alumno a
           JOIN usuario u ON a.ivd_id = u.ivd_id
           JOIN plan_estudio p ON p.plan_estudio_id = a.plan_estudio_id
+          JOIN carrera c ON c.carrera_id = p.carrera_id
           WHERE a.regular = true AND
                 p.carrera_id = $1
           ORDER BY a.ivd_id ASC
-      `;
+      `; 
       return await pool.query(query, [carrera_id]);
     }
 
@@ -103,17 +106,20 @@ module.exports = class Alumno {
     
     static async fetchAllIrregularesPorCarrera(carrera_id) {
       const query = `
-          SELECT *,
-                (SELECT COUNT(alumno_id) > 0 AS result
-                  FROM resultado_inscripcion
-                  WHERE alumno_id = a.ivd_id)
-                AS asignada
-          FROM alumno a
-          JOIN usuario u ON a.ivd_id = u.ivd_id
-          JOIN plan_estudio p ON p.plan_estudio_id = a.plan_estudio_id
-          WHERE a.regular = false AND
-                p.carrera_id = $1
-          ORDER BY a.ivd_id ASC
+          SELECT a.*, 
+               u.*,
+               p.carrera_id,
+               c.nombre as carrera_nombre,
+               (SELECT COUNT(alumno_id) > 0 AS result
+                FROM resultado_inscripcion
+                WHERE alumno_id = a.ivd_id) AS asignada
+        FROM alumno a
+        JOIN usuario u ON a.ivd_id = u.ivd_id
+        JOIN plan_estudio p ON p.plan_estudio_id = a.plan_estudio_id
+        JOIN carrera c ON c.carrera_id = p.carrera_id
+        WHERE a.regular = false AND
+              p.carrera_id = $1
+        ORDER BY a.ivd_id ASC
       `;
       return await pool.query(query, [carrera_id]);
     }
