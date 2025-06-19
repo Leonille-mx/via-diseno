@@ -1,12 +1,13 @@
 const pool = require("../util/database");
 
 module.exports = class Solicitud {
-  constructor(mi_solicitud, mi_descripcion, mi_estatus, mi_fecha, mi_id) {
+  constructor(mi_solicitud, mi_descripcion, mi_estatus, mi_fecha, mi_id, mi_carrera_nombre) {
     this.solicitud = mi_solicitud;
     this.descripcion = mi_descripcion;
     this.estatus = mi_estatus;
     this.fecha = mi_fecha;
     this.id = mi_id;
+    this.carrera_nombre = mi_carrera_nombre;
   }
 
   save() {
@@ -66,7 +67,8 @@ module.exports = class Solicitud {
             sc.ivd_id,
             u.nombre, 
             u.primer_apellido,
-            u.correo_institucional
+            u.correo_institucional,
+            c.nombre as carrera_nombre
         FROM 
             solicitud_cambio sc
         JOIN 
@@ -75,6 +77,8 @@ module.exports = class Solicitud {
             alumno a ON a.ivd_id = u.ivd_id
         JOIN 
             plan_estudio p ON p.plan_estudio_id = a.plan_estudio_id
+        JOIN
+            carrera c ON c.carrera_id = p.carrera_id
         WHERE 
             sc.aprobada = false 
             AND
@@ -82,8 +86,7 @@ module.exports = class Solicitud {
         ORDER BY 
             sc.created_at::timestamp ASC
     `, [carrera_id]);
-  }
-
+}
   static aprobar(id) {
     return Promise.all([
       pool.query(

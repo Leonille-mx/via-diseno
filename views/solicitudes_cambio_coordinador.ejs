@@ -17,6 +17,7 @@
           <th scope="col" style="width: 15%; min-width: 100px;" class="text-center align-middle">ID</th>
           <th scope="col" style="width: 15%; min-width: 100px;" class="text-center align-middle">Nombre</th>
           <th scope="col" style="width: 15%; min-width: 100px;" class="text-center align-middle">Apellido</th>
+          <th scope="col" style="width: 20%; min-width: 100px;" class="text-center align-middle">Carrera</th>
           <th scope="col" style="width: 25%; min-width: 100px;" class="text-center align-middle">Correo</th>
           <th scope="col" style="width: 25%; min-width: 100px;" class="text-center align-middle">Fecha de solicitud</th>
           <th scope="col" style="width: 5%; min-width: 50px;"></th>
@@ -28,6 +29,8 @@
             <th scope="row" class="text-center align-middle"><%= solicitud.ivd_id%></th>
             <td class="text-center align-middle"><%= solicitud.nombre%></td>
             <td class="text-center align-middle"><%= solicitud.primer_apellido %></td>
+            <% console.log("Datos en vista:", solicitud); %>
+            <td class="text-center align-middle"><%= solicitud.carrera_nombre %></td>
             <td class="text-center align-middle"><%= solicitud.correo_institucional %></td>
             <td class="text-center align-middle">  <%= new Date(solicitud.created_at).toLocaleString('es-ES', { 
               year: 'numeric', 
