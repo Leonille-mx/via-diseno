@@ -422,3 +422,6 @@ select.form-select {
 .custom-table td[rowspan] {
   height: auto;
 }
+.bg-secondary {
+  color: white !important;
+}
