@@ -1,4 +1,5 @@
 const pool = require("../util/database");
+const { updateStudentStatus } = require('../util/adminApiClient');
 
 module.exports = class Solicitud {
   constructor(mi_solicitud, mi_descripcion, mi_estatus, mi_fecha, mi_id, mi_carrera_nombre) {
@@ -87,15 +88,23 @@ module.exports = class Solicitud {
             sc.created_at::timestamp ASC
     `, [carrera_id]);
 }
-  static aprobar(id) {
-    return Promise.all([
+  static async aprobar(id) {
+  try {
+    await Promise.all([
       pool.query(
         "UPDATE solicitud_cambio SET aprobada = true WHERE ivd_id = $1",
         [id]
       ),
       pool.query("UPDATE alumno SET regular = false WHERE ivd_id = $1", [id]),
+      updateStudentStatus(id, false) // false = irregular
     ]);
+    
+    console.log(`Estudiante ${id} marcado como irregular correctamente`);
+  } catch (error) {
+    console.error("Error al actualizar el estado:", error);
+    throw error;
   }
+}
 
   static rechazar(id) {
     return pool.query(
