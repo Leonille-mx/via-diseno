@@ -29,7 +29,6 @@
             <th scope="row" class="text-center align-middle"><%= solicitud.ivd_id%></th>
             <td class="text-center align-middle"><%= solicitud.nombre%></td>
             <td class="text-center align-middle"><%= solicitud.primer_apellido %></td>
-            <% console.log("Datos en vista:", solicitud); %>
             <td class="text-center align-middle"><%= solicitud.carrera_nombre %></td>
             <td class="text-center align-middle"><%= solicitud.correo_institucional %></td>
             <td class="text-center align-middle">  <%= new Date(solicitud.created_at).toLocaleString('es-ES', { 
