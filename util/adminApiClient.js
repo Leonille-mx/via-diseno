@@ -149,5 +149,26 @@ async function getExternalCycles() {
   return response.data;
 }
 
+async function updateStudentStatus(ivd_id, regularStatus) {
+  try {
+    const token = await getToken();
+    const headers = getHeaders(token);
+    
+    const response = await axiosAdminClient.patch(
+      "v1/users",
+      {
+        ivd_id: ivd_id,
+        regular: regularStatus
+      },
+      { headers }
+    );
+    
+    return response.data;
+  } catch (error) {
+    console.error("Error updating student status:", error.response?.data || error.message);
+    throw new Error(`Failed to update student status: ${error.message}`);
+  }
+}
+
 // Export the functions so they can be used in other files
-module.exports = { getExternalCycles, getHeaders, getToken, axiosAdminClient, getAllCourses, getAllProfessors, getAllStudents, getCiclosEscolares, getAllDegree, getAllAcademyHistory };
+module.exports = { getExternalCycles, getHeaders, getToken, axiosAdminClient, getAllCourses, getAllProfessors, getAllStudents, getCiclosEscolares, getAllDegree, getAllAcademyHistory, updateStudentStatus };
