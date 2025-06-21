@@ -152,6 +152,7 @@ ORDER BY
             await pool.query('DELETE FROM resultado_inscripcion');
             await pool.query('DELETE FROM grupo_bloque_tiempo');
             await pool.query('DELETE FROM grupo');
+            await pool.query('DELETE FROM profesor_materia');
             await pool.query('UPDATE alumno SET inscripcion_completada = false')
     
             // Se hace commit de lo hecho

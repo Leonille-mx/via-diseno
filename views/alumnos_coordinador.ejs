@@ -484,7 +484,7 @@
                 const clase = horario[dia][bloque];
                 horaPorGrp[clase.grupo_id][dia].push(clase.hora); 
                 html_container_tabla += `
-                  <td class="text-black text-center align-middle ${clase.color}" 
+                  <td class="text-center align-middle ${clase.color} ${clase.color === 'bg-secondary' ? 'text-white' : 'text-black'}" 
                       rowspan="${clase.rowspan + 1}"
                       data-bs-toggle="tooltip" 
                       data-bs-placement="top"`;
@@ -1390,7 +1390,7 @@ document.getElementById('alertaModal').addEventListener('show.bs.modal', functio
                   const clase = horario[dia][bloque];
                   horaPorGrp[clase.grupo_id][dia].push(clase.hora); 
                   html_container_tabla += `
-                    <td class="text-black text-center align-middle ${clase.color}" 
+                    <td class="text-center align-middle ${clase.color} ${clase.color === 'bg-secondary' ? 'text-white' : 'text-black'}" 
                         rowspan="${clase.rowspan + 1}"
                         data-bs-toggle="tooltip" 
                         data-bs-placement="top"`;
