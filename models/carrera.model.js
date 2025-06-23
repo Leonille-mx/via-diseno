@@ -214,4 +214,8 @@ module.exports = class Carrera {
             client.release();
         }
     }
+
+    static fetchAll() {
+        return pool.query('SELECT * FROM carrera');
+    }
 }

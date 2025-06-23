@@ -70,4 +70,6 @@ router.get('/ciclo-escolar', agregarCicloInfo, coordinador_controller.get_cicloe
 router.post('/ciclo-escolar/sincronizar', agregarCicloInfo, coordinador_controller.postSincronizarCicloEscolar);
 router.post('/dashboard/sincronizar-planes-de-estudio', agregarCicloInfo, coordinador_controller.post_sincronizar_planes_de_estudio);
 
+router.post('/guardar-carreras', agregarCicloInfo, coordinador_controller.guardar_carreras);
+
 module.exports = router;

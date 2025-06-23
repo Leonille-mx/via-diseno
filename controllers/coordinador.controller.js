@@ -35,6 +35,7 @@ exports.get_dashboard = async (req, res) => {
         const materias_Abiertas  = await Materia.numeroMaterias(carreraCoordinador.rows[0].carrera_id);
         const solicitud_Cambio_Dashboard = await Solicitud.dasboard_Solicitud(carreraCoordinador.rows[0].carrera_id);
         const total_Solicitudes = await Solicitud.numeroTotalSolicitudes(carreraCoordinador.rows[0].carrera_id);
+        const carreras = await Carrera.fetchAll();
 
         res.render('dashboard_coordinador', {
             msg1: msg1,
@@ -54,8 +55,8 @@ exports.get_dashboard = async (req, res) => {
             materias_Abiertas: materias_Abiertas,
             solicitud_Cambio_Dashboard: solicitud_Cambio_Dashboard,
             total_Solicitudes: total_Solicitudes,
-
-            
+            carreras: carreras.rows,
+            carrerasSeleccionadas: req.session.carrerasSeleccionadas || [carreraCoordinador.rows[0].carrera_id],
         });
     } catch (error) {
         console.error("Dashboard error:", error);
@@ -85,6 +86,7 @@ exports.get_materias = async (req, res, nxt) => {
         const msg = req.query.msg || null;
         const msgTitle = req.query.msgTitle;
         const allMaterias = materiasSemestreDB.rows;
+        const carreras = await Carrera.fetchAll();
         // Creamos un nuevo objeto que tienen key-value relación y están separados
         // por semestre
         const materiasPorSemestre = allMaterias.reduce((accumulator, materia) => {
@@ -113,7 +115,9 @@ exports.get_materias = async (req, res, nxt) => {
             materiasPorSemestre: materiasPorSemestre,
             materiasNoAbiertasPorSemestre,
             msg,
-            msgTitle
+            msgTitle,
+            carreras: carreras.rows,
+            carrerasSeleccionadas: req.session.carrerasSeleccionadas || [carreraCoordinador.rows[0].carrera_id],
         });
     } catch(error) {
         console.log(error);
@@ -185,6 +189,8 @@ exports.get_profesores = async (req, res, nxt) => {
       const profesoresActivos = await Profesor.fetchActivos();  
       const msg = req.query.msg || null;
       const msg2 = req.query.msg2 || null;
+      const carreraCoordinador = await Coordinador.getCarrera(req.session.usuario.id);
+      const carreras = await Carrera.fetchAll();
   
       res.render('profesores_coordinador', {
           isLoggedIn: req.session.isLoggedIn || false,
@@ -192,7 +198,9 @@ exports.get_profesores = async (req, res, nxt) => {
           profesores: profesoresActivos.rows,  
           msg, 
           msg2,
-          materias: materias.rows
+          materias: materias.rows,
+          carreras: carreras.rows,
+          carrerasSeleccionadas: req.session.carrerasSeleccionadas || [carreraCoordinador.rows[0].carrera_id],
       });
     } catch (error) {
       console.log(error);
@@ -278,30 +286,32 @@ exports.post_modificar_profesor = async (req, res, next) => {
     }
 };
 
-exports.get_salones = (req, res, nxt) => {
-    const msgTitle = req.query.msgTitle || null; 
-    const msg = req.query.msg || null; 
-    Salon.fetchAll()
-    .then((salones) => {
-        Campus.fetchAll()
-            .then((campus) => {
-                res.render('salones_coordinador', {
-                    isLoggedIn: req.session.isLoggedIn || false,
-                    matricula: req.session.matricula || '',
-                    salones : salones.rows,
-                    campus : campus.rows,
-                    msgTitle,
-                    msg
-                });
-            })
-            .catch((error) => {
-                console.log(error);
-            });
-        })
-    .catch((error) => {
-        console.log(error);
-        res.status(500).send('Error al obtener salones');
-    });
+exports.get_salones = async (req, res, nxt) => {
+    try {
+        const msgTitle = req.query.msgTitle || null;
+        const msg = req.query.msg || null;
+        const carreraCoordinador = await Coordinador.getCarrera(req.session.usuario.id);
+
+        const [carreras, salones, campus] = await Promise.all([
+            Carrera.fetchAll(),
+            Salon.fetchAll(),
+            Campus.fetchAll()
+        ]);
+
+        res.render('salones_coordinador', {
+            isLoggedIn: req.session.isLoggedIn || false,
+            matricula: req.session.matricula || '',
+            salones: salones.rows,
+            campus: campus.rows,
+            msgTitle,
+            msg,
+            carreras: carreras.rows,
+            carrerasSeleccionadas: req.session.carrerasSeleccionadas || [carreraCoordinador.rows[0].carrera_id],
+        });
+    } catch (error) {
+        console.error("Error en get_salones:", error);
+        res.status(500).send("Error al cargar la vista de salones");
+    }
 };
 
 exports.post_salones = async (req, res, nxt) => {
@@ -350,9 +360,11 @@ exports.get_grupos = (req, res, next) => {
         MateriaSemestre.fetchMateriasSemestre(),
         Profesor.fetchAll(),
         Grupos.fetchAll(),
-        Salon.fetchAll()
+        Salon.fetchAll(),
+        Carrera.fetchAll(),
+        Coordinador.getCarrera(req.session.usuario.id),
     ])
-    .then(([materias, profesores, grupos, salones]) => {
+    .then(([materias, profesores, grupos, salones, carreras, carreraCoordinador]) => {
         res.render('grupos_coordinador', { 
             grupos: grupos.rows,
             materias: materias.rows,
@@ -361,7 +373,9 @@ exports.get_grupos = (req, res, next) => {
             isLoggedIn: req.session.isLoggedIn || false,
             matricula: req.session.matricula || '',
             msgTitle,
-            msg
+            msg,
+            carreras: carreras.rows,
+            carrerasSeleccionadas: req.session.carrerasSeleccionadas || [carreraCoordinador.rows[0].carrera_id],
         });
     })
     .catch((error) => {
@@ -475,12 +489,15 @@ exports.get_alumnos = async (req, res, nxt) => {
         const alumnosRegularesDB = await Alumno.fetchAllRegularesPorCarrera(carreraCoordinador.rows[0].carrera_id); 
         const alumnosIrregularesDB = await Alumno.fetchAllIrregularesPorCarrera(carreraCoordinador.rows[0].carrera_id);
         const msg = req.query.msg || null;
+        const carreras = await Carrera.fetchAll();
         res.render('alumnos_coordinador', {
             alumnosRegulares: alumnosRegularesDB.rows,
             alumnosIrregulares: alumnosIrregularesDB.rows,
             msg,
             isLoggedIn: req.session.isLoggedIn || false,
             matricula: req.session.matricula || '',
+            carreras: carreras.rows,
+            carrerasSeleccionadas: req.session.carrerasSeleccionadas || [carreraCoordinador.rows[0].carrera_id],
         });
     } catch(error) {
         console.log(error);
@@ -680,12 +697,23 @@ exports.post_modificar_obligacion = async (req, res, nxt) => {
     }
 };
 
-exports.get_ayuda = (req, res, nxt) => {
-    res.render('ayuda_coordinador', {
-        isLoggedIn: req.session.isLoggedIn || false,
-        matricula: req.session.matricula || '',
-    });
+exports.get_ayuda = async (req, res, nxt) => {
+    try {
+        const carreras = await Carrera.fetchAll();
+        const carreraCoordinador = await Coordinador.getCarrera(req.session.usuario.id);
+
+        res.render('ayuda_coordinador', {
+            isLoggedIn: req.session.isLoggedIn || false,
+            matricula: req.session.matricula || '',
+            carreras: carreras.rows,
+            carrerasSeleccionadas: req.session.carrerasSeleccionadas || [carreraCoordinador.rows[0].carrera_id],
+        });
+    } catch (error) {
+        console.error("Error en get_ayuda:", error);
+        res.status(500).send("Error al cargar la vista de ayuda");
+    }
 };
+
 
 exports.get_cicloescolar = (req, res, next) => {
     CicloEscolar.fetchAll()
@@ -805,16 +833,19 @@ exports.post_sincronizar_planes_de_estudio = async (req, res) => {
 }
 
 exports.get_solicitudes_cambio = async (req, res, next) => {
-    const carreraCoordinador = await Coordinador.getCarrera(req.session.usuario.id);
     try {
+        const carreraCoordinador = await Coordinador.getCarrera(req.session.usuario.id);
         const solicitudesActivas = await Solicitud.fetchActivosPorCarrera(carreraCoordinador.rows[0].carrera_id);
         const msg = req.query.msg || null;
+        const carreras = await Carrera.fetchAll();
 
         res.render('solicitudes_cambio_coordinador', {
             isLoggedIn: req.session.isLoggedIn || false,
             matricula: req.session.matricula || '',
             solicitudes: solicitudesActivas.rows, 
-            msg  
+            msg  ,
+            carreras: carreras.rows,
+            carrerasSeleccionadas: req.session.carrerasSeleccionadas || [carreraCoordinador.rows[0].carrera_id],
         });
     } catch (error) {
         console.error('Error al obtener solicitudes:', error);
@@ -1030,3 +1061,10 @@ exports.enviarDatos = async (req, res) => {
     }
 };
   
+exports.guardar_carreras = async (req, res) => {
+    const { seleccionadas } = req.body;
+    req.session.carrerasSeleccionadas = Array.isArray(seleccionadas)
+        ? seleccionadas.map(Number)
+        : [];
+    res.sendStatus(200);
+};
