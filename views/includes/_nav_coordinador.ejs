@@ -70,10 +70,14 @@
                         </a>
                     </li>
                     <li class="nav-item li-nav w-100">
-                        <a class="nav-link active d-flex align-items-center" href="/usuario/iniciar-sesion">
-                            <img class="me-2" src="/images/box-arrow-right.svg" alt="Cerrar Sesión" width="15">
-                            <span>Cerrar Sesión</span>
-                        </a>
+                    <form action="/usuario/cerrar-sesion" method="POST" class="d-flex align-items-center m-0 p-0">
+                        <button type="submit"
+                                class="nav-link active d-flex align-items-center"
+                                style="background: none; border: none; width: 100%; text-align: left; padding: 0;">
+                        <img class="me-2" src="/images/box-arrow-right.svg" alt="Cerrar Sesión" width="15">
+                        <span>Cerrar Sesión</span>
+                        </button>
+                    </form>
                     </li>
                 </ul>
             </nav>
