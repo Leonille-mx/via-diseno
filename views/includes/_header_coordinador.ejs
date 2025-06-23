@@ -1,10 +1,73 @@
 <div class="col-lg-10 py-3 d-flex flex-column gap-3">
     <header class="bg-grey d-flex justify-content-end px-4 py-4 rounded-5">
-        <div class="d-flex align-items-center justify-content-between mx-4 w-100">
-            <p class="mb-0 border ivd-border-red rounded-5 bg-white py-2 px-3"><%= cicloInfo.periodo %></p>
+        <div class="d-flex align-items-center justify-content-between mx-1 w-100">
+             <div class="d-flex align-items-center justify-content-start w-70">
+                <p class="mb-0 border ivd-border-red rounded-5 bg-white py-2 px-3 me-4"><%= cicloInfo.periodo %></p>
+                <div class="dropdown">
+                    <button class="btn border dropdown-toggle rounded-pill ivd-border-red" type="button" id="btnCarrera"
+                        data-bs-toggle="dropdown" aria-expanded="false" style="background-color: white;">
+                        Filtrar Carrera
+                    </button>
+                    <ul class="dropdown-menu p-3" style="min-width: 300px;">
+                        <% carreras.forEach(carrera => { %>
+                            <li>
+                            <div class="form-check">
+                                <input class="form-check-input carrera-checkbox ivd-bg-red ivd-border-red" 
+                                type="checkbox" 
+                                value="<%= carrera.carrera_id %>" 
+                                id="check<%= carrera.carrera_id %>"
+                                <%= (carrerasSeleccionadas.includes(carrera.carrera_id)) ? 'checked' : '' %>>
+                                <label class="form-check-label" for="check<%= carrera.carrera_id %>"><%= carrera.nombre %></label>
+                            </div>
+                            </li>
+                        <% }) %>
+                    </ul>
+                </div>
+            </div>
             <div class="d-flex flex-column align-items-center header-user-info">
                 <strong class="text-center"><%= usuario?.nombre || 'Nombre no disponible' %></strong>
                 <span class="text-center"><%= usuario?.correo || 'Correo no disponible' %></span>
             </div> 
         </div>
     </header>
+
+<script>
+    const checkboxes = document.querySelectorAll('.carrera-checkbox');
+    const btn = document.getElementById('btnCarrera');
+
+    function actualizarTextoBoton() {
+        const seleccionadas = Array.from(checkboxes)
+            .filter(c => c.checked)
+            .map(c => c.nextElementSibling.innerText);
+
+        if (seleccionadas.length === 0) {
+            btn.innerText = 'Filtrar Carrera';
+        } else if (seleccionadas.length === 1) {
+            btn.innerText = seleccionadas[0];
+        } else {
+            btn.innerText = `Carreras: ${seleccionadas.length} Seleccionadas`;
+        }
+    }
+
+    checkboxes.forEach(cb => {
+        cb.addEventListener('change', actualizarTextoBoton);
+    });
+
+    document.addEventListener('DOMContentLoaded', actualizarTextoBoton);
+
+    document.querySelectorAll('.carrera-checkbox').forEach(cb => {
+        cb.addEventListener('change', () => {
+            const seleccionadas = Array.from(document.querySelectorAll('.carrera-checkbox'))
+            .filter(c => c.checked)
+            .map(c => c.value);
+
+            fetch('/coordinador/guardar-carreras', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ seleccionadas })
+            });
+        });
+    });
+</script>
