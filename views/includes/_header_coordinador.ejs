@@ -6,7 +6,7 @@
                 <div class="dropdown">
                     <button class="btn border dropdown-toggle rounded-pill ivd-border-red" type="button" id="btnCarrera"
                         data-bs-toggle="dropdown" aria-expanded="false" style="background-color: white;">
-                        Filtrar Carrera
+                        Seleccionar Carrera
                     </button>
                     <ul class="dropdown-menu p-3" style="min-width: 300px;">
                         <% carreras.forEach(carrera => { %>
@@ -41,7 +41,7 @@
             .map(c => c.nextElementSibling.innerText);
 
         if (seleccionadas.length === 0) {
-            btn.innerText = 'Filtrar Carrera';
+            btn.innerText = 'Seleccionar Carrera';
         } else if (seleccionadas.length === 1) {
             btn.innerText = seleccionadas[0];
         } else {

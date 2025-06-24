@@ -62,6 +62,8 @@ router.post('/grupos/modificar/:id', agregarCicloInfo, coordinador_controller.po
 router.get('/solicitudes-cambio', agregarCicloInfo, coordinador_controller.get_solicitudes_cambio);
 router.post('/solicitudes-cambio/aprobar/:id', agregarCicloInfo, coordinador_controller.post_aprobar_solicitud);
 router.post('/solicitudes-cambio/rechazar/:id', agregarCicloInfo, coordinador_controller.post_rechazar_solicitud);
+router.get('/solicitudes-cambio/filtradas', agregarCicloInfo, coordinador_controller.get_solicitudes_cambio_carrera);
+
 
 router.get('/ayuda', agregarCicloInfo, coordinador_controller.get_ayuda);
 
