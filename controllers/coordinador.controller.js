@@ -80,7 +80,7 @@ exports.post_reset_grupos = async (req, res) => {
 exports.get_materias = async (req, res, nxt) => {
     try {
         const carreraCoordinador = await Coordinador.getCarrera(req.session.usuario.id);
-        const materiasSemestreDB = await MateriaSemestre.fetchMateriasSemestrePorCarrera(carreraCoordinador.rows[0].carrera_id);
+        const materiasSemestreDB = await MateriaSemestre.fetchMateriasSemestre();
         
         // Si hay query string, lo guarda en la variable msg
         const msg = req.query.msg || null;
@@ -122,6 +122,35 @@ exports.get_materias = async (req, res, nxt) => {
     } catch(error) {
         console.log(error);
     }
+};
+
+exports.get_materias_carrera = async (req, res, nxt) => {
+  try {
+    // Traemos **todas** las materias por semestre del modelo
+    const materiasSemestreDB = await MateriaSemestre.fetchMateriasSemestre();
+    const allMaterias = materiasSemestreDB.rows;
+
+    // Agrupamos igual que en el render inicial
+    const materiasPorSemestre = allMaterias.reduce((acc, m) => {
+      if (!acc[m.semestre_id]) acc[m.semestre_id] = [];
+      acc[m.semestre_id].push(m);
+      return acc;
+    }, {});
+
+    // (Opcional) Si quieres enviar también las no-abiertas:
+    const materiasNoAbiertasPorSemestre = {};
+    for (let i = 1; i <= 9; i++) {
+      const semestreId = `s${i}`;
+      const resultado = await MateriaSemestre.fetchMateriasNoAbiertasPorSemestre(semestreId);
+      materiasNoAbiertasPorSemestre[semestreId] = resultado.rows;
+    }
+
+    // Respondemos con la misma forma de los locals de EJS
+    res.json({ materiasPorSemestre, materiasNoAbiertasPorSemestre });
+  } catch (error) {
+    console.error('Error al obtener materias:', error);
+    res.status(500).json({ error: 'Error interno del servidor' });
+  }
 };
 
 exports.post_sincronizar_materias = async (req, res, nxt) => {
