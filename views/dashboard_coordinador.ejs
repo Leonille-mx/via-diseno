@@ -485,46 +485,60 @@
       //En vez de ser manejados de manera de objetos.
       // A cuestiones de vulnabilidad y porque el JSON 
       //Antes de ejecutar el codigo se espera para que exista la variable ctx
-document.addEventListener('DOMContentLoaded', () => {
-  // ─── Obtener datos iniciales del HTML y crear gráfica ───
-  const rawData = document.getElementById('chart-data').dataset.json;
-  const initialData = JSON.parse(rawData);
+      document.addEventListener('DOMContentLoaded', () => {
+        const msg1Modal = document.getElementById('msg1Modal');
+        const msg2Modal = document.getElementById('msg2Modal');
 
-  const ctx = document.getElementById('grafica_Alumnos').getContext('2d');
-  window.miGrafica = new Chart(ctx, {
-    type: 'bar',
-    data: {
-      labels: initialData.map(d => `${d.semestre} Semestre`),
-      datasets: [
-        {
-          label: 'Inscritos',
-          data: initialData.map(d => d.inscritos),
-          backgroundColor: '#000000',    // mismo estilo de la tabla
-          borderColor: '#000000',
-          borderWidth: 1
-        },
-        {
-          label: 'No Inscritos',
-          data: initialData.map(d => d.no_inscritos),
-          backgroundColor: '#84251c',    // ídem
-          borderColor: '#84251c',
-          borderWidth: 1
+        if (msg1Modal) {
+            const modal = new bootstrap.Modal(msg1Modal);
+            modal.show();
+            history.replaceState(null, '', window.location.pathname);
         }
-      ]
-    },
-    options: {
-      responsive: true,
-      scales: {
-        y: {
-          beginAtZero: true,
-          ticks: {
-            stepSize: 1
+        
+        if (msg2Modal) {
+            const modal = new bootstrap.Modal(msg2Modal);
+            modal.show();
+            history.replaceState(null, '', window.location.pathname);
+        }
+        
+        const rawData = document.getElementById('chart-data').dataset.json;
+        const initialData = JSON.parse(rawData);
+
+        const ctx = document.getElementById('grafica_Alumnos').getContext('2d');
+        window.miGrafica = new Chart(ctx, {
+          type: 'bar',
+          data: {
+            labels: initialData.map(d => `${d.semestre} Semestre`),
+            datasets: [
+              {
+                label: 'Inscritos',
+                data: initialData.map(d => d.inscritos),
+                backgroundColor: '#000000',    // mismo estilo de la tabla
+                borderColor: '#000000',
+                borderWidth: 1
+              },
+              {
+                label: 'No Inscritos',
+                data: initialData.map(d => d.no_inscritos),
+                backgroundColor: '#84251c',    // ídem
+                borderColor: '#84251c',
+                borderWidth: 1
+              }
+            ]
+          },
+          options: {
+            responsive: true,
+            scales: {
+              y: {
+                beginAtZero: true,
+                ticks: {
+                  stepSize: 1
+                }
+              }
+            }
           }
-        }
-      }
-    }
-  });
-});
+        });
+      });
     </script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
     <script src="/js/coordinador.js"></script>
