@@ -422,33 +422,18 @@ module.exports = class Alumno {
         SELECT 
           r.grupo_id AS grupo_id,
     
-          (
-            SELECT jsonb_agg(sub.hora_inicio ORDER BY sub.min_bt)
+          ( -- Agrupa por día y dentro de cada día ordena los bloques, luego ordena los días
+            SELECT jsonb_agg(sub.bloques ORDER BY sub.min_bt)
             FROM (
-              SELECT 
-                b.hora_inicio,
-                MIN(gb.bloque_tiempo_id) AS min_bt
+              SELECT
+                jsonb_agg(gb.bloque_tiempo_id ORDER BY gb.bloque_tiempo_id) AS bloques,
+                MIN(gb.bloque_tiempo_id)                          AS min_bt
               FROM grupo_bloque_tiempo gb
-              JOIN bloque_tiempo b 
-                ON b.bloque_tiempo_id = gb.bloque_tiempo_id
+              JOIN bloque_tiempo b ON b.bloque_tiempo_id = gb.bloque_tiempo_id
               WHERE gb.grupo_id = r.grupo_id
-              GROUP BY b.dia, b.hora_inicio
+              GROUP BY b.dia
             ) AS sub
-          ) AS hora_inicio,
-    
-          (
-            SELECT jsonb_agg(sub.hora_fin ORDER BY sub.max_bt)
-            FROM (
-              SELECT 
-                b.hora_fin,
-                MAX(gb.bloque_tiempo_id) AS max_bt
-              FROM grupo_bloque_tiempo gb
-              JOIN bloque_tiempo b 
-                ON b.bloque_tiempo_id = gb.bloque_tiempo_id
-              WHERE gb.grupo_id = r.grupo_id
-              GROUP BY b.dia, b.hora_fin
-            ) AS sub
-          ) AS hora_fin,
+          ) AS bloque_tiempo_id,
     
           m.nombre               AS materia_nombre,
           s.numero               AS salon_numero,
@@ -457,30 +442,30 @@ module.exports = class Alumno {
           p.segundo_apellido     AS profesor_segundo_apellido,
           r.obligatorio          AS obligatorio,
     
-          (
+          ( -- Lista de días en el mismo orden que los bloques
             SELECT jsonb_agg(sub2.dia ORDER BY sub2.min_bt)
             FROM (
-              SELECT 
+              SELECT
                 b.dia,
                 MIN(gb.bloque_tiempo_id) AS min_bt
               FROM grupo_bloque_tiempo gb
-              JOIN bloque_tiempo b 
-                ON b.bloque_tiempo_id = gb.bloque_tiempo_id
+              JOIN bloque_tiempo b ON b.bloque_tiempo_id = gb.bloque_tiempo_id
               WHERE gb.grupo_id = r.grupo_id
               GROUP BY b.dia
             ) AS sub2
           ) AS dias
     
         FROM resultado_inscripcion r
-        JOIN grupo             g ON r.grupo_id   = g.grupo_id
-        JOIN materia           m ON g.materia_id = m.materia_id
-        JOIN profesor          p ON g.profesor_id= p.ivd_id
-        JOIN salon             s ON g.salon_id   = s.salon_id
-        JOIN grupo_bloque_tiempo gb ON gb.grupo_id= r.grupo_id
+        JOIN grupo             g ON r.grupo_id    = g.grupo_id
+        JOIN materia           m ON g.materia_id  = m.materia_id
+        JOIN profesor          p ON g.profesor_id = p.ivd_id
+        JOIN salon             s ON g.salon_id    = s.salon_id
+        JOIN grupo_bloque_tiempo gb ON gb.grupo_id = g.grupo_id
     
-        WHERE r.alumno_id = $1
+        WHERE r.alumno_id = $1 AND r.seleccionado = true
+              
     
-        GROUP BY 
+        GROUP BY
           r.grupo_id,
           m.nombre,
           s.numero,
