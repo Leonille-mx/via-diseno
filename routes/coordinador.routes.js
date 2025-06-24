@@ -23,9 +23,6 @@ router.post('/profesores/sincronizar', agregarCicloInfo, coordinador_controller.
 router.get('/profesores/modificar/:id', agregarCicloInfo, coordinador_controller.get_modificar_profesor);
 router.post('/profesores/modificar/:id', agregarCicloInfo, coordinador_controller.post_modificar_profesor);
 
-router.get('/alumnos', agregarCicloInfo, coordinador_controller.get_alumnos);
-router.post('/alumnos/sincronizar', agregarCicloInfo, coordinador_controller.post_sincronizar_alumnos);
-
 router.get('/salones', agregarCicloInfo, coordinador_controller.get_salones);
 router.post('/salones', agregarCicloInfo, coordinador_controller.post_salones);
 router.post('/salones/eliminar/:id', agregarCicloInfo, coordinador_controller.post_eliminar_salon);
@@ -49,6 +46,7 @@ router.get('/alumnos/modificar-horario/materias-disponibles/:semestre/:id', agre
 router.post('/alumnos/modificar-horario/eliminar-resultado', agregarCicloInfo, coordinador_controller.post_eliminar_materia_del_resultado);
 router.post('/alumnos/modificar-horario/agregar-resultado', agregarCicloInfo, coordinador_controller.post_agregar_materia_del_resultado);
 router.post('/alumnos/modificar-horario/modificar-obligacion', agregarCicloInfo, coordinador_controller.post_modificar_obligacion);
+router.get('/alumnos/filtrados', agregarCicloInfo, coordinador_controller.get_alumnos_carrera);
 
 router.get('/salones', agregarCicloInfo, coordinador_controller.get_salones);
 router.post('/salones', agregarCicloInfo, coordinador_controller.post_salones);

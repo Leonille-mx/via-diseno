@@ -515,8 +515,8 @@ exports.post_modificar_grupo = async (req, res, next) => {
 exports.get_alumnos = async (req, res, nxt) => {
     const carreraCoordinador = await Coordinador.getCarrera(req.session.usuario.id);
     try {
-        const alumnosRegularesDB = await Alumno.fetchAllRegularesPorCarrera(carreraCoordinador.rows[0].carrera_id); 
-        const alumnosIrregularesDB = await Alumno.fetchAllIrregularesPorCarrera(carreraCoordinador.rows[0].carrera_id);
+        const alumnosRegularesDB = await Alumno.fetchAllRegulares(); 
+        const alumnosIrregularesDB = await Alumno.fetchAllIrregulares();
         const msg = req.query.msg || null;
         const carreras = await Carrera.fetchAll();
         res.render('alumnos_coordinador', {
@@ -532,6 +532,22 @@ exports.get_alumnos = async (req, res, nxt) => {
         console.log(error);
         res.status(500).send('Hubo un problema al obtener los alumnos.');
     }
+};
+
+exports.get_alumnos_carrera = async (req, res, next) => {
+  try {
+    const [regularesDB, irregularesDB] = await Promise.all([
+      Alumno.fetchAllRegulares(),  
+      Alumno.fetchAllIrregulares()
+    ]);
+    res.json({
+      alumnosRegulares:   regularesDB.rows,
+      alumnosIrregulares: irregularesDB.rows
+    });
+  } catch (error) {
+    console.error('Error al obtener alumnos filtrados:', error);
+    res.status(500).json({ error: 'Error interno del servidor' });
+  }
 };
 
 exports.post_sincronizar_alumnos = async (req, res, nxt) => {
