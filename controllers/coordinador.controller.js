@@ -880,7 +880,7 @@ exports.post_sincronizar_planes_de_estudio = async (req, res) => {
 exports.get_solicitudes_cambio = async (req, res, next) => {
     try {
         const carreraCoordinador = await Coordinador.getCarrera(req.session.usuario.id);
-        const solicitudesActivas = await Solicitud.fetchActivosPorCarrera(carreraCoordinador.rows[0].carrera_id);
+        const solicitudesActivas = await Solicitud.fetchActivos();
         const msg = req.query.msg || null;
         const carreras = await Carrera.fetchAll();
 
@@ -898,6 +898,16 @@ exports.get_solicitudes_cambio = async (req, res, next) => {
             message: 'Hubo un problema al obtener las solicitudes de cambio',
             error
         });
+    }
+};
+
+exports.get_solicitudes_cambio_carrera = async (req, res, next) => {
+    try {
+        const result = await Solicitud.fetchActivos();
+        res.json({ solicitudes: result.rows });
+    } catch (err) {
+        console.error(err);
+        res.status(500).json({ error: 'Error interno' });
     }
 };
 

@@ -23,62 +23,64 @@
           <th scope="col" style="width: 5%; min-width: 50px;"></th>
         </tr>
       </thead>
-      <tbody>
+      <tbody id="solicitudesTablaBody">
         <% for (let solicitud of solicitudes) { %>
-          <tr>
-            <th scope="row" class="text-center align-middle"><%= solicitud.ivd_id%></th>
-            <td class="text-center align-middle"><%= solicitud.nombre%></td>
-            <td class="text-center align-middle"><%= solicitud.primer_apellido %></td>
-            <td class="text-center align-middle"><%= solicitud.carrera_nombre %></td>
-            <td class="text-center align-middle"><%= solicitud.correo_institucional %></td>
-            <td class="text-center align-middle">  <%= new Date(solicitud.created_at).toLocaleString('es-ES', { 
-              year: 'numeric', 
-              month: '2-digit', 
-              day: '2-digit',
-              hour: '2-digit', 
-              minute: '2-digit',
-              hour12: false 
-          }).replace(',', '') %></td>
-            <td class="text-center align-middle">
-              <button class="btn btn-sm p-0 d-flex align-items-center justify-content-center toggle-descripcion" 
-                style="width: 1.5rem; height: 1.5rem; border-radius: 50%; background-color: #84251c; color: white; border: none;"
-                data-solicitud-id="<%= solicitud.ivd_id %>">
-                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-caret-down-fill" viewBox="0 0 16 16">
-                  <path d="M7.247 11.14 2.451 5.658C1.885 5.013 2.345 4 3.204 4h9.592a1 1 0 0 1 .753 1.659l-4.796 5.48a1 1 0 0 1-1.506 0z"/>
-                </svg>
-              </button>
-            </td>
-          </tr>
-          <tr class="descripcion-row" data-solicitud-id="<%= solicitud.ivd_id %>" style="display: none;">
-            <td colspan="5" class="p-4"> 
-              <h4 class="mb-4"><b>Motivo del cambio:</b></h4> 
-              <div class=" descripcion-container bg-grey p-4 rounded-5 mb-4" style=" margin: 0 auto; word-wrap: break-word; overflow-wrap: break-word;"> 
-                <p class="mb-0 text-center" style="white-space: pre-wrap; word-break: break-word; line-height: 1.6;"><%= solicitud.descripcion %></p>
-              </div>
-              <div class="d-flex justify-content-center gap-5 mt-3"> 
-              <!-- Botón Rechazar -->
-                <button type="button" 
-                class="btn rounded-pill px-4 py-2 mx-2"
-                style="background-color: white; border: 1px solid #84251C; color: #84251C; min-width: 120px;" 
-                data-bs-toggle="modal"
-                data-bs-target="#confirmRechazarModal"
-                data-solicitud-id="<%= solicitud.ivd_id %>"> 
-                Rechazar
+           <% if (carrerasSeleccionadas.includes(solicitud.carrera_id)) { %>
+            <tr>
+              <th scope="row" class="text-center align-middle"><%= solicitud.ivd_id%></th>
+              <td class="text-center align-middle"><%= solicitud.nombre%></td>
+              <td class="text-center align-middle"><%= solicitud.primer_apellido %></td>
+              <td class="text-center align-middle"><%= solicitud.carrera_nombre %></td>
+              <td class="text-center align-middle"><%= solicitud.correo_institucional %></td>
+              <td class="text-center align-middle">  <%= new Date(solicitud.created_at).toLocaleString('es-ES', { 
+                year: 'numeric', 
+                month: '2-digit', 
+                day: '2-digit',
+                hour: '2-digit', 
+                minute: '2-digit',
+                hour12: false 
+            }).replace(',', '') %></td>
+              <td class="text-center align-middle">
+                <button class="btn btn-sm p-0 d-flex align-items-center justify-content-center toggle-descripcion" 
+                  style="width: 1.5rem; height: 1.5rem; border-radius: 50%; background-color: #84251c; color: white; border: none;"
+                  data-solicitud-id="<%= solicitud.ivd_id %>">
+                  <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-caret-down-fill" viewBox="0 0 16 16">
+                    <path d="M7.247 11.14 2.451 5.658C1.885 5.013 2.345 4 3.204 4h9.592a1 1 0 0 1 .753 1.659l-4.796 5.48a1 1 0 0 1-1.506 0z"/>
+                  </svg>
                 </button>
+              </td>
+            </tr>
+            <tr class="descripcion-row" data-solicitud-id="<%= solicitud.ivd_id %>" style="display: none;">
+              <td colspan="8" class="p-4"> 
+                <h4 class="mb-4"><b>Motivo del cambio:</b></h4> 
+                <div class=" descripcion-container bg-grey p-4 rounded-5 mb-4" style=" margin: 0 auto; word-wrap: break-word; overflow-wrap: break-word;"> 
+                  <p class="mb-0 text-center" style="white-space: pre-wrap; word-break: break-word; line-height: 1.6;"><%= solicitud.descripcion %></p>
+                </div>
+                <div class="d-flex justify-content-center gap-5 mt-3"> 
+                <!-- Botón Rechazar -->
+                  <button type="button" 
+                  class="btn rounded-pill px-4 py-2 mx-2"
+                  style="background-color: white; border: 1px solid #84251C; color: #84251C; min-width: 120px;" 
+                  data-bs-toggle="modal"
+                  data-bs-target="#confirmRechazarModal"
+                  data-solicitud-id="<%= solicitud.ivd_id %>"> 
+                  Rechazar
+                  </button>
 
-                <!-- Botón Aceptar -->
-                <button type="button" 
-                class="btn rounded-pill px-4 py-2 mx-2"
-                style="background-color: #84251C; color: white; border: none; min-width: 120px;" 
-                data-bs-toggle="modal" 
-                data-bs-target="#confirmAceptarModal"
-                data-solicitud-id="<%= solicitud.ivd_id %>">
-                Aceptar
-                </button>
+                  <!-- Botón Aceptar -->
+                  <button type="button" 
+                  class="btn rounded-pill px-4 py-2 mx-2"
+                  style="background-color: #84251C; color: white; border: none; min-width: 120px;" 
+                  data-bs-toggle="modal" 
+                  data-bs-target="#confirmAceptarModal"
+                  data-solicitud-id="<%= solicitud.ivd_id %>">
+                  Aceptar
+                  </button>
+            </div>
           </div>
-        </div>
-            </td>
-          </tr>
+              </td>
+            </tr>
+          <% } %>
         <% } %>
       </tbody>
     </table>
@@ -162,6 +164,105 @@
 <script src="/js/coordinador.js"></script>
 
 <script>
+  document.addEventListener('DOMContentLoaded', () => {
+    const checkboxes = document.querySelectorAll('.carrera-checkbox');
+    const tbody = document.getElementById('solicitudesBody');
+
+    async function actualizarSolicitudes() {
+      // 1) IDs de carreras marcadas
+      const seleccionadas = Array.from(checkboxes)
+        .filter(cb => cb.checked)
+        .map(cb => cb.value);
+
+      try {
+        // 2) Traemos todas las solicitudes
+        const res = await fetch('/coordinador/solicitudes-cambio/filtradas');
+        const { solicitudes } = await res.json();
+
+        // 3) Filtramos y creamos el HTML
+        let html = '';
+        solicitudes
+          .filter(s => seleccionadas.length === 0 || seleccionadas.includes(String(s.carrera_id)))
+          .forEach(s => {
+            html += `
+              <tr 
+                class="solicitud-row" 
+                data-solicitud-id="${s.ivd_id}"
+                data-carrera-id="${s.carrera_id}">
+                <th class="text-center align-middle">${s.ivd_id}</th>
+                <td class="text-center align-middle">${s.nombre}</td>
+                <td class="text-center align-middle">${s.primer_apellido}</td>
+                <td class="text-center align-middle">${s.carrera_nombre}</td>
+                <td class="text-center align-middle">${s.correo_institucional}</td>
+                <td class="text-center align-middle">
+                  ${new Date(s.created_at).toLocaleString('es-ES', {
+                    year: 'numeric', month: '2-digit', day: '2-digit',
+                    hour: '2-digit', minute: '2-digit', hour12: false
+                  }).replace(',', '')}
+                </td>
+                <td class="text-center align-middle">
+                  <button class="btn btn-sm p-0 d-flex align-items-center justify-content-center toggle-descripcion"
+                          style="width:1.5rem;height:1.5rem;border-radius:50%;background-color:#84251c;color:white;border:none;"
+                          data-solicitud-id="${s.ivd_id}">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"
+                        class="bi bi-caret-down-fill" viewBox="0 0 16 16">
+                      <path d="M7.247 11.14 2.451 5.658C1.885 5.013 2.345 4 3.204 4h9.592
+                              a1 1 0 0 1 .753 1.659l-4.796 5.48a1 1 0 0 1-1.506 0z"/>
+                    </svg>
+                  </button>
+                </td>
+              </tr>
+              <tr class="descripcion-row" data-solicitud-id="${s.ivd_id}" style="display:none;">
+                <td colspan="8" class="p-4">
+                  <h4><b>Motivo del cambio:</b></h4>
+                  <div class="bg-grey p-3 rounded-5" style="white-space:pre-wrap;">
+                    ${s.descripcion}
+                  </div>
+                  <div class="d-flex justify-content-center gap-3 mt-3">
+                    <button type="button" 
+                      class="btn rounded-pill px-4 py-2 mx-2"
+                      style="background-color: white; border: 1px solid #84251C; color: #84251C; min-width: 120px;" 
+                      data-bs-toggle="modal"
+                      data-bs-target="#confirmRechazarModal"
+                      data-solicitud-id="${s.ivd_id}"> 
+                      Rechazar
+                    </button>
+                    <button type="button" 
+                      class="btn rounded-pill px-4 py-2 mx-2"
+                      style="background-color: #84251C; color: white; border: none; min-width: 120px;" 
+                      data-bs-toggle="modal" 
+                      data-bs-target="#confirmAceptarModal"
+                      data-solicitud-id="${s.ivd_id}">
+                      Aceptar
+                    </button>
+                  </div>
+                </td>
+              </tr>`;
+          });
+
+        // 4) Insertamos en el tbody
+        solicitudesTablaBody.innerHTML = html;
+
+        // 5) Volvemos a enlazar los toggles de descripción
+        document.querySelectorAll('.toggle-descripcion').forEach(btn => {
+          btn.addEventListener('click', () => {
+            const id = btn.getAttribute('data-solicitud-id');
+            const todas = document.querySelectorAll('.descripcion-row');
+             todas.forEach(r => r.style.display = 'none');
+            const actual = document.querySelector(`.descripcion-row[data-solicitud-id="${id}"]`);
+            actual.style.display = 'table-row';
+          });
+        });
+
+      } catch (error) {
+        console.error('Error al cargar solicitudes:', error);
+      }
+    }
+
+    // Asociar evento a los checkboxes
+    checkboxes.forEach(cb => cb.addEventListener('change', actualizarSolicitudes));
+  });
+
  document.addEventListener("DOMContentLoaded", function() {
     // Esto es para que se despliegue hacia abajo cuando selecciono al alumno
     document.querySelectorAll(".toggle-descripcion").forEach(button => {
