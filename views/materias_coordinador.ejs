@@ -687,10 +687,11 @@
               <table class="table table-hover" id="selectedMateriasTabla" style="min-width: 800px; width: 100%;">
                 <thead class="table-light">
                   <tr>
-                    <th scope="col" style="width: 31%; min-width: 100px;" class="text-center align-middle">Nombre</th>
-                    <th scope="col" class="text-center align-middle">SEP ID</th>
-                    <th scope="col" class="text-center align-middle">Semestre</th>
-                    <th scope="col" style="width: 16%; min-width: 150px;" class="text-center align-middle">Tipo de Salón</th>
+                    <th scope="col" style="width: 25%; min-width: 100px;" class="text-center align-middle">Nombre</th>
+                    <th scope="col" style="width: 15%;" class="text-center align-middle">SEP ID</th>
+                    <th scope="col" style="width: 25%; min-width: 100px;" class="text-center align-middle">Carrera</th>
+                    <th scope="col" style="width: 15%; min-width: 100px;" class="text-center align-middle">Semestre</th>
+                    <th scope="col" style="width: 15%; min-width: 150px;" class="text-center align-middle">Tipo de Salón</th>
                     <th scope="col" style="width: 5%; min-width: 50px;"></th>
                   </tr>
                 </thead>
@@ -712,10 +713,11 @@
               <table class="table table-hover" id="materiasTabla" style="min-width: 800px; width: 100%;">
                 <thead class="table-light">
                   <tr>
-                    <th scope="col" style="width: 31%; min-width: 100px;" class="text-center align-middle">Nombre</th>
-                    <th scope="col" class="text-center align-middle">SEP ID</th>
-                    <th scope="col" class="text-center align-middle">Semestre</th>
-                    <th scope="col" style="width: 16%; min-width: 150px;" class="text-center align-middle">Tipo de Salón</th>
+                    <th scope="col" style="width: 25%; min-width: 100px;" class="text-center align-middle">Nombre</th>
+                    <th scope="col" style="width: 15%;" class="text-center align-middle">SEP ID</th>
+                    <th scope="col" style="width: 25%; min-width: 100px;" class="text-center align-middle">Carrera</th>
+                    <th scope="col" style="width: 15%; min-width: 100px;" class="text-center align-middle">Semestre</th>
+                    <th scope="col" style="width: 15%; min-width: 150px;" class="text-center align-middle">Tipo de Salón</th>
                     <th scope="col" style="width: 5%; min-width: 50px;"></th>
                   </tr>
                 </thead>
@@ -924,6 +926,7 @@
       tr.innerHTML = `
         <td class="text-center align-middle">${m.nombre}</td>
         <td class="text-center align-middle">${m.sep_id}</td>
+        <td class="text-center align-middle">${m.carrera_nombre}</td>
         <td class="text-center align-middle">${m.semestre_plan}</td>
         <td class="text-center align-middle">${m.tipo_salon}</td>
         <td class="text-center align-middle">
@@ -970,8 +973,13 @@
       btn.addEventListener("click", () => {
         currentSemestre = btn.dataset.semestre;
 
-        const materiasAbiertas = materiasPorSemestre[currentSemestre] || [];
-        const materiasDisponibles = materiasNoAbiertasPorSemestre[currentSemestre] || [];
+        const seleccionadas = Array
+          .from(document.querySelectorAll('.carrera-checkbox'))
+          .filter(cb => cb.checked)
+          .map(cb => parseInt(cb.value, 10));
+
+        let materiasAbiertas = (materiasPorSemestre[currentSemestre] || []).filter(m => seleccionadas.includes(m.carrera_id));
+        let materiasDisponibles = (materiasNoAbiertasPorSemestre[currentSemestre] || []).filter(m => seleccionadas.includes(m.carrera_id));
 
         selectedSet.clear();
         availableSet.clear();
