@@ -66,12 +66,14 @@ module.exports = class Alumno {
 
     static async fetchAllRegulares() {
         const query = `
-            SELECT *
-            FROM alumno a, usuario u
-            WHERE a.ivd_id = u.ivd_id AND
-                  a.regular = true
-            ORDER BY a.ivd_id ASC
-        `;
+          SELECT a.*, u.*, c.carrera_id, c.nombre as carrera_nombre
+          FROM alumno a
+          JOIN usuario u ON a.ivd_id = u.ivd_id
+          JOIN plan_estudio p ON p.plan_estudio_id = a.plan_estudio_id
+          JOIN carrera c ON c.carrera_id = p.carrera_id
+          WHERE a.regular
+          ORDER BY a.ivd_id ASC
+      `;
         return await pool.query(query);
     }
 
@@ -90,17 +92,21 @@ module.exports = class Alumno {
     }
 
     static async fetchAllIrregulares() {
-        const query = `
-            SELECT *,
-                  (SELECT COUNT(alumno_id) > 0 AS result
-                   FROM resultado_inscripcion
-                   WHERE alumno_id = a.ivd_id)
-                  AS asignada
-            FROM alumno a
-            WHERE a.ivd_id = u.ivd_id AND
-                  a.regular = false
-            ORDER BY a.ivd_id ASC
-        `;
+      const query = `
+          SELECT a.*, 
+               u.*,
+               p.carrera_id,
+               c.nombre as carrera_nombre,
+               (SELECT COUNT(alumno_id) > 0 AS result
+                FROM resultado_inscripcion
+                WHERE alumno_id = a.ivd_id) AS asignada
+        FROM alumno a
+        JOIN usuario u ON a.ivd_id = u.ivd_id
+        JOIN plan_estudio p ON p.plan_estudio_id = a.plan_estudio_id
+        JOIN carrera c ON c.carrera_id = p.carrera_id
+        WHERE a.regular = false
+        ORDER BY a.ivd_id ASC
+      `;
         return await pool.query(query);
     }
     
