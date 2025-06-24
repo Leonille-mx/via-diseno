@@ -24,17 +24,17 @@ exports.get_dashboard = async (req, res) => {
         const msg2 = req.query.msg2 || null; 
         const carreraCoordinador = await Coordinador.getCarrera(req.session.usuario.id);
         //Consulta el total de profesores activos de la Base de Datos
-        const alumnosConMaterias = await Alumno.fetchNumeroIrregularesConMaterias(carreraCoordinador.rows[0].carrera_id);
-        const alumnosNoInscritos = await Alumno.totalNoInscritos(carreraCoordinador.rows[0].carrera_id);
-        const alumnosInscritos = await Alumno.numero_TotalAlumnoInscritos(carreraCoordinador.rows[0].carrera_id);
+        const alumnosConMaterias = await Alumno.fetchNumeroIrregularesConMaterias(req.session.carrerasSeleccionadas || [carreraCoordinador.rows[0].carrera_id]);
+        const alumnosNoInscritos = await Alumno.totalNoInscritos(req.session.carrerasSeleccionadas || [carreraCoordinador.rows[0].carrera_id]);
+        const alumnosInscritos = await Alumno.numero_TotalAlumnoInscritos(req.session.carrerasSeleccionadas || [carreraCoordinador.rows[0].carrera_id]);
         const salon_Totales = await Salon.numero_TotalSalones();
-        const grupos_Totales = await Grupos.numeroTotalGrupos();
-        const grupos_Dashboard = await Grupos.grupoDashboard();
+        const grupos_Totales = await Grupos.numeroTotalGrupos(req.session.carrerasSeleccionadas || [carreraCoordinador.rows[0].carrera_id]);
+        const grupos_Dashboard = await Grupos.grupoDashboard(req.session.carrerasSeleccionadas || [carreraCoordinador.rows[0].carrera_id]);
         const salones_Dashboard = await Salon.salonesDashboard();
-        const grafica_Alumnos = await Alumno.alumnosComparacion(carreraCoordinador.rows[0].carrera_id);
-        const materias_Abiertas  = await Materia.numeroMaterias(carreraCoordinador.rows[0].carrera_id);
-        const solicitud_Cambio_Dashboard = await Solicitud.dasboard_Solicitud(carreraCoordinador.rows[0].carrera_id);
-        const total_Solicitudes = await Solicitud.numeroTotalSolicitudes(carreraCoordinador.rows[0].carrera_id);
+        const grafica_Alumnos = await Alumno.alumnosComparacion(req.session.carrerasSeleccionadas || [carreraCoordinador.rows[0].carrera_id]);
+        const materias_Abiertas  = await Materia.numeroMaterias(req.session.carrerasSeleccionadas || [carreraCoordinador.rows[0].carrera_id]);
+        const solicitud_Cambio_Dashboard = await Solicitud.dasboard_Solicitud(req.session.carrerasSeleccionadas || [carreraCoordinador.rows[0].carrera_id]);
+        const total_Solicitudes = await Solicitud.numeroTotalSolicitudes(req.session.carrerasSeleccionadas || [carreraCoordinador.rows[0].carrera_id]);
         const carreras = await Carrera.fetchAll();
 
         res.render('dashboard_coordinador', {
@@ -62,6 +62,55 @@ exports.get_dashboard = async (req, res) => {
         console.error("Dashboard error:", error);
         res.status(500).send("Error loading dashboard");
     }
+};
+
+exports.get_dashboard_carrera = async (req, res) => {
+  try {
+    // 1) Obtener las carreras seleccionadas directamente desde la sesión
+    let carrerasFinal = Array.isArray(req.session.carrerasSeleccionadas)
+      ? req.session.carrerasSeleccionadas.slice()
+      : [];
+
+    // 3) Recalcular todos los datos con las carreras en sesión
+    const [materiasAbiertas, gruposTotales, alumnosInscritos,
+      alumnosNoInscritos, alumnosConMaterias, salon_Totales,
+      grupos_Dashboard, salones_Dashboard, solicitud_Cambio_Dashboard,
+      total_Solicitudes, grafica_Alumnos] = await Promise.all([
+      Materia.numeroMaterias(carrerasFinal),
+      Grupos.numeroTotalGrupos(carrerasFinal),
+      Alumno.numero_TotalAlumnoInscritos(carrerasFinal),
+      Alumno.totalNoInscritos(carrerasFinal),
+      Alumno.fetchNumeroIrregularesConMaterias(carrerasFinal),
+      Salon.numero_TotalSalones(),
+      Grupos.grupoDashboard(carrerasFinal),
+      Salon.salonesDashboard(carrerasFinal),
+      Solicitud.dasboard_Solicitud(carrerasFinal),
+      Solicitud.numeroTotalSolicitudes(carrerasFinal),
+      Alumno.alumnosComparacion(carrerasFinal)
+    ]);
+
+    // 4) Calcular alumnos sin materias (NoInscritos – ConMaterias)
+    const alumnosSinMaterias = alumnosNoInscritos - alumnosConMaterias;
+
+    // 5) Enviar JSON al frontend con la misma estructura esperada
+    res.json({
+      materiasAbiertas,
+      gruposTotales,
+      alumnosInscritos,
+      alumnosNoInscritos: alumnosConMaterias,
+      alumnosSinMaterias,
+      salon_Totales,
+      grupos_Dashboard,
+      salones_Dashboard,
+      solicitud_Cambio_Dashboard,
+      total_Solicitudes,
+      grafica_Alumnos
+    });
+
+  } catch (error) {
+    console.error("Error al filtrar dashboard:", error);
+    res.status(500).json({ error: 'Error al filtrar datos del dashboard' });
+  }
 };
 
 exports.post_reset_grupos = async (req, res) => {

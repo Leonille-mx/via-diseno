@@ -10,7 +10,7 @@ router.use(isAuth.estaAutenticado, isAuth.esCoordinador);
 
 router.get('/dashboard', agregarCicloInfo, coordinador_controller.get_dashboard);
 router.post('/dashboard/reset-grupos', agregarCicloInfo, coordinador_controller.post_reset_grupos);
-
+router.get('/dashboard/filtrado', agregarCicloInfo, coordinador_controller.get_dashboard_carrera);
 
 router.get('/materias', agregarCicloInfo, coordinador_controller.get_materias);
 router.post('/materias/sincronizar', agregarCicloInfo, coordinador_controller.post_sincronizar_materias);
