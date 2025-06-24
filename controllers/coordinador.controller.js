@@ -526,7 +526,7 @@ exports.get_alumno_horario = async (req, res, nxt) => {
     const bloque_tiempo = await BloqueTiempo.fetchAllHoras();
     const bloqueTiempoMap = bloque_tiempo.rows[0]?.id_hora_map || {};
     if (esRegular.rows[0].regular === true) {
-        Alumno.fetchAllResultadoAlumno2(req.params.id)
+        Alumno.fetchAllResultadoAlumno(req.params.id)
         .then((data) => {
             res.status(200).json({
                 isLoggedIn: req.session.isLoggedIn || false,
@@ -536,7 +536,7 @@ exports.get_alumno_horario = async (req, res, nxt) => {
             });
         });
     } else {
-        Alumno.fetchAllResultadoAlumno2(req.params.id)
+        Alumno.fetchAllResultadoAlumno(req.params.id)
         .then((data) => {
             res.status(200).json({
                 isLoggedIn: req.session.isLoggedIn || false,
