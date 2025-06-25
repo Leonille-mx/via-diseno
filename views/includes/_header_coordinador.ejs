@@ -8,7 +8,7 @@
                         data-bs-toggle="dropdown" aria-expanded="false" style="background-color: white;">
                         Seleccionar Carrera
                     </button>
-                    <ul class="dropdown-menu p-3" style="min-width: 300px;">
+                    <ul class="dropdown-menu p-3" style="min-width: 30rem;">
                         <% carreras.forEach(carrera => {
                             if (carrera.carrera_id != 9999) { %>
                                 <li>
@@ -55,7 +55,7 @@
         cb.addEventListener('change', actualizarTextoBoton);
     });
 
-    document.addEventListener('DOMContentLoaded', actualizarTextoBoton);
+    actualizarTextoBoton();
 
     document.querySelectorAll('.carrera-checkbox').forEach(cb => {
         cb.addEventListener('change', () => {

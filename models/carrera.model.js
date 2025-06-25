@@ -220,6 +220,6 @@ module.exports = class Carrera {
     }
 
     static fetchAll() {
-        return pool.query('SELECT * FROM carrera');
+        return pool.query('SELECT * FROM carrera ORDER BY carrera_id DESC');
     }
 }

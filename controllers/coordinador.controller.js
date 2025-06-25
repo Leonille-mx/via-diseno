@@ -15,7 +15,7 @@ const Solicitud = require('../models/solicitudes-cambio.model.js');
 const ResultadoInscripcion = require('../models/resultado_inscripcion.model.js');
 const BloqueTiempo = require('../models/bloque_tiempo.model.js');
 const Coordinador = require('../models/coordinador.model.js');
-const { axiosAdminClient, getToken, getHeaders, getAllProfessors, getAllCourses, getAllStudents, getCiclosEscolares, getAllDegree, getAllAcademyHistory, getExternalCycles} = require('../util/adminApiClient.js');
+const { axiosAdminClient, getToken, getHeaders, getAllProfessors, getAllCourses, getAllStudents, getAllAdministrators, getCiclosEscolares, getAllDegree, getAllAcademyHistory, getExternalCycles} = require('../util/adminApiClient.js');
 
 
 exports.get_dashboard = async (req, res) => {
@@ -143,6 +143,26 @@ exports.get_administradores = async (req, res, nxt) => {
         res.status(500).send("Error loading admins");
     }
 }
+
+exports.post_sincronizar_administradores = async (req, res, nxt) => {
+    try {
+        const admins = await getAllAdministrators();
+
+        const adminsApi = admins.data;
+
+        const resultadoUsuario = await Usuario.sincronizarUsuariosAdmins(adminsApi);
+        const resultadoAdmins = await Coordinador.sincronizarAdministradores(adminsApi);
+
+        const msg = `La operación fue exitosa!<br>
+                    Insertado: ${resultadoUsuario.inserted}<br>
+                    Actualizado: ${resultadoUsuario.updated + resultadoAdmins.updated}<br>
+                    Eliminado: ${resultadoUsuario.deleted}`;
+        res.redirect(`/coordinador/administradores?msg=${encodeURIComponent(msg)}`);
+    } catch (error) {
+        console.error(error);
+        res.redirect(`/coordinador/administradores?msg=${encodeURIComponent('La operación fue fracasada')}`);
+    }
+};
 
 exports.administrador_cambiar_carrera = async (req, res, nxt) => {
     const {admin_id, carrera_id } = req.body;
@@ -634,7 +654,7 @@ exports.post_sincronizar_alumnos = async (req, res, nxt) => {
 
         const studentsApi = students.data;
 
-        const resultadoUsuario = await Usuario.sincronizarUsuarios(studentsApi);
+        const resultadoUsuario = await Usuario.sincronizarUsuariosAlumnos(studentsApi);
         const resultadoAlumno = await Alumno.sincronizarAlumnos(studentsApi);
 
         const alumnos_sin_historial = [];

@@ -30,27 +30,31 @@
             <thead class="table-light">
                 <tr>
                 <th scope="col" style="width: 10%;" class="text-center align-middle">ID</th>
-                <th scope="col" style="width: 25%;" class="text-center align-middle">Nombre</th>
-                <th scope="col" style="width: 25%;" class="text-center align-middle">Correo Institucional</th>
+                <th scope="col" style="width: 20%;" class="text-center align-middle">Nombre</th>
+                <th scope="col" style="width: 15%;" class="text-center align-middle">Puesto</th>
+                <th scope="col" style="width: 20%;" class="text-center align-middle">Correo Institucional</th>
                 <th scope="col" style="width: 35%;" class="text-center align-middle">Carrera</th>
                 </tr>
             </thead>
             <tbody id="administradoresBody">
-                <% for (let admin of administradores) { %>
-                <tr>
-                    <th scope="row" class="text-center align-middle"><%= admin.ivd_id %></th>
-                    <td class="text-center align-middle"><%= admin.nombre + ' ' + admin.primer_apellido + ' ' + admin.segundo_apellido %></td>
-                    <td class="text-center align-middle"><%= admin.correo_institucional %></td>
-                    <td class="text-center align-middle">
-                        <select style="background-color: white;" class=" btn border dropdown-toggle rounded-pill ivd-border-red form-select carrera-select" data-admin-id="<%= admin.ivd_id %>">
-                            <% for (let carrera of carreras) { %>
-                            <option value="<%= carrera.carrera_id %>" <%= carrera.nombre === admin.carrera_nombre ? 'selected' : '' %>>
-                                <%= carrera.nombre %>
-                            </option>
-                            <% } %>
-                        </select>
-                    </td>
-                </tr>
+                <% for (let admin of administradores) { 
+                    if (admin.ivd_id !== 1037) { %>
+                        <tr>
+                            <th scope="row" class="text-center align-middle"><%= admin.ivd_id %></th>
+                            <td class="text-center align-middle"><%= admin.nombre + ' ' + admin.primer_apellido + (admin.segundo_apellido ? ' ' + admin.segundo_apellido : '')  %></td>
+                            <td class="text-center align-middle"><%= (admin.puesto ? admin.puesto : 'Indefinido') %></td>
+                            <td class="text-center align-middle"><%= admin.correo_institucional %></td>
+                            <td class="text-center align-middle">
+                                <select style="background-color: white;" class=" btn border dropdown-toggle rounded-pill ivd-border-red form-select carrera-select" data-admin-id="<%= admin.ivd_id %>">
+                                    <% for (let carrera of carreras) { %>
+                                    <option value="<%= carrera.carrera_id %>" <%= carrera.nombre === admin.carrera_nombre ? 'selected' : '' %>>
+                                        <%= carrera.nombre %>
+                                    </option>
+                                    <% } %>
+                                </select>
+                            </td>
+                        </tr>
+                    <% } %>
                 <% } %>
             </tbody>
         </table>
@@ -96,10 +100,11 @@
             rows.forEach(row => {
             const id = row.children[0].textContent.toLowerCase();
             const nombre = row.children[1].textContent.toLowerCase();
-            const correo = row.children[2].textContent.toLowerCase();
-            const carrera = row.children[3].textContent.toLowerCase();
+            const puesto = row.children[2].textContent.toLowerCase();
+            const correo = row.children[3].textContent.toLowerCase();
+            const carrera = row.children[4].textContent.toLowerCase();
 
-            if (id.includes(filtro) || nombre.includes(filtro) || correo.includes(filtro) || carrera.includes(filtro)) {
+            if (id.includes(filtro) || nombre.includes(filtro) || puesto.includes(filtro) || correo.includes(filtro) || carrera.includes(filtro)) {
                 row.style.display = '';
             } else {
                 row.style.display = 'none';

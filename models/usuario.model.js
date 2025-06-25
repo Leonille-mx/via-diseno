@@ -10,12 +10,13 @@ module.exports = class Usuario {
         this.correo_institucional = mi_correo_institucional;
         this.role_id = mi_role_id;
     }
-    static async sincronizarUsuarios(studentsApi) {
+
+    static async sincronizarUsuariosAlumnos(studentsApi) {
         const client = await pool.connect();
         
         try { 
 
-            const usersDB_data = await client.query('SELECT * FROM usuario');
+            const usersDB_data = await client.query('SELECT * FROM usuario WHERE role_id = 2');
 
             const usersDB = usersDB_data.rows;
 
@@ -53,6 +54,65 @@ module.exports = class Usuario {
                 if (userDB.role_id === 2) {
                   await client.query(
                     'DELETE FROM usuario WHERE ivd_id = $1 AND role_id = 2',
+                    [id]
+                  );
+                  deleted++;
+                }
+            }
+    
+            return { inserted, updated, deleted };
+    
+        } catch(error) {
+            console.error('Error durante la sincronización de usuarios:', error);
+            throw error;
+        } finally {
+            client.release();
+        }
+    }
+
+    static async sincronizarUsuariosAdmins(adminsApi) {
+        const client = await pool.connect();
+        
+        try { 
+
+            const usersDB_data = await client.query('SELECT * FROM usuario WHERE role_id = 1');
+
+            const usersDB = usersDB_data.rows;
+
+            const usersMap = new Map(usersDB.map(user => [user.ivd_id, user]));
+    
+            let inserted = 0, updated = 0, deleted = 0;
+    
+            for (const uA of adminsApi) {
+                const userDB = usersMap.get(uA.ivd_id);
+
+                if (!userDB) {
+                    await client.query(
+                        `INSERT INTO usuario 
+                         (ivd_id, contrasena, nombre, primer_apellido, segundo_apellido, correo_institucional, role_id) 
+                         VALUES ($1, NULL, $2, $3, $4, $5, $6)`,
+                        [ uA.ivd_id, uA.name, uA.first_surname, uA.second_surname, uA.email, 1 ]
+                    );
+                    inserted++;
+                } else if (
+                    (userDB.nombre || "").trim() !== (uA.name || "").trim() ||
+                    (userDB.primer_apellido || "").trim() !== (uA.first_surname || "").trim() ||
+                    (userDB.segundo_apellido || "").trim() !== (uA.second_surname || "").trim() ||
+                    (userDB.correo_institucional || "").trim() !== (uA.email || "").trim()
+                ) {
+                    await client.query(
+                        `UPDATE usuario SET nombre = $1, primer_apellido = $2, segundo_apellido = $3, correo_institucional = $4, role_id = $5 WHERE ivd_id = $6`,
+                        [ uA.name, uA.first_surname, uA.second_surname, uA.email, 1, uA.ivd_id ]
+                    );
+                    updated++;
+                }
+                usersMap.delete(uA.ivd_id); 
+            }
+
+            for (const [id, userDB] of usersMap) {
+                if (userDB.role_id === 1 && userDB.ivd_id != 1037) {
+                  await client.query(
+                    'DELETE FROM usuario WHERE ivd_id = $1 AND role_id = 1',
                     [id]
                   );
                   deleted++;
