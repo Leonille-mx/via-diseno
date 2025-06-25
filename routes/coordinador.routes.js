@@ -13,6 +13,7 @@ router.post('/dashboard/reset-grupos', agregarCicloInfo, coordinador_controller.
 router.get('/dashboard/filtrado', agregarCicloInfo, coordinador_controller.get_dashboard_carrera);
 
 router.get('/administradores', agregarCicloInfo, coordinador_controller.get_administradores);
+router.post('/administradores/cambiar-carrera', agregarCicloInfo, coordinador_controller.administrador_cambiar_carrera);
 
 router.get('/materias', agregarCicloInfo, coordinador_controller.get_materias);
 router.post('/materias/sincronizar', agregarCicloInfo, coordinador_controller.post_sincronizar_materias);
