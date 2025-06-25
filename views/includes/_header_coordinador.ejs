@@ -9,18 +9,20 @@
                         Seleccionar Carrera
                     </button>
                     <ul class="dropdown-menu p-3" style="min-width: 300px;">
-                        <% carreras.forEach(carrera => { %>
-                            <li>
-                            <div class="form-check">
-                                <input class="form-check-input carrera-checkbox ivd-bg-red ivd-border-red" 
-                                type="checkbox" 
-                                value="<%= carrera.carrera_id %>" 
-                                id="check<%= carrera.carrera_id %>"
-                                <%= (carrerasSeleccionadas.includes(carrera.carrera_id)) ? 'checked' : '' %>>
-                                <label class="form-check-label" for="check<%= carrera.carrera_id %>"><%= carrera.nombre %></label>
-                            </div>
-                            </li>
-                        <% }) %>
+                        <% carreras.forEach(carrera => {
+                            if (carrera.carrera_id != 9999) { %>
+                                <li>
+                                <div class="form-check">
+                                    <input class="form-check-input carrera-checkbox ivd-bg-red ivd-border-red" 
+                                    type="checkbox" 
+                                    value="<%= carrera.carrera_id %>" 
+                                    id="check<%= carrera.carrera_id %>"
+                                    <%= (carrerasSeleccionadas.includes(carrera.carrera_id)) ? 'checked' : '' %>>
+                                    <label class="form-check-label" for="check<%= carrera.carrera_id %>"><%= carrera.nombre %></label>
+                                </div>
+                                </li>
+                            <% }
+                        }) %>
                     </ul>
                 </div>
             </div>

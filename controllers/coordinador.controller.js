@@ -130,17 +130,29 @@ exports.get_administradores = async (req, res, nxt) => {
     try {
         const carreras = await Carrera.fetchAll();
         const carreraCoordinador = await Coordinador.getCarrera(req.session.usuario.id);
+        const coordinadores = await Coordinador.fetchAll();
         res.render('administradores_coordinador', {
             isLoggedIn: req.session.isLoggedIn || false,
             matricula: req.session.matricula || '',
             carreras: carreras.rows,
             carrerasSeleccionadas: req.session.carrerasSeleccionadas || [carreraCoordinador.rows[0].carrera_id],
+            administradores: coordinadores.rows,
         });
     } catch (error) {
         console.error("Admins error:", error);
         res.status(500).send("Error loading admins");
     }
-   
+}
+
+exports.administrador_cambiar_carrera = async (req, res, nxt) => {
+    const {admin_id, carrera_id } = req.body;
+    try {
+        await Coordinador.cambiarCarrera(admin_id, carrera_id);
+        res.status(200).json({ success: true });
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({success: false, error: 'Error al actualizar la carrera'});
+    }
 }
 
 exports.get_materias = async (req, res, nxt) => {
