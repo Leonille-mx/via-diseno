@@ -131,12 +131,14 @@ exports.get_administradores = async (req, res, nxt) => {
         const carreras = await Carrera.fetchAll();
         const carreraCoordinador = await Coordinador.getCarrera(req.session.usuario.id);
         const coordinadores = await Coordinador.fetchAll();
+        const msg = req.query.msg || null;
         res.render('administradores_coordinador', {
             isLoggedIn: req.session.isLoggedIn || false,
             matricula: req.session.matricula || '',
             carreras: carreras.rows,
             carrerasSeleccionadas: req.session.carrerasSeleccionadas || [carreraCoordinador.rows[0].carrera_id],
             administradores: coordinadores.rows,
+            msg,
         });
     } catch (error) {
         console.error("Admins error:", error);
