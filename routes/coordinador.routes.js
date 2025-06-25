@@ -12,6 +12,8 @@ router.get('/dashboard', agregarCicloInfo, coordinador_controller.get_dashboard)
 router.post('/dashboard/reset-grupos', agregarCicloInfo, coordinador_controller.post_reset_grupos);
 router.get('/dashboard/filtrado', agregarCicloInfo, coordinador_controller.get_dashboard_carrera);
 
+router.get('/administradores', agregarCicloInfo, coordinador_controller.get_administradores);
+
 router.get('/materias', agregarCicloInfo, coordinador_controller.get_materias);
 router.post('/materias/sincronizar', agregarCicloInfo, coordinador_controller.post_sincronizar_materias);
 router.post('/materias/abrir', agregarCicloInfo, coordinador_controller.post_abrir_materia);

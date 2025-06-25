@@ -126,6 +126,23 @@ exports.post_reset_grupos = async (req, res) => {
     }
 };
 
+exports.get_administradores = async (req, res, nxt) => {
+    try {
+        const carreras = await Carrera.fetchAll();
+        const carreraCoordinador = await Coordinador.getCarrera(req.session.usuario.id);
+        res.render('administradores_coordinador', {
+            isLoggedIn: req.session.isLoggedIn || false,
+            matricula: req.session.matricula || '',
+            carreras: carreras.rows,
+            carrerasSeleccionadas: req.session.carrerasSeleccionadas || [carreraCoordinador.rows[0].carrera_id],
+        });
+    } catch (error) {
+        console.error("Admins error:", error);
+        res.status(500).send("Error loading admins");
+    }
+   
+}
+
 exports.get_materias = async (req, res, nxt) => {
     try {
         const carreraCoordinador = await Coordinador.getCarrera(req.session.usuario.id);
