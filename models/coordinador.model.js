@@ -61,6 +61,19 @@ module.exports = class Coordinador {
             ORDER BY ivd_id`)
     }
 
+    static async fetchPorCarrera(carreras_id) {
+        return pool.query(`
+            SELECT c.ivd_id, c.carrera_id, c.puesto,
+                   u.nombre, u.primer_apellido, u.segundo_apellido,
+                   u.correo_institucional, ca.nombre AS carrera_nombre 
+            FROM coordinador c
+            JOIN usuario u ON c.ivd_id = u.ivd_id
+            JOIN carrera ca ON c.carrera_id = ca.carrera_id
+            WHERE c.carrera_id = ANY ($1)
+            ORDER BY ivd_id`
+            , [carreras_id])
+    }
+
     static async getCarrera(id) {
         return pool.query(`
             SELECT carrera_id
@@ -78,4 +91,6 @@ module.exports = class Coordinador {
             `, [id, carrera]
         );
     }
+
+    
 }

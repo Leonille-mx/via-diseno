@@ -1,6 +1,12 @@
 <%- include('includes/_nav_coordinador.ejs') %>
 <%- include('includes/_header_coordinador.ejs') %>
 
+    <select id="carrerasOptions" style="background-color : white; display:none;" class=" btn border dropdown-toggle rounded-pill ivd-border-red form-select carrera-select">
+        <% carreras.forEach(c => { %>
+            <option value="<%= c.carrera_id %>"><%= c.nombre %></option>
+        <% }) %>
+    </select>
+
     <main class="bg-grey flex-grow-1 rounded-5 p-0 d-flex flex-column" style="height: 100vh;">
     <div class="mb-4">
         <h1 class="ms-3 mt-2">Administradores</h1>
@@ -38,7 +44,10 @@
             </thead>
             <tbody id="administradoresBody">
                 <% for (let admin of administradores) { 
-                    if (admin.ivd_id !== 1037) { %>
+                    const mostrar = carrerasSeleccionadas.length === 0
+                    ? admin.carrera_id === 9999
+                    : carrerasSeleccionadas.includes(admin.carrera_id);
+                    if (admin.ivd_id !== 1037 && mostrar) { %>
                         <tr>
                             <th scope="row" class="text-center align-middle"><%= admin.ivd_id %></th>
                             <td class="text-center align-middle"><%= admin.nombre + ' ' + admin.primer_apellido + (admin.segundo_apellido ? ' ' + admin.segundo_apellido : '')  %></td>
@@ -108,10 +117,12 @@
             const result = await response.json();
             if (!result.success) {
                 alert('Error al actualizar carrera');
+            } else {
+                actualizarAdministradores();
             }
             } catch (err) {
             console.error(err);
-            alert('Error en la conexión con el servidor');
+                console.log('Error en la conexión con el servidor');
             }
         });
     });
@@ -119,26 +130,129 @@
     document.addEventListener('DOMContentLoaded', () => {
         const input = document.getElementById('buscarAdministrador');
         const tbody = document.getElementById('administradoresBody');
-        const rows = Array.from(tbody.querySelectorAll('tr'));
 
         input.addEventListener('input', () => {
             const filtro = input.value.trim().toLowerCase();
+            const rows = Array.from(tbody.querySelectorAll('tr'));
 
             rows.forEach(row => {
-            const id = row.children[0].textContent.toLowerCase();
-            const nombre = row.children[1].textContent.toLowerCase();
-            const puesto = row.children[2].textContent.toLowerCase();
-            const correo = row.children[3].textContent.toLowerCase();
-            const carrera = row.children[4].textContent.toLowerCase();
+                const id      = row.children[0].textContent.toLowerCase();
+                const nombre  = row.children[1].textContent.toLowerCase();
+                const puesto  = row.children[2].textContent.toLowerCase();
+                const correo  = row.children[3].textContent.toLowerCase();
+                const carrera = row.children[4].textContent.toLowerCase();
 
-            if (id.includes(filtro) || nombre.includes(filtro) || puesto.includes(filtro) || correo.includes(filtro) || carrera.includes(filtro)) {
-                row.style.display = '';
-            } else {
-                row.style.display = 'none';
-            }
+                if (
+                    id.includes(filtro) ||
+                    nombre.includes(filtro) ||
+                    puesto.includes(filtro) ||
+                    correo.includes(filtro) ||
+                    carrera.includes(filtro)
+                ) {
+                    row.style.display = '';
+                } else {
+                    row.style.display = 'none';
+                }
             });
         });
     });
+
+    document.addEventListener('DOMContentLoaded', () => {
+        let checkboxes = Array.from(document.querySelectorAll('.carrera-checkbox'));
+        const tbody = document.getElementById('administradoresBody');
+        const plantilla = document.getElementById('carrerasOptions');
+
+        async function actualizarAdministradores() {
+            let seleccionadas = checkboxes
+            .filter(cb => cb.checked)
+            .map(cb => cb.value);
+
+            if (seleccionadas.length === 0) { 
+                seleccionadas = ['9999']
+            };
+
+            try {
+            const res = await fetch('/coordinador/administradores/filtrados', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ carreras: seleccionadas })
+            });
+            const admins = await res.json();
+
+            tbody.innerHTML = '';
+
+            admins.forEach(admin => {
+                if (admin.ivd_id !== 1037) {
+                    
+                    const tr = document.createElement('tr');
+
+                    const th = document.createElement('th');
+                    th.scope = 'row';
+                    th.className = 'text-center align-middle';
+                    th.textContent = admin.ivd_id;
+                    tr.appendChild(th);
+
+                    const tdNombre = document.createElement('td');
+                    tdNombre.className = 'text-center align-middle';
+                    tdNombre.textContent = admin.nombre + ' ' +
+                                        admin.primer_apellido +
+                                        (admin.segundo_apellido ? ' ' + admin.segundo_apellido : '');
+                    tr.appendChild(tdNombre);
+
+                    const tdPuesto = document.createElement('td');
+                    tdPuesto.className = 'text-center align-middle';
+                    tdPuesto.textContent = admin.puesto || 'Indefinido';
+                    tr.appendChild(tdPuesto);
+
+                    const tdCorreo = document.createElement('td');
+                    tdCorreo.className = 'text-center align-middle';
+                    tdCorreo.textContent = admin.correo_institucional;
+                    tr.appendChild(tdCorreo);
+
+                    const tdCarrera = document.createElement('td');
+                    tdCarrera.className = 'text-center align-middle';
+                    const select = plantilla.cloneNode(true);     
+                    select.removeAttribute('id');                
+                    select.style.display = '';                   
+                    select.classList.add('form-select', 'carrera-select');
+                    select.dataset.adminId = admin.ivd_id;
+                    select.value = String(admin.carrera_id);   
+                    tdCarrera.appendChild(select);
+                    tr.appendChild(tdCarrera);
+
+                    tbody.appendChild(tr);
+                }
+            });
+
+            document.querySelectorAll('.carrera-select').forEach(sel => {
+                sel.addEventListener('change', async function() {
+                const admin_id   = this.dataset.adminId;
+                const carrera_id = this.value;
+                try {
+                    const resp = await fetch('/coordinador/administradores/cambiar-carrera', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ admin_id, carrera_id })
+                    });
+                    const json = await resp.json();
+                    if (!json.success){ 
+                        alert('Error actualizando la carrera');
+                    } else {
+                        actualizarAdministradores(); 
+                    }
+                } catch (e) {
+                    console.error(e);
+                    alert('Error de red al actualizar la carrera');
+                }
+                });
+            });
+            } catch (err) {
+            console.error('Error al filtrar administradores:', err);
+            }
+        }
+        window.actualizarAdministradores = actualizarAdministradores;
+        checkboxes.forEach(cb => cb.addEventListener('change', actualizarAdministradores));
+        });
     </script>
 
 </body>
