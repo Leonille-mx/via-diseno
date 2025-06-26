@@ -554,9 +554,8 @@ exports.get_grupos_por_id = (req, res, nxt) => {
 };
 
 exports.post_grupos = async (req, res, next) => {
+    const msgTitle = `Agregar Grupo`;
     try {
-        const msgTitle = `Agregar Grupo`;
-
         const selectedBlocks = JSON.parse(req.body.selectedBlocks);
         const grupo = new Grupos(req.body.materia, req.body.profesor, req.body.salon);
         
