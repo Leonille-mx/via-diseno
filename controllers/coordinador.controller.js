@@ -166,6 +166,17 @@ exports.post_sincronizar_administradores = async (req, res, nxt) => {
     }
 };
 
+exports.get_administradores_carrera = async (req, res, nxt) => {
+    try {
+        const { carreras } = req.body; 
+        const result = await Coordinador.fetchPorCarrera(carreras);
+        res.json(result.rows);
+    } catch (error) {
+        console.error('Error al obtener administradores filtrados:', error);
+        res.status(500).json({ error: 'Error interno del servidor' });
+    }
+}
+
 exports.administrador_cambiar_carrera = async (req, res, nxt) => {
     const {admin_id, carrera_id } = req.body;
     try {
