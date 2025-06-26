@@ -87,13 +87,14 @@ exports.enviarCorreoContrasena = async (req, res) => {
         return res.render('recuperar', { error: 'Matrícula no registrada' });
     }
 
+    // Creating new secure random token
     const token = uuidv4();
     tokens[token] = {
         ivd_id: matricula,
         expires_at: Date.now() + 30 * 60 * 1000 // 30 min
     };
 
-    const link = `https://ivd-inscripciones-leonille-97f95df993b3.herokuapp.com/usuario/recuperar/${token}`;
+    const link = `${process.env.BASE_URL}/usuario/recuperar/${token}`;
 
     const transporter = nodemailer.createTransport({
         service: 'gmail',
@@ -103,11 +104,61 @@ exports.enviarCorreoContrasena = async (req, res) => {
         }
     });
 
+    // const transporter = nodemailer.createTransport({
+    //     host: 'smtp.sendgrid.net',
+    //     port: 587,
+    //     auth: {
+    //         user: 'apikey',
+    //         pass: process.env.SENDGRID_API_KEY,
+    //     },
+    // });
+
+
     await transporter.sendMail({
-        from: 'IVD inscripciones',
+        from: '"IVD Inscripciones" <no-reply@yourdomain.com>',
         to: usuario.correo_institucional,
-        subject: 'Registrar nueva contraseña',
-        html: `<p>Haz clic en el siguiente enlace para registrar una nueva contraseña:</p><a href="${link}">${link}</a>`
+        subject: 'Registrar nueva contraseña - IVD Inscripciones',
+        html: `
+            <!DOCTYPE html>
+            <html>
+            <head>
+                <meta charset="UTF-8" />
+                <title>Restablecer contraseña</title>
+            </head>
+            <body style="font-family: Arial, sans-serif; background-color: #f6f6f6; padding: 20px; margin: 0;">
+                <table width="100%" cellspacing="0" cellpadding="0">
+                <tr>
+                    <td align="center">
+                    <table width="600" style="background-color: #ffffff; border-radius: 8px; box-shadow: 0 0 10px rgba(0,0,0,0.1); padding: 30px;">
+                        <tr>
+                        <td align="center" style="padding-bottom: 20px;">
+                            <h2 style="color: #333;">IVD Inscripciones</h2>
+                        </td>
+                        </tr>
+                        <tr>
+                        <td style="color: #333; font-size: 16px;">
+                            <p>Hola,</p>
+                            <p>Hemos recibido una solicitud para registrar una nueva contraseña para tu cuenta.</p>
+                            <p>Haz clic en el siguiente botón para continuar:</p>
+                            <p style="text-align: center; margin: 30px 0;">
+                            <a href="${link}" style="background-color: #007BFF; color: white; text-decoration: none; padding: 12px 24px; border-radius: 5px; display: inline-block;">Restablecer contraseña</a>
+                            </p>
+                            <p>Si no solicitaste este cambio, puedes ignorar este mensaje.</p>
+                            <p style="margin-top: 30px;">Saludos,<br/>Equipo de IVD Inscripciones</p>
+                        </td>
+                        </tr>
+                        <tr>
+                        <td align="center" style="font-size: 12px; color: #888; padding-top: 30px;">
+                            © 2025 IVD Inscripciones. Todos los derechos reservados.
+                        </td>
+                        </tr>
+                    </table>
+                    </td>
+                </tr>
+                </table>
+            </body>
+            </html>
+        `
     });
 
     res.render('recuperar', { mensaje: 'Se envió un enlace a tu correo institucional.' });
