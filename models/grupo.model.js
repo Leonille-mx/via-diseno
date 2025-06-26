@@ -8,20 +8,65 @@ module.exports = class Grupo {
         this.salon_id = mi_salon_id;
     }
 
-    async save() {
-        
-        const resultMax = await pool.query(`SELECT COALESCE(MAX(grupo_id), 0) AS max_id FROM grupo`);
-        const newId = resultMax.rows[0].max_id + 1;
+    async save() {     
+    // 1. Obtener nuevo ID de grupo
+    const resultMax = await pool.query(`SELECT COALESCE(MAX(grupo_id), 0) AS max_id FROM grupo`);
+    const newId = resultMax.rows[0].max_id + 1;
 
-        const cicloMax = await pool.query(`SELECT ciclo_escolar_id FROM ciclo_escolar ORDER BY fecha_fin DESC LIMIT 1;`)
-        const ciclo = cicloMax.rows[0].ciclo_escolar_id;
+    // 2. Obtener ciclo escolar actual (más reciente)
+    const cicloMax = await pool.query(`SELECT ciclo_escolar_id FROM ciclo_escolar ORDER BY fecha_fin DESC LIMIT 1`);
+    const ciclo = cicloMax.rows[0].ciclo_escolar_id;
 
-        return pool.query(
-            'INSERT INTO grupo(grupo_id, materia_id, profesor_id, salon_id, ciclo_escolar_id) VALUES ($1, $2, $3, $4, $5) RETURNING grupo_id',
-            [newId, this.materia_id, this.profesor_id, this.salon_id, ciclo]
+    // 3. Insertar nuevo grupo
+    const grupo_id = await pool.query(
+        `INSERT INTO grupo(grupo_id, materia_id, profesor_id, salon_id, ciclo_escolar_id)
+         VALUES ($1, $2, $3, $4, $5) RETURNING grupo_id`,
+        [newId, this.materia_id, this.profesor_id, this.salon_id, ciclo]
+    );
+
+    // 4. Obtener los semestres en los que se imparte esta materia
+    const semestres = await pool.query(
+        `SELECT semestre_id FROM materia_semestre WHERE materia_id = $1`,
+        [this.materia_id]
+    );
+
+    // 5. Obtener la carrera de la materia
+    const carreraRes = await pool.query(`
+        SELECT pe.carrera_id
+        FROM plan_materia pm
+        JOIN plan_estudio pe
+            ON pm.plan_estudio_id = pe.plan_estudio_id
+        AND pm.plan_estudio_version = pe.version
+        WHERE pm.materia_id = $1
+        LIMIT 1
+        `, [this.materia_id]);
+    const carreraId = carreraRes.rows[0].carrera_id;
+
+    // 6. Asignar alumnos al grupo recién creado
+    for (const row of semestres.rows) {
+        const semestreId = row.semestre_id;
+
+        await pool.query(
+            `INSERT INTO resultado_inscripcion (alumno_id, grupo_id, obligatorio, seleccionado)
+            SELECT al.ivd_id, $1, true, true
+            FROM alumno al
+            JOIN semestre s
+            ON al.semestre = s.numero
+            JOIN plan_estudio pe
+            ON al.plan_estudio_id = pe.plan_estudio_id
+            LEFT JOIN historial_academico h 
+            ON h.ivd_id = al.ivd_id 
+            AND h.materia_id = $2 
+            AND h.aprobado = true
+            WHERE s.semestre_id = $3
+            AND pe.carrera_id = $4 
+            AND h.ivd_id IS NULL`,
+            [ newId, this.materia_id, semestreId, carreraId ]
         );
     }
 
+    return grupo_id;
+    }
 
     static fetchAll() {
         return pool.query(`
