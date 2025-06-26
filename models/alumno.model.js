@@ -66,12 +66,14 @@ module.exports = class Alumno {
 
     static async fetchAllRegulares() {
         const query = `
-            SELECT *
-            FROM alumno a, usuario u
-            WHERE a.ivd_id = u.ivd_id AND
-                  a.regular = true
-            ORDER BY a.ivd_id ASC
-        `;
+          SELECT a.*, u.*, c.carrera_id, c.nombre as carrera_nombre
+          FROM alumno a
+          JOIN usuario u ON a.ivd_id = u.ivd_id
+          JOIN plan_estudio p ON p.plan_estudio_id = a.plan_estudio_id
+          JOIN carrera c ON c.carrera_id = p.carrera_id
+          WHERE a.regular
+          ORDER BY a.ivd_id ASC
+      `;
         return await pool.query(query);
     }
 
@@ -90,17 +92,21 @@ module.exports = class Alumno {
     }
 
     static async fetchAllIrregulares() {
-        const query = `
-            SELECT *,
-                  (SELECT COUNT(alumno_id) > 0 AS result
-                   FROM resultado_inscripcion
-                   WHERE alumno_id = a.ivd_id)
-                  AS asignada
-            FROM alumno a
-            WHERE a.ivd_id = u.ivd_id AND
-                  a.regular = false
-            ORDER BY a.ivd_id ASC
-        `;
+      const query = `
+          SELECT a.*, 
+               u.*,
+               p.carrera_id,
+               c.nombre as carrera_nombre,
+               (SELECT COUNT(alumno_id) > 0 AS result
+                FROM resultado_inscripcion
+                WHERE alumno_id = a.ivd_id) AS asignada
+        FROM alumno a
+        JOIN usuario u ON a.ivd_id = u.ivd_id
+        JOIN plan_estudio p ON p.plan_estudio_id = a.plan_estudio_id
+        JOIN carrera c ON c.carrera_id = p.carrera_id
+        WHERE a.regular = false
+        ORDER BY a.ivd_id ASC
+      `;
         return await pool.query(query);
     }
     
@@ -124,20 +130,23 @@ module.exports = class Alumno {
       return await pool.query(query, [carrera_id]);
     }
 
-    static async fetchNumeroIrregularesConMaterias(carrera_id) {
+    static async fetchNumeroIrregularesConMaterias(carreras_id) {
       const result = await pool.query(`
-            SELECT COUNT(*)
-            FROM (
-              SELECT alumno_id
-              FROM resultado_inscripcion
-              GROUP BY alumno_id
-            ) AS sub
-            JOIN alumno a ON a.ivd_id = sub.alumno_id
-            JOIN plan_estudio p ON p.plan_estudio_id = a.plan_estudio_id
-            WHERE a.inscripcion_completada = false AND p.carrera_id = $1;
-      `, [carrera_id]);
-      return parseInt(result.rows[0].count);
+        SELECT COUNT(*) AS count
+        FROM (
+          SELECT alumno_id
+          FROM resultado_inscripcion
+          GROUP BY alumno_id
+        ) AS sub
+        JOIN alumno a ON a.ivd_id = sub.alumno_id
+        JOIN plan_estudio p ON p.plan_estudio_id = a.plan_estudio_id
+        WHERE a.inscripcion_completada = false
+          AND p.carrera_id = ANY($1);
+      `, [carreras_id]);
+
+      return parseInt(result.rows[0].count, 10);
     }
+
     static async fetchAllResultadoAlumnoIrregular2(id) {
       return pool.query(`
         SELECT 
@@ -492,39 +501,43 @@ module.exports = class Alumno {
     }
 
     // Método para obtener número total de alumnos no inscritos
-    static async totalNoInscritos(carrera_id) {
-        const result = await pool.query(`
-          SELECT count(*) 
-          FROM alumno a
-          JOIN plan_estudio p ON p.plan_estudio_id = a.plan_estudio_id
-          WHERE a.inscripcion_completada = false AND p.carrera_id = $1`
-        , [carrera_id]);
-        return parseInt(result.rows[0].count);
+    static async totalNoInscritos(carreras_id) {
+      const result = await pool.query(`
+        SELECT COUNT(*) AS count
+        FROM alumno a
+        JOIN plan_estudio p ON p.plan_estudio_id = a.plan_estudio_id
+        WHERE a.inscripcion_completada = false
+          AND p.carrera_id = ANY($1);
+      `, [carreras_id]);
+
+      return parseInt(result.rows[0].count, 10);
     };
 
     // Método para obtener número total de alumnos no inscritos
-    static async numero_TotalAlumnoInscritos(carrera_id) {
-        const result = await pool.query(`
-          SELECT count(*) 
+    static async numero_TotalAlumnoInscritos(carreras_id) {
+      const result = await pool.query(`
+        SELECT COUNT(*) AS count
           FROM alumno a
           JOIN plan_estudio p ON p.plan_estudio_id = a.plan_estudio_id
-          WHERE a.inscripcion_completada = true AND p.carrera_id = $1`
-        , [carrera_id]);
-        return parseInt(result.rows[0].count);
+        WHERE a.inscripcion_completada = true
+          AND p.carrera_id = ANY($1);
+      `, [carreras_id]);
+
+      return parseInt(result.rows[0].count, 10);
     };
 
     //metodo para obtener el numero de alumnos no inscritos e inscritos, agrupado por semestres
-    static async alumnosComparacion(carrera_id){
+    static async alumnosComparacion(carreras_id){
         const result = await pool.query (`
             SELECT 
             a.semestre, count(CASE WHEN a.inscripcion_completada = TRUE THEN 1 END) AS inscritos, 
             COUNT(CASE WHEN a.inscripcion_completada = FALSE THEN 1 END) AS no_inscritos 
             FROM public.alumno a
             JOIN plan_estudio p ON p.plan_estudio_id = a.plan_estudio_id
-            WHERE p.carrera_id = $1
+            WHERE p.carrera_id = ANY($1)
             group by semestre
             order by semestre ASC;`
-            , [carrera_id]
+            , [carreras_id]
           );
         return result.rows;
     }

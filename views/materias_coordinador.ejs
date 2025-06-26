@@ -72,35 +72,37 @@
               <th scope="col" style="width: 5%; min-width: 50px;"></th>
             </tr>
           </thead>
-          <tbody>
+          <tbody id="tbody1">
             <% if (materias['s1']) { %>
               <% for (let materia of materias['s1']) { %>
-                <tr>
-                  <th scope="row" class="text-center align-middle"><%= materia.sep_id %></th>
-                  <td class="text-center align-middle"><%= materia.nombre %></td>
-                  <td class="text-center align-middle"><%= materia.carrera_nombre %></td>
-                  <td class="text-center align-middle"><%= materia.creditos %></td>
-                  <td class="text-center align-middle"><%= materia.semestre_plan %></td>
-                  <td class="text-center align-middle"><%= materia.horas_profesor %></td>
-                  <td class="text-center align-middle"><%= materia.tipo_salon ? materia.tipo_salon : 'null' %></td>
-                  <td class="text-center align-middle">
-                    <button class="btn btn-sm p-0 d-flex align-items-center justify-content-center" 
-                    style="width: 1.5rem;height: 1.5rem;border-radius: 50%;background-color: #84251c;color: white;border: none;"
-                    data-bs-toggle="modal" 
-                    data-bs-target="#eliminarMateriaModal"
-                    data-materia-id="<%= materia.materia_id %>"
-                    data-sep-id="<%= materia.sep_id %>"
-                    data-semestre-plan="<%= materia.semestre_plan %>"
-                    data-semestre-id="<%= materia.semestre_id %>"
-                    data-materia-nombre="<%= materia.nombre %>"
-                    data-materia-creditos="<%= materia.creditos %>"
-                    data-materia-tipo-salon="<%= materia.tipo_salon %>">
-                      <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-x-lg" viewBox="0 0 16 16">
-                        <path d="M2.146 2.854a.5.5 0 1 1 .708-.708L8 7.293l5.146-5.147a.5.5 0 0 1 .708.708L8.707 8l5.147 5.146a.5.5 0 0 1-.708.708L8 8.707l-5.146 5.147a.5.5 0 0 1-.708-.708L7.293 8z"/>
-                      </svg>
-                    </button>
-                  </td>
-                </tr>
+                <% if (!carrerasSeleccionadas || carrerasSeleccionadas.includes(materia.carrera_id)) { %>
+                  <tr>
+                    <th scope="row" class="text-center align-middle"><%= materia.sep_id %></th>
+                    <td class="text-center align-middle"><%= materia.nombre %></td>
+                    <td class="text-center align-middle"><%= materia.carrera_nombre %></td>
+                    <td class="text-center align-middle"><%= materia.creditos %></td>
+                    <td class="text-center align-middle"><%= materia.semestre_plan %></td>
+                    <td class="text-center align-middle"><%= materia.horas_profesor %></td>
+                    <td class="text-center align-middle"><%= materia.tipo_salon ? materia.tipo_salon : 'null' %></td>
+                    <td class="text-center align-middle">
+                      <button class="btn btn-sm p-0 d-flex align-items-center justify-content-center" 
+                      style="width: 1.5rem;height: 1.5rem;border-radius: 50%;background-color: #84251c;color: white;border: none;"
+                      data-bs-toggle="modal" 
+                      data-bs-target="#eliminarMateriaModal"
+                      data-materia-id="<%= materia.materia_id %>"
+                      data-sep-id="<%= materia.sep_id %>"
+                      data-semestre-plan="<%= materia.semestre_plan %>"
+                      data-semestre-id="<%= materia.semestre_id %>"
+                      data-materia-nombre="<%= materia.nombre %>"
+                      data-materia-creditos="<%= materia.creditos %>"
+                      data-materia-tipo-salon="<%= materia.tipo_salon %>">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-x-lg" viewBox="0 0 16 16">
+                          <path d="M2.146 2.854a.5.5 0 1 1 .708-.708L8 7.293l5.146-5.147a.5.5 0 0 1 .708.708L8.707 8l5.147 5.146a.5.5 0 0 1-.708.708L8 8.707l-5.146 5.147a.5.5 0 0 1-.708-.708L7.293 8z"/>
+                        </svg>
+                      </button>
+                    </td>
+                  </tr>
+                <% } %>
               <% } %>
             <% } %>
           </tbody>
@@ -139,35 +141,37 @@
               <th scope="col" style="width: 5%; min-width: 50px;"></th>
             </tr>
           </thead>
-          <tbody>
+          <tbody id="tbody2">
             <% if (materias['s2']) { %>
               <% for (let materia of materias['s2']) { %>
-                <tr>
-                  <th scope="row" class="text-center align-middle"><%= materia.sep_id %></th>
-                  <td class="text-center align-middle"><%= materia.nombre %></td>
-                  <td class="text-center align-middle"><%= materia.carrera_nombre %></td>
-                  <td class="text-center align-middle"><%= materia.creditos %></td>
-                  <td class="text-center align-middle"><%= materia.semestre_plan %></td>
-                  <td class="text-center align-middle"><%= materia.horas_profesor %></td>
-                  <td class="text-center align-middle"><%= materia.tipo_salon ? materia.tipo_salon : 'null' %></td>
-                  <td class="text-center align-middle">
-                    <button class="btn btn-sm p-0 d-flex align-items-center justify-content-center" 
-                    style="width: 1.5rem;height: 1.5rem;border-radius: 50%;background-color: #84251c;color: white;border: none;"
-                    data-bs-toggle="modal" 
-                    data-bs-target="#eliminarMateriaModal"
-                    data-materia-id="<%= materia.materia_id %>"
-                    data-sep-id="<%= materia.sep_id %>"
-                    data-semestre-plan="<%= materia.semestre_plan %>"
-                    data-semestre-id="<%= materia.semestre_id %>"
-                    data-materia-nombre="<%= materia.nombre %>"
-                    data-materia-creditos="<%= materia.creditos %>"
-                    data-materia-tipo-salon="<%= materia.tipo_salon %>">
-                      <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-x-lg" viewBox="0 0 16 16">
-                        <path d="M2.146 2.854a.5.5 0 1 1 .708-.708L8 7.293l5.146-5.147a.5.5 0 0 1 .708.708L8.707 8l5.147 5.146a.5.5 0 0 1-.708.708L8 8.707l-5.146 5.147a.5.5 0 0 1-.708-.708L7.293 8z"/>
-                      </svg>
-                    </button>
-                  </td>
-                </tr>
+                <% if (!carrerasSeleccionadas || carrerasSeleccionadas.includes(materia.carrera_id)) { %>
+                  <tr>
+                    <th scope="row" class="text-center align-middle"><%= materia.sep_id %></th>
+                    <td class="text-center align-middle"><%= materia.nombre %></td>
+                    <td class="text-center align-middle"><%= materia.carrera_nombre %></td>
+                    <td class="text-center align-middle"><%= materia.creditos %></td>
+                    <td class="text-center align-middle"><%= materia.semestre_plan %></td>
+                    <td class="text-center align-middle"><%= materia.horas_profesor %></td>
+                    <td class="text-center align-middle"><%= materia.tipo_salon ? materia.tipo_salon : 'null' %></td>
+                    <td class="text-center align-middle">
+                      <button class="btn btn-sm p-0 d-flex align-items-center justify-content-center" 
+                      style="width: 1.5rem;height: 1.5rem;border-radius: 50%;background-color: #84251c;color: white;border: none;"
+                      data-bs-toggle="modal" 
+                      data-bs-target="#eliminarMateriaModal"
+                      data-materia-id="<%= materia.materia_id %>"
+                      data-sep-id="<%= materia.sep_id %>"
+                      data-semestre-plan="<%= materia.semestre_plan %>"
+                      data-semestre-id="<%= materia.semestre_id %>"
+                      data-materia-nombre="<%= materia.nombre %>"
+                      data-materia-creditos="<%= materia.creditos %>"
+                      data-materia-tipo-salon="<%= materia.tipo_salon %>">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-x-lg" viewBox="0 0 16 16">
+                          <path d="M2.146 2.854a.5.5 0 1 1 .708-.708L8 7.293l5.146-5.147a.5.5 0 0 1 .708.708L8.707 8l5.147 5.146a.5.5 0 0 1-.708.708L8 8.707l-5.146 5.147a.5.5 0 0 1-.708-.708L7.293 8z"/>
+                        </svg>
+                      </button>
+                    </td>
+                  </tr>
+                <% } %>
               <% } %>
             <% } %>
           </tbody>
@@ -205,35 +209,37 @@
               <th scope="col" style="width: 5%; min-width: 50px;"></th>
             </tr>
           </thead>
-          <tbody>
+          <tbody id="tbody3">
             <% if (materias['s3']) { %>
               <% for (let materia of materias['s3']) { %>
-                <tr>
-                  <th scope="row" class="text-center align-middle"><%= materia.sep_id %></th>
-                  <td class="text-center align-middle"><%= materia.nombre %></td>
-                  <td class="text-center align-middle"><%= materia.carrera_nombre %></td>
-                  <td class="text-center align-middle"><%= materia.creditos %></td>
-                  <td class="text-center align-middle"><%= materia.semestre_plan %></td>
-                  <td class="text-center align-middle"><%= materia.horas_profesor %></td>
-                  <td class="text-center align-middle"><%= materia.tipo_salon ? materia.tipo_salon : 'null' %></td>
-                  <td class="text-center align-middle">
-                    <button class="btn btn-sm p-0 d-flex align-items-center justify-content-center" 
-                    style="width: 1.5rem;height: 1.5rem;border-radius: 50%;background-color: #84251c;color: white;border: none;"
-                    data-bs-toggle="modal" 
-                    data-bs-target="#eliminarMateriaModal"
-                    data-materia-id="<%= materia.materia_id %>"
-                    data-sep-id="<%= materia.sep_id %>"
-                    data-semestre-plan="<%= materia.semestre_plan %>"
-                    data-semestre-id="<%= materia.semestre_id %>"
-                    data-materia-nombre="<%= materia.nombre %>"
-                    data-materia-creditos="<%= materia.creditos %>"
-                    data-materia-tipo-salon="<%= materia.tipo_salon %>">
-                      <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-x-lg" viewBox="0 0 16 16">
-                        <path d="M2.146 2.854a.5.5 0 1 1 .708-.708L8 7.293l5.146-5.147a.5.5 0 0 1 .708.708L8.707 8l5.147 5.146a.5.5 0 0 1-.708.708L8 8.707l-5.146 5.147a.5.5 0 0 1-.708-.708L7.293 8z"/>
-                      </svg>
-                    </button>
-                  </td>
-                </tr>
+                <% if (!carrerasSeleccionadas || carrerasSeleccionadas.includes(materia.carrera_id)) { %>
+                  <tr>
+                    <th scope="row" class="text-center align-middle"><%= materia.sep_id %></th>
+                    <td class="text-center align-middle"><%= materia.nombre %></td>
+                    <td class="text-center align-middle"><%= materia.carrera_nombre %></td>
+                    <td class="text-center align-middle"><%= materia.creditos %></td>
+                    <td class="text-center align-middle"><%= materia.semestre_plan %></td>
+                    <td class="text-center align-middle"><%= materia.horas_profesor %></td>
+                    <td class="text-center align-middle"><%= materia.tipo_salon ? materia.tipo_salon : 'null' %></td>
+                    <td class="text-center align-middle">
+                      <button class="btn btn-sm p-0 d-flex align-items-center justify-content-center" 
+                      style="width: 1.5rem;height: 1.5rem;border-radius: 50%;background-color: #84251c;color: white;border: none;"
+                      data-bs-toggle="modal" 
+                      data-bs-target="#eliminarMateriaModal"
+                      data-materia-id="<%= materia.materia_id %>"
+                      data-sep-id="<%= materia.sep_id %>"
+                      data-semestre-plan="<%= materia.semestre_plan %>"
+                      data-semestre-id="<%= materia.semestre_id %>"
+                      data-materia-nombre="<%= materia.nombre %>"
+                      data-materia-creditos="<%= materia.creditos %>"
+                      data-materia-tipo-salon="<%= materia.tipo_salon %>">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-x-lg" viewBox="0 0 16 16">
+                          <path d="M2.146 2.854a.5.5 0 1 1 .708-.708L8 7.293l5.146-5.147a.5.5 0 0 1 .708.708L8.707 8l5.147 5.146a.5.5 0 0 1-.708.708L8 8.707l-5.146 5.147a.5.5 0 0 1-.708-.708L7.293 8z"/>
+                        </svg>
+                      </button>
+                    </td>
+                  </tr>
+                <% } %>
               <% } %>
             <% } %>
           </tbody>
@@ -272,35 +278,37 @@
               <th scope="col" style="width: 5%; min-width: 50px;"></th>
             </tr>
           </thead>
-          <tbody>
+          <tbody id="tbody4">
             <% if (materias['s4']) { %>
               <% for (let materia of materias['s4']) { %>
-                <tr>
-                  <th scope="row" class="text-center align-middle"><%= materia.sep_id %></th>
-                  <td class="text-center align-middle"><%= materia.nombre %></td>
-                  <td class="text-center align-middle"><%= materia.carrera_nombre %></td>
-                  <td class="text-center align-middle"><%= materia.creditos %></td>
-                  <td class="text-center align-middle"><%= materia.semestre_plan %></td>
-                  <td class="text-center align-middle"><%= materia.horas_profesor %></td>
-                  <td class="text-center align-middle"><%= materia.tipo_salon ? materia.tipo_salon : 'null' %></td>
-                  <td class="text-center align-middle">
-                    <button class="btn btn-sm p-0 d-flex align-items-center justify-content-center" 
-                    style="width: 1.5rem;height: 1.5rem;border-radius: 50%;background-color: #84251c;color: white;border: none;"
-                    data-bs-toggle="modal" 
-                    data-bs-target="#eliminarMateriaModal"
-                    data-materia-id="<%= materia.materia_id %>"
-                    data-sep-id="<%= materia.sep_id %>"
-                    data-semestre-plan="<%= materia.semestre_plan %>"
-                    data-semestre-id="<%= materia.semestre_id %>"
-                    data-materia-nombre="<%= materia.nombre %>"
-                    data-materia-creditos="<%= materia.creditos %>"
-                    data-materia-tipo-salon="<%= materia.tipo_salon %>">
-                      <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-x-lg" viewBox="0 0 16 16">
-                        <path d="M2.146 2.854a.5.5 0 1 1 .708-.708L8 7.293l5.146-5.147a.5.5 0 0 1 .708.708L8.707 8l5.147 5.146a.5.5 0 0 1-.708.708L8 8.707l-5.146 5.147a.5.5 0 0 1-.708-.708L7.293 8z"/>
-                      </svg>
-                    </button>
-                  </td>
-                </tr>
+                <% if (!carrerasSeleccionadas || carrerasSeleccionadas.includes(materia.carrera_id)) { %>
+                  <tr>
+                    <th scope="row" class="text-center align-middle"><%= materia.sep_id %></th>
+                    <td class="text-center align-middle"><%= materia.nombre %></td>
+                    <td class="text-center align-middle"><%= materia.carrera_nombre %></td>
+                    <td class="text-center align-middle"><%= materia.creditos %></td>
+                    <td class="text-center align-middle"><%= materia.semestre_plan %></td>
+                    <td class="text-center align-middle"><%= materia.horas_profesor %></td>
+                    <td class="text-center align-middle"><%= materia.tipo_salon ? materia.tipo_salon : 'null' %></td>
+                    <td class="text-center align-middle">
+                      <button class="btn btn-sm p-0 d-flex align-items-center justify-content-center" 
+                      style="width: 1.5rem;height: 1.5rem;border-radius: 50%;background-color: #84251c;color: white;border: none;"
+                      data-bs-toggle="modal" 
+                      data-bs-target="#eliminarMateriaModal"
+                      data-materia-id="<%= materia.materia_id %>"
+                      data-sep-id="<%= materia.sep_id %>"
+                      data-semestre-plan="<%= materia.semestre_plan %>"
+                      data-semestre-id="<%= materia.semestre_id %>"
+                      data-materia-nombre="<%= materia.nombre %>"
+                      data-materia-creditos="<%= materia.creditos %>"
+                      data-materia-tipo-salon="<%= materia.tipo_salon %>">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-x-lg" viewBox="0 0 16 16">
+                          <path d="M2.146 2.854a.5.5 0 1 1 .708-.708L8 7.293l5.146-5.147a.5.5 0 0 1 .708.708L8.707 8l5.147 5.146a.5.5 0 0 1-.708.708L8 8.707l-5.146 5.147a.5.5 0 0 1-.708-.708L7.293 8z"/>
+                        </svg>
+                      </button>
+                    </td>
+                  </tr>
+                <% } %>
               <% } %>
             <% } %>
           </tbody>
@@ -339,35 +347,37 @@
               <th scope="col" style="width: 5%; min-width: 50px;"></th>
             </tr>
           </thead>
-          <tbody>
+          <tbody id="tbody5">
             <% if (materias['s5']) { %>
               <% for (let materia of materias['s5']) { %>
-                <tr>
-                  <th scope="row" class="text-center align-middle"><%= materia.sep_id %></th>
-                  <td class="text-center align-middle"><%= materia.nombre %></td>
-                  <td class="text-center align-middle"><%= materia.carrera_nombre %></td>
-                  <td class="text-center align-middle"><%= materia.creditos %></td>
-                  <td class="text-center align-middle"><%= materia.semestre_plan %></td>
-                  <td class="text-center align-middle"><%= materia.horas_profesor %></td>
-                  <td class="text-center align-middle"><%= materia.tipo_salon ? materia.tipo_salon : 'null' %></td>
-                  <td class="text-center align-middle">
-                    <button class="btn btn-sm p-0 d-flex align-items-center justify-content-center" 
-                    style="width: 1.5rem;height: 1.5rem;border-radius: 50%;background-color: #84251c;color: white;border: none;"
-                    data-bs-toggle="modal" 
-                    data-bs-target="#eliminarMateriaModal"
-                    data-materia-id="<%= materia.materia_id %>"
-                    data-sep-id="<%= materia.sep_id %>"
-                    data-semestre-plan="<%= materia.semestre_plan %>"
-                    data-semestre-id="<%= materia.semestre_id %>"
-                    data-materia-nombre="<%= materia.nombre %>"
-                    data-materia-creditos="<%= materia.creditos %>"
-                    data-materia-tipo-salon="<%= materia.tipo_salon %>">
-                      <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-x-lg" viewBox="0 0 16 16">
-                        <path d="M2.146 2.854a.5.5 0 1 1 .708-.708L8 7.293l5.146-5.147a.5.5 0 0 1 .708.708L8.707 8l5.147 5.146a.5.5 0 0 1-.708.708L8 8.707l-5.146 5.147a.5.5 0 0 1-.708-.708L7.293 8z"/>
-                      </svg>
-                    </button>
-                  </td>
-                </tr>
+                <% if (!carrerasSeleccionadas || carrerasSeleccionadas.includes(materia.carrera_id)) { %>
+                  <tr>
+                    <th scope="row" class="text-center align-middle"><%= materia.sep_id %></th>
+                    <td class="text-center align-middle"><%= materia.nombre %></td>
+                    <td class="text-center align-middle"><%= materia.carrera_nombre %></td>
+                    <td class="text-center align-middle"><%= materia.creditos %></td>
+                    <td class="text-center align-middle"><%= materia.semestre_plan %></td>
+                    <td class="text-center align-middle"><%= materia.horas_profesor %></td>
+                    <td class="text-center align-middle"><%= materia.tipo_salon ? materia.tipo_salon : 'null' %></td>
+                    <td class="text-center align-middle">
+                      <button class="btn btn-sm p-0 d-flex align-items-center justify-content-center" 
+                      style="width: 1.5rem;height: 1.5rem;border-radius: 50%;background-color: #84251c;color: white;border: none;"
+                      data-bs-toggle="modal" 
+                      data-bs-target="#eliminarMateriaModal"
+                      data-materia-id="<%= materia.materia_id %>"
+                      data-sep-id="<%= materia.sep_id %>"
+                      data-semestre-plan="<%= materia.semestre_plan %>"
+                      data-semestre-id="<%= materia.semestre_id %>"
+                      data-materia-nombre="<%= materia.nombre %>"
+                      data-materia-creditos="<%= materia.creditos %>"
+                      data-materia-tipo-salon="<%= materia.tipo_salon %>">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-x-lg" viewBox="0 0 16 16">
+                          <path d="M2.146 2.854a.5.5 0 1 1 .708-.708L8 7.293l5.146-5.147a.5.5 0 0 1 .708.708L8.707 8l5.147 5.146a.5.5 0 0 1-.708.708L8 8.707l-5.146 5.147a.5.5 0 0 1-.708-.708L7.293 8z"/>
+                        </svg>
+                      </button>
+                    </td>
+                  </tr>
+                <% } %>
               <% } %>
             <% } %>
           </tbody>
@@ -405,35 +415,37 @@
               <th scope="col" style="width: 5%; min-width: 50px;"></th>
             </tr>
           </thead>
-          <tbody>
+          <tbody id="tbody6">
             <% if (materias['s6']) { %>
               <% for (let materia of materias['s6']) { %>
-                <tr>
-                  <th scope="row" class="text-center align-middle"><%= materia.sep_id %></th>
-                  <td class="text-center align-middle"><%= materia.nombre %></td>
-                  <td class="text-center align-middle"><%= materia.carrera_nombre %></td>
-                  <td class="text-center align-middle"><%= materia.creditos %></td>
-                  <td class="text-center align-middle"><%= materia.semestre_plan %></td>
-                  <td class="text-center align-middle"><%= materia.horas_profesor %></td>
-                  <td class="text-center align-middle"><%= materia.tipo_salon ? materia.tipo_salon : 'null' %></td>
-                  <td class="text-center align-middle">
-                    <button class="btn btn-sm p-0 d-flex align-items-center justify-content-center" 
-                    style="width: 1.5rem;height: 1.5rem;border-radius: 50%;background-color: #84251c;color: white;border: none;"
-                    data-bs-toggle="modal" 
-                    data-bs-target="#eliminarMateriaModal"
-                    data-materia-id="<%= materia.materia_id %>"
-                    data-sep-id="<%= materia.sep_id %>"
-                    data-semestre-plan="<%= materia.semestre_plan %>"
-                    data-semestre-id="<%= materia.semestre_id %>"
-                    data-materia-nombre="<%= materia.nombre %>"
-                    data-materia-creditos="<%= materia.creditos %>"
-                    data-materia-tipo-salon="<%= materia.tipo_salon %>">
-                      <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-x-lg" viewBox="0 0 16 16">
-                        <path d="M2.146 2.854a.5.5 0 1 1 .708-.708L8 7.293l5.146-5.147a.5.5 0 0 1 .708.708L8.707 8l5.147 5.146a.5.5 0 0 1-.708.708L8 8.707l-5.146 5.147a.5.5 0 0 1-.708-.708L7.293 8z"/>
-                      </svg>
-                    </button>
-                  </td>
-                </tr>
+                <% if (!carrerasSeleccionadas || carrerasSeleccionadas.includes(materia.carrera_id)) { %>
+                  <tr>
+                    <th scope="row" class="text-center align-middle"><%= materia.sep_id %></th>
+                    <td class="text-center align-middle"><%= materia.nombre %></td>
+                    <td class="text-center align-middle"><%= materia.carrera_nombre %></td>
+                    <td class="text-center align-middle"><%= materia.creditos %></td>
+                    <td class="text-center align-middle"><%= materia.semestre_plan %></td>
+                    <td class="text-center align-middle"><%= materia.horas_profesor %></td>
+                    <td class="text-center align-middle"><%= materia.tipo_salon ? materia.tipo_salon : 'null' %></td>
+                    <td class="text-center align-middle">
+                      <button class="btn btn-sm p-0 d-flex align-items-center justify-content-center" 
+                      style="width: 1.5rem;height: 1.5rem;border-radius: 50%;background-color: #84251c;color: white;border: none;"
+                      data-bs-toggle="modal" 
+                      data-bs-target="#eliminarMateriaModal"
+                      data-materia-id="<%= materia.materia_id %>"
+                      data-sep-id="<%= materia.sep_id %>"
+                      data-semestre-plan="<%= materia.semestre_plan %>"
+                      data-semestre-id="<%= materia.semestre_id %>"
+                      data-materia-nombre="<%= materia.nombre %>"
+                      data-materia-creditos="<%= materia.creditos %>"
+                      data-materia-tipo-salon="<%= materia.tipo_salon %>">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-x-lg" viewBox="0 0 16 16">
+                          <path d="M2.146 2.854a.5.5 0 1 1 .708-.708L8 7.293l5.146-5.147a.5.5 0 0 1 .708.708L8.707 8l5.147 5.146a.5.5 0 0 1-.708.708L8 8.707l-5.146 5.147a.5.5 0 0 1-.708-.708L7.293 8z"/>
+                        </svg>
+                      </button>
+                    </td>
+                  </tr>
+                <% } %>
               <% } %>
             <% } %>
           </tbody>
@@ -472,35 +484,37 @@
               <th scope="col" style="width: 5%; min-width: 50px;"></th>
             </tr>
           </thead>
-          <tbody>
+          <tbody id="tbody7">
             <% if (materias['s7']) { %>
               <% for (let materia of materias['s7']) { %>
-                <tr>
-                  <th scope="row" class="text-center align-middle"><%= materia.sep_id %></th>
-                  <td class="text-center align-middle"><%= materia.nombre %></td>
-                  <td class="text-center align-middle"><%= materia.carrera_nombre %></td>
-                  <td class="text-center align-middle"><%= materia.creditos %></td>
-                  <td class="text-center align-middle"><%= materia.semestre_plan %></td>
-                  <td class="text-center align-middle"><%= materia.horas_profesor %></td>
-                  <td class="text-center align-middle"><%= materia.tipo_salon ? materia.tipo_salon : 'null' %></td>
-                  <td class="text-center align-middle">
-                    <button class="btn btn-sm p-0 d-flex align-items-center justify-content-center" 
-                    style="width: 1.5rem;height: 1.5rem;border-radius: 50%;background-color: #84251c;color: white;border: none;"
-                    data-bs-toggle="modal" 
-                    data-bs-target="#eliminarMateriaModal"
-                    data-materia-id="<%= materia.materia_id %>"
-                    data-sep-id="<%= materia.sep_id %>"
-                    data-semestre-plan="<%= materia.semestre_plan %>"
-                    data-semestre-id="<%= materia.semestre_id %>"
-                    data-materia-nombre="<%= materia.nombre %>"
-                    data-materia-creditos="<%= materia.creditos %>"
-                    data-materia-tipo-salon="<%= materia.tipo_salon %>">
-                      <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-x-lg" viewBox="0 0 16 16">
-                        <path d="M2.146 2.854a.5.5 0 1 1 .708-.708L8 7.293l5.146-5.147a.5.5 0 0 1 .708.708L8.707 8l5.147 5.146a.5.5 0 0 1-.708.708L8 8.707l-5.146 5.147a.5.5 0 0 1-.708-.708L7.293 8z"/>
-                      </svg>
-                    </button>
-                  </td>
-                </tr>
+                 <% if (!carrerasSeleccionadas || carrerasSeleccionadas.includes(materia.carrera_id)) { %>
+                  <tr>
+                    <th scope="row" class="text-center align-middle"><%= materia.sep_id %></th>
+                    <td class="text-center align-middle"><%= materia.nombre %></td>
+                    <td class="text-center align-middle"><%= materia.carrera_nombre %></td>
+                    <td class="text-center align-middle"><%= materia.creditos %></td>
+                    <td class="text-center align-middle"><%= materia.semestre_plan %></td>
+                    <td class="text-center align-middle"><%= materia.horas_profesor %></td>
+                    <td class="text-center align-middle"><%= materia.tipo_salon ? materia.tipo_salon : 'null' %></td>
+                    <td class="text-center align-middle">
+                      <button class="btn btn-sm p-0 d-flex align-items-center justify-content-center" 
+                      style="width: 1.5rem;height: 1.5rem;border-radius: 50%;background-color: #84251c;color: white;border: none;"
+                      data-bs-toggle="modal" 
+                      data-bs-target="#eliminarMateriaModal"
+                      data-materia-id="<%= materia.materia_id %>"
+                      data-sep-id="<%= materia.sep_id %>"
+                      data-semestre-plan="<%= materia.semestre_plan %>"
+                      data-semestre-id="<%= materia.semestre_id %>"
+                      data-materia-nombre="<%= materia.nombre %>"
+                      data-materia-creditos="<%= materia.creditos %>"
+                      data-materia-tipo-salon="<%= materia.tipo_salon %>">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-x-lg" viewBox="0 0 16 16">
+                          <path d="M2.146 2.854a.5.5 0 1 1 .708-.708L8 7.293l5.146-5.147a.5.5 0 0 1 .708.708L8.707 8l5.147 5.146a.5.5 0 0 1-.708.708L8 8.707l-5.146 5.147a.5.5 0 0 1-.708-.708L7.293 8z"/>
+                        </svg>
+                      </button>
+                    </td>
+                  </tr>
+                <% } %>
               <% } %>
             <% } %>
           </tbody>
@@ -539,35 +553,37 @@
               <th scope="col" style="width: 5%; min-width: 50px;"></th>
             </tr>
           </thead>
-          <tbody>
+          <tbody id="tbody8">
             <% if (materias['s8']) { %>
               <% for (let materia of materias['s8']) { %>
-                <tr>
-                  <th scope="row" class="text-center align-middle"><%= materia.sep_id %></th>
-                  <td class="text-center align-middle"><%= materia.nombre %></td>
-                  <td class="text-center align-middle"><%= materia.carrera_nombre %></td>
-                  <td class="text-center align-middle"><%= materia.creditos %></td>
-                  <td class="text-center align-middle"><%= materia.semestre_plan %></td>
-                  <td class="text-center align-middle"><%= materia.horas_profesor %></td>
-                  <td class="text-center align-middle"><%= materia.tipo_salon ? materia.tipo_salon : 'null' %></td>
-                  <td class="text-center align-middle">
-                    <button class="btn btn-sm p-0 d-flex align-items-center justify-content-center" 
-                    style="width: 1.5rem;height: 1.5rem;border-radius: 50%;background-color: #84251c;color: white;border: none;"
-                    data-bs-toggle="modal" 
-                    data-bs-target="#eliminarMateriaModal"
-                    data-materia-id="<%= materia.materia_id %>"
-                    data-sep-id="<%= materia.sep_id %>"
-                    data-semestre-plan="<%= materia.semestre_plan %>"
-                    data-semestre-id="<%= materia.semestre_id %>"
-                    data-materia-nombre="<%= materia.nombre %>"
-                    data-materia-creditos="<%= materia.creditos %>"
-                    data-materia-tipo-salon="<%= materia.tipo_salon %>">
-                      <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-x-lg" viewBox="0 0 16 16">
-                        <path d="M2.146 2.854a.5.5 0 1 1 .708-.708L8 7.293l5.146-5.147a.5.5 0 0 1 .708.708L8.707 8l5.147 5.146a.5.5 0 0 1-.708.708L8 8.707l-5.146 5.147a.5.5 0 0 1-.708-.708L7.293 8z"/>
-                      </svg>
-                    </button>
-                  </td>
-                </tr>
+                <% if (!carrerasSeleccionadas || carrerasSeleccionadas.includes(materia.carrera_id)) { %>
+                  <tr>
+                    <th scope="row" class="text-center align-middle"><%= materia.sep_id %></th>
+                    <td class="text-center align-middle"><%= materia.nombre %></td>
+                    <td class="text-center align-middle"><%= materia.carrera_nombre %></td>
+                    <td class="text-center align-middle"><%= materia.creditos %></td>
+                    <td class="text-center align-middle"><%= materia.semestre_plan %></td>
+                    <td class="text-center align-middle"><%= materia.horas_profesor %></td>
+                    <td class="text-center align-middle"><%= materia.tipo_salon ? materia.tipo_salon : 'null' %></td>
+                    <td class="text-center align-middle">
+                      <button class="btn btn-sm p-0 d-flex align-items-center justify-content-center" 
+                      style="width: 1.5rem;height: 1.5rem;border-radius: 50%;background-color: #84251c;color: white;border: none;"
+                      data-bs-toggle="modal" 
+                      data-bs-target="#eliminarMateriaModal"
+                      data-materia-id="<%= materia.materia_id %>"
+                      data-sep-id="<%= materia.sep_id %>"
+                      data-semestre-plan="<%= materia.semestre_plan %>"
+                      data-semestre-id="<%= materia.semestre_id %>"
+                      data-materia-nombre="<%= materia.nombre %>"
+                      data-materia-creditos="<%= materia.creditos %>"
+                      data-materia-tipo-salon="<%= materia.tipo_salon %>">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-x-lg" viewBox="0 0 16 16">
+                          <path d="M2.146 2.854a.5.5 0 1 1 .708-.708L8 7.293l5.146-5.147a.5.5 0 0 1 .708.708L8.707 8l5.147 5.146a.5.5 0 0 1-.708.708L8 8.707l-5.146 5.147a.5.5 0 0 1-.708-.708L7.293 8z"/>
+                        </svg>
+                      </button>
+                    </td>
+                  </tr>
+                <% } %>
               <% } %>
             <% } %>
           </tbody>
@@ -606,35 +622,37 @@
               <th scope="col" style="width: 5%; min-width: 50px;"></th>
             </tr>
           </thead>
-          <tbody>
+          <tbody id="tbody9">
             <% if (materias['s9']) { %>
               <% for (let materia of materias['s9']) { %>
-                <tr>
-                  <th scope="row" class="text-center align-middle"><%= materia.sep_id %></th>
-                  <td class="text-center align-middle"><%= materia.nombre %></td>
-                  <td class="text-center align-middle"><%= materia.carrera_nombre %></td>
-                  <td class="text-center align-middle"><%= materia.creditos %></td>
-                  <td class="text-center align-middle"><%= materia.semestre_plan %></td>
-                  <td class="text-center align-middle"><%= materia.horas_profesor %></td>
-                  <td class="text-center align-middle"><%= materia.tipo_salon ? materia.tipo_salon : 'null' %></td>
-                  <td class="text-center align-middle">
-                    <button class="btn btn-sm p-0 d-flex align-items-center justify-content-center" 
-                    style="width: 1.5rem;height: 1.5rem;border-radius: 50%;background-color: #84251c;color: white;border: none;"
-                    data-bs-toggle="modal" 
-                    data-bs-target="#eliminarMateriaModal"
-                    data-materia-id="<%= materia.materia_id %>"
-                    data-sep-id="<%= materia.sep_id %>"
-                    data-semestre-plan="<%= materia.semestre_plan %>"
-                    data-semestre-id="<%= materia.semestre_id %>"
-                    data-materia-nombre="<%= materia.nombre %>"
-                    data-materia-creditos="<%= materia.creditos %>"
-                    data-materia-tipo-salon="<%= materia.tipo_salon %>">
-                      <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-x-lg" viewBox="0 0 16 16">
-                        <path d="M2.146 2.854a.5.5 0 1 1 .708-.708L8 7.293l5.146-5.147a.5.5 0 0 1 .708.708L8.707 8l5.147 5.146a.5.5 0 0 1-.708.708L8 8.707l-5.146 5.147a.5.5 0 0 1-.708-.708L7.293 8z"/>
-                      </svg>
-                    </button>
-                  </td>
-                </tr>
+                <% if (!carrerasSeleccionadas || carrerasSeleccionadas.includes(materia.carrera_id)) { %>
+                  <tr>
+                    <th scope="row" class="text-center align-middle"><%= materia.sep_id %></th>
+                    <td class="text-center align-middle"><%= materia.nombre %></td>
+                    <td class="text-center align-middle"><%= materia.carrera_nombre %></td>
+                    <td class="text-center align-middle"><%= materia.creditos %></td>
+                    <td class="text-center align-middle"><%= materia.semestre_plan %></td>
+                    <td class="text-center align-middle"><%= materia.horas_profesor %></td>
+                    <td class="text-center align-middle"><%= materia.tipo_salon ? materia.tipo_salon : 'null' %></td>
+                    <td class="text-center align-middle">
+                      <button class="btn btn-sm p-0 d-flex align-items-center justify-content-center" 
+                      style="width: 1.5rem;height: 1.5rem;border-radius: 50%;background-color: #84251c;color: white;border: none;"
+                      data-bs-toggle="modal" 
+                      data-bs-target="#eliminarMateriaModal"
+                      data-materia-id="<%= materia.materia_id %>"
+                      data-sep-id="<%= materia.sep_id %>"
+                      data-semestre-plan="<%= materia.semestre_plan %>"
+                      data-semestre-id="<%= materia.semestre_id %>"
+                      data-materia-nombre="<%= materia.nombre %>"
+                      data-materia-creditos="<%= materia.creditos %>"
+                      data-materia-tipo-salon="<%= materia.tipo_salon %>">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-x-lg" viewBox="0 0 16 16">
+                          <path d="M2.146 2.854a.5.5 0 1 1 .708-.708L8 7.293l5.146-5.147a.5.5 0 0 1 .708.708L8.707 8l5.147 5.146a.5.5 0 0 1-.708.708L8 8.707l-5.146 5.147a.5.5 0 0 1-.708-.708L7.293 8z"/>
+                        </svg>
+                      </button>
+                    </td>
+                  </tr>
+                <% } %>
               <% } %>
             <% } %>
           </tbody>
@@ -669,10 +687,11 @@
               <table class="table table-hover" id="selectedMateriasTabla" style="min-width: 800px; width: 100%;">
                 <thead class="table-light">
                   <tr>
-                    <th scope="col" style="width: 31%; min-width: 100px;" class="text-center align-middle">Nombre</th>
-                    <th scope="col" class="text-center align-middle">SEP ID</th>
-                    <th scope="col" class="text-center align-middle">Semestre</th>
-                    <th scope="col" style="width: 16%; min-width: 150px;" class="text-center align-middle">Tipo de Salón</th>
+                    <th scope="col" style="width: 25%; min-width: 100px;" class="text-center align-middle">Nombre</th>
+                    <th scope="col" style="width: 15%;" class="text-center align-middle">SEP ID</th>
+                    <th scope="col" style="width: 25%; min-width: 100px;" class="text-center align-middle">Carrera</th>
+                    <th scope="col" style="width: 15%; min-width: 100px;" class="text-center align-middle">Semestre</th>
+                    <th scope="col" style="width: 15%; min-width: 150px;" class="text-center align-middle">Tipo de Salón</th>
                     <th scope="col" style="width: 5%; min-width: 50px;"></th>
                   </tr>
                 </thead>
@@ -694,10 +713,11 @@
               <table class="table table-hover" id="materiasTabla" style="min-width: 800px; width: 100%;">
                 <thead class="table-light">
                   <tr>
-                    <th scope="col" style="width: 31%; min-width: 100px;" class="text-center align-middle">Nombre</th>
-                    <th scope="col" class="text-center align-middle">SEP ID</th>
-                    <th scope="col" class="text-center align-middle">Semestre</th>
-                    <th scope="col" style="width: 16%; min-width: 150px;" class="text-center align-middle">Tipo de Salón</th>
+                    <th scope="col" style="width: 25%; min-width: 100px;" class="text-center align-middle">Nombre</th>
+                    <th scope="col" style="width: 15%;" class="text-center align-middle">SEP ID</th>
+                    <th scope="col" style="width: 25%; min-width: 100px;" class="text-center align-middle">Carrera</th>
+                    <th scope="col" style="width: 15%; min-width: 100px;" class="text-center align-middle">Semestre</th>
+                    <th scope="col" style="width: 15%; min-width: 150px;" class="text-center align-middle">Tipo de Salón</th>
                     <th scope="col" style="width: 5%; min-width: 50px;"></th>
                   </tr>
                 </thead>
@@ -779,6 +799,76 @@
     </script>
   <% } %>
   <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      const checkboxes = document.querySelectorAll('.carrera-checkbox');
+
+      async function actualizarMaterias() {
+        // 1) Leer carreras seleccionadas
+        const seleccionadas = Array.from(checkboxes)
+          .filter(cb => cb.checked)
+          .map(cb => parseInt(cb.value));
+
+        try {
+          // 2) Traer la estructura completa por semestre
+          const res = await fetch('/coordinador/materias/filtradas');
+          const { materiasPorSemestre } = await res.json();
+
+          // 3) Para cada semestre s1…s9 limpia y rellena el tbody correspondiente
+          for (let i = 1; i <= 9; i++) {
+            const tbody = document.getElementById(`tbody${i}`);
+            if (!tbody) continue;
+            tbody.innerHTML = ''; // limpiar
+
+            const key = `s${i}`;
+            const lista = materiasPorSemestre[key] || [];
+
+            // 4) Filtrar por carrera y agregar filas
+            lista
+              .filter(m => seleccionadas.includes(m.carrera_id))
+              .forEach(materia => {
+                const tr = document.createElement('tr');
+                tr.innerHTML = `
+                  <th scope="row" class="text-center align-middle">${materia.sep_id}</th>
+                  <td class="text-center align-middle">${materia.nombre}</td>
+                  <td class="text-center align-middle">${materia.carrera_nombre}</td>
+                  <td class="text-center align-middle">${materia.creditos}</td>
+                  <td class="text-center align-middle">${materia.semestre_plan}</td>
+                  <td class="text-center align-middle">${materia.horas_profesor}</td>
+                  <td class="text-center align-middle">${materia.tipo_salon || 'null'}</td>
+                  <td class="text-center align-middle">
+                    <button class="btn btn-sm p-0 d-flex align-items-center justify-content-center"
+                            style="width:1.5rem;height:1.5rem;border-radius:50%;background-color:#84251c;color:white;border:none;"
+                            data-bs-toggle="modal"
+                            data-bs-target="#eliminarMateriaModal"
+                            data-materia-id="${materia.materia_id}"
+                            data-sep-id="${materia.sep_id}"
+                            data-semestre-plan="${materia.semestre_plan}"
+                            data-semestre-id="${materia.semestre_id}"
+                            data-materia-nombre="${materia.nombre}"
+                            data-materia-creditos="${materia.creditos}"
+                            data-materia-tipo-salon="${materia.tipo_salon}">
+                      <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"
+                          class="bi bi-x-lg" viewBox="0 0 16 16">
+                        <path d="M2.146 2.854a.5.5 0 1 1 .708-.708L8 7.293l5.146-5.147
+                                a.5.5 0 0 1 .708.708L8.707 8l5.147 5.146
+                                a.5.5 0 0 1-.708.708L8 8.707l-5.146 5.147
+                                a.5.5 0 0 1-.708-.708L7.293 8z"/>
+                      </svg>
+                    </button>
+                  </td>
+                `;
+                tbody.appendChild(tr);
+              });
+          }
+        } catch (err) {
+          console.error('Error al cargar materias filtradas:', err);
+        }
+      }
+
+      // 5) Asignar evento a cada checkbox
+      checkboxes.forEach(cb => cb.addEventListener('change', actualizarMaterias));
+    });
+
     document.getElementById('eliminarMateriaModal').addEventListener('show.bs.modal', function(event) {
     const button = event.relatedTarget;
     const materiaId = button.getAttribute('data-materia-id');
@@ -836,6 +926,7 @@
       tr.innerHTML = `
         <td class="text-center align-middle">${m.nombre}</td>
         <td class="text-center align-middle">${m.sep_id}</td>
+        <td class="text-center align-middle">${m.carrera_nombre}</td>
         <td class="text-center align-middle">${m.semestre_plan}</td>
         <td class="text-center align-middle">${m.tipo_salon}</td>
         <td class="text-center align-middle">
@@ -882,8 +973,13 @@
       btn.addEventListener("click", () => {
         currentSemestre = btn.dataset.semestre;
 
-        const materiasAbiertas = materiasPorSemestre[currentSemestre] || [];
-        const materiasDisponibles = materiasNoAbiertasPorSemestre[currentSemestre] || [];
+        const seleccionadas = Array
+          .from(document.querySelectorAll('.carrera-checkbox'))
+          .filter(cb => cb.checked)
+          .map(cb => parseInt(cb.value, 10));
+
+        let materiasAbiertas = (materiasPorSemestre[currentSemestre] || []).filter(m => seleccionadas.includes(m.carrera_id));
+        let materiasDisponibles = (materiasNoAbiertasPorSemestre[currentSemestre] || []).filter(m => seleccionadas.includes(m.carrera_id));
 
         selectedSet.clear();
         availableSet.clear();

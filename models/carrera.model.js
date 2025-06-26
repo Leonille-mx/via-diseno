@@ -160,6 +160,10 @@ module.exports = class Carrera {
                 }
             }
             for (let [cDB] of carrerasDBMap) {
+                if (cDB === 9999) {
+                    carrerasDBMap.delete(cDB);
+                continue;
+                 }
                 await client.query(`
                     DELETE FROM plan_materia pm
                     USING plan_estudio pe
@@ -213,5 +217,9 @@ module.exports = class Carrera {
         } finally {
             client.release();
         }
+    }
+
+    static fetchAll() {
+        return pool.query('SELECT * FROM carrera ORDER BY carrera_id DESC');
     }
 }

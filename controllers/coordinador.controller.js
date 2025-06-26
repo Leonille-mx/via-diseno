@@ -15,7 +15,7 @@ const Solicitud = require('../models/solicitudes-cambio.model.js');
 const ResultadoInscripcion = require('../models/resultado_inscripcion.model.js');
 const BloqueTiempo = require('../models/bloque_tiempo.model.js');
 const Coordinador = require('../models/coordinador.model.js');
-const { axiosAdminClient, getToken, getHeaders, getAllProfessors, getAllCourses, getAllStudents, getCiclosEscolares, getAllDegree, getAllAcademyHistory, getExternalCycles} = require('../util/adminApiClient.js');
+const { axiosAdminClient, getToken, getHeaders, getAllProfessors, getAllCourses, getAllStudents, getAllAdministrators, getCiclosEscolares, getAllDegree, getAllAcademyHistory, getExternalCycles} = require('../util/adminApiClient.js');
 
 
 exports.get_dashboard = async (req, res) => {
@@ -24,17 +24,18 @@ exports.get_dashboard = async (req, res) => {
         const msg2 = req.query.msg2 || null; 
         const carreraCoordinador = await Coordinador.getCarrera(req.session.usuario.id);
         //Consulta el total de profesores activos de la Base de Datos
-        const alumnosConMaterias = await Alumno.fetchNumeroIrregularesConMaterias(carreraCoordinador.rows[0].carrera_id);
-        const alumnosNoInscritos = await Alumno.totalNoInscritos(carreraCoordinador.rows[0].carrera_id);
-        const alumnosInscritos = await Alumno.numero_TotalAlumnoInscritos(carreraCoordinador.rows[0].carrera_id);
+        const alumnosConMaterias = await Alumno.fetchNumeroIrregularesConMaterias(req.session.carrerasSeleccionadas || [carreraCoordinador.rows[0].carrera_id]);
+        const alumnosNoInscritos = await Alumno.totalNoInscritos(req.session.carrerasSeleccionadas || [carreraCoordinador.rows[0].carrera_id]);
+        const alumnosInscritos = await Alumno.numero_TotalAlumnoInscritos(req.session.carrerasSeleccionadas || [carreraCoordinador.rows[0].carrera_id]);
         const salon_Totales = await Salon.numero_TotalSalones();
-        const grupos_Totales = await Grupos.numeroTotalGrupos();
-        const grupos_Dashboard = await Grupos.grupoDashboard();
+        const grupos_Totales = await Grupos.numeroTotalGrupos(req.session.carrerasSeleccionadas || [carreraCoordinador.rows[0].carrera_id]);
+        const grupos_Dashboard = await Grupos.grupoDashboard(req.session.carrerasSeleccionadas || [carreraCoordinador.rows[0].carrera_id]);
         const salones_Dashboard = await Salon.salonesDashboard();
-        const grafica_Alumnos = await Alumno.alumnosComparacion(carreraCoordinador.rows[0].carrera_id);
-        const materias_Abiertas  = await Materia.numeroMaterias(carreraCoordinador.rows[0].carrera_id);
-        const solicitud_Cambio_Dashboard = await Solicitud.dasboard_Solicitud(carreraCoordinador.rows[0].carrera_id);
-        const total_Solicitudes = await Solicitud.numeroTotalSolicitudes(carreraCoordinador.rows[0].carrera_id);
+        const grafica_Alumnos = await Alumno.alumnosComparacion(req.session.carrerasSeleccionadas || [carreraCoordinador.rows[0].carrera_id]);
+        const materias_Abiertas  = await Materia.numeroMaterias(req.session.carrerasSeleccionadas || [carreraCoordinador.rows[0].carrera_id]);
+        const solicitud_Cambio_Dashboard = await Solicitud.dasboard_Solicitud(req.session.carrerasSeleccionadas || [carreraCoordinador.rows[0].carrera_id]);
+        const total_Solicitudes = await Solicitud.numeroTotalSolicitudes(req.session.carrerasSeleccionadas || [carreraCoordinador.rows[0].carrera_id]);
+        const carreras = await Carrera.fetchAll();
 
         res.render('dashboard_coordinador', {
             msg1: msg1,
@@ -54,13 +55,62 @@ exports.get_dashboard = async (req, res) => {
             materias_Abiertas: materias_Abiertas,
             solicitud_Cambio_Dashboard: solicitud_Cambio_Dashboard,
             total_Solicitudes: total_Solicitudes,
-
-            
+            carreras: carreras.rows,
+            carrerasSeleccionadas: req.session.carrerasSeleccionadas || [carreraCoordinador.rows[0].carrera_id],
         });
     } catch (error) {
         console.error("Dashboard error:", error);
         res.status(500).send("Error loading dashboard");
     }
+};
+
+exports.get_dashboard_carrera = async (req, res) => {
+  try {
+    // 1) Obtener las carreras seleccionadas directamente desde la sesión
+    let carrerasFinal = Array.isArray(req.session.carrerasSeleccionadas)
+      ? req.session.carrerasSeleccionadas.slice()
+      : [];
+
+    // 3) Recalcular todos los datos con las carreras en sesión
+    const [materiasAbiertas, gruposTotales, alumnosInscritos,
+      alumnosNoInscritos, alumnosConMaterias, salon_Totales,
+      grupos_Dashboard, salones_Dashboard, solicitud_Cambio_Dashboard,
+      total_Solicitudes, grafica_Alumnos] = await Promise.all([
+      Materia.numeroMaterias(carrerasFinal),
+      Grupos.numeroTotalGrupos(carrerasFinal),
+      Alumno.numero_TotalAlumnoInscritos(carrerasFinal),
+      Alumno.totalNoInscritos(carrerasFinal),
+      Alumno.fetchNumeroIrregularesConMaterias(carrerasFinal),
+      Salon.numero_TotalSalones(),
+      Grupos.grupoDashboard(carrerasFinal),
+      Salon.salonesDashboard(carrerasFinal),
+      Solicitud.dasboard_Solicitud(carrerasFinal),
+      Solicitud.numeroTotalSolicitudes(carrerasFinal),
+      Alumno.alumnosComparacion(carrerasFinal)
+    ]);
+
+    // 4) Calcular alumnos sin materias (NoInscritos – ConMaterias)
+    const alumnosSinMaterias = alumnosNoInscritos - alumnosConMaterias;
+
+    // 5) Enviar JSON al frontend con la misma estructura esperada
+    res.json({
+      materiasAbiertas,
+      gruposTotales,
+      alumnosInscritos,
+      alumnosNoInscritos: alumnosConMaterias,
+      alumnosSinMaterias,
+      salon_Totales,
+      grupos_Dashboard,
+      salones_Dashboard,
+      solicitud_Cambio_Dashboard,
+      total_Solicitudes,
+      grafica_Alumnos
+    });
+
+  } catch (error) {
+    console.error("Error al filtrar dashboard:", error);
+    res.status(500).json({ error: 'Error al filtrar datos del dashboard' });
+  }
 };
 
 exports.post_reset_grupos = async (req, res) => {
@@ -76,15 +126,78 @@ exports.post_reset_grupos = async (req, res) => {
     }
 };
 
+exports.get_administradores = async (req, res, nxt) => {
+    try {
+        const carreras = await Carrera.fetchAll();
+        const carreraCoordinador = await Coordinador.getCarrera(req.session.usuario.id);
+        const coordinadores = await Coordinador.fetchAll();
+        const msg = req.query.msg || null;
+        res.render('administradores_coordinador', {
+            isLoggedIn: req.session.isLoggedIn || false,
+            matricula: req.session.matricula || '',
+            carreras: carreras.rows,
+            carrerasSeleccionadas: req.session.carrerasSeleccionadas || [carreraCoordinador.rows[0].carrera_id],
+            administradores: coordinadores.rows,
+            msg,
+        });
+    } catch (error) {
+        console.error("Admins error:", error);
+        res.status(500).send("Error loading admins");
+    }
+}
+
+exports.post_sincronizar_administradores = async (req, res, nxt) => {
+    try {
+        const admins = await getAllAdministrators();
+
+        const adminsApi = admins.data;
+
+        const resultadoUsuario = await Usuario.sincronizarUsuariosAdmins(adminsApi);
+        const resultadoAdmins = await Coordinador.sincronizarAdministradores(adminsApi);
+
+        const msg = `La operación fue exitosa!<br>
+                    Insertado: ${resultadoUsuario.inserted}<br>
+                    Actualizado: ${resultadoUsuario.updated + resultadoAdmins.updated}<br>
+                    Eliminado: ${resultadoUsuario.deleted}`;
+        res.redirect(`/coordinador/administradores?msg=${encodeURIComponent(msg)}`);
+    } catch (error) {
+        console.error(error);
+        res.redirect(`/coordinador/administradores?msg=${encodeURIComponent('La operación fue fracasada')}`);
+    }
+};
+
+exports.get_administradores_carrera = async (req, res, nxt) => {
+    try {
+        const { carreras } = req.body; 
+        const result = await Coordinador.fetchPorCarrera(carreras);
+        res.json(result.rows);
+    } catch (error) {
+        console.error('Error al obtener administradores filtrados:', error);
+        res.status(500).json({ error: 'Error interno del servidor' });
+    }
+}
+
+exports.administrador_cambiar_carrera = async (req, res, nxt) => {
+    const {admin_id, carrera_id } = req.body;
+    try {
+        await Coordinador.cambiarCarrera(admin_id, carrera_id);
+        res.status(200).json({ success: true });
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({success: false, error: 'Error al actualizar la carrera'});
+    }
+}
+
 exports.get_materias = async (req, res, nxt) => {
     try {
         const carreraCoordinador = await Coordinador.getCarrera(req.session.usuario.id);
-        const materiasSemestreDB = await MateriaSemestre.fetchMateriasSemestrePorCarrera(carreraCoordinador.rows[0].carrera_id);
+        const materiasSemestreDB = await MateriaSemestre.fetchMateriasSemestre();
         
         // Si hay query string, lo guarda en la variable msg
         const msg = req.query.msg || null;
         const msgTitle = req.query.msgTitle;
         const allMaterias = materiasSemestreDB.rows;
+        const carreras = await Carrera.fetchAll();
         // Creamos un nuevo objeto que tienen key-value relación y están separados
         // por semestre
         const materiasPorSemestre = allMaterias.reduce((accumulator, materia) => {
@@ -113,11 +226,42 @@ exports.get_materias = async (req, res, nxt) => {
             materiasPorSemestre: materiasPorSemestre,
             materiasNoAbiertasPorSemestre,
             msg,
-            msgTitle
+            msgTitle,
+            carreras: carreras.rows,
+            carrerasSeleccionadas: req.session.carrerasSeleccionadas || [carreraCoordinador.rows[0].carrera_id],
         });
     } catch(error) {
         console.log(error);
     }
+};
+
+exports.get_materias_carrera = async (req, res, nxt) => {
+  try {
+    // Traemos **todas** las materias por semestre del modelo
+    const materiasSemestreDB = await MateriaSemestre.fetchMateriasSemestre();
+    const allMaterias = materiasSemestreDB.rows;
+
+    // Agrupamos igual que en el render inicial
+    const materiasPorSemestre = allMaterias.reduce((acc, m) => {
+      if (!acc[m.semestre_id]) acc[m.semestre_id] = [];
+      acc[m.semestre_id].push(m);
+      return acc;
+    }, {});
+
+    // (Opcional) Si quieres enviar también las no-abiertas:
+    const materiasNoAbiertasPorSemestre = {};
+    for (let i = 1; i <= 9; i++) {
+      const semestreId = `s${i}`;
+      const resultado = await MateriaSemestre.fetchMateriasNoAbiertasPorSemestre(semestreId);
+      materiasNoAbiertasPorSemestre[semestreId] = resultado.rows;
+    }
+
+    // Respondemos con la misma forma de los locals de EJS
+    res.json({ materiasPorSemestre, materiasNoAbiertasPorSemestre });
+  } catch (error) {
+    console.error('Error al obtener materias:', error);
+    res.status(500).json({ error: 'Error interno del servidor' });
+  }
 };
 
 exports.post_sincronizar_materias = async (req, res, nxt) => {
@@ -185,6 +329,8 @@ exports.get_profesores = async (req, res, nxt) => {
       const profesoresActivos = await Profesor.fetchActivos();  
       const msg = req.query.msg || null;
       const msg2 = req.query.msg2 || null;
+      const carreraCoordinador = await Coordinador.getCarrera(req.session.usuario.id);
+      const carreras = await Carrera.fetchAll();
   
       res.render('profesores_coordinador', {
           isLoggedIn: req.session.isLoggedIn || false,
@@ -192,7 +338,9 @@ exports.get_profesores = async (req, res, nxt) => {
           profesores: profesoresActivos.rows,  
           msg, 
           msg2,
-          materias: materias.rows
+          materias: materias.rows,
+          carreras: carreras.rows,
+          carrerasSeleccionadas: req.session.carrerasSeleccionadas || [carreraCoordinador.rows[0].carrera_id],
       });
     } catch (error) {
       console.log(error);
@@ -278,30 +426,32 @@ exports.post_modificar_profesor = async (req, res, next) => {
     }
 };
 
-exports.get_salones = (req, res, nxt) => {
-    const msgTitle = req.query.msgTitle || null; 
-    const msg = req.query.msg || null; 
-    Salon.fetchAll()
-    .then((salones) => {
-        Campus.fetchAll()
-            .then((campus) => {
-                res.render('salones_coordinador', {
-                    isLoggedIn: req.session.isLoggedIn || false,
-                    matricula: req.session.matricula || '',
-                    salones : salones.rows,
-                    campus : campus.rows,
-                    msgTitle,
-                    msg
-                });
-            })
-            .catch((error) => {
-                console.log(error);
-            });
-        })
-    .catch((error) => {
-        console.log(error);
-        res.status(500).send('Error al obtener salones');
-    });
+exports.get_salones = async (req, res, nxt) => {
+    try {
+        const msgTitle = req.query.msgTitle || null;
+        const msg = req.query.msg || null;
+        const carreraCoordinador = await Coordinador.getCarrera(req.session.usuario.id);
+
+        const [carreras, salones, campus] = await Promise.all([
+            Carrera.fetchAll(),
+            Salon.fetchAll(),
+            Campus.fetchAll()
+        ]);
+
+        res.render('salones_coordinador', {
+            isLoggedIn: req.session.isLoggedIn || false,
+            matricula: req.session.matricula || '',
+            salones: salones.rows,
+            campus: campus.rows,
+            msgTitle,
+            msg,
+            carreras: carreras.rows,
+            carrerasSeleccionadas: req.session.carrerasSeleccionadas || [carreraCoordinador.rows[0].carrera_id],
+        });
+    } catch (error) {
+        console.error("Error en get_salones:", error);
+        res.status(500).send("Error al cargar la vista de salones");
+    }
 };
 
 exports.post_salones = async (req, res, nxt) => {
@@ -350,9 +500,11 @@ exports.get_grupos = (req, res, next) => {
         MateriaSemestre.fetchMateriasSemestre(),
         Profesor.fetchAll(),
         Grupos.fetchAll(),
-        Salon.fetchAll()
+        Salon.fetchAll(),
+        Carrera.fetchAll(),
+        Coordinador.getCarrera(req.session.usuario.id),
     ])
-    .then(([materias, profesores, grupos, salones]) => {
+    .then(([materias, profesores, grupos, salones, carreras, carreraCoordinador]) => {
         res.render('grupos_coordinador', { 
             grupos: grupos.rows,
             materias: materias.rows,
@@ -361,7 +513,9 @@ exports.get_grupos = (req, res, next) => {
             isLoggedIn: req.session.isLoggedIn || false,
             matricula: req.session.matricula || '',
             msgTitle,
-            msg
+            msg,
+            carreras: carreras.rows,
+            carrerasSeleccionadas: req.session.carrerasSeleccionadas || [carreraCoordinador.rows[0].carrera_id],
         });
     })
     .catch((error) => {
@@ -472,20 +626,39 @@ exports.post_modificar_grupo = async (req, res, next) => {
 exports.get_alumnos = async (req, res, nxt) => {
     const carreraCoordinador = await Coordinador.getCarrera(req.session.usuario.id);
     try {
-        const alumnosRegularesDB = await Alumno.fetchAllRegularesPorCarrera(carreraCoordinador.rows[0].carrera_id); 
-        const alumnosIrregularesDB = await Alumno.fetchAllIrregularesPorCarrera(carreraCoordinador.rows[0].carrera_id);
+        const alumnosRegularesDB = await Alumno.fetchAllRegulares(); 
+        const alumnosIrregularesDB = await Alumno.fetchAllIrregulares();
         const msg = req.query.msg || null;
+        const carreras = await Carrera.fetchAll();
         res.render('alumnos_coordinador', {
             alumnosRegulares: alumnosRegularesDB.rows,
             alumnosIrregulares: alumnosIrregularesDB.rows,
             msg,
             isLoggedIn: req.session.isLoggedIn || false,
             matricula: req.session.matricula || '',
+            carreras: carreras.rows,
+            carrerasSeleccionadas: req.session.carrerasSeleccionadas || [carreraCoordinador.rows[0].carrera_id],
         });
     } catch(error) {
         console.log(error);
         res.status(500).send('Hubo un problema al obtener los alumnos.');
     }
+};
+
+exports.get_alumnos_carrera = async (req, res, next) => {
+  try {
+    const [regularesDB, irregularesDB] = await Promise.all([
+      Alumno.fetchAllRegulares(),  
+      Alumno.fetchAllIrregulares()
+    ]);
+    res.json({
+      alumnosRegulares:   regularesDB.rows,
+      alumnosIrregulares: irregularesDB.rows
+    });
+  } catch (error) {
+    console.error('Error al obtener alumnos filtrados:', error);
+    res.status(500).json({ error: 'Error interno del servidor' });
+  }
 };
 
 exports.post_sincronizar_alumnos = async (req, res, nxt) => {
@@ -494,7 +667,7 @@ exports.post_sincronizar_alumnos = async (req, res, nxt) => {
 
         const studentsApi = students.data;
 
-        const resultadoUsuario = await Usuario.sincronizarUsuarios(studentsApi);
+        const resultadoUsuario = await Usuario.sincronizarUsuariosAlumnos(studentsApi);
         const resultadoAlumno = await Alumno.sincronizarAlumnos(studentsApi);
 
         const alumnos_sin_historial = [];
@@ -680,12 +853,23 @@ exports.post_modificar_obligacion = async (req, res, nxt) => {
     }
 };
 
-exports.get_ayuda = (req, res, nxt) => {
-    res.render('ayuda_coordinador', {
-        isLoggedIn: req.session.isLoggedIn || false,
-        matricula: req.session.matricula || '',
-    });
+exports.get_ayuda = async (req, res, nxt) => {
+    try {
+        const carreras = await Carrera.fetchAll();
+        const carreraCoordinador = await Coordinador.getCarrera(req.session.usuario.id);
+
+        res.render('ayuda_coordinador', {
+            isLoggedIn: req.session.isLoggedIn || false,
+            matricula: req.session.matricula || '',
+            carreras: carreras.rows,
+            carrerasSeleccionadas: req.session.carrerasSeleccionadas || [carreraCoordinador.rows[0].carrera_id],
+        });
+    } catch (error) {
+        console.error("Error en get_ayuda:", error);
+        res.status(500).send("Error al cargar la vista de ayuda");
+    }
 };
+
 
 exports.get_cicloescolar = (req, res, next) => {
     CicloEscolar.fetchAll()
@@ -805,16 +989,19 @@ exports.post_sincronizar_planes_de_estudio = async (req, res) => {
 }
 
 exports.get_solicitudes_cambio = async (req, res, next) => {
-    const carreraCoordinador = await Coordinador.getCarrera(req.session.usuario.id);
     try {
-        const solicitudesActivas = await Solicitud.fetchActivosPorCarrera(carreraCoordinador.rows[0].carrera_id);
+        const carreraCoordinador = await Coordinador.getCarrera(req.session.usuario.id);
+        const solicitudesActivas = await Solicitud.fetchActivos();
         const msg = req.query.msg || null;
+        const carreras = await Carrera.fetchAll();
 
         res.render('solicitudes_cambio_coordinador', {
             isLoggedIn: req.session.isLoggedIn || false,
             matricula: req.session.matricula || '',
             solicitudes: solicitudesActivas.rows, 
-            msg  
+            msg  ,
+            carreras: carreras.rows,
+            carrerasSeleccionadas: req.session.carrerasSeleccionadas || [carreraCoordinador.rows[0].carrera_id],
         });
     } catch (error) {
         console.error('Error al obtener solicitudes:', error);
@@ -822,6 +1009,16 @@ exports.get_solicitudes_cambio = async (req, res, next) => {
             message: 'Hubo un problema al obtener las solicitudes de cambio',
             error
         });
+    }
+};
+
+exports.get_solicitudes_cambio_carrera = async (req, res, next) => {
+    try {
+        const result = await Solicitud.fetchActivos();
+        res.json({ solicitudes: result.rows });
+    } catch (err) {
+        console.error(err);
+        res.status(500).json({ error: 'Error interno' });
     }
 };
 
@@ -1030,3 +1227,10 @@ exports.enviarDatos = async (req, res) => {
     }
 };
   
+exports.guardar_carreras = async (req, res) => {
+    const { seleccionadas } = req.body;
+    req.session.carrerasSeleccionadas = Array.isArray(seleccionadas)
+        ? seleccionadas.map(Number)
+        : [];
+    res.sendStatus(200);
+};

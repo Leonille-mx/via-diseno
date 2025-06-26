@@ -115,6 +115,19 @@ async function getAllStudents() {
   return response.data;
 }
 
+async function getAllAdministrators() {
+  const token = await getToken();
+  const headers = await getHeaders(token);
+  
+  const response = await axiosAdminClient.get("v1/users/all", {
+    headers,
+    params: {
+      type: "Users::Administrator",
+    }
+  }); 
+  return response.data;
+}
+
 async function getAllDegree() {
   const token = await getToken();
   const headers = await getHeaders(token);
@@ -171,4 +184,4 @@ async function updateStudentStatus(ivd_id, regularStatus) {
 }
 
 // Export the functions so they can be used in other files
-module.exports = { getExternalCycles, getHeaders, getToken, axiosAdminClient, getAllCourses, getAllProfessors, getAllStudents, getCiclosEscolares, getAllDegree, getAllAcademyHistory, updateStudentStatus };
+module.exports = { getExternalCycles, getHeaders, getToken, axiosAdminClient, getAllCourses, getAllProfessors, getAllStudents, getAllAdministrators, getCiclosEscolares, getAllDegree, getAllAcademyHistory, updateStudentStatus };

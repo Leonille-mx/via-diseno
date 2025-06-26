@@ -26,7 +26,7 @@ module.exports = class Grupo {
     static fetchAll() {
         return pool.query(`
             SELECT g.grupo_id, m.nombre AS materia, g.materia_id, g.profesor_id, p.nombre, p.primer_apellido, 
-            p.segundo_apellido, s.numero, c.ciclo_escolar_id, c.code, ms.semestre_id, ca.nombre AS carrera_nombre 
+            p.segundo_apellido, s.numero, c.ciclo_escolar_id, c.code, ms.semestre_id, ca.carrera_id, ca.nombre AS carrera_nombre 
             FROM grupo g
             JOIN materia m ON g.materia_id = m.materia_id
             JOIN profesor p ON g.profesor_id = p.ivd_id
@@ -113,32 +113,46 @@ module.exports = class Grupo {
                            WHERE grupo_id = $4`, [materia, profesor, salon, id]);
     }
      // Método para obtener número total de grupos abiertos
-     static async numeroTotalGrupos() {
-        const result = await pool.query('SELECT count(*) FROM public.grupo');
+     static async numeroTotalGrupos(carreras_id) {
+        const result = await pool.query(
+            `SELECT count(*) FROM grupo g
+            JOIN materia m ON g.materia_id = m.materia_id
+            JOIN plan_materia pm ON m.materia_id = pm.materia_id
+            JOIN plan_estudio pe ON pm.plan_estudio_id = pe.plan_estudio_id
+                AND pm.plan_estudio_version = pe.version
+            JOIN carrera c ON pe.carrera_id = c.carrera_id  
+            WHERE c.carrera_id = ANY($1)
+            `, [carreras_id]);
         return parseInt(result.rows[0].count);
     };
 
     //Metodo para obtener los grupos con las relaciones entre otras tablas
-    static async grupoDashboard() {
+    static async grupoDashboard(carreras_id) {
         const result = await pool.query(
             ` SELECT 
-    g.grupo_id,
-    bt.dia,
-    MIN(bt.hora_inicio) AS hora_inicio,
-    MAX(bt.hora_fin) AS hora_fin,
-    MIN(m.nombre) AS materia_nombre,
-    MIN(p.nombre || ' ' || p.primer_apellido) AS profesor_nombre
-FROM 
-    grupo_bloque_tiempo gbt
-    JOIN bloque_tiempo bt ON gbt.bloque_tiempo_id = bt.bloque_tiempo_id
-    JOIN grupo g ON gbt.grupo_id = g.grupo_id
-    JOIN materia m ON g.materia_id = m.materia_id
-    JOIN profesor p ON g.profesor_id = p.ivd_id
-GROUP BY 
-    g.grupo_id, bt.dia
-ORDER BY 
-    g.grupo_id, bt.dia;`
-            );
+                g.grupo_id,
+                bt.dia,
+                MIN(bt.hora_inicio) AS hora_inicio,
+                MAX(bt.hora_fin) AS hora_fin,
+                MIN(m.nombre) AS materia_nombre,
+                MIN(p.nombre || ' ' || p.primer_apellido) AS profesor_nombre
+            FROM 
+                grupo_bloque_tiempo gbt
+                JOIN bloque_tiempo bt ON gbt.bloque_tiempo_id = bt.bloque_tiempo_id
+                JOIN grupo g ON gbt.grupo_id = g.grupo_id
+                JOIN materia m ON g.materia_id = m.materia_id
+                JOIN plan_materia pm ON m.materia_id = pm.materia_id
+                JOIN plan_estudio pe ON pm.plan_estudio_id = pe.plan_estudio_id
+                    AND pm.plan_estudio_version = pe.version
+                JOIN carrera c ON pe.carrera_id = c.carrera_id 
+                JOIN profesor p ON g.profesor_id = p.ivd_id
+            WHERE
+                c.carrera_id = ANY($1)
+            GROUP BY 
+                g.grupo_id, bt.dia
+            ORDER BY 
+                g.grupo_id, bt.dia;`
+            , [carreras_id]) ;
         return result.rows;
     };
 

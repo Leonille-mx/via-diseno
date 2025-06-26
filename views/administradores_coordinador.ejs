@@ -1,0 +1,259 @@
+<%- include('includes/_nav_coordinador.ejs') %>
+<%- include('includes/_header_coordinador.ejs') %>
+
+    <select id="carrerasOptions" style="background-color : white; display:none;" class=" btn border dropdown-toggle rounded-pill ivd-border-red form-select carrera-select">
+        <% carreras.forEach(c => { %>
+            <option value="<%= c.carrera_id %>"><%= c.nombre %></option>
+        <% }) %>
+    </select>
+
+    <main class="bg-grey flex-grow-1 rounded-5 p-0 d-flex flex-column" style="height: 100vh;">
+    <div class="mb-4">
+        <h1 class="ms-3 mt-2">Administradores</h1>
+        <div style="border-bottom: 3px solid #84251C; width: 22rem; margin-top: -10px;"></div>
+    </div>
+
+    <div class="d-flex align-items-center justify-content-between mx-5 mb-3 gap-3 flex-wrap">
+        <div class="d-flex align-items-center flex-grow-1" style="max-width: 210px;">
+            <input id="buscarAdministrador" class="form-control me-2 rounded-pill" type="search" placeholder="Buscar administrador" aria-label="Search"
+            style="background-image:url('/images/search.svg'); background-repeat:no-repeat; background-position: 1rem center; padding-left: 3rem; font-size: 1rem; width: 100%; border: 1px solid #84251C;">
+        </div>
+        <div class="d-flex gap-3">
+        <form action="/coordinador/administradores/sincronizar" method="POST">
+            <button type="submit" class="btn btn-primary d-flex align-items-center gap-2 rounded-pill px-3 py-2" style="background-color: #84251C; border: none;">
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-arrow-repeat" viewBox="0 0 16 16">
+                <path d="M11.534 7h3.932a.25.25 0 0 1 .192.41l-1.966 2.36a.25.25 0 0 1-.384 0l-1.966-2.36a.25.25 0 0 1 .192-.41m-11 2h3.932a.25.25 0 0 0 .192-.41L2.692 6.23a.25.25 0 0 0-.384 0L.342 8.59A.25.25 0 0 0 .534 9"/>
+                <path fill-rule="evenodd" d="M8 3c-1.552 0-2.94.707-3.857 1.818a.5.5 0 1 1-.771-.636A6.002 6.002 0 0 1 13.917 7H12.9A5 5 0 0 0 8 3M3.1 9a5.002 5.002 0 0 0 8.757 2.182.5.5 0 1 1 .771.636A6.002 6.002 0 0 1 2.083 9z"/>
+            </svg>
+            Sincronizar administradores
+            </button>
+        </form>
+        </div>
+    </div>
+
+    <div class="table-responsive mx-5 mb-5 rounded-5 flex-grow-1" style="overflow: auto; background-color: white;">
+        <table class="table table-hover" style="min-width: 800px; width: 100%;">
+            <thead class="table-light">
+                <tr>
+                <th scope="col" style="width: 10%;" class="text-center align-middle">ID</th>
+                <th scope="col" style="width: 20%;" class="text-center align-middle">Nombre</th>
+                <th scope="col" style="width: 15%;" class="text-center align-middle">Puesto</th>
+                <th scope="col" style="width: 20%;" class="text-center align-middle">Correo Institucional</th>
+                <th scope="col" style="width: 35%;" class="text-center align-middle">Carrera</th>
+                </tr>
+            </thead>
+            <tbody id="administradoresBody">
+                <% for (let admin of administradores) { 
+                    const mostrar = carrerasSeleccionadas.length === 0
+                    ? admin.carrera_id === 9999
+                    : carrerasSeleccionadas.includes(admin.carrera_id);
+                    if (admin.ivd_id !== 1037 && mostrar) { %>
+                        <tr>
+                            <th scope="row" class="text-center align-middle"><%= admin.ivd_id %></th>
+                            <td class="text-center align-middle"><%= admin.nombre + ' ' + admin.primer_apellido + (admin.segundo_apellido ? ' ' + admin.segundo_apellido : '')  %></td>
+                            <td class="text-center align-middle"><%= (admin.puesto ? admin.puesto : 'Indefinido') %></td>
+                            <td class="text-center align-middle"><%= admin.correo_institucional %></td>
+                            <td class="text-center align-middle">
+                                <select style="background-color: white;" class=" btn border dropdown-toggle rounded-pill ivd-border-red form-select carrera-select" data-admin-id="<%= admin.ivd_id %>">
+                                    <% for (let carrera of carreras) { %>
+                                    <option value="<%= carrera.carrera_id %>" <%= carrera.nombre === admin.carrera_nombre ? 'selected' : '' %>>
+                                        <%= carrera.nombre %>
+                                    </option>
+                                    <% } %>
+                                </select>
+                            </td>
+                        </tr>
+                    <% } %>
+                <% } %>
+            </tbody>
+        </table>
+    </div>
+
+    <% if (msg) { %>
+        <div class="modal fade" id="msgModal" tabindex="-1" aria-labelledby="msgModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered modal-sm">
+            <div class="modal-content align-items-center rounded-5">
+            <div class="modal-header border border-0">
+                <h5 class="modal-title ivd-text-red" id="msgModalLabel">Sincronizar Administradores</h5>
+            </div>
+            <div class="modal-body bg-grey rounded-5 text-center px-5">
+                <%- msg %>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn ivd-bg-red text-white rounded-5" data-bs-dismiss="modal">Aceptar</button>
+            </div>
+            </div>
+        </div>
+        </div>
+    <% } %>
+    </main>
+
+    <% if (msg) { %>
+        <script>
+            document.addEventListener('DOMContentLoaded', () => {
+            var myModal = new bootstrap.Modal(document.getElementById('msgModal'));
+            myModal.show();
+            });
+        </script>
+    <% } %>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="/js/coordinador.js"></script>
+    <script>
+    document.querySelectorAll('.carrera-select').forEach(select => {
+        select.addEventListener('change', async function () {
+            const admin_id = this.dataset.adminId;
+            const carrera_id = this.value;
+
+            try {
+            const response = await fetch('/coordinador/administradores/cambiar-carrera', {
+                method: 'POST',
+                headers: {
+                'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ admin_id, carrera_id })
+            });
+
+            const result = await response.json();
+            if (!result.success) {
+                alert('Error al actualizar carrera');
+            } else {
+                actualizarAdministradores();
+            }
+            } catch (err) {
+            console.error(err);
+                console.log('Error en la conexión con el servidor');
+            }
+        });
+    });
+
+    document.addEventListener('DOMContentLoaded', () => {
+        const input = document.getElementById('buscarAdministrador');
+        const tbody = document.getElementById('administradoresBody');
+
+        input.addEventListener('input', () => {
+            const filtro = input.value.trim().toLowerCase();
+            const rows = Array.from(tbody.querySelectorAll('tr'));
+
+            rows.forEach(row => {
+                const id      = row.children[0].textContent.toLowerCase();
+                const nombre  = row.children[1].textContent.toLowerCase();
+                const puesto  = row.children[2].textContent.toLowerCase();
+                const correo  = row.children[3].textContent.toLowerCase();
+                const carrera = row.children[4].textContent.toLowerCase();
+
+                if (
+                    id.includes(filtro) ||
+                    nombre.includes(filtro) ||
+                    puesto.includes(filtro) ||
+                    correo.includes(filtro) ||
+                    carrera.includes(filtro)
+                ) {
+                    row.style.display = '';
+                } else {
+                    row.style.display = 'none';
+                }
+            });
+        });
+    });
+
+    document.addEventListener('DOMContentLoaded', () => {
+        let checkboxes = Array.from(document.querySelectorAll('.carrera-checkbox'));
+        const tbody = document.getElementById('administradoresBody');
+        const plantilla = document.getElementById('carrerasOptions');
+
+        async function actualizarAdministradores() {
+            let seleccionadas = checkboxes
+            .filter(cb => cb.checked)
+            .map(cb => cb.value);
+
+            if (seleccionadas.length === 0) { 
+                seleccionadas = ['9999']
+            };
+
+            try {
+            const res = await fetch('/coordinador/administradores/filtrados', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ carreras: seleccionadas })
+            });
+            const admins = await res.json();
+
+            tbody.innerHTML = '';
+
+            admins.forEach(admin => {
+                if (admin.ivd_id !== 1037) {
+                    
+                    const tr = document.createElement('tr');
+
+                    const th = document.createElement('th');
+                    th.scope = 'row';
+                    th.className = 'text-center align-middle';
+                    th.textContent = admin.ivd_id;
+                    tr.appendChild(th);
+
+                    const tdNombre = document.createElement('td');
+                    tdNombre.className = 'text-center align-middle';
+                    tdNombre.textContent = admin.nombre + ' ' +
+                                        admin.primer_apellido +
+                                        (admin.segundo_apellido ? ' ' + admin.segundo_apellido : '');
+                    tr.appendChild(tdNombre);
+
+                    const tdPuesto = document.createElement('td');
+                    tdPuesto.className = 'text-center align-middle';
+                    tdPuesto.textContent = admin.puesto || 'Indefinido';
+                    tr.appendChild(tdPuesto);
+
+                    const tdCorreo = document.createElement('td');
+                    tdCorreo.className = 'text-center align-middle';
+                    tdCorreo.textContent = admin.correo_institucional;
+                    tr.appendChild(tdCorreo);
+
+                    const tdCarrera = document.createElement('td');
+                    tdCarrera.className = 'text-center align-middle';
+                    const select = plantilla.cloneNode(true);     
+                    select.removeAttribute('id');                
+                    select.style.display = '';                   
+                    select.classList.add('form-select', 'carrera-select');
+                    select.dataset.adminId = admin.ivd_id;
+                    select.value = String(admin.carrera_id);   
+                    tdCarrera.appendChild(select);
+                    tr.appendChild(tdCarrera);
+
+                    tbody.appendChild(tr);
+                }
+            });
+
+            document.querySelectorAll('.carrera-select').forEach(sel => {
+                sel.addEventListener('change', async function() {
+                const admin_id   = this.dataset.adminId;
+                const carrera_id = this.value;
+                try {
+                    const resp = await fetch('/coordinador/administradores/cambiar-carrera', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ admin_id, carrera_id })
+                    });
+                    const json = await resp.json();
+                    if (!json.success){ 
+                        alert('Error actualizando la carrera');
+                    } else {
+                        actualizarAdministradores(); 
+                    }
+                } catch (e) {
+                    console.error(e);
+                    alert('Error de red al actualizar la carrera');
+                }
+                });
+            });
+            } catch (err) {
+            console.error('Error al filtrar administradores:', err);
+            }
+        }
+        window.actualizarAdministradores = actualizarAdministradores;
+        checkboxes.forEach(cb => cb.addEventListener('change', actualizarAdministradores));
+        });
+    </script>
+
+</body>
+</html>

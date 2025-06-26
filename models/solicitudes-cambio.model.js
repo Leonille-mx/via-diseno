@@ -46,16 +46,23 @@ module.exports = class Solicitud {
             sc.ivd_id,
             u.nombre, 
             u.primer_apellido,
-            u.correo_institucional
+            u.correo_institucional,
+            c.carrera_id,
+            c.nombre as carrera_nombre
         FROM 
             solicitud_cambio sc
         JOIN 
             usuario u ON sc.ivd_id = u.ivd_id
+        JOIN 
+            alumno a ON a.ivd_id = u.ivd_id
+        JOIN 
+            plan_estudio p ON p.plan_estudio_id = a.plan_estudio_id
+        JOIN
+            carrera c ON c.carrera_id = p.carrera_id
         WHERE 
-            sc.aprobada = false
+            sc.aprobada = false 
         ORDER BY 
-            sc.created_at::timestamp ASC
-    `);
+            sc.created_at::timestamp ASC`);
   }
   
   static fetchActivosPorCarrera(carrera_id) {
@@ -69,6 +76,7 @@ module.exports = class Solicitud {
             u.nombre, 
             u.primer_apellido,
             u.correo_institucional,
+            c.carrera_id,
             c.nombre as carrera_nombre
         FROM 
             solicitud_cambio sc
@@ -114,7 +122,7 @@ module.exports = class Solicitud {
   }
 
   //metodo para obtener el la solicitud, nombre y apellido de las solicitudes
-  static async dasboard_Solicitud(carrera_id) {
+  static async dasboard_Solicitud(carreras_id) {
     const result = await pool.query(`SELECT 
             sc.solicitud_cambio_id,
             sc.created_at,
@@ -131,22 +139,22 @@ module.exports = class Solicitud {
         WHERE 
             sc.aprobada = false 
             AND
-            p.carrera_id = $1
+            p.carrera_id = ANY($1)
         ORDER BY 
             sc.created_at::timestamp ASC`
-        , [carrera_id]);
+        , [carreras_id]);
     return result.rows;
   }
 
   // Método para obtener número total de solicitudes de cambio
-  static async numeroTotalSolicitudes(carrera_id) {
+  static async numeroTotalSolicitudes(carreras_id) {
     const result = await pool.query(`
       SELECT count(*) 
       FROM solicitud_cambio sc
       JOIN alumno a ON a.ivd_id = sc.ivd_id
       JOIN plan_estudio p ON p.plan_estudio_id = a.plan_estudio_id
-      WHERE p.carrera_id = $1 AND sc.aprobada = false`
-      , [carrera_id]
+      WHERE p.carrera_id = ANY($1) AND sc.aprobada = false`
+      , [carreras_id]
     );
     return parseInt(result.rows[0].count);
   }
