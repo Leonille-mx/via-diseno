@@ -1043,71 +1043,102 @@ exports.post_rechazar_solicitud = async (req, res, nxt) => {
 
 exports.enviarGruposAPI = async (req, res, isInternal = false) => {
     try {
-        const token = await getToken();
-        const headers = getHeaders(token);
-    
-        const [gruposResult, profesoresExternosResponse, ciclosLocalesResult, ciclosExternosResponse] = await Promise.all([
-            Grupos.fetchAll(),
-            getAllProfessors(token),
-            CicloEscolar.fetchAll(),
-            getExternalCycles()
-        ]);
-    
-        const grupos = gruposResult.rows;
-        const profesoresExternos = profesoresExternosResponse.data || [];
-        const ciclosLocales = ciclosLocalesResult.rows;
-        const ciclosExternos = ciclosExternosResponse.data || [];
-    
-        const mapaProfesores = Object.fromEntries(
-            profesoresExternos.map(p => [String(p.ivd_id), p.id])
-        );
-      
-      
-        // Mapa de ciclos locales (id interno → code)
-        const mapaIdToCode = {};
-        for (const ciclo of ciclosLocales) {
-        mapaIdToCode[ciclo.ciclo_escolar_id] = ciclo.code;
+      const token = await getToken();
+      const headers = getHeaders(token);
+  
+      const [
+        gruposResult,
+        profesoresExternosResponse,
+        ciclosLocalesResult,
+        ciclosExternosResponse,
+        gruposExternos
+      ] = await Promise.all([
+        Grupos.fetchAll(),
+        getAllProfessors(token),
+        CicloEscolar.fetchAll(),
+        getExternalCycles(),
+        getExternalGroups(token)
+      ]);
+  
+      const gruposLocales = gruposResult.rows;
+      const profesoresExternos = profesoresExternosResponse.data || [];
+      const ciclosLocales = ciclosLocalesResult.rows;
+      const ciclosExternos = ciclosExternosResponse.data || [];
+  
+      const mapaProfesores = Object.fromEntries(
+        profesoresExternos.map(p => [String(p.ivd_id), p.id])
+      );
+  
+      const mapaIdToCode = Object.fromEntries(
+        ciclosLocales.map(c => [c.ciclo_escolar_id, c.code])
+      );
+  
+      const mapaCodeToApiId = Object.fromEntries(
+        ciclosExternos.map(c => [c.code, c.id])
+      );
+  
+      const mapaExternosPorNombre = new Map(
+        gruposExternos.map(g => [g.name, g])
+      );
+  
+      const nombresLocales = new Set();
+  
+      for (const grupo of gruposLocales) {
+        const profesor_api_id = mapaProfesores[String(grupo.profesor_id)];
+        const code_local = mapaIdToCode[grupo.ciclo_escolar_id];
+        const ciclo_api_id = mapaCodeToApiId[code_local];
+        const nombreGrupo = String(grupo.grupo_id);
+        nombresLocales.add(nombreGrupo);
+  
+        const body = {
+          school_cycle_id: ciclo_api_id,
+          course_id: grupo.materia_id,
+          professor_id: profesor_api_id,
+          name: nombreGrupo,
+          room: grupo.numero === 9999 ? "No asignado" : String(grupo.numero)
+        };
+  
+        const grupoExistente = mapaExternosPorNombre.get(nombreGrupo);
+  
+        if (!grupoExistente) {
+          // No existe: POST
+          const response = await axiosAdminClient.post('/v1/groups', body, { headers });
+          const grupo_api_id = response.data?.data?.id;
+          if (grupo_api_id) {
+            await Grupos.guardarIdExternoGrupoPorId(grupo_api_id, grupo.grupo_id);
+          }
+        } else {
+          // Ya existe: PATCH si hay diferencias
+          const cambios =
+            grupoExistente.school_cycle_id !== body.school_cycle_id ||
+            grupoExistente.course_id !== body.course_id ||
+            grupoExistente.professor_id !== body.professor_id ||
+            grupoExistente.room !== body.room;
+  
+          if (cambios) {
+            await axiosAdminClient.patch(`/v1/groups/${grupoExistente.id}`, body, { headers });
+          }
         }
-
-        // Mapa de ciclos externos (code → id externo)
-        const mapaCiclosExternos = {};
-        for (const ciclo of ciclosExternos) {
-        mapaCiclosExternos[ciclo.code] = ciclo.id;
+      }
+  
+      // Eliminar los grupos externos que no están localmente
+      for (const externo of gruposExternos) {
+        if (!nombresLocales.has(externo.name)) {
+          await axiosAdminClient.delete(`/v1/groups/${externo.id}`, { headers });
         }
-
-        for (const grupo of grupos) {
-            const profesor_api_id = mapaProfesores[String(grupo.profesor_id)];
-            const code_local = mapaIdToCode[grupo.ciclo_escolar_id];
-            const ciclo_api_id = mapaCiclosExternos[code_local];
-
-            const body = {
-            school_cycle_id: ciclo_api_id,
-            course_id: grupo.materia_id,
-            professor_id: profesor_api_id,
-            name: String(grupo.grupo_id),
-            room: grupo.numero === 9999 ? "No asignado" : String(grupo.numero)
-            };
-
-            console.log('Enviando grupo:', body);
-    
-            const response = await axiosAdminClient.post('/v1/groups', body, { headers });
-            const grupo_api_id = response.data?.data?.id;
-    
-            if (grupo_api_id) {
-                await Grupos.guardarIdExternoGrupoPorId(grupo_api_id, grupo.grupo_id);
-            }
-        }
-    
-        if (!isInternal) {
-            res.status(200).send('Grupos enviados y guardados exitosamente.');
-        }
-        } catch (error) {
-        console.error('Error al enviar grupos:', error.response?.data || error.message);
-        if (!isInternal) {
-            res.status(500).send('Error al enviar grupos.');
-        }
+      }
+  
+      if (!isInternal) {
+        res.status(200).send('Grupos enviados, actualizados y eliminados correctamente.');
+      }
+    } catch (error) {
+      console.error('Error al enviar grupos:', error.response?.data || error.message);
+      if (!isInternal) {
+        res.status(500).send('Error al enviar grupos.');
+      }
     }
-};  
+  };
+  
 
 exports.enviarAlumnosAPI = async (req, res, isInternal = false) => {
     try {
