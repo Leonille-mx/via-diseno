@@ -944,8 +944,10 @@ exports.get_generar_grupos = async (req, res, next) => {
     const title = 'Generar Grupos';
     const ga = new generarGrupos();
     try {
-        const resultado = await ga.run();
-        await ga.saveResult(resultado);
+        const carreraCoordinador = await Coordinador.getCarrera(req.session.usuario.id);
+        const carrera_id = carreraCoordinador.rows[0].carrera_id;
+        const resultado = await ga.run(carrera_id);
+        await ga.saveResult(resultado, carrera_id);
 
         const { best, unassigned } = resultado;
         let msg = 'Los grupos fueron generados exitosamente.';
