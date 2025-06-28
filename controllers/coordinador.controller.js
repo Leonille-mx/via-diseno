@@ -944,14 +944,22 @@ exports.get_generar_grupos = async (req, res, next) => {
     const title = 'Generar Grupos';
     const ga = new generarGrupos();
     try {
-        const resultado = await ga.run();
-        await ga.saveResult(resultado);
-
-        const { best, unassigned } = resultado;
-        let msg = 'Los grupos fueron generados exitosamente.';
-        if (unassigned.length > 0) {
-            msg += ' No se pudieron asignar las materias: ' + unassigned.join(', ');
+        const carreraCoordinador = await Coordinador.getCarrera(req.session.usuario.id);
+        const carrera_id = carreraCoordinador.rows[0].carrera_id;
+        let msg = '';
+        
+        if (carrera_id != 9999) {
+            const resultado = await ga.run(carrera_id);
+            await ga.saveResult(resultado, carrera_id);
+            const { best, unassigned } = resultado;
+            msg += 'Los grupos fueron generados exitosamente.';
+            if (unassigned.length > 0) {
+                msg += ' No se pudieron asignar las materias: ' + unassigned.join(', ');
+            }
+        } else {
+            msg += 'Para generar grupos debe tener una carrera asignada en el sistema.';
         }
+        
         res.redirect(`/coordinador/grupos?msg=${encodeURIComponent(msg)}&msgTitle=${encodeURIComponent(title)}`);
     } catch (error) {
         console.error(error);
