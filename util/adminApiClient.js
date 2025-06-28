@@ -183,5 +183,26 @@ async function updateStudentStatus(ivd_id, regularStatus) {
   }
 }
 
+async function getExternalGroups() {
+  try {
+    const token = await getToken();
+    const headers = await getHeaders(token);
+
+    const response = await axiosAdminClient.get("v1/groups", { headers });
+
+    const data = response.data?.data;
+
+    if (!Array.isArray(data)) {
+      console.warn('Advertencia: la respuesta de la API no contiene un arreglo de grupos. Se usará un arreglo vacío.');
+      return [];
+    }
+
+    return data;
+  } catch (error) {
+    console.error("Error al obtener grupos externos:", error.response?.data || error.message);
+    return [];
+  }
+}
+
 // Export the functions so they can be used in other files
-module.exports = { getExternalCycles, getHeaders, getToken, axiosAdminClient, getAllCourses, getAllProfessors, getAllStudents, getAllAdministrators, getCiclosEscolares, getAllDegree, getAllAcademyHistory, updateStudentStatus };
+module.exports = { getExternalGroups, getExternalCycles, getHeaders, getToken, axiosAdminClient, getAllCourses, getAllProfessors, getAllStudents, getAllAdministrators, getCiclosEscolares, getAllDegree, getAllAcademyHistory, updateStudentStatus };
