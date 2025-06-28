@@ -130,7 +130,7 @@
                         <% if (horario[dia][bloque] && horario[dia][bloque].seleccionado === true) { 
                           const clase = horario[dia][bloque];
                         %>
-                          <td class="text-black text-center align-middle <%= clase.color %>" 
+                          <td class="text-center align-middle <%= clase.color %> <%= clase.color === 'bg-secondary' ? 'text-white' : 'text-black' %>" 
                               rowspan="<%= clase.rowspan + 1 %>"
                               data-bs-toggle="tooltip" 
                               data-bs-placement="top" 

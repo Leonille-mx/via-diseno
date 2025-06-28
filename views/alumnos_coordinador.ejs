@@ -54,24 +54,27 @@
     <table class="table table-hover" style="min-width: 800px; width: 100%;">
       <thead class="table-light">
         <tr>
-          <th scope="col" style="width: 13.5%; min-width: 100px;" class="text-center align-middle">Matricula</th>
+          <th scope="col" style="width: 10%; min-width: 100px;" class="text-center align-middle">Matricula</th>
           <th scope="col" style="width: 28%; min-width: 100px;" class="text-center align-middle">Nombre</th>
+          <th scope="col" style="width: 20%; min-width: 100px;" class="text-center align-middle">Carrera</th>
           <th scope="col" style="width: 10%; min-width: 100px;" class="text-center align-middle">Semestre</th>
           <th scope="col" style="width: 23.5%; min-width: 100px;" class="text-center align-middle">Correo Institucional</th>
           <th scope="col" style="width: 14%; min-width: 25px;" class="text-center align-middle">Inscripción</th>
-          <th scope="col" style="width: 4%; min-width: 25px;"></th>
-          <th scope="col" style="width: 7%; min-width: 25px;"></th>
+          <th scope="col" style="width: 5%; min-width: 25px;"></th>
+          <th scope="col" style="width: 5%; min-width: 25px;"></th>
         </tr>
       </thead>
       <tbody id="alumnoRegularTablaBody">
-        <% for (let alumnoRegular of alumnosRegulares) { %>
+        <% const alumnosRegularesFiltrados = alumnosRegulares.filter(ar => carrerasSeleccionadas.includes(ar.carrera_id));
+        alumnosRegularesFiltrados.forEach(alumnoRegular => {  %>
           <tr>
             <th scope="row" class="text-center align-middle"><%= alumnoRegular.ivd_id %></th>
             <td class="text-center align-middle"><%= alumnoRegular.nombre %> <%= alumnoRegular.primer_apellido %> <%= alumnoRegular.segundo_apellido|| '' %></td>
+            <td class="text-center align-middle"><%= alumnoRegular.carrera_nombre %></td>
             <td class="text-center align-middle"><%= alumnoRegular.semestre %></td>
             <td class="text-center align-middle"><%= alumnoRegular.correo_institucional %></td>
-            <td class="text-center align-middle d-flex justify-content-center">
-              <button class="btn btn-sm p-2 rounded-3 d-flex align-items-center justify-content-center <%= alumnoRegular.inscripcion_completada ? 'btn-success' : 'btn-warning text-dark' %>" 
+            <td class="text-center align-middle">
+              <button class="d-block mx-auto btn btn-sm p-2 rounded-3 d-flex align-items-center justify-content-center <%= alumnoRegular.inscripcion_completada ? 'btn-success' : 'btn-warning text-dark' %>" 
                 style="width: 70%; height: 1.5rem; color: white; border: none;">
                 <%= alumnoRegular.inscripcion_completada ? 'Completa' : 'Incompleta' %>
               </button>
@@ -102,7 +105,7 @@
               </button>
             </td>
           </tr>
-        <% } %>
+        <% }) %>
       </tbody>
     </table>
   </div>
@@ -123,24 +126,27 @@
     <table class="table table-hover" style="min-width: 800px; width: 100%;">
       <thead class="table-light">
         <tr>
-          <th scope="col" style="width: 13.5%; min-width: 100px;" class="text-center align-middle">Matricula</th>
+          <th scope="col" style="width: 10%; min-width: 100px;" class="text-center align-middle">Matricula</th>
           <th scope="col" style="width: 28%; min-width: 100px;" class="text-center align-middle">Nombre</th>
+          <th scope="col" style="width: 20%; min-width: 100px;" class="text-center align-middle">Carrera</th>
           <th scope="col" style="width: 10%; min-width: 100px;" class="text-center align-middle">Semestre</th>
           <th scope="col" style="width: 23.5%; min-width: 100px;" class="text-center align-middle">Correo Institucional</th>
           <th scope="col" style="width: 14%; min-width: 25px;" class="text-center align-middle">Inscripción</th>
-          <th scope="col" style="width: 4%; min-width: 25px;"></th>
-          <th scope="col" style="width: 7%; min-width: 25px;"></th>
+          <th scope="col" style="width: 5%; min-width: 25px;"></th>
+          <th scope="col" style="width: 5%; min-width: 25px;"></th>
         </tr>
       </thead>
       <tbody id="alumnoIrregularTablaBody">
-        <% for (let alumnoIrregular of alumnosIrregulares) { %>
+        <% const alumnosIrregularesFiltrados = alumnosIrregulares.filter(ar => carrerasSeleccionadas.includes(ar.carrera_id));
+        alumnosIrregularesFiltrados.forEach(alumnoIrregular => {  %>
           <tr>
             <th scope="row" class="text-center align-middle"><%= alumnoIrregular.ivd_id %></th>
             <td class="text-center align-middle"><%= alumnoIrregular.nombre %> <%= alumnoIrregular.primer_apellido %> <%= alumnoIrregular.segundo_apellido|| '' %></td>
+            <td class="text-center align-middle"><%= alumnoIrregular.carrera_nombre %></td>
             <td class="text-center align-middle"><%= alumnoIrregular.semestre %></td>
             <td class="text-center align-middle"><%= alumnoIrregular.correo_institucional %></td>
-            <td class="text-center align-middle d-flex justify-content-center">
-              <button class="btn btn-sm p-2 rounded-3 d-flex align-items-center justify-content-center <%= (alumnoIrregular.inscripcion_completada ? 'btn-success' : (alumnoIrregular.asignada ? 'btn-warning text-dark' : 'ivd-bg-red')) %>" 
+            <td class="text-center align-middle">
+              <button class="d-block mx-auto btn btn-sm p-2 rounded-3 d-flex align-items-center justify-content-center <%= (alumnoIrregular.inscripcion_completada ? 'btn-success' : (alumnoIrregular.asignada ? 'btn-warning text-dark' : 'ivd-bg-red')) %>" 
                 style="width: 70%; height: 1.5rem; color: white; border: none;"> 
                 <%= (alumnoIrregular.inscripcion_completada ? 'Completa' : (alumnoIrregular.asignada ? 'Incompleta' : 'No Asignada')) %>
               </button>
@@ -171,7 +177,7 @@
               </button>
             </td>
           </tr>
-        <% } %>
+        <% }) %>
       </tbody>
     </table>
   </div>
@@ -376,6 +382,120 @@
   </script>
 <% } %>
 <script>
+  document.querySelectorAll('.carrera-checkbox').forEach(cb => {
+    cb.addEventListener('change', () => {
+      // 1) Recopilamos los IDs de carrera seleccionados
+      const seleccionadas = Array.from(document.querySelectorAll('.carrera-checkbox'))
+        .filter(c => c.checked)
+        .map(c => parseInt(c.value, 10));
+
+      // 2) Hacemos el fetch de TODOS los alumnos
+      fetch('/coordinador/alumnos/filtrados', { method: 'GET' })
+        .then(res => res.json())
+        .then(data => {
+          const { alumnosRegulares, alumnosIrregulares } = data;
+
+          // 3) Filtramos por carrera y regeneramos cada tabla
+          const bodyReg = document.getElementById('alumnoRegularTablaBody');
+          const bodyIrr = document.getElementById('alumnoIrregularTablaBody');
+          let htmlReg = '', htmlIrr = '';
+
+          for (const a of alumnosRegulares.filter(a => seleccionadas.includes(a.carrera_id))) {
+            htmlReg += `
+              <tr>
+                <th class="text-center">${a.ivd_id}</th>
+                <td class="text-center">${a.nombre} ${a.primer_apellido} ${a.segundo_apellido||''}</td>
+                <td class="text-center">${a.carrera_nombre}</td>
+                <td class="text-center">${a.semestre}</td>
+                <td class="text-center">${a.correo_institucional}</td>
+                <td class="text-center align-middle">
+                  <button class="d-block mx-auto btn btn-sm p-2 rounded-3 d-flex align-items-center justify-content-center ${a.inscripcion_completada ? 'btn-success' : 'btn-warning text-dark'}" 
+                    style="width: 70%; height: 1.5rem; color: white; border: none;">
+                    ${a.inscripcion_completada ? 'Completa' : 'Incompleta'}
+                  </button>
+                </td>
+                <td class="text-center align-middle">
+                  <button class="btn btn-sm p-0 d-flex align-items-center justify-content-center" 
+                      style="width: 1.5rem; height: 1.5rem; border-radius: 50%; background-color: #84251c; color: white; border: none;"
+                      data-bs-toggle="modal" 
+                      data-bs-target="#viewModal"
+                      data-alumno-id="${a.ivd_id}"
+                      data-alumno-nombre="${a.nombre} ${a.primer_apellido}  ${a.segundo_apellido || ''}">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-eye-fill" viewBox="0 0 16 16">
+                      <path d="M10.5 8a2.5 2.5 0 1 1-5 0 2.5 2.5 0 0 1 5 0"/>
+                      <path d="M0 8s3-5.5 8-5.5S16 8 16 8s-3 5.5-8 5.5S0 8 0 8m8 3.5a3.5 3.5 0 1 0 0-7 3.5 3.5 0 0 0 0 7"/>
+                    </svg>
+                  </button>
+                </td>
+                <td class="text-center align-middle">
+                  <button class="btn btn-sm p-0 d-flex align-items-center justify-content-center" 
+                      style="width: 1.5rem; height: 1.5rem; border-radius: 50%; background-color: #84251c; color: white; border: none;"
+                      data-bs-toggle="modal" 
+                      data-bs-target="#alertaModal"
+                      data-alumno-id="${a.ivd_id}"
+                      data-alumno-nombre="${a.nombre} ${a.primer_apellido} ${a.segundo_apellido || ''}">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-pencil-fill" viewBox="0 0 16 16">
+                      <path d="M12.854.146a.5.5 0 0 0-.707 0L10.5 1.793 14.207 5.5l1.647-1.646a.5.5 0 0 0 0-.708zm.646 6.061L9.793 2.5 3.293 9H3.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.207zm-7.468 7.468A.5.5 0 0 1 6 13.5V13h-.5a.5.5 0 0 1-.5-.5V12h-.5a.5.5 0 0 1-.5-.5V11h-.5a.5.5 0 0 1-.5-.5V10h-.5a.5.5 0 0 1-.175-.032l-.179.178a.5.5 0 0 0-.11.168l-2 5a.5.5 0 0 0 .65.65l5-2a.5.5 0 0 0 .168-.11z"/>
+                    </svg>
+                </td>
+              </tr>`;
+          }
+
+          for (const a of alumnosIrregulares.filter(a => seleccionadas.includes(a.carrera_id))) {
+            htmlIrr += `
+              <tr>
+                <th class="text-center">${a.ivd_id}</th>
+                <td class="text-center">${a.nombre} ${a.primer_apellido} ${a.segundo_apellido||''}</td>
+                <td class="text-center">${a.carrera_nombre}</td>
+                <td class="text-center">${a.semestre}</td>
+                <td class="text-center">${a.correo_institucional}</td>
+                <td class="text-center align-middle">
+                  <button class="d-block mx-auto btn btn-sm p-2 rounded-3 d-flex align-items-center justify-content-center 
+                  ${a.inscripcion_completada
+                      ? 'btn-success'
+                      : (a.asignada ? 'btn-warning text-dark' : 'ivd-bg-red')}"
+                      style="width: 70%; height: 1.5rem; color: white; border: none;">
+                    ${a.inscripcion_completada
+                      ? 'Completa'
+                      : (a.asignada ? 'Incompleta' : 'No Asignada')}
+                  </button>
+                </td>
+                <td class="text-center align-middle">
+                  <button class="btn btn-sm p-0 d-flex align-items-center justify-content-center" 
+                      style="width: 1.5rem; height: 1.5rem; border-radius: 50%; background-color: #84251c; color: white; border: none;"
+                      data-bs-toggle="modal" 
+                      data-bs-target="#viewModal"
+                      data-alumno-id="${a.ivd_id}"
+                      data-alumno-nombre="${a.nombre} ${a.primer_apellido} ${a.segundo_apellido || ''}">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-eye-fill" viewBox="0 0 16 16">
+                      <path d="M10.5 8a2.5 2.5 0 1 1-5 0 2.5 2.5 0 0 1 5 0"/>
+                      <path d="M0 8s3-5.5 8-5.5S16 8 16 8s-3 5.5-8 5.5S0 8 0 8m8 3.5a3.5 3.5 0 1 0 0-7 3.5 3.5 0 0 0 0 7"/>
+                    </svg>
+                  </button>
+                </td>
+                <td class="text-center align-middle">
+                  <button class="btn btn-sm p-0 d-flex align-items-center justify-content-center" 
+                      style="width: 1.5rem; height: 1.5rem; border-radius: 50%; background-color: #84251c; color: white; border: none;"
+                      data-bs-toggle="modal" 
+                      data-bs-target="#alertaModal"
+                      data-alumno-id="${a.ivd_id}"
+                      data-alumno-nombre="${a.nombre} ${a.primer_apellido} ${a.segundo_apellido || ''}">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-pencil-fill" viewBox="0 0 16 16">
+                      <path d="M12.854.146a.5.5 0 0 0-.707 0L10.5 1.793 14.207 5.5l1.647-1.646a.5.5 0 0 0 0-.708zm.646 6.061L9.793 2.5 3.293 9H3.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.207zm-7.468 7.468A.5.5 0 0 1 6 13.5V13h-.5a.5.5 0 0 1-.5-.5V12h-.5a.5.5 0 0 1-.5-.5V11h-.5a.5.5 0 0 1-.5-.5V10h-.5a.5.5 0 0 1-.175-.032l-.179.178a.5.5 0 0 0-.11.168l-2 5a.5.5 0 0 0 .65.65l5-2a.5.5 0 0 0 .168-.11z"/>
+                    </svg>
+                  </button>
+                </td>
+              </tr>`;
+          }
+
+          bodyReg.innerHTML = htmlReg;
+          bodyIrr.innerHTML = htmlIrr;
+        })
+        .catch(err => console.error('Error al filtrar alumnos:', err));
+    });
+  });
+
+
   // Para modal de consultar horario
   document.getElementById('viewModal').addEventListener('shown.bs.modal', (event) => {
     const button = event.relatedTarget;
@@ -480,7 +600,7 @@
                 const clase = horario[dia][bloque];
                 horaPorGrp[clase.grupo_id][dia].push(clase.hora); 
                 html_container_tabla += `
-                  <td class="text-black text-center align-middle ${clase.color}" 
+                  <td class="text-center align-middle ${clase.color} ${clase.color === 'bg-secondary' ? 'text-white' : 'text-black'}" 
                       rowspan="${clase.rowspan + 1}"
                       data-bs-toggle="tooltip" 
                       data-bs-placement="top"`;
@@ -1386,7 +1506,7 @@ document.getElementById('alertaModal').addEventListener('show.bs.modal', functio
                   const clase = horario[dia][bloque];
                   horaPorGrp[clase.grupo_id][dia].push(clase.hora); 
                   html_container_tabla += `
-                    <td class="text-black text-center align-middle ${clase.color}" 
+                    <td class="text-center align-middle ${clase.color} ${clase.color === 'bg-secondary' ? 'text-white' : 'text-black'}" 
                         rowspan="${clase.rowspan + 1}"
                         data-bs-toggle="tooltip" 
                         data-bs-placement="top"`;

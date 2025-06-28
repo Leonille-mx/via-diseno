@@ -10,6 +10,9 @@ module.exports = class Carrera {
         // Establece la conexión con nuestra base de datos
         const client = await pool.connect();
         try {
+            // Iniciamos transacción para garantizar consistencia
+            await client.query('BEGIN');
+
             const carrerasDB_data = await client.query('SELECT * FROM carrera');
             const carrerasDB = carrerasDB_data.rows;
 
@@ -58,7 +61,6 @@ module.exports = class Carrera {
                     // Crea un mapa de planes de estudio de la API
                     const planEstudioApiMap = new Map(cA.plans.map(planE => [planE.id, {version: planE.version, status: planE.status}])); 
                     
-
                     for (const planEApi of planEstudioApiMap) {
                         if (!planEstudioDBMap.has(planEApi[0]) && planEApi[1].status === 'active') {
                             console.log(planEApi);
@@ -72,6 +74,30 @@ module.exports = class Carrera {
                         } else if (planEstudioDBMap.has(planEApi[0]) && 
                                    planEstudioDBMap.get(planEApi[0]) !== planEApi[1].version && 
                                    planEApi[1].status === 'active') {
+                            await client.query(`
+                                DELETE FROM plan_materia
+                                WHERE plan_estudio_id = $1 AND plan_estudio_version = $2`,
+                                [planEApi[0], planEstudioDBMap.get(planEApi[0])]
+                            );
+                            await client.query(`
+                                DELETE FROM historial_academico ha
+                                USING alumno a
+                                WHERE ha.ivd_id = a.ivd_id
+                                AND a.plan_estudio_id = $1 AND a.plan_estudio_version = $2`,
+                                [planEApi[0], planEstudioDBMap.get(planEApi[0])]
+                            );
+                            await client.query(`
+                                DELETE FROM resultado_inscripcion ri
+                                USING alumno a
+                                WHERE ri.alumno_id = a.ivd_id
+                                AND a.plan_estudio_id = $1 AND a.plan_estudio_version = $2`,
+                                [planEApi[0], planEstudioDBMap.get(planEApi[0])]
+                            );
+                            await client.query(`
+                                DELETE FROM alumno
+                                WHERE plan_estudio_id = $1 AND plan_estudio_version = $2`,
+                                [planEApi[0], planEstudioDBMap.get(planEApi[0])]
+                            );
                             await client.query(`
                                 UPDATE plan_estudio 
                                 SET version = $1
@@ -90,6 +116,30 @@ module.exports = class Carrera {
                     }
 
                     for (const [planEDB] of planEstudioDBMap) {
+                        await client.query(`
+                            DELETE FROM plan_materia
+                            WHERE plan_estudio_id = $1`,
+                            [planEDB]
+                        );
+                        await client.query(`
+                            DELETE FROM historial_academico ha
+                            USING alumno a
+                            WHERE ha.ivd_id = a.ivd_id
+                            AND a.plan_estudio_id = $1`,
+                            [planEDB]
+                        );
+                        await client.query(`
+                            DELETE FROM resultado_inscripcion ri
+                            USING alumno a
+                            WHERE ri.alumno_id = a.ivd_id
+                            AND a.plan_estudio_id = $1`,
+                            [planEDB]
+                        );
+                        await client.query(`
+                            DELETE FROM alumno
+                            WHERE plan_estudio_id = $1`,
+                            [planEDB]
+                        );
                         await client.query(`
                             DELETE FROM plan_estudio
                             WHERE plan_estudio_id = $1`,
@@ -110,22 +160,66 @@ module.exports = class Carrera {
                 }
             }
             for (let [cDB] of carrerasDBMap) {
+                if (cDB === 9999) {
+                    carrerasDBMap.delete(cDB);
+                continue;
+                 }
                 await client.query(`
-                    DELETE FROM carrera
-                    WHERE carrera_id = $1`
+                    DELETE FROM plan_materia pm
+                    USING plan_estudio pe
+                    WHERE pm.plan_estudio_id = pe.plan_estudio_id
+                    AND pm.plan_estudio_version = pe.version
+                    AND pe.carrera_id = $1`
+                    , [cDB]);
+                await client.query(`
+                    DELETE FROM historial_academico ha
+                    USING alumno a, plan_estudio pe
+                    WHERE ha.ivd_id = a.ivd_id
+                    AND a.plan_estudio_id = pe.plan_estudio_id
+                    AND a.plan_estudio_version = pe.version
+                    AND pe.carrera_id = $1`
+                    , [cDB]);
+                await client.query(`
+                    DELETE FROM resultado_inscripcion ri
+                    USING alumno a, plan_estudio pe
+                    WHERE ri.alumno_id = a.ivd_id
+                    AND a.plan_estudio_id = pe.plan_estudio_id
+                    AND a.plan_estudio_version = pe.version
+                    AND pe.carrera_id = $1`
+                    , [cDB]);
+                await client.query(`
+                    DELETE FROM alumno a
+                    USING plan_estudio pe
+                    WHERE a.plan_estudio_id = pe.plan_estudio_id
+                    AND a.plan_estudio_version = pe.version
+                    AND pe.carrera_id = $1`
                     , [cDB]);
                 await client.query(`
                     DELETE FROM plan_estudio
                     WHERE carrera_id = $1`
                     , [cDB]);
+                await client.query(`
+                    DELETE FROM coordinador
+                    WHERE carrera_id = $1`
+                    , [cDB]);
+                await client.query(`
+                    DELETE FROM carrera
+                    WHERE carrera_id = $1`
+                    , [cDB]);
                 deleted += 2;
             }
+            await client.query('COMMIT');
             return { inserted, updated, deleted };
         } catch (error) {
+            await client.query('ROLLBACK');
             console.error("Error durante la sincronización de materias:", error);
             throw error;
         } finally {
             client.release();
         }
+    }
+
+    static fetchAll() {
+        return pool.query('SELECT * FROM carrera ORDER BY carrera_id DESC');
     }
 }

@@ -48,34 +48,120 @@ module.exports = class GenerarGruposGA {
         };
     }
 
-    async loadData(client = pool) {
-        const [mRes, pmRes, phRes] = await Promise.all([
-            client.query(
-                `SELECT m.materia_id, m.sep_id, m.horas_profesor, ms.semestre_id
-                 FROM materia m
-                 JOIN materia_semestre ms ON m.materia_id = ms.materia_id`
-            ),
-            client.query(`SELECT materia_id, profesor_id FROM profesor_materia`),
-            client.query(`SELECT profesor_id, bloque_tiempo_id FROM profesor_bloque_tiempo`)
-        ]);
+  async loadData(carrera_id, client = pool) {
+    await client.query(`
+    DELETE FROM grupo_bloque_tiempo gbt
+    USING grupo g
+    JOIN plan_materia pm ON g.materia_id = pm.materia_id
+    JOIN plan_estudio pe  ON pm.plan_estudio_id = pe.plan_estudio_id
+    WHERE gbt.grupo_id = g.grupo_id
+        AND pe.carrera_id = $1
+    `, [carrera_id]);
 
-        const mapMat = {};
-        mRes.rows.forEach(r => {
-            if (!mapMat[r.materia_id]) mapMat[r.materia_id] = { materia_id: r.materia_id, sep_id: r.sep_id, horas_profesor: r.horas_profesor, semestres: [] };
-            if (!mapMat[r.materia_id].semestres.includes(r.semestre_id)) mapMat[r.materia_id].semestres.push(r.semestre_id);
-        });
-        this.materias = Object.values(mapMat);
-        this.materias.forEach(m => { this.bloquesNecesariosMap[m.materia_id] = m.horas_profesor * 2; });
+    await client.query(`
+    DELETE FROM resultado_inscripcion ri
+    USING grupo g
+    JOIN plan_materia pm ON g.materia_id = pm.materia_id
+    JOIN plan_estudio pe  ON pm.plan_estudio_id = pe.plan_estudio_id
+    WHERE ri.grupo_id = g.grupo_id
+        AND pe.carrera_id = $1
+    `, [carrera_id]);
 
-        pmRes.rows.forEach(r => {
-            this.profesorMaterias[r.materia_id] = this.profesorMaterias[r.materia_id] || [];
-            this.profesorMaterias[r.materia_id].push(r.profesor_id);
-        });
-        phRes.rows.forEach(r => {
-            this.profesorHorarios[r.profesor_id] = this.profesorHorarios[r.profesor_id] || [];
-            this.profesorHorarios[r.profesor_id].push(r.bloque_tiempo_id);
-        });
-    }
+    await client.query(`
+    DELETE FROM grupo g
+    USING plan_materia pm
+    JOIN plan_estudio pe ON pm.plan_estudio_id = pe.plan_estudio_id
+    WHERE g.materia_id = pm.materia_id
+        AND pe.carrera_id = $1
+    `, [carrera_id]);
+
+    // 1) Traer materias con su carrera y semestres
+    const mRes = await client.query(`
+      SELECT 
+        m.materia_id, 
+        m.sep_id, 
+        m.horas_profesor, 
+        ms.semestre_id,
+        c.carrera_id
+      FROM materia m
+      JOIN materia_semestre ms 
+        ON m.materia_id = ms.materia_id
+      JOIN plan_materia pm 
+        ON m.materia_id = pm.materia_id
+      JOIN plan_estudio pe 
+        ON pm.plan_estudio_id = pe.plan_estudio_id
+       AND pm.plan_estudio_version = pe.version
+      JOIN carrera c 
+        ON pe.carrera_id = c.carrera_id
+      WHERE c.carrera_id = $1
+    `, [ carrera_id ]);
+
+    // 2) Traer asignaciones profesor→materia
+    const pmRes = await client.query(`
+      SELECT materia_id, profesor_id FROM profesor_materia
+    `);
+
+    // 3) Traer todos los bloques disponibles por profesor
+    const phRes = await client.query(`
+      SELECT profesor_id, bloque_tiempo_id FROM profesor_bloque_tiempo
+    `);
+
+    // 4) Traer los bloques ya usados en grupos
+    const usedRes = await client.query(`
+      SELECT g.profesor_id, gbt.bloque_tiempo_id
+      FROM grupo_bloque_tiempo gbt
+      JOIN grupo g 
+        ON gbt.grupo_id = g.grupo_id
+    `);
+
+    // 5) Construir map de materias (agrupa semestres)
+    const mapMat = {};
+    mRes.rows.forEach(r => {
+      if (!mapMat[r.materia_id]) {
+        mapMat[r.materia_id] = {
+          materia_id: r.materia_id,
+          sep_id:     r.sep_id,
+          horas_profesor: r.horas_profesor,
+          semestres: [],
+        };
+      }
+      if (!mapMat[r.materia_id].semestres.includes(r.semestre_id)) {
+        mapMat[r.materia_id].semestres.push(r.semestre_id);
+      }
+    });
+    this.materias = Object.values(mapMat);
+
+    // 6) Horas necesarias en bloques (2 por hora de clase)
+    this.materias.forEach(m => {
+      this.bloquesNecesariosMap[m.materia_id] = m.horas_profesor * 2;
+    });
+
+    // 7) Profesor→Materias
+    pmRes.rows.forEach(r => {
+      this.profesorMaterias[r.materia_id] =
+        this.profesorMaterias[r.materia_id] || [];
+      this.profesorMaterias[r.materia_id].push(r.profesor_id);
+    });
+
+    // 8) Profesor→Bloques *disponibles* = todos menos los usados
+    //    construimos un set de usados por profesor
+    const usadosPorProf = {};
+    usedRes.rows.forEach(r => {
+      usadosPorProf[r.profesor_id] = usadosPorProf[r.profesor_id] || new Set();
+      usadosPorProf[r.profesor_id].add(r.bloque_tiempo_id);
+    });
+
+    phRes.rows.forEach(r => {
+      const usados = usadosPorProf[r.profesor_id] || new Set();
+      // sólo metemos si NO está en usados
+      if (!usados.has(r.bloque_tiempo_id)) {
+        this.profesorHorarios[r.profesor_id] =
+          this.profesorHorarios[r.profesor_id] || [];
+        this.profesorHorarios[r.profesor_id].push(r.bloque_tiempo_id);
+      }
+    });
+  }
+
 
     createGreedyIndividual() {
         const ind = this.materias.map(mat => {
@@ -313,8 +399,8 @@ module.exports = class GenerarGruposGA {
         return this.repairIndividual(best);
     }
 
-    async run() {
-        await this.loadData();
+    async run(carrera_id) {
+        await this.loadData(carrera_id);
         const start = Date.now();
         const limit = 10 * 60 * 1000;
         this.bestIndividual = null;
@@ -388,14 +474,11 @@ module.exports = class GenerarGruposGA {
         return { best: this.bestIndividual, unassigned: this.unassignedMaterias, metrics: this.metrics };
     }
 
-    async saveResult(resultado, client = pool) {
+    async saveResult(resultado, carrera_id, client = pool) {
         const { best } = resultado;
         await client.query('BEGIN');
         try {
-            await client.query(`DELETE FROM grupo_bloque_tiempo`);
-            await client.query(`DELETE FROM resultado_inscripcion`);
-            await client.query(`DELETE FROM grupo`);
-            const asigns = [];
+        const asigns = [];
             for (const g of best) {
                 if (!g.profesor || !this.validarSesion(g.bloques)) continue;
                 const rId = await client.query(`SELECT COALESCE(MAX(grupo_id),0)+1 AS id FROM grupo`);
@@ -415,13 +498,21 @@ module.exports = class GenerarGruposGA {
             for (const a of asigns) {
                 for (const sem of a.semestres) {
                     await client.query(
-                        `INSERT INTO resultado_inscripcion (alumno_id, grupo_id, obligatorio, seleccionado)
-                         SELECT al.ivd_id,$1,true,true
-                         FROM alumno al
-                         JOIN semestre s ON al.semestre = s.numero
-                         LEFT JOIN historial_academico h ON h.ivd_id=al.ivd_id AND h.materia_id=$2 AND h.aprobado=true
-                         WHERE s.semestre_id=$3 AND h.ivd_id IS NULL`,
-                        [a.grupo_id, a.materia_id, sem]
+                    `INSERT INTO resultado_inscripcion (alumno_id, grupo_id, obligatorio, seleccionado)
+                     SELECT al.ivd_id, $1, true, true
+                       FROM alumno al
+                       JOIN semestre s 
+                         ON al.semestre = s.numero
+                       JOIN plan_estudio p 
+                         ON al.plan_estudio_id = p.plan_estudio_id
+                       LEFT JOIN historial_academico h 
+                         ON h.ivd_id = al.ivd_id 
+                        AND h.materia_id = $2 
+                        AND h.aprobado = true
+                      WHERE s.semestre_id = $3
+                        AND p.carrera_id = $4
+                        AND h.ivd_id IS NULL`,
+                    [a.grupo_id, a.materia_id, sem, carrera_id]
                     );
                 }
             }

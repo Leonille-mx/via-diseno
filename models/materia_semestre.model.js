@@ -10,11 +10,15 @@ module.exports = class MateriaSemestre {
     static async fetchMateriasSemestre() {
         return pool.query(`
             SELECT 
-            m.materia_id, m.sep_id, nombre, creditos,
+            m.materia_id, m.sep_id, m.nombre, creditos,
             semestre_plan, horas_profesor, 
-            tipo_salon, semestre_id
-            FROM materia m, materia_semestre ms
-            WHERE m.materia_id = ms.materia_id
+            tipo_salon, semestre_id, c.carrera_id,
+            c.nombre as carrera_nombre
+            FROM materia m
+            JOIN materia_semestre ms ON m.materia_id = ms.materia_id
+            JOIN plan_materia pm ON m.materia_id = pm.materia_id
+            JOIN plan_estudio p ON pm.plan_estudio_id = p.plan_estudio_id
+            JOIN carrera c ON c.carrera_id = p.carrera_id
             ORDER BY m.sep_id ASC`
         );
     }
@@ -22,13 +26,15 @@ module.exports = class MateriaSemestre {
     static async fetchMateriasSemestrePorCarrera (carrera_id) {
         return pool.query(`
             SELECT 
-            m.materia_id, m.sep_id, nombre, creditos,
+            m.materia_id, m.sep_id, m.nombre, creditos,
             semestre_plan, horas_profesor, 
-            tipo_salon, semestre_id
+            tipo_salon, semestre_id, c.carrera_id,
+            c.nombre as carrera_nombre
             FROM materia m
             JOIN materia_semestre ms ON m.materia_id = ms.materia_id
             JOIN plan_materia pm ON m.materia_id = pm.materia_id
             JOIN plan_estudio p ON pm.plan_estudio_id = p.plan_estudio_id
+            JOIN carrera c ON c.carrera_id = p.carrera_id
             WHERE p.carrera_id = $1
             ORDER BY m.sep_id ASC`
             , [carrera_id]
@@ -90,16 +96,21 @@ module.exports = class MateriaSemestre {
     }
 
     static async fetchMateriasNoAbiertasPorSemestre(semestre_id) {
-        return pool.query(
-            `SELECT m.materia_id, m.sep_id, m.semestre_plan, m.nombre, m.creditos, m.horas_profesor, m.tipo_salon
-             FROM materia m
-             WHERE NOT EXISTS (
-                 SELECT 1 FROM materia_semestre ms
-                 WHERE ms.materia_id = m.materia_id
-                 AND ms.semestre_id = $1
-             )
-             ORDER BY m.sep_id;`,
-            [semestre_id]
-        );
+    return pool.query(`
+        SELECT 
+        m.materia_id, m.sep_id, m.nombre, m.creditos, m.horas_profesor, m.tipo_salon, semestre_plan,
+        c.carrera_id, c.nombre AS carrera_nombre
+        FROM materia m
+        JOIN plan_materia pm ON m.materia_id = pm.materia_id
+        JOIN plan_estudio p ON pm.plan_estudio_id = p.plan_estudio_id
+        JOIN carrera c ON p.carrera_id = c.carrera_id
+        WHERE NOT EXISTS (
+            SELECT 1 
+            FROM materia_semestre ms
+            WHERE ms.materia_id   = m.materia_id
+            AND ms.semestre_id  = $1
+        )
+        ORDER BY m.sep_id;
+    `, [semestre_id]);
     }
 }

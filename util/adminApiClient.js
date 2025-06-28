@@ -115,6 +115,19 @@ async function getAllStudents() {
   return response.data;
 }
 
+async function getAllAdministrators() {
+  const token = await getToken();
+  const headers = await getHeaders(token);
+  
+  const response = await axiosAdminClient.get("v1/users/all", {
+    headers,
+    params: {
+      type: "Users::Administrator",
+    }
+  }); 
+  return response.data;
+}
+
 async function getAllDegree() {
   const token = await getToken();
   const headers = await getHeaders(token);
@@ -149,5 +162,47 @@ async function getExternalCycles() {
   return response.data;
 }
 
+async function updateStudentStatus(ivd_id, regularStatus) {
+  try {
+    const token = await getToken();
+    const headers = getHeaders(token);
+    
+    const response = await axiosAdminClient.patch(
+      "v1/users",
+      {
+        ivd_id: ivd_id,
+        regular: regularStatus
+      },
+      { headers }
+    );
+    
+    return response.data;
+  } catch (error) {
+    console.error("Error updating student status:", error.response?.data || error.message);
+    throw new Error(`Failed to update student status: ${error.message}`);
+  }
+}
+
+async function getExternalGroups() {
+  try {
+    const token = await getToken();
+    const headers = await getHeaders(token);
+
+    const response = await axiosAdminClient.get("v1/groups", { headers });
+
+    const data = response.data?.data;
+
+    if (!Array.isArray(data)) {
+      console.warn('Advertencia: la respuesta de la API no contiene un arreglo de grupos. Se usará un arreglo vacío.');
+      return [];
+    }
+
+    return data;
+  } catch (error) {
+    console.error("Error al obtener grupos externos:", error.response?.data || error.message);
+    return [];
+  }
+}
+
 // Export the functions so they can be used in other files
-module.exports = { getExternalCycles, getHeaders, getToken, axiosAdminClient, getAllCourses, getAllProfessors, getAllStudents, getCiclosEscolares, getAllDegree, getAllAcademyHistory };
+module.exports = { getExternalGroups, getExternalCycles, getHeaders, getToken, axiosAdminClient, getAllCourses, getAllProfessors, getAllStudents, getAllAdministrators, getCiclosEscolares, getAllDegree, getAllAcademyHistory, updateStudentStatus };

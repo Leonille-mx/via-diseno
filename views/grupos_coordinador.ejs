@@ -63,18 +63,6 @@
 
   <!-- Contenedor principal con scroll -->
   <div class="mx-5 mb-5 rounded-5 flex-grow-1 materia-scroll pt-0" style="padding: 1rem;">
-    <div class="dropdown d-flex justify-content-end">
-      <button id="btnCarrera" class="btn border dropdown-toggle rounded-pill ivd-border-red" 
-              type="button" data-bs-toggle="dropdown" style="background-color: white;">
-        Carrera
-      </button>
-      <ul class="dropdown-menu">
-        <li class="dropdown-item carrera-opcion" data-carrera="carrera">Carrera</li>
-        <li class="dropdown-item carrera-opcion" data-carrera="moda">Diseño de la Moda e Industria del Vestido</li>
-        <li class="dropdown-item carrera-opcion" data-carrera="interior">Diseño y Arquitectura de Interiores</li>
-        <li class="dropdown-item carrera-opcion" data-carrera="sistemas">Ingenieria en Sistemas</li>
-      </ul>
-    </div>
     <!-- Primer Semestre --> 
     <div class="mb-4">
       <div class="d-flex justify-content-between align-items-center">
@@ -95,7 +83,7 @@
             </tr>
           </thead>
           <tbody id="tbody1">
-            <% for (let grupo of grupos.filter(g => g.semestre_id === 's1')) { %>
+            <% for (let grupo of grupos.filter(g => g.semestre_id === 's1' && carrerasSeleccionadas.includes(g.carrera_id))) { %>
               <tr>
                 <th scope="row" class="text-center align-middle"><%= grupo.grupo_id %></th>
                 <td class="text-center align-middle"><%= grupo.materia %></td>
@@ -157,7 +145,7 @@
             </tr>
           </thead>
           <tbody id="tbody2">
-            <% for (let grupo of grupos.filter(g => g.semestre_id === 's2')) { %>
+            <% for (let grupo of grupos.filter(g => g.semestre_id === 's2' && carrerasSeleccionadas.includes(g.carrera_id))) { %>
               <tr>
                 <th scope="row" class="text-center align-middle"><%= grupo.grupo_id %></th>
                 <td class="text-center align-middle"><%= grupo.materia %></td>
@@ -219,7 +207,7 @@
             </tr>
           </thead>
           <tbody id="tbody3">
-            <% for (let grupo of grupos.filter(g => g.semestre_id === 's3')) { %>
+            <% for (let grupo of grupos.filter(g => g.semestre_id === 's3' && carrerasSeleccionadas.includes(g.carrera_id))) { %>
               <tr>
                 <th scope="row" class="text-center align-middle"><%= grupo.grupo_id %></th>
                 <td class="text-center align-middle"><%= grupo.materia %></td>
@@ -280,7 +268,7 @@
             </tr>
           </thead>
           <tbody id="tbody4">
-            <% for (let grupo of grupos.filter(g => g.semestre_id === 's4')) { %>
+            <% for (let grupo of grupos.filter(g => g.semestre_id === 's4' && carrerasSeleccionadas.includes(g.carrera_id))) { %>
               <tr>
                 <th scope="row" class="text-center align-middle"><%= grupo.grupo_id %></th>
                 <td class="text-center align-middle"><%= grupo.materia %></td>
@@ -341,7 +329,7 @@
             </tr>
           </thead>
           <tbody id="tbody5">
-            <% for (let grupo of grupos.filter(g => g.semestre_id === 's5')) { %>
+            <% for (let grupo of grupos.filter(g => g.semestre_id === 's5' && carrerasSeleccionadas.includes(g.carrera_id))) { %>
               <tr>
                 <th scope="row" class="text-center align-middle"><%= grupo.grupo_id %></th>
                 <td class="text-center align-middle"><%= grupo.materia %></td>
@@ -402,7 +390,7 @@
             </tr>
           </thead>
           <tbody id="tbody6">
-            <% for (let grupo of grupos.filter(g => g.semestre_id === 's6')) { %>
+            <% for (let grupo of grupos.filter(g => g.semestre_id === 's6' && carrerasSeleccionadas.includes(g.carrera_id))) { %>
               <tr>
                 <th scope="row" class="text-center align-middle"><%= grupo.grupo_id %></th>
                 <td class="text-center align-middle"><%= grupo.materia %></td>
@@ -463,7 +451,7 @@
             </tr>
           </thead>
           <tbody id="tbody7">
-            <% for (let grupo of grupos.filter(g => g.semestre_id === 's7')) { %>
+            <% for (let grupo of grupos.filter(g => g.semestre_id === 's7' && carrerasSeleccionadas.includes(g.carrera_id))) { %>
               <tr>
                 <th scope="row" class="text-center align-middle"><%= grupo.grupo_id %></th>
                 <td class="text-center align-middle"><%= grupo.materia %></td>
@@ -524,7 +512,7 @@
             </tr>
           </thead>
           <tbody id="tbody8">
-            <% for (let grupo of grupos.filter(g => g.semestre_id === 's8')) { %>
+            <% for (let grupo of grupos.filter(g => g.semestre_id === 's8' && carrerasSeleccionadas.includes(g.carrera_id))) { %>
               <tr>
                 <th scope="row" class="text-center align-middle"><%= grupo.grupo_id %></th>
                 <td class="text-center align-middle"><%= grupo.materia %></td>
@@ -585,7 +573,7 @@
             </tr>
           </thead>
           <tbody id="tbody9">
-            <% for (let grupo of grupos.filter(g => g.semestre_id === 's9')) { %>
+            <% for (let grupo of grupos.filter(g => g.semestre_id === 's9' && carrerasSeleccionadas.includes(g.carrera_id))) { %>
               <tr>
                 <th scope="row" class="text-center align-middle"><%= grupo.grupo_id %></th>
                 <td class="text-center align-middle"><%= grupo.materia %></td>
@@ -1253,40 +1241,43 @@
 <script src="/js/coordinador.js"></script>
 
 <script>
-  document.querySelectorAll('.carrera-opcion').forEach(item => {
-    item.addEventListener('click', function () {
-      const carreraSeleccionada = this.getAttribute('data-carrera');
-      let carrera_id = '';
-      if (carreraSeleccionada === 'carrera') {
-        document.getElementById('btnCarrera').innerHTML = 'Carrera';
-        fetch(`/coordinador/grupos/get-carrera`, {
-          method: 'GET'
-        }).then((res) => {
-          return res.json();
-        }).then((data) => {
-          const grupos = data.grupos;
-          let html_container_grupos;
-          for (let i = 1; i <= 9; i++) {
-            html_container_grupos = '';
-            for (let grupo of grupos.filter(g => g.semestre_id === `s${i}`)) {
-              html_container_grupos += `
+document.querySelectorAll('.carrera-checkbox').forEach(cb => {
+  cb.addEventListener('change', () => {
+    // 1) Recopilamos los IDs de carrera seleccionados
+    const seleccionadas = Array.from(document.querySelectorAll('.carrera-checkbox'))
+      .filter(c => c.checked)
+      .map(c => parseInt(c.value, 10));
+
+    // 2) Hacemos el fetch de TODOS los grupos
+    fetch('/coordinador/grupos/get-carrera', { method: 'GET' })
+      .then(res => res.json())
+      .then(data => {
+        const grupos = data.grupos;
+
+        // 3) Vaciamos y rellenamos cada tbody según filtro
+        for (let i = 1; i <= 9; i++) {
+          const tbody = document.getElementById(`tbody${i}`);
+          if (!tbody) continue;
+
+          // Filtramos por carrera y semestre
+          const gruposFiltrados = grupos
+            .filter(g => seleccionadas.includes(g.carrera_id))
+            .filter(g => g.semestre_id === `s${i}`);
+
+          // Generamos el HTML tal cual en tu primer bloque
+          let html = '';
+          for (const grupo of gruposFiltrados) {
+            html += `
               <tr>
                 <th scope="row" class="text-center align-middle">${grupo.grupo_id}</th>
                 <td class="text-center align-middle">${grupo.materia}</td>
                 <td class="text-center align-middle">${grupo.carrera_nombre}</td>
-                <td class="text-center align-middle">${grupo.nombre + ' ' + grupo.primer_apellido + ' ' + grupo.segundo_apellido}</td>`
-                if (grupo.numero === 9999) {
-                  html_container_grupos += `
-                  <td class="text-center align-middle">No Asignado</td>`
-                } else {
-                  html_container_grupos += `
-                  <td class="text-center align-middle">${grupo.numero}</td>`
-                }
-                html_container_grupos += `
+                <td class="text-center align-middle">${grupo.nombre} ${grupo.primer_apellido} ${grupo.segundo_apellido}</td>
+                <td class="text-center align-middle">${grupo.numero === 9999 ? 'No Asignado' : grupo.numero}</td>
                 <td class="text-center align-middle">${grupo.code}</td>
                 <td class="text-center align-middle">
                   <button class="btn btn-sm p-0 d-flex align-items-center justify-content-center"
-                          style="width: 1.5rem; height: 1.5rem; border-radius: 50%; background-color: #84251c; color: white; border: none;"
+                          style="width:1.5rem;height:1.5rem;border-radius:50%;background-color:#84251c;color:#fff;border:none;"
                           data-bs-toggle="modal" data-bs-target="#viewModal"
                           data-grupo-id="${grupo.grupo_id}">
                     <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-eye-fill" viewBox="0 0 16 16">
@@ -1298,7 +1289,7 @@
                 <td class="text-center align-middle">
                   <form action="/coordinador/grupos/eliminar/${grupo.grupo_id}" method="POST">
                     <button type="button" class="btn btn-sm p-0 d-flex align-items-center justify-content-center delete-btn"
-                            style="width: 1.5rem; height: 1.5rem; border-radius: 50%; background-color: #84251c; color: white; border: none;"
+                            style="width:1.5rem;height:1.5rem;border-radius:50%;background-color:#84251c;color:#fff;border:none;"
                             data-bs-toggle="modal" data-bs-target="#deleteModal"
                             data-grupo-id="${grupo.grupo_id}" data-materia="${grupo.materia}" data-ciclo="${grupo.code}">
                       <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-x-lg" viewBox="0 0 16 16">
@@ -1307,83 +1298,15 @@
                     </button>
                   </form>
                 </td>
-              </tr>`
-            }
-            document.getElementById(`tbody${i}`).innerHTML = html_container_grupos;
-          }       
-        }).catch((error) => {
-          console.log(error);
-        });
-      } else { 
-        if (carreraSeleccionada === 'moda') {
-          carrera_id = 7;
-          document.getElementById('btnCarrera').innerHTML = 'Diseño de la Moda e Industria del Vestido';
-        } else if (carreraSeleccionada === 'interior') {
-          carrera_id = 8;
-          document.getElementById('btnCarrera').innerHTML = 'Diseño y Arquitectura de Interiores';
-        } else if (carreraSeleccionada === 'sistemas') {
-          carrera_id = 9;
-          document.getElementById('btnCarrera').innerHTML = 'Ingenieria en Sistemas';
-        }
-        fetch(`/coordinador/grupos/get/${carrera_id}`, {
-          method: 'GET'
-        }).then((res) => {
-          return res.json();
-        }).then((data) => {
-          const grupos = data.grupos;
-          let html_container_grupos;
-          for (let i = 1; i <= 9; i++) {
-            html_container_grupos = '';
-            for (let grupo of grupos.filter(g => g.semestre_id === `s${i}`)) {
-              console.log
-              html_container_grupos += `
-              <tr>
-                <th scope="row" class="text-center align-middle">${grupo.grupo_id}</th>
-                <td class="text-center align-middle">${grupo.materia}</td>
-                <td class="text-center align-middle">${grupo.carrera_nombre}</td>
-                <td class="text-center align-middle">${grupo.nombre + ' ' + grupo.primer_apellido + ' ' + grupo.segundo_apellido}</td>`
-                if (grupo.numero === 9999) {
-                  html_container_grupos += `
-                  <td class="text-center align-middle">No Asignado</td>`
-                } else {
-                  html_container_grupos += `
-                  <td class="text-center align-middle">${grupo.numero}</td>`
-                }
-                html_container_grupos += `
-                <td class="text-center align-middle">${grupo.code}</td>
-                <td class="text-center align-middle">
-                  <button class="btn btn-sm p-0 d-flex align-items-center justify-content-center"
-                          style="width: 1.5rem; height: 1.5rem; border-radius: 50%; background-color: #84251c; color: white; border: none;"
-                          data-bs-toggle="modal" data-bs-target="#viewModal"
-                          data-grupo-id="${grupo.grupo_id}">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-eye-fill" viewBox="0 0 16 16">
-                      <path d="M10.5 8a2.5 2.5 0 1 1-5 0 2.5 2.5 0 0 1 5 0"/>
-                      <path d="M0 8s3-5.5 8-5.5S16 8 16 8s-3 5.5-8 5.5S0 8 0 8m8 3.5a3.5 3.5 0 1 0 0-7 3.5 3.5 0 0 0 0 7"/>
-                    </svg>
-                  </button>
-                </td>
-                <td class="text-center align-middle">
-                  <form action="/coordinador/grupos/eliminar/${grupo.grupo_id}" method="POST">
-                    <button type="button" class="btn btn-sm p-0 d-flex align-items-center justify-content-center delete-btn"
-                            style="width: 1.5rem; height: 1.5rem; border-radius: 50%; background-color: #84251c; color: white; border: none;"
-                            data-bs-toggle="modal" data-bs-target="#deleteModal"
-                            data-grupo-id="${grupo.grupo_id}" data-materia="${grupo.materia}" data-ciclo="${grupo.code}">
-                      <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-x-lg" viewBox="0 0 16 16">
-                        <path d="M2.146 2.854a.5.5 0 1 1 .708-.708L8 7.293l5.146-5.147a.5.5 0 0 1 .708.708L8.707 8l5.147 5.146a.5.5 0 0 1-.708.708L8 8.707l-5.146 5.147a.5.5 0 0 1-.708-.708L7.293 8z"/>
-                      </svg>
-                    </button>
-                  </form>
-                </td>
-              </tr>`
-            }
-            document.getElementById(`tbody${i}`).innerHTML = html_container_grupos;
+              </tr>`;
           }
-        }).catch((error) => {
-          console.log(error);
-        });
-      }
-    })
+
+          tbody.innerHTML = html;
+        }
+      })
+      .catch(err => console.error('Error al filtrar grupos:', err));
   });
+});
 
   // Configuración del modal de eliminación
   document.getElementById('deleteModal').addEventListener('show.bs.modal', function(event) {

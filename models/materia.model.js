@@ -37,6 +37,8 @@ module.exports = class Materia {
                 // Si no se encuentra
                 if (!materiaDB) {
                     // Inserta los nuevos registros en nuestra base de datos
+                    console.log("start");
+                    
                     await client.query(
                         `INSERT INTO materia 
                         (materia_id, sep_id, nombre, creditos, semestre_plan, horas_profesor, tipo_salon) 
@@ -46,11 +48,12 @@ module.exports = class Materia {
                             mA.sep_id, 
                             mA.name,
                             mA.credits,
-                            mA.plans_courses[0].semester,
+                            mA.plans_courses?.[0]?.semester ?? null,
                             mA.hours_professor,
                             mA.facilities,
                         ]
                     );
+                    console.log("inserta");
                     // Inserta los requisitios de la materia
                     for (const requisito of mA.requisites) {
                         await client.query(
@@ -68,7 +71,7 @@ module.exports = class Materia {
                         INSERT INTO plan_materia
                         (plan_estudio_id, plan_estudio_version, materia_id)
                         VALUES ($1, $2, $3)`
-                        , [mA.plans[0].id, mA.plans[0].version, mA.id]
+                        , [mA.plans?.[0]?.id ?? null, mA.plans?.[0]?.version ?? null, mA.id]
                     );
                     inserted++;
                 // Si existe la llave pero otros atributos son diferentes    
@@ -130,7 +133,7 @@ module.exports = class Materia {
                         // Conviértelos a números para una mejor comparasión
                         Number(materiaDB.creditos) !== Number(mA.credits) ||
                         // Conviértelos a números para una mejor comparasión
-                        Number(materiaDB.semestre_plan) !== Number(mA.plans_courses[0].semester,) ||
+                        Number(materiaDB.semestre_plan) !== Number(mA.plans_courses?.[0]?.semester ?? null) ||
                         // Conviértelos a números para una mejor comparasión
                         Number(materiaDB.horas_profesor) !== Number(mA.hours_professor) ||
                         // Normaliza el tipo de salon (trim strings) para una mejor comparasión
@@ -146,13 +149,14 @@ module.exports = class Materia {
                                 mA.sep_id,
                                 mA.name, 
                                 mA.credits, 
-                                mA.plans_courses[0].semester,
+                                mA.plans_courses?.[0]?.semester ?? null,
                                 mA.hours_professor, 
                                 mA.facilities, 
                                 mA.id,
                             ]
                         );
                         changed = true;
+                        console.log("update");
                     }
                     // Consulta del plan de estudio de la materia
                     const planMateriaDB = await client.query(
@@ -171,7 +175,7 @@ module.exports = class Materia {
                                 SET plan_estudio_id = $1, 
                                     plan_estudio_version = $2
                                 WHERE materia_id = $3`
-                            , [mA.plans[0].id, mA.plans[0].version, mA.id]);
+                            , [mA.plans?.[0]?.id ?? null, mA.plans?.[0]?.version ?? null, mA.id]);
                             changed = true;
                         }
                     // Si no existe
@@ -181,7 +185,7 @@ module.exports = class Materia {
                             INSERT INTO plan_materia
                             (plan_estudio_id, plan_estudio_version, materia_id)
                             VALUES ($1, $2, $3)`
-                            , [mA.plans[0].id, mA.plans[0].version, mA.id]
+                            , [mA.plans?.[0]?.id ?? null, mA.plans?.[0]?.version ?? null, mA.id]
                         );
                         changed = true;
                     }
@@ -197,10 +201,21 @@ module.exports = class Materia {
     
             // Elimina cualquier datos que existan en el otro sistema de nuestra base de datos
             for (const [id] of materiasMap) {
-                await client.query("DELETE FROM materia WHERE materia_id = $1", [id]);
                 await client.query("DELETE FROM materia_requisito WHERE materia_id = $1", [id]);
                 await client.query("DELETE FROM materia_semestre WHERE materia_id = $1", [id]);
                 await client.query("DELETE FROM plan_materia WHERE materia_id = $1", [id]);
+                await client.query(`DELETE FROM grupo_bloque_tiempo gbt
+                                    USING grupo gp
+                                    WHERE gp.grupo_id = gbt.grupo_id
+                                    AND gp.materia_id = $1`, [id]);
+                await client.query(`DELETE FROM resultado_inscripcion ri
+                    USING grupo gp
+                    WHERE gp.grupo_id = ri.grupo_id
+                    AND gp.materia_id = $1`, [id]);
+                await client.query("DELETE FROM grupo WHERE materia_id = $1", [id]);
+                await client.query("DELETE FROM historial_academico WHERE materia_id = $1", [id]);
+                await client.query("DELETE FROM profesor_materia WHERE materia_id = $1", [id]);
+                await client.query("DELETE FROM materia WHERE materia_id = $1", [id]);
                 deleted++;
             }
             // Regresa el resultado para el mensaje
@@ -233,7 +248,7 @@ module.exports = class Materia {
 
     
      // Método para obtener número total de materias abiertas
-     static async numeroMaterias(carrera_id) {
+     static async numeroMaterias(carreras_id) {
         const result = await pool.query(`
                 SELECT COUNT(*)
                 FROM (
@@ -244,8 +259,8 @@ module.exports = class Materia {
                 ) AS m
                 JOIN plan_materia pm ON pm.materia_id = m.materia_id
                 JOIN plan_estudio p ON p.plan_estudio_id = pm.plan_estudio_id
-                WHERE p.carrera_id = $1`
-            ,[carrera_id]
+                WHERE p.carrera_id = ANY($1)`
+            ,[carreras_id]
         );
         return parseInt(result.rows[0].count);
     }; 

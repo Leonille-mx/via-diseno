@@ -79,13 +79,13 @@ module.exports = class Salon {
 
     // Método para obtener número total de salones registrados
     static async numero_TotalSalones() {
-        const result = await pool.query('SELECT count(*) FROM public.salon');
+        const result = await pool.query('SELECT count(*) FROM public.salon WHERE salon_id != 9999');
         return parseInt(result.rows[0].count);
     };
 
     //Metodo para obtener los grupos con las relaciones entre otras tablas
     static async salonesDashboard() {
-        const result = await pool.query('SELECT numero, capacidad FROM public.salon');
+        const result = await pool.query('SELECT numero, capacidad FROM public.salon WHERE salon_id != 9999');
         return result.rows;
     };
 
