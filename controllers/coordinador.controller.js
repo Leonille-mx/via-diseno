@@ -15,7 +15,7 @@ const Solicitud = require('../models/solicitudes-cambio.model.js');
 const ResultadoInscripcion = require('../models/resultado_inscripcion.model.js');
 const BloqueTiempo = require('../models/bloque_tiempo.model.js');
 const Coordinador = require('../models/coordinador.model.js');
-const { axiosAdminClient, getToken, getHeaders, getAllProfessors, getAllCourses, getAllStudents, getAllAdministrators, getCiclosEscolares, getAllDegree, getAllAcademyHistory, getExternalCycles} = require('../util/adminApiClient.js');
+const { axiosAdminClient, getToken, getHeaders, getAllProfessors, getAllCourses, getAllStudents, getAllAdministrators, getCiclosEscolares, getAllDegree, getAllAcademyHistory, getExternalCycles, getExternalGroups } = require('../util/adminApiClient.js');
 
 
 exports.get_dashboard = async (req, res) => {
@@ -1051,7 +1051,7 @@ exports.enviarGruposAPI = async (req, res, isInternal = false) => {
         profesoresExternosResponse,
         ciclosLocalesResult,
         ciclosExternosResponse,
-        gruposExternos
+        gruposExternosResponse
       ] = await Promise.all([
         Grupos.fetchAll(),
         getAllProfessors(token),
@@ -1064,6 +1064,8 @@ exports.enviarGruposAPI = async (req, res, isInternal = false) => {
       const profesoresExternos = profesoresExternosResponse.data || [];
       const ciclosLocales = ciclosLocalesResult.rows;
       const ciclosExternos = ciclosExternosResponse.data || [];
+      const gruposExternos = Array.isArray(gruposExternosResponse.data) ? gruposExternosResponse.data : [];
+
   
       const mapaProfesores = Object.fromEntries(
         profesoresExternos.map(p => [String(p.ivd_id), p.id])
@@ -1184,24 +1186,35 @@ exports.enviarHorariosAPI = async (req, res, isInternal = false) => {
         const bloquesDia = gruposPorDia[key];
         const dia = bloquesDia[0].dia;
         const group_id = bloquesDia[0].grupo_api_id;
-  
+        
+        bloquesDia.sort((a, b) => a.hora_inicio.localeCompare(b.hora_inicio));
+
         let tempGroup = [bloquesDia[0]];
-  
-        for (let i = 1; i < bloquesDia.length; i++) {
-          const actual = bloquesDia[i];
-          const anterior = bloquesDia[i - 1];
-  
-          if (actual.bloque_tiempo_id === anterior.bloque_tiempo_id + 1) {
-            tempGroup.push(actual);
-          } else {
-            await enviarBloqueHorario(group_id, dia, tempGroup, token);
-            tempGroup = [actual];
+        
+        function minutos(horaStr) {
+            const [h, m] = horaStr.split(':').map(Number);
+            return h * 60 + m;
           }
-        }
-  
-        if (tempGroup.length > 0) {
-          await enviarBloqueHorario(group_id, dia, tempGroup, token);
-        }
+
+          for (let i = 1; i < bloquesDia.length; i++) {
+            const actual = bloquesDia[i];
+            const anterior = bloquesDia[i - 1];
+          
+            const finAnterior = minutos(anterior.hora_fin);
+            const inicioActual = minutos(actual.hora_inicio);
+          
+            // Si el bloque actual inicia exactamente donde terminó el anterior → es consecutivo
+            if (inicioActual === finAnterior) {
+              tempGroup.push(actual);
+            } else {
+              await enviarBloqueHorario(group_id, dia, tempGroup, token);
+              tempGroup = [actual];
+            }
+          }
+          
+          if (tempGroup.length > 0) {
+            await enviarBloqueHorario(group_id, dia, tempGroup, token);
+          }
         console.log(`Grupo ${group_id}, Día ${dia} → ${bloquesDia.length} bloques`);
       }
   
