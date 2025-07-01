@@ -74,9 +74,9 @@
             <td class="text-center align-middle"><%= alumnoRegular.semestre %></td>
             <td class="text-center align-middle"><%= alumnoRegular.correo_institucional %></td>
             <td class="text-center align-middle">
-              <button class="d-block mx-auto btn btn-sm p-2 rounded-3 d-flex align-items-center justify-content-center <%= alumnoRegular.inscripcion_completada ? 'btn-success' : 'btn-warning text-dark' %>" 
+              <button class="d-block mx-auto btn btn-sm p-2 rounded-3 d-flex align-items-center justify-content-center <%= (alumnoRegular.inscripcion_completada ? 'btn-success' : (alumnoRegular.asignada ? 'btn-warning text-dark' : 'ivd-bg-red')) %>" 
                 style="width: 70%; height: 1.5rem; color: white; border: none;">
-                <%= alumnoRegular.inscripcion_completada ? 'Completa' : 'Incompleta' %>
+                <%= (alumnoRegular.inscripcion_completada ? 'Completa' : (alumnoRegular.asignada ? 'Incompleta' : 'No Asignada')) %>
               </button>
             </td>
             <td class="text-center align-middle">

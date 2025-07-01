@@ -66,7 +66,10 @@ module.exports = class Alumno {
 
     static async fetchAllRegulares() {
         const query = `
-          SELECT a.*, u.*, c.carrera_id, c.nombre as carrera_nombre
+          SELECT a.*, u.*, c.carrera_id, c.nombre as carrera_nombre,
+                (SELECT COUNT(alumno_id) > 0 AS result
+                FROM resultado_inscripcion
+                WHERE alumno_id = a.ivd_id) AS asignada
           FROM alumno a
           JOIN usuario u ON a.ivd_id = u.ivd_id
           JOIN plan_estudio p ON p.plan_estudio_id = a.plan_estudio_id
@@ -79,7 +82,10 @@ module.exports = class Alumno {
 
     static async fetchAllRegularesPorCarrera(carrera_id) {
         const query = `
-          SELECT a.*, u.*, c.carrera_id, c.nombre as carrera_nombre
+          SELECT a.*, u.*, c.carrera_id, c.nombre as carrera_nombre,
+                (SELECT COUNT(alumno_id) > 0 AS result
+                FROM resultado_inscripcion
+                WHERE alumno_id = a.ivd_id) AS asignada
           FROM alumno a
           JOIN usuario u ON a.ivd_id = u.ivd_id
           JOIN plan_estudio p ON p.plan_estudio_id = a.plan_estudio_id
