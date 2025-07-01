@@ -3,6 +3,7 @@ const bcrypt = require('bcryptjs');
 const Usuario = require('../models/usuario.model');
 const Alumno = require('../models/alumno.model');
 const nodemailer = require('nodemailer');
+const dotenv = require("dotenv");
 
 const tokens = {};
 
@@ -94,28 +95,21 @@ exports.enviarCorreoContrasena = async (req, res) => {
         expires_at: Date.now() + 30 * 60 * 1000 // 30 min
     };
 
+    dotenv.config();
+
     const link = `${process.env.BASE_URL}/usuario/recuperar/${token}`;
 
     const transporter = nodemailer.createTransport({
-        service: 'gmail',
+        host: 'smtp.sendgrid.net',
+        port: 587,
         auth: {
-            user: 'armandofu0705@gmail.com',
-            pass: 'ibhr rhdw pneb wuqi'
-        }
+            user: 'apikey',
+            pass: process.env.SENDGRID_API_KEY,
+        },
     });
 
-    // const transporter = nodemailer.createTransport({
-    //     host: 'smtp.sendgrid.net',
-    //     port: 587,
-    //     auth: {
-    //         user: 'apikey',
-    //         pass: process.env.SENDGRID_API_KEY,
-    //     },
-    // });
-
-
     await transporter.sendMail({
-        from: '"IVD Inscripciones" <no-reply@yourdomain.com>',
+        from: '"IVD Inscripciones" <avisos@ivd.edu.mx>',
         to: usuario.correo_institucional,
         subject: 'Registrar nueva contraseña - IVD Inscripciones',
         html: `
