@@ -129,7 +129,7 @@ module.exports = class Profesor {
     }
 
     static getCoursesInfo(id) {
-        return pool.query(`SELECT m.materia_id, sep_id, m.nombre, creditos, horas_profesor, tipo_salon, semestre_plan, c.nombre AS carrera
+        return pool.query(`SELECT m.materia_id, sep_id, m.nombre, creditos, horas_profesor, tipo_salon, semestre_plan, c.carrera_id, c.nombre AS carrera
                            FROM materia m, profesor_materia pm, plan_materia plm, plan_estudio pe, carrera c
                            WHERE m.materia_id = pm.materia_id
                            AND m.materia_id = plm.materia_id
