@@ -282,10 +282,12 @@ document.getElementById('viewModal').addEventListener('show.bs.modal', async (ev
   try {
     const response = await fetch(`/coordinador/profesores/modificar/${currentProfessorId}`);
     const data = await response.json();
+    const seleccionadas = Array.from(checkboxes).filter(cb => cb.checked).map(cb => cb.value);
 
     const materiasBody = document.getElementById('viewMateriasBody');
     materiasBody.innerHTML = '';
-    data.materiasInfo.rows.forEach(materia => {
+    data.materiasInfo.rows.filter(materia => seleccionadas.includes(String(materia.carrera_id))
+    ).forEach(materia => {
       materiasBody.innerHTML += `
         <tr>
           <td class="text-center align-middle">${materia.sep_id}</td>
@@ -347,6 +349,7 @@ document.getElementById('editModal').addEventListener('show.bs.modal', async (ev
     // Se obtiene la información del profesor, incluyendo materias asignadas y bloques
     const response = await fetch(`/coordinador/profesores/modificar/${currentProfessorId}`);
     const data = await response.json();
+    const seleccionadas = Array.from(checkboxes).filter(cb => cb.checked).map(cb => cb.value);
     var allMaterias = data.allMaterias.rows;
 
     // data.materias es un array con los IDs de las materias asignadas
@@ -379,7 +382,8 @@ document.getElementById('editModal').addEventListener('show.bs.modal', async (ev
     }
 
     // Poblar tabla de materias asignadas
-    assignedMaterias.forEach(materia => {
+    assignedMaterias.filter(materia => seleccionadas.includes(String(materia.carrera_id))
+    ).forEach(materia => {
       const row = createMateriaRow(materia, 'btn-danger remove-assigned', `
       <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-x-lg" viewBox="0 0 16 16">
         <path d="M2.146 2.854a.5.5 0 1 1 .708-.708L8 7.293l5.146-5.147a.5.5 0 0 1 .708.708L8.707 8l5.147 5.146a.5.5 0 0 1-.708.708L8 8.707l-5.146 5.147a.5.5 0 0 1-.708-.708L7.293 8z"/>
@@ -390,7 +394,8 @@ document.getElementById('editModal').addEventListener('show.bs.modal', async (ev
     });
 
     // Poblar tabla de materias disponibles
-    availableMaterias.forEach(materia => {
+    availableMaterias.filter(materia => seleccionadas.includes(String(materia.carrera_id))
+    ).forEach(materia => {
       const row = createMateriaRow(materia, 'btn-success add-available', `
       <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" class="bi bi-plus" viewBox="0 0 16 16">
         <path d="M8 4a.5.5 0 0 1 .5.5v3h3a.5.5 0 0 1 0 1h-3v3a.5.5 0 0 1-1 0v-3h-3a.5.5 0 0 1 0-1h3v-3A.5.5 0 0 1 8 4"/>

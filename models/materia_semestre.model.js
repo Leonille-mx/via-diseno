@@ -44,7 +44,7 @@ module.exports = class MateriaSemestre {
     static async fetchMateriasSemestreOnce() {
         return pool.query(`
             SELECT DISTINCT
-            m.materia_id, sep_id, m.nombre, creditos, horas_profesor, tipo_salon, semestre_plan, c.nombre AS carrera
+            m.materia_id, sep_id, m.nombre, creditos, horas_profesor, tipo_salon, semestre_plan, c.carrera_id, c.nombre AS carrera
             FROM materia m, materia_semestre ms, plan_materia plm, plan_estudio pe, carrera c
             WHERE m.materia_id = ms.materia_id
             AND m.materia_id = plm.materia_id
