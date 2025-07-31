@@ -109,7 +109,7 @@ exports.enviarCorreoContrasena = async (req, res) => {
     });
 
     await transporter.sendMail({
-        from: '"IVD Inscripciones" <avisos@ivd.edu.mx>',
+        from: '"IVD Inscripciones" <avisos@inscripciones.ivd.edu.mx>',
         to: usuario.correo_institucional,
         subject: 'Registrar nueva contraseña - IVD Inscripciones',
         html: `
