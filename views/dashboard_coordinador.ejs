@@ -612,6 +612,41 @@
 
       // Ejecuta cada vez que recibas tu CustomEvent tras guardar carreras
       window.addEventListener('carrerasGuardadas', actualizarDashboard);
+
+      document.getElementById('confirmResetBtn').addEventListener('click', async () => {
+        const btn = document.getElementById('confirmResetBtn');
+        const resetModal = bootstrap.Modal.getInstance(document.getElementById('resetGroupsModal'));
+
+        try {
+          btn.disabled = true;
+          btn.innerHTML = '<span class="spinner-border spinner-border-sm"></span> Procesando...';
+
+          const response = await fetch('/coordinador/dashboard/reset-grupos', {
+            method: 'POST'
+          });
+
+          if (!response.ok) throw new Error('Server error');
+          const result = await response.json();
+          if (result.error) throw new Error(result.error);
+
+          resetModal.hide();
+
+          const successModal = new bootstrap.Modal(document.getElementById('successModal'));
+          successModal.show();
+
+          document.getElementById('successConfirmBtn').onclick = () => {
+            successModal.hide();
+            window.location.reload(true);
+          };
+
+        } catch (error) {
+          console.error('Error:', error);
+          alert('Error: ' + (error.message || 'No se pudo completar la operación'));
+        } finally {
+          btn.disabled = false;
+          btn.textContent = 'Aceptar';
+        }
+      });
     </script>
 
 
