@@ -58,18 +58,17 @@
     actualizarTextoBoton();
 
     document.querySelectorAll('.carrera-checkbox').forEach(cb => {
-        cb.addEventListener('change', () => {
+        cb.addEventListener('change', async () => {
             const seleccionadas = Array.from(document.querySelectorAll('.carrera-checkbox'))
-            .filter(c => c.checked)
-            .map(c => c.value);
+            .filter(c => c.checked).map(c => c.value);
 
-            fetch('/coordinador/guardar-carreras', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify({ seleccionadas })
+            await fetch('/coordinador/guardar-carreras', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ seleccionadas })
             });
+
+            window.dispatchEvent(new CustomEvent('carrerasGuardadas'));
         });
     });
 </script>

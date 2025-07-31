@@ -544,105 +544,76 @@
     <script src="/js/coordinador.js"></script>
 
     <script>
-      document.querySelectorAll('.carrera-checkbox').forEach(cb => {
-        cb.addEventListener('change', async () => {
-          try {
-            // 1) La sesión ya se actualiza automáticamente en el servidor
-            // 2) Solo fetch a filtrados sin query params
-            const res = await fetch('/coordinador/dashboard/filtrado', { method: 'GET' });
-            const data = await res.json();
-
-            // 3a) Actualizar contadores (cards)
-            document.getElementById('materiasAbiertasCount').textContent = data.materiasAbiertas;
-            document.getElementById('gruposTotalesCount').textContent = data.gruposTotales;
-            document.getElementById('alumnosInscritosCount').textContent = data.alumnosInscritos;
-            document.getElementById('alumnosNoInscritosCount').textContent = data.alumnosNoInscritos;
-            document.getElementById('alumnosSinMateriasCount').textContent = data.alumnosSinMaterias;
-            document.getElementById('grupoTotalesCount').textContent = `Total: ${data.gruposTotales} grupos`;
-            document.getElementById('salonesTotalesCount').textContent = `Total: ${data.salon_Totales} salones`;
-            document.getElementById('solicitudesTotalesCount').textContent = `Total: ${data.total_Solicitudes} solicitudes`;
-
-            // 3b) Regenerar tablas
-            const tbodyGrupos = document.querySelector('#tabla-grupos tbody');
-            const tbodySalones = document.querySelector('#tabla-salones tbody');
-            const tbodySolic = document.querySelector('#tabla-solicitudes tbody');
-
-            tbodyGrupos.innerHTML = data.grupos_Dashboard.map(g => `
-              <tr>
-                <td>${g.materia_nombre}</td>
-                <td>${g.hora_inicio}</td>
-                <td>${g.hora_fin}</td>
-                <td>${g.dia}</td>
-                <td>${g.profesor_nombre}</td>
-              </tr>
-            `).join('');
-
-            tbodySalones.innerHTML = data.salones_Dashboard.map(s => `
-              <tr>
-                <td>${s.numero}</td>
-                <td>${s.capacidad || 0}</td>
-              </tr>
-            `).join('');
-
-            tbodySolic.innerHTML = data.solicitud_Cambio_Dashboard.map(s => `
-              <tr>
-                <td>${s.solicitud_cambio_id}</td>
-                <td>${s.nombre} ${s.primer_apellido}</td>
-                <td>${new Date(s.created_at).toLocaleString('es-MX')}</td>
-              </tr>
-            `).join('');
-
-              const labels = data.grafica_Alumnos.map(d => `${d.semestre} Semestre`);
-              const inscritos = data.grafica_Alumnos.map(d => d.inscritos);
-              const noInscritos = data.grafica_Alumnos.map(d => d.no_inscritos);
-
-              window.miGrafica.data.labels = labels;
-              window.miGrafica.data.datasets[0].data = inscritos;
-              window.miGrafica.data.datasets[1].data = noInscritos;
-
-              window.miGrafica.update();
-
-          } catch (err) {
-            console.error('Error al actualizar dashboard:', err);
-          }
-        });
-      });
-      
-      document.getElementById('confirmResetBtn').addEventListener('click', async () => {
-        const btn = document.getElementById('confirmResetBtn');
-        const resetModal = bootstrap.Modal.getInstance(document.getElementById('resetGroupsModal'));
-
+      async function actualizarDashboard() {
         try {
-          btn.disabled = true;
-          btn.innerHTML = '<span class="spinner-border spinner-border-sm"></span> Procesando...';
+          // 1) Petición al servidor para obtener los datos filtrados
+          const res = await fetch('/coordinador/dashboard/filtrado', { method: 'GET' });
+          if (!res.ok) {
+            throw new Error(`HTTP ${res.status} – Error obteniendo datos del dashboard`);
+          }
+          const data = await res.json();
 
-          const response = await fetch('/coordinador/dashboard/reset-grupos', {
-            method: 'POST'
-          });
+          // 2) Actualizar contadores (cards)
+          document.getElementById('materiasAbiertasCount').textContent = data.materiasAbiertas;
+          document.getElementById('gruposTotalesCount').textContent = data.gruposTotales;
+          document.getElementById('alumnosInscritosCount').textContent = data.alumnosInscritos;
+          document.getElementById('alumnosNoInscritosCount').textContent = data.alumnosNoInscritos;
+          document.getElementById('alumnosSinMateriasCount').textContent = data.alumnosSinMaterias;
+          document.getElementById('grupoTotalesCount').textContent = `Total: ${data.gruposTotales} grupos`;
+          document.getElementById('salonesTotalesCount').textContent = `Total: ${data.salon_Totales} salones`;
+          document.getElementById('solicitudesTotalesCount').textContent = `Total: ${data.total_Solicitudes} solicitudes`;
 
-          if (!response.ok) throw new Error('Server error');
-          const result = await response.json();
-          if (result.error) throw new Error(result.error);
+          // 3) Regenerar tablas dinámicamente
+          const tbodyGrupos = document.querySelector('#tabla-grupos tbody');
+          const tbodySalones = document.querySelector('#tabla-salones tbody');
+          const tbodySolic = document.querySelector('#tabla-solicitudes tbody');
 
-          resetModal.hide();
+          tbodyGrupos.innerHTML = data.grupos_Dashboard.map(g => `
+            <tr>
+              <td>${g.materia_nombre}</td>
+              <td>${g.hora_inicio}</td>
+              <td>${g.hora_fin}</td>
+              <td>${g.dia}</td>
+              <td>${g.profesor_nombre}</td>
+            </tr>
+          `).join('');
 
-          const successModal = new bootstrap.Modal(document.getElementById('successModal'));
-          successModal.show();
+          tbodySalones.innerHTML = data.salones_Dashboard.map(s => `
+            <tr>
+              <td>${s.numero}</td>
+              <td>${s.capacidad ?? 0}</td>
+            </tr>
+          `).join('');
 
-          document.getElementById('successConfirmBtn').onclick = () => {
-            successModal.hide();
-            window.location.reload(true);
-          };
+          tbodySolic.innerHTML = data.solicitud_Cambio_Dashboard.map(s => `
+            <tr>
+              <td>${s.solicitud_cambio_id}</td>
+              <td>${s.nombre} ${s.primer_apellido}</td>
+              <td>${new Date(s.created_at).toLocaleString('es-MX')}</td>
+            </tr>
+          `).join('');
 
-        } catch (error) {
-          console.error('Error:', error);
-          alert('Error: ' + (error.message || 'No se pudo completar la operación'));
-        } finally {
-          btn.disabled = false;
-          btn.textContent = 'Aceptar';
+          // 4) Actualizar la gráfica (Chart.js)
+          if (window.miGrafica) {
+            const labels = data.grafica_Alumnos.map(d => `${d.semestre} Semestre`);
+            const inscritos = data.grafica_Alumnos.map(d => d.inscritos);
+            const noInscritos = data.grafica_Alumnos.map(d => d.no_inscritos);
+
+            window.miGrafica.data.labels = labels;
+            window.miGrafica.data.datasets[0].data = inscritos;
+            window.miGrafica.data.datasets[1].data = noInscritos;
+            window.miGrafica.update();
+          }
+
+        } catch (err) {
+          console.error('Error al actualizar dashboard:', err);
         }
-      });
+      }
+
+      // Ejecuta cada vez que recibas tu CustomEvent tras guardar carreras
+      window.addEventListener('carrerasGuardadas', actualizarDashboard);
     </script>
+
 
     </body>
 
