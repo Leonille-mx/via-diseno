@@ -208,3 +208,9 @@ html {
     overflow-y: auto; /* Enables vertical scrolling */
     overflow-x: hidden; /* Prevents horizontal scrolling */
 }
+
+.bg-secondary-subtle,
+.bg-dark {
+  color: white !important;
+}
+
