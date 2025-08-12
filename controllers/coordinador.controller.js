@@ -737,6 +737,37 @@ exports.post_cambiar_estatus = async (req, res, nxt) => {
     };
 };
 
+exports.get_alumno_editar_resultado = async (req, res, nxt) => {
+    try {
+        const materias_resultado = await Alumno.fetchAllResultadoAlumnoIrregular2(req.params.id);
+        const bloque_tiempo = await BloqueTiempo.fetchAllHoras();
+        const bloqueTiempoMap = bloque_tiempo.rows[0]?.id_hora_map || {};
+        const cicloActual = await CicloEscolar.fetchMostRecent();
+
+        let cicloInfo = null;
+        if (cicloActual.rows.length > 0) {
+            const ciclo = cicloActual.rows[0];
+            const cicloObj = new CicloEscolar(ciclo.code, ciclo.fecha_inicio, ciclo.fecha_fin);
+            cicloInfo = {
+                periodo: cicloObj.getFormattedPeriod(),
+                fecha_inicio: new Date(ciclo.fecha_inicio).toLocaleDateString('es-ES'),
+                fecha_fin: new Date(ciclo.fecha_fin).toLocaleDateString('es-ES'),
+                raw: ciclo 
+            };
+        }
+        res.status(200).json({
+            isLoggedIn: req.session.isLoggedIn || false,
+            matricula: req.session.usuario.id || '',
+            materias_resultado: materias_resultado.rows,
+            cicloEscolar: cicloInfo,
+            bloque_tiempo: bloqueTiempoMap
+        });
+    } catch (error) {
+        console.error('Error en get_alumno_editar_resultado:', error);
+        nxt(error);
+    }
+}
+
 exports.get_alumno_modificar_horario = async (req, res, nxt) => {
     try {
         const materias_resultado = await Alumno.fetchAllResultadoAlumno2(req.params.id);
@@ -851,6 +882,48 @@ exports.post_modificar_obligacion = async (req, res, nxt) => {
         console.log(error);
     }
 };
+
+exports.post_eliminar_materia_del_resultado_inscripcion = async (req, res, nxt) => {
+    try {
+        const grupo_id = req.body.grupo_id;
+        const alumno_id = req.body.alumno_id;
+        await ResultadoInscripcion.eliminarMateriaOpcionalDelResultado(alumno_id, grupo_id);
+
+        const materias_resultado = await Alumno.fetchAllResultadoAlumnoIrregular2(alumno_id);
+        const bloque_tiempo = await BloqueTiempo.fetchAllHoras();
+        const bloqueTiempoMap = bloque_tiempo.rows[0]?.id_hora_map || {};
+
+        res.status(200).json({
+            isLoggedIn: req.session.isLoggedIn || false,
+            matricula: req.session.usuario.id || '',
+            materias_resultado: materias_resultado.rows,
+            bloque_tiempo: bloqueTiempoMap
+        });
+    } catch (error) {
+        console.log(error);
+    }
+};
+
+exports.post_agregar_materia_del_resultado_inscripcion = async (req, res, nxt) => {
+    try {
+        const grupo_id = req.body.grupo_id;
+        const alumno_id = req.body.alumno_id;
+        await ResultadoInscripcion.agregarMateriaOpcionalDelResultado(alumno_id, grupo_id);
+
+        const materias_resultado = await Alumno.fetchAllResultadoAlumnoIrregular2(alumno_id);
+        const bloque_tiempo = await BloqueTiempo.fetchAllHoras();
+        const bloqueTiempoMap = bloque_tiempo.rows[0]?.id_hora_map || {};
+
+        res.status(200).json({
+            isLoggedIn: req.session.isLoggedIn || false,
+            matricula: req.session.usuario.id || '',
+            materias_resultado: materias_resultado.rows,
+            bloque_tiempo: bloqueTiempoMap
+        });
+    } catch (error) {
+        console.log(error);
+    }
+}
 
 exports.get_ayuda = async (req, res, nxt) => {
     try {

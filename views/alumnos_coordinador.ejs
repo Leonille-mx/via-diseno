@@ -155,7 +155,7 @@
               <button class="btn btn-sm p-0 d-flex align-items-center justify-content-center" 
                 style="width: 1.5rem; height: 1.5rem; border-radius: 50%; background-color: #84251c; color: white; border: none;"
                 data-bs-toggle="modal" 
-                data-bs-target="#viewModal"
+                data-bs-target="#viewModalIrregular"
                 data-alumno-id="<%= alumnoIrregular.ivd_id %>"
                 data-alumno-nombre="<%= alumnoIrregular.nombre %> <%= alumnoIrregular.primer_apellido %> <%= alumnoIrregular.segundo_apellido|| '' %>">
                   <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-eye-fill" viewBox="0 0 16 16">
@@ -284,12 +284,158 @@
   </div>
 </div>
 
-<!-- Modal para modificar horario -->
+<!-- Modal para consultar horario con el botón de modificar -->
+<div class="modal fade" id="viewModalIrregular" tabindex="-1" aria-labelledby="viewModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-xl modal-dialog-centered modal-dialog-scrollable">
+    <div class="modal-content rounded-5" style="background-color: #f0f0f0; max-width: 95vw;">
+      <div class="modal-header justify-content-center border-bottom-0">
+        <h5 class="modal-title ivd-text-red" id="viewModalLabel"><b>Estás viendo el horario de un alumno</b></h5>
+      </div>
+      <div class="modal-body px-4 materia-scroll">
+        <div class="rounded-5 py-1" style="background-color: white;">
+          <div class="d-flex" style="height: fit-content;">
+            <!-- Columna de la izquierda -->
+            <div class="p-3 ps-0 flex-grow-1" style="width: 66.66%; height: fit-content;">
+              <div class="mb-4" style="min-height: fit-content;">
+                <div class="mt-1 mb-4">
+                  <div class="d-flex align-items-end" style="border-bottom: 3px solid #84251C; width: fit-content; margin-top: -10px;">
+                    <p class="fs-5 m-0 ms-2 me-3" id="viewModalAlumnoNombre1"></p>
+                  </div>
+                </div>
+                <div class="bg-white rounded-5 p-0 flex-grow-1 ms-3 border ivd-border-red" style=" display: block; height: fit-content; overflow-y: auto;">
+                  <!-- Contenido del horario principal -->
+                  <table class="table custom-table p-0 table-striped table-bordered table-hover mb-0"
+                    style="font-size: 0.85rem; border-collapse: separate !important; border-spacing: 0; border-radius: 1rem;"
+                  >
+                    <thead class="table-danger rounded-top">
+                      <tr class="text-center rounded-top">
+                        <!-- Titulo de columnas -->
+                        <th class="hour-col">Hora</th>
+                        <th>Lunes</th>
+                        <th>Martes</th>
+                        <th>Miércoles</th>
+                        <th>Jueves</th>
+                        <th>Viernes</th>
+                      </tr>
+                    </thead>
+                    <tbody id="viewModalTableBody1">
+                    </tbody>
+                  </table>
+                </div>
+              </div> 
+            </div>
+            <!-- Columna de la derecha -->
+            <div class="p-3 flex-grow-1 d-flex flex-column mt-5" style="width: 33.33%; height: auto;">
+              <!-- Botones de los días -->
+               <div class="d-flex justify-content-center gap-4 mt-3 mb-4">
+                <button type="button" class="btn btn-circle-custom day-btn" data-day="LU">LU</button>
+                <button type="button" class="btn btn-circle-custom day-btn" data-day="MA">MA</button>
+                <button type="button" class="btn btn-circle-custom day-btn" data-day="MI">MI</button>
+                <button type="button" class="btn btn-circle-custom day-btn" data-day="JU">JU</button>
+                <button type="button" class="btn btn-circle-custom day-btn" data-day="VI">VI</button>
+                </div>
+              <!-- Clases -->
+              <div id="classes-container" class="flex-grow-1 overflow-y-auto">
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="modal-footer justify-content-center" style="background-color: #f0f0f0;">
+        <button class="btn btn-primary rounded-pill px-4 mx-4" 
+          style="background-color: #84251C; border: none;"
+          data-bs-dismiss="modal">
+          Cerrar
+        </button>
+        <button class="btn btn-primary rounded-pill px-4 mx-4" 
+          style="background-color: white; border: 1; border-color: #84251C; color: #84251C;"
+          id="btnModificar"
+          data-bs-dismiss="modal"
+          data-bs-toggle="modal"
+          data-bs-target="#modifyModal"
+          >
+          Modificar
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Modal para modificar materias -->
+<div class="modal fade" id="modifyModal" tabindex="-1" aria-labelledby="modifyModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-xl modal-dialog-centered modal-dialog-scrollable">
+    <div class="modal-content rounded-5" style="background-color: #f0f0f0; max-width: 95vw;">
+      <div class="modal-header justify-content-center">
+        <h5 class="modal-title ivd-text-red" id="modifyModalLabel"><b>Estás modificando el horario de un alumno</b></h5>
+      </div>
+      <div class="modal-body px-4 materia-scroll">
+        <main class="bg-grey mx-2 mb-2 alumno-scroll" style="height: 85%; border-radius: 1.5rem;">
+          <!-- header -->
+          <div class="mt-4">
+            <div class="d-flex align-items-end" style="border-bottom: 3px solid #84251C; width: fit-content; margin-top: -10px;">
+              <h1 class="m-0 ms-4">Horario</h1>
+              <p class="fs-5 m-0 ms-2 me-3" id="modifyModalAlumnoNombre"></p>
+            </div>
+          </div>
+          <!-- horario y grupos -->
+          <div class="d-flex flex-column align-items-center pt-4 w-100">
+            <p class="w-100 text-center mb-4 mt-3 fs-5">Materias presentadas en gris no se pueden modificar</p>
+            <div class="rounded-4 mb-4" style="background-color: white; width: 70%; height: fit-content; overflow: hidden;">
+                  <!-- Contenido del horario principal -->
+                  <table class="table custom-table p-0 table-striped table-bordered table-hover mb-0 rounded-"
+                    style="font-size: 0.85rem; border-collapse: separate !important; border-spacing: 0; border-radius: 1rem;"
+                  >
+                    <thead class="table-danger rounded-top">
+                      <tr class="text-center rounded-top">
+                        <!-- Titulo de columnas -->
+                        <th class="hour-col">Hora</th>
+                        <th>Lunes</th>
+                        <th>Martes</th>
+                        <th>Miércoles</th>
+                        <th>Jueves</th>
+                        <th>Viernes</th>
+                      </tr>
+                    </thead>
+                    <tbody id="modifyModalTablebody">
+                    </tbody>
+                  </table>
+            </div>
+            <div class="ivd-bg-red w-100" style="height: 2px; margin-left: 12px;"></div>
+            <div class="w-100 d-flex align-items-center" style="height: 500px;">
+              <div class="w-50 h-100 px-5 py-4 d-flex flex-column align-items-center">
+                <p class="w-100 ms-3 fw-semibold" style="font-size: 1.2rem;">Materias Seleccionadas</p>
+                <div id="modificarMateriasSeleccionadas" class="w-100 pb-3 alumno-scroll-gris">
+                  <!-- materias seleccinadas -->
+                </div>
+              </div>
+              <div style="background-color:lightgrey; width: 3px; height: 80%;"></div>
+              <div class="w-50 h-100 px-5 py-4 d-flex flex-column align-items-center">
+                <p class="w-100 ms-3 fw-semibold" style="font-size: 1.2rem;">Materias Disponibles</p>
+                <div id="modificarMateriasDisponibles" class="w-100 pb-3 alumno-scroll-gris">
+                  <!-- materias disponibles -->
+                </div>
+              </div>
+            </div>
+          </div>
+        </main> 
+      </div>
+      <div class="modal-footer justify-content-center" style="background-color: #f0f0f0;">
+        <button class="btn btn-primary rounded-pill px-4 mx-4" 
+          style="background-color: #84251C; border: none;"
+          data-bs-dismiss="modal">
+          Aceptar
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Modal para configurar materias -->
 <div class="modal fade" id="editModal" tabindex="-1" aria-labelledby="editModalLabel" aria-hidden="true">
   <div class="modal-dialog modal-xl modal-dialog-centered modal-dialog-scrollable">
     <div class="modal-content rounded-5" style="background-color: #f0f0f0; max-width: 95vw;">
       <div class="modal-header justify-content-center">
-        <h5 class="modal-title ivd-text-red" id="editModalLabel"><b>Estás modificando el horario de un alumno</b></h5>
+        <h5 class="modal-title ivd-text-red" id="editModalLabel"><b>Estás configurando las materias de un alumno</b></h5>
       </div>
       <div class="modal-body px-4 materia-scroll">
         <div class="mt-4">
@@ -464,7 +610,7 @@
                   <button class="btn btn-sm p-0 d-flex align-items-center justify-content-center" 
                       style="width: 1.5rem; height: 1.5rem; border-radius: 50%; background-color: #84251c; color: white; border: none;"
                       data-bs-toggle="modal" 
-                      data-bs-target="#viewModal"
+                      data-bs-target="#viewModalIrregular"
                       data-alumno-id="${a.ivd_id}"
                       data-alumno-nombre="${a.nombre} ${a.primer_apellido} ${a.segundo_apellido || ''}">
                     <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-eye-fill" viewBox="0 0 16 16">
@@ -477,7 +623,7 @@
                   <button class="btn btn-sm p-0 d-flex align-items-center justify-content-center" 
                       style="width: 1.5rem; height: 1.5rem; border-radius: 50%; background-color: #84251c; color: white; border: none;"
                       data-bs-toggle="modal" 
-                      data-bs-target="#alertaModal"
+                      data-bs-target="#editModal"
                       data-alumno-id="${a.ivd_id}"
                       data-alumno-nombre="${a.nombre} ${a.primer_apellido} ${a.segundo_apellido || ''}">
                     <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-pencil-fill" viewBox="0 0 16 16">
@@ -497,211 +643,219 @@
 
 
   // Para modal de consultar horario
-  document.getElementById('viewModal').addEventListener('shown.bs.modal', (event) => {
-    const button = event.relatedTarget;
-    const alumno_id = button.getAttribute('data-alumno-id');
-    const alumno_nombre = button.getAttribute('data-alumno-nombre');
-    console.log(alumno_id);
-    document.getElementById('viewModalAlumnoNombre').innerHTML = alumno_nombre;
-    fetch(`/coordinador/alumnos/consultar-horario/${alumno_id}`, {
-      method: 'GET',
-    }).then((res) => {
-      return res.json();
-    }).then((data) => {
-      console.log(data.materias_resultado);
-      // Tabla de horario
-      const colores = ['bg-primary-subtle', 'bg-success-subtle ','bg-warning-subtle ','bg-danger-subtle','bg-info-subtle','bg-secondary-subtle','bg-light'];
-      const materiasColor = {};
-      let colorIndex = 0;
-      let html_container_tabla = '';
-      let horaPorGrp = {};
-      const bloque_tiempo = data.bloque_tiempo;
-      
-      const horario = { 
-        Lunes: {}, Martes: {}, Miércoles: {}, Jueves: {}, Viernes: {} 
-      };
-      
-      if (typeof data.materias_resultado !== 'undefined' && Array.isArray(data.materias_resultado)) {
-        data.materias_resultado.forEach(materia => {
-          // Asignar color único por materia
-          if (!materiasColor[materia.grupo_id]) {
-            materiasColor[materia.grupo_id] = colores[colorIndex % colores.length];
-            colorIndex++;
-          }
-          horaPorGrp[materia.grupo_id] = {};
-
-          let indexDia = 0;
-          materia.dias.forEach(dia => {
-            horaPorGrp[materia.grupo_id][dia] = [];
-            const diaNombre = dia.charAt(0).toUpperCase() + dia.slice(1).toLowerCase();
-            const bloqueTiempoIds = [];
-            let indexBloque = 0;
-            for (let i = materia.bloque_tiempo_id[indexDia][0]; i <= materia.bloque_tiempo_id[indexDia][materia.bloque_tiempo_id[indexDia].length - 1]; i++) {
-              
-              if (i === materia.bloque_tiempo_id[indexDia][indexBloque]) {
-                bloqueTiempoIds.push(i);
-                indexBloque++;
-              } else {
-                bloqueTiempoIds.push(null);
-              }
+  ['viewModal', 'viewModalIrregular'].forEach(id => {
+    document.getElementById(id).addEventListener('shown.bs.modal', (event) => {
+      const button = event.relatedTarget;
+      const alumno_id = button.getAttribute('data-alumno-id');
+      const alumno_nombre = button.getAttribute('data-alumno-nombre');
+      console.log(alumno_id);
+      id == 'viewModal' ?
+        (document.getElementById('viewModalAlumnoNombre').innerHTML = alumno_nombre) 
+        :
+        (document.getElementById('viewModalAlumnoNombre1').innerHTML = alumno_nombre) 
+      fetch(`/coordinador/alumnos/consultar-horario/${alumno_id}`, {
+        method: 'GET',
+      }).then((res) => {
+        return res.json();
+      }).then((data) => {
+        console.log(data.materias_resultado);
+        // Tabla de horario
+        const colores = ['bg-primary-subtle', 'bg-success-subtle ','bg-warning-subtle ','bg-danger-subtle','bg-info-subtle','bg-secondary-subtle','bg-light'];
+        const materiasColor = {};
+        let colorIndex = 0;
+        let html_container_tabla = '';
+        let horaPorGrp = {};
+        const bloque_tiempo = data.bloque_tiempo;
+        
+        const horario = { 
+          Lunes: {}, Martes: {}, Miércoles: {}, Jueves: {}, Viernes: {} 
+        };
+        
+        if (typeof data.materias_resultado !== 'undefined' && Array.isArray(data.materias_resultado)) {
+          data.materias_resultado.forEach(materia => {
+            // Asignar color único por materia
+            if (!materiasColor[materia.grupo_id]) {
+              materiasColor[materia.grupo_id] = colores[colorIndex % colores.length];
+              colorIndex++;
             }
-            
-            if (horario[diaNombre]) {
-              let inicioBloque = bloqueTiempoIds[0];
-              let rowSpan = 0;
-              for (let bloqueTiempoId of bloqueTiempoIds) {
-                if (bloqueTiempoId === null || bloqueTiempoId === bloqueTiempoIds[bloqueTiempoIds.length - 1]) {
-                  if (rowSpan > 0) {
-                    if (bloqueTiempoId === null) {
-                      rowSpan --;
-                    }
-                    horario[diaNombre][inicioBloque % 24 + 13] = {
-                      grupo_id: materia.grupo_id,
-                      rowspan: rowSpan,
-                      nombre: materia.materia_nombre,
-                      color: materiasColor[materia.grupo_id],
-                      salon: materia.salon_numero,
-                      profesor: `${materia.profesor_nombre} ${materia.profesor_primer_apellido} ${materia.profesor_segundo_apellido}`,
-                      hora: `${bloque_tiempo[inicioBloque][0].slice(0, 5)} - ${bloque_tiempo[inicioBloque + rowSpan][1].slice(0, 5)}`
-                    };
-                    <!-- Bloques intermedios como ocupados -->
-                    for (let b = inicioBloque + 1; b <= inicioBloque + rowSpan; b++) {
-                      horario[diaNombre][b % 24 + 13] = 'ocupar';
-                    }
-                    rowSpan = 0;
-                  }
+            horaPorGrp[materia.grupo_id] = {};
+
+            let indexDia = 0;
+            materia.dias.forEach(dia => {
+              horaPorGrp[materia.grupo_id][dia] = [];
+              const diaNombre = dia.charAt(0).toUpperCase() + dia.slice(1).toLowerCase();
+              const bloqueTiempoIds = [];
+              let indexBloque = 0;
+              for (let i = materia.bloque_tiempo_id[indexDia][0]; i <= materia.bloque_tiempo_id[indexDia][materia.bloque_tiempo_id[indexDia].length - 1]; i++) {
+                
+                if (i === materia.bloque_tiempo_id[indexDia][indexBloque]) {
+                  bloqueTiempoIds.push(i);
+                  indexBloque++;
                 } else {
-                  if (rowSpan === 0) {
-                    inicioBloque = bloqueTiempoId;
-                  }
-                  rowSpan ++;
+                  bloqueTiempoIds.push(null);
                 }
               }
-            }
-            indexDia ++;
-          });
-        });
-      }
-      for (let bloque = 14; bloque < 32; bloque++) {
-        const hora = Math.floor(bloque / 2);
-        const minutos = bloque % 2 === 0 ? '00' : '30';
-        let horaFormato;
-        if (bloque % 2 !== 0) {
-          horaFormato = `${hora}:${minutos} - ${hora + 1}:00`;
-        } else {
-          horaFormato = `${hora}:${minutos} - ${hora}:30`;
-        }
-        html_container_tabla += `
-          <tr style="max-height: 1rem;">
-            <th class="hour-cell text-center align-middle">${horaFormato}</th>`;
-            ['Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes'].forEach(dia => {
-              if (horario[dia][bloque] === 'ocupar') return;
-              if (horario[dia][bloque]) { 
-                const clase = horario[dia][bloque];
-                horaPorGrp[clase.grupo_id][dia].push(clase.hora); 
-                html_container_tabla += `
-                  <td class="text-center align-middle ${clase.color} ${clase.color === 'bg-secondary' ? 'text-white' : 'text-black'}" 
-                      rowspan="${clase.rowspan + 1}"
-                      data-bs-toggle="tooltip" 
-                      data-bs-placement="top"`;
-                      if (clase.salon === 9999) {
-                        html_container_tabla += `
-                          title="${clase.hora} | Salon: No asignado | Prof: ${clase.profesor}">`;
-                      } else {
-                        html_container_tabla += `
-                          title="${clase.hora} | Salon: ${clase.salon} | Prof: ${clase.profesor}">`
+              
+              if (horario[diaNombre]) {
+                let inicioBloque = bloqueTiempoIds[0];
+                let rowSpan = 0;
+                for (let bloqueTiempoId of bloqueTiempoIds) {
+                  if (bloqueTiempoId === null || bloqueTiempoId === bloqueTiempoIds[bloqueTiempoIds.length - 1]) {
+                    if (rowSpan > 0) {
+                      if (bloqueTiempoId === null) {
+                        rowSpan --;
                       }
-                    html_container_tabla += `
-                    ${clase.nombre}
-                  </td>`;
-              } else {
-                html_container_tabla += `
-                  <td class="empty-slot"></td>`;
+                      horario[diaNombre][inicioBloque % 24 + 13] = {
+                        grupo_id: materia.grupo_id,
+                        rowspan: rowSpan,
+                        nombre: materia.materia_nombre,
+                        color: materiasColor[materia.grupo_id],
+                        salon: materia.salon_numero,
+                        profesor: `${materia.profesor_nombre} ${materia.profesor_primer_apellido} ${materia.profesor_segundo_apellido}`,
+                        hora: `${bloque_tiempo[inicioBloque][0].slice(0, 5)} - ${bloque_tiempo[inicioBloque + rowSpan][1].slice(0, 5)}`
+                      };
+                      // Bloques intermedios como ocupados
+                      for (let b = inicioBloque + 1; b <= inicioBloque + rowSpan; b++) {
+                        horario[diaNombre][b % 24 + 13] = 'ocupar';
+                      }
+                      rowSpan = 0;
+                    }
+                  } else {
+                    if (rowSpan === 0) {
+                      inicioBloque = bloqueTiempoId;
+                    }
+                    rowSpan ++;
+                  }
+                }
               }
-            })
-        html_container_tabla += `
-          </tr>`;
-      }
-
-      document.getElementById('viewModalTableBody').innerHTML = html_container_tabla;
-      
-      // Tarjetas de materias
-      let html_container_materias = '';
-      for (let materia_resultado of data.materias_resultado) {
-        html_container_materias += `
-        <div class="bg-white rounded-5 py-2 mb-3 class-card border ivd-border-red" 
-          data-days="${materia_resultado.dias.map(dia => dia.substring(0,2).toUpperCase()).join(',')}"
-          data-horas="${JSON.stringify(horaPorGrp[materia_resultado.grupo_id]).replace(/"/g, '&quot;')}"
-        >
-          <div class="d-flex m-0 align-items-center justify-content-center" style="width: 100%;">
-            <p class="m-0 me-3 hora-card"></p>
-            <p class="m-0" style="color: #84251C;">(${materia_resultado.dias.join(', ')})</p>
-          </div>
-          <div class="d-flex justify-content-center my-3">
-            <div style="border-bottom: 3px solid #84251C; width: 100%;"></div>
-          </div>
-          <p class="fw-semibold text-center">${materia_resultado.materia_nombre}</p>
-          <p class="text-center mb-3">
-            Salón: `;
-            if (materia_resultado.salon_numero === 9999) {
-              html_container_materias += `
-              No asignado |`;
-            } else {
-              html_container_materias += `
-              ${materia_resultado.salon_numero} |`
-            }
-            html_container_materias += ` 
-            ${materia_resultado.profesor_nombre} 
-            ${materia_resultado.profesor_primer_apellido}
-            ${materia_resultado.profesor_segundo_apellido}
-          </p>
-        </div>`;
-      }
-      document.getElementById('classes-container').innerHTML = html_container_materias;
-
-      const dayButtons = document.querySelectorAll('.day-btn');
-      const classCards = document.querySelectorAll('.class-card');  
-
-      function filterClassesByDay(day) {
-          classCards.forEach(card => {
-            const diasCorto = card.getAttribute("data-days")       // ej. "LU,JU"
-                                .split(",");
-            const horasObj  = JSON.parse(card.getAttribute("data-horas"));
-            const idx       = diasCorto.indexOf(day);              // 0 para LU, 1 para JU, etc.
-
-            if (idx === -1) {
-              card.style.display = "none";
-              return;
-            }
-
-            card.style.display = "block";
-            const horasArray = Object.values(horasObj)[idx] || [];
-            card.querySelector(".hora-card").textContent = horasArray.join(", ");
+              indexDia ++;
+            });
           });
-
-        //Hover cuando se selecciona
-        dayButtons.forEach(btn => {
-          if (btn.getAttribute('data-day') === day) {
-            btn.style.backgroundColor = '#84251C';
-            btn.style.color = 'white';
-            btn.style.borderColor = '#84251C';
+        }
+        for (let bloque = 14; bloque < 32; bloque++) {
+          const hora = Math.floor(bloque / 2);
+          const minutos = bloque % 2 === 0 ? '00' : '30';
+          let horaFormato;
+          if (bloque % 2 !== 0) {
+            horaFormato = `${hora}:${minutos} - ${hora + 1}:00`;
           } else {
-            btn.style.backgroundColor = 'white';
-            btn.style.color = 'black';
-            btn.style.borderColor = '#84251C';
+            horaFormato = `${hora}:${minutos} - ${hora}:30`;
           }
+          html_container_tabla += `
+            <tr style="max-height: 1rem;">
+              <th class="hour-cell text-center align-middle">${horaFormato}</th>`;
+              ['Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes'].forEach(dia => {
+                if (horario[dia][bloque] === 'ocupar') return;
+                if (horario[dia][bloque]) { 
+                  const clase = horario[dia][bloque];
+                  horaPorGrp[clase.grupo_id][dia].push(clase.hora); 
+                  html_container_tabla += `
+                    <td class="text-center align-middle ${clase.color} ${clase.color === 'bg-secondary' ? 'text-white' : 'text-black'}" 
+                        rowspan="${clase.rowspan + 1}"
+                        data-bs-toggle="tooltip" 
+                        data-bs-placement="top"`;
+                        if (clase.salon === 9999) {
+                          html_container_tabla += `
+                            title="${clase.hora} | Salon: No asignado | Prof: ${clase.profesor}">`;
+                        } else {
+                          html_container_tabla += `
+                            title="${clase.hora} | Salon: ${clase.salon} | Prof: ${clase.profesor}">`
+                        }
+                      html_container_tabla += `
+                      ${clase.nombre}
+                    </td>`;
+                } else {
+                  html_container_tabla += `
+                    <td class="empty-slot"></td>`;
+                }
+              })
+          html_container_tabla += `
+            </tr>`;
+        }
+
+        id == 'viewModal' ?
+          (document.getElementById('viewModalTableBody').innerHTML = html_container_tabla)
+          :
+          (document.getElementById('viewModalTableBody1').innerHTML = html_container_tabla)
+        
+        // Tarjetas de materias
+        let html_container_materias = '';
+        for (let materia_resultado of data.materias_resultado) {
+          html_container_materias += `
+          <div class="bg-white rounded-5 py-2 mb-3 class-card border ivd-border-red" 
+            data-days="${materia_resultado.dias.map(dia => dia.substring(0,2).toUpperCase()).join(',')}"
+            data-horas="${JSON.stringify(horaPorGrp[materia_resultado.grupo_id]).replace(/"/g, '&quot;')}"
+          >
+            <div class="d-flex m-0 align-items-center justify-content-center" style="width: 100%;">
+              <p class="m-0 me-3 hora-card"></p>
+              <p class="m-0" style="color: #84251C;">(${materia_resultado.dias.join(', ')})</p>
+            </div>
+            <div class="d-flex justify-content-center my-3">
+              <div style="border-bottom: 3px solid #84251C; width: 100%;"></div>
+            </div>
+            <p class="fw-semibold text-center">${materia_resultado.materia_nombre}</p>
+            <p class="text-center mb-3">
+              Salón: `;
+              if (materia_resultado.salon_numero === 9999) {
+                html_container_materias += `
+                No asignado |`;
+              } else {
+                html_container_materias += `
+                ${materia_resultado.salon_numero} |`
+              }
+              html_container_materias += ` 
+              ${materia_resultado.profesor_nombre} 
+              ${materia_resultado.profesor_primer_apellido}
+              ${materia_resultado.profesor_segundo_apellido}
+            </p>
+          </div>`;
+        }
+        document.getElementById('classes-container').innerHTML = html_container_materias;
+
+        const dayButtons = document.querySelectorAll('.day-btn');
+        const classCards = document.querySelectorAll('.class-card');  
+
+        function filterClassesByDay(day) {
+            classCards.forEach(card => {
+              const diasCorto = card.getAttribute("data-days")       // ej. "LU,JU"
+                                  .split(",");
+              const horasObj  = JSON.parse(card.getAttribute("data-horas"));
+              const idx       = diasCorto.indexOf(day);              // 0 para LU, 1 para JU, etc.
+
+              if (idx === -1) {
+                card.style.display = "none";
+                return;
+              }
+
+              card.style.display = "block";
+              const horasArray = Object.values(horasObj)[idx] || [];
+              card.querySelector(".hora-card").textContent = horasArray.join(", ");
+            });
+
+          //Hover cuando se selecciona
+          dayButtons.forEach(btn => {
+            if (btn.getAttribute('data-day') === day) {
+              btn.style.backgroundColor = '#84251C';
+              btn.style.color = 'white';
+              btn.style.borderColor = '#84251C';
+            } else {
+              btn.style.backgroundColor = 'white';
+              btn.style.color = 'black';
+              btn.style.borderColor = '#84251C';
+            }
+          });
+        }
+        dayButtons.forEach(button => {
+          button.addEventListener('click', function() {
+            filterClassesByDay(this.getAttribute('data-day')); });
+          button.addEventListener('mouseover', function() { });
+          button.addEventListener('mouseout', function() { });
         });
-      }
-      dayButtons.forEach(button => {
-        button.addEventListener('click', function() {
-          filterClassesByDay(this.getAttribute('data-day')); });
-        button.addEventListener('mouseover', function() { });
-        button.addEventListener('mouseout', function() { });
+        //Muestra siempre el lunes
+        filterClassesByDay('LU');
+      }).catch((error) => {
+        console.log(error);
       });
-      //Muestra siempre el lunes
-      filterClassesByDay('LU');
-    }).catch((error) => {
-      console.log(error);
     });
   });
   let alumno_id;
@@ -849,12 +1003,887 @@ document.getElementById('alertaModal').addEventListener('show.bs.modal', functio
   newBtnAceptar.setAttribute('data-alumno-id', alumnoId);
   newBtnAceptar.setAttribute('data-alumno-nombre', alumnoNombre);
 });
+  // Para modal viewModalIrregular para pasar los datos
+  const btnModificar = document.getElementById('btnModificar')
+  document.getElementById('viewModalIrregular').addEventListener('shown.bs.modal', event => {
+    const button = event.relatedTarget;
+    const alumno_id = button.getAttribute('data-alumno-id');
+    const alumno_nombre = button.getAttribute('data-alumno-nombre');
 
+    btnModificar.setAttribute('data-alumno-id', alumno_id);
+    btnModificar.setAttribute('data-alumno-nombre', alumno_nombre);
+  });
+  // Para modal de modificar horario
+  document.getElementById('modifyModal').addEventListener('shown.bs.modal', (event) => {
+    function reagregarEventListeners() {
+      document.querySelectorAll(".btn-eliminar-resultado").forEach((button) => {
+          button.addEventListener("click", eliminar);
+      });
+      document.querySelectorAll(".btn-agregar-resultado").forEach((button) => {
+          button.addEventListener("click", agregar);
+      });
+    }
+    const button = event.relatedTarget;
+    const alumno_id = button.getAttribute('data-alumno-id');
+    const alumno_nombre = button.getAttribute('data-alumno-nombre');
+    document.getElementById('modifyModalAlumnoNombre').innerHTML = alumno_nombre;
+    fetch(`/coordinador/alumnos/editar-resultado/${alumno_id}`, {
+      method: 'GET',
+    }).then((res) => {
+      return res.json();
+    }).then((data) => {
+      // Colores de bloques
+      const colores = ['bg-primary-subtle', 'bg-success-subtle ','bg-warning-subtle ','bg-danger-subtle','bg-info-subtle','bg-secondary-subtle','bg-light'];
+      const materiasColor = {};
+      let colorIndex = 0;
+      let html_container_tabla = '';
+      let horaPorGrp = {};
+      const bloque_tiempo = data.bloque_tiempo;
+      const materias_resultado = data.materias_resultado;
 
-  // Para modal de editar horario
+      // Inicializa estructura de horario
+      const horario = { 
+        Lunes: {}, Martes: {}, Miércoles: {}, Jueves: {}, Viernes: {} 
+      };
+      // Procesa las materia de resultado para construir el horario
+      if (typeof materias_resultado !== 'undefined' && Array.isArray(materias_resultado)) {
+        materias_resultado.forEach(materia => {
+          // Asignar color único por materia
+          if (!materiasColor[materia.grupo_id]) {
+            if (materia.obligatorio === true) {
+                materiasColor[materia.grupo_id] = 'bg-secondary';
+            } else {
+              materiasColor[materia.grupo_id] = colores[colorIndex % colores.length];
+              colorIndex++;
+            }
+          }
+          horaPorGrp[materia.grupo_id] = {};
+          // Procesa el dia de la materia
+          let indexDia = 0;
+          materia.dias.forEach(dia => {
+            horaPorGrp[materia.grupo_id][dia] = [];
+            const diaNombre = dia.charAt(0).toUpperCase() + dia.slice(1).toLowerCase();
+            const bloqueTiempoIds = [];
+            let indexBloque = 0;
+            for (let i = materia.bloque_tiempo_id[indexDia][0]; i <= materia.bloque_tiempo_id[indexDia][materia.bloque_tiempo_id[indexDia].length - 1]; i++) {
+              
+              if (i === materia.bloque_tiempo_id[indexDia][indexBloque]) {
+                bloqueTiempoIds.push(i);
+                indexBloque++;
+              } else {
+                bloqueTiempoIds.push(null);
+              }
+            }
+
+            // Si el dia es valido
+            if (horario[diaNombre]) {
+              let inicioBloque = bloqueTiempoIds[0];
+              let rowSpan = 0;
+              for (let bloqueTiempoId of bloqueTiempoIds) {
+                if (bloqueTiempoId === null || bloqueTiempoId === bloqueTiempoIds[bloqueTiempoIds.length - 1]) {
+                  if (rowSpan > 0) {
+                    if (bloqueTiempoId === null) {
+                      rowSpan --;
+                    }
+                    horario[diaNombre][inicioBloque % 24 + 13] = {
+                      grupo_id: materia.grupo_id,
+                      rowspan: rowSpan,
+                      nombre: materia.materia_nombre,
+                      color: materiasColor[materia.grupo_id],
+                      salon: materia.salon_numero,
+                      profesor: `${materia.profesor_nombre} ${materia.profesor_primer_apellido} ${materia.profesor_segundo_apellido}`,
+                      hora: `${bloque_tiempo[inicioBloque][0].slice(0, 5)} - ${bloque_tiempo[inicioBloque + rowSpan][1].slice(0, 5)}`,
+                      seleccionado: materia.seleccionado
+                    };
+                    // Bloques intermedios como ocupados
+                    if (materia.seleccionado === true) {
+                      for (let b = inicioBloque + 1; b <= inicioBloque + rowSpan; b++) {
+                        horario[diaNombre][b % 24 + 13] = 'ocupar';
+                      }
+                    }
+                    rowSpan = 0;
+                  }
+                } else {
+                  if (rowSpan === 0) {
+                    inicioBloque = bloqueTiempoId;
+                  }
+                  rowSpan ++;
+                }
+              }
+            }
+            indexDia ++;
+          });
+        });
+      }
+      
+      // Filas de la tabla
+      for (let bloque = 14; bloque < 32; bloque++) {
+        const hora = Math.floor(bloque / 2);
+        const minutos = bloque % 2 === 0 ? '00' : '30';
+        let horaFormato;
+        if (bloque % 2 !== 0) {
+          horaFormato = `${hora}:${minutos} - ${hora + 1}:00`;
+        } else {
+          horaFormato = `${hora}:${minutos} - ${hora}:30`;
+        }
+        html_container_tabla += `
+        <tr style="max-height: 1rem;">
+          <th class="hour-cell text-center align-middle">${horaFormato}</th>`;
+        ['Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes'].forEach(dia => {
+          if (horario[dia][bloque] === 'ocupar') return;
+          if (horario[dia][bloque]) {
+            horaPorGrp[horario[dia][bloque].grupo_id][dia].push(horario[dia][bloque].hora);
+          }
+          if (horario[dia][bloque] && horario[dia][bloque].seleccionado === true) { 
+            const clase = horario[dia][bloque];
+            html_container_tabla += `
+              <td class="text-center align-middle ${clase.color} ${clase.color === 'bg-secondary' ? 'text-white' : 'text-black'}" 
+                  rowspan="${clase.rowspan + 1}"
+                  data-bs-toggle="tooltip" 
+                  data-bs-placement="top"`;
+            if (clase.salon === 9999) {                
+              html_container_tabla += `
+              title="${clase.hora} | Salon: No asignado | Prof: ${clase.profesor}">`;
+            } else {
+              html_container_tabla += `
+              title="${clase.hora} | Salon: ${clase.salon} | Prof: ${clase.profesor}"
+              `;
+            }
+            html_container_tabla += `
+                ${clase.nombre}
+              </td>
+            `;
+          } else {
+            html_container_tabla += `
+              <td class="empty-slot"></td>`;
+          }
+        })
+      html_container_tabla += `
+        </tr>`;
+      }
+      document.getElementById('modifyModalTablebody').innerHTML = html_container_tabla;
+
+      let html_container_materias_seleccionadas ='';
+      for (let materia_resultado of materias_resultado) {
+        if (materia_resultado.seleccionado === true) {
+          html_container_materias_seleccionadas += `
+          <div class="w-100 d-flex flex-column align-items-center rounded-5 mt-3" style="background-color: white;">
+            <div class="w-100 d-flex my-2">
+              <div class="d-flex flex-column" style="width: 100%;">
+                <div class="d-flex m-0 align-items-center justify-content-center" style="width: 100%; padding-left: 10%;">`;
+                  for (let i = 0; i < materia_resultado.dias.length; i++) {
+                    html_container_materias_seleccionadas += `
+                    <p class="m-0 me-2">
+                      ${Object.values(horaPorGrp[materia_resultado.grupo_id][materia_resultado.dias[i]]).join(", ")}
+                    </p>`;
+                    if (i !== materia_resultado.dias.length - 1) {
+                      html_container_materias_seleccionadas += `
+                      <p class="m-0 me-3 ivd-text-red">
+                        (${materia_resultado.dias[i]})  
+                      </p>`;
+                    } else {
+                      html_container_materias_seleccionadas += `
+                      <p class="m-0 ivd-text-red">
+                        (${materia_resultado.dias[i]})  
+                      </p>`;
+                    }
+                  }
+                html_container_materias_seleccionadas += `
+                </div>
+              </div>
+              <div class="d-flex align-items-center justify-content-end" style="width: 10%;">`;
+                if (materia_resultado.obligatorio === false) {
+                  html_container_materias_seleccionadas += `
+                  <button class="btn-eliminar-resultado btn btn-sm p-0 d-flex align-items-center justify-content-center me-3" 
+                  style="
+                    width: 1.3rem;
+                    height: 1.3rem;
+                    border-radius: 50%;
+                    background-color: #84251c;
+                    color: white;
+                    border: none;
+                  "
+                  data-grupo-id="${materia_resultado.grupo_id}"
+                  data-horas="${JSON.stringify(horaPorGrp).replace(/"/g, '&quot;')}"
+                  >
+                    <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" fill="currentColor" class="bi bi-x-lg" viewBox="0 0 16 16">
+                      <path d="M2.146 2.854a.5.5 0 1 1 .708-.708L8 7.293l5.146-5.147a.5.5 0 0 1 .708.708L8.707 8l5.147 5.146a.5.5 0 0 1-.708.708L8 8.707l-5.146 5.147a.5.5 0 0 1-.708-.708L7.293 8z"/>
+                    </svg>
+                  </button>`;
+                }
+              html_container_materias_seleccionadas +=`
+              </div>
+            </div>
+            <div class="ivd-bg-red w-100" style="height: 1px;"></div>
+            <p class="fw-semibold my-3">${materia_resultado.materia_nombre}</p>
+            <p class="mb-3">
+              Salon:`;
+              if (materia_resultado.salon_numero === 9999) {
+                html_container_materias_seleccionadas += `
+                No asignado | `;
+              } else {
+                html_container_materias_seleccionadas += `
+                ${materia_resultado.salon_numero} | `;
+              }
+              html_container_materias_seleccionadas += `
+              ${materia_resultado.profesor_nombre} 
+              ${materia_resultado.profesor_primer_apellido}
+              ${materia_resultado.profesor_segundo_apellido}
+            </p>
+          </div>`;
+        }
+      }
+      document.getElementById('modificarMateriasSeleccionadas').innerHTML = html_container_materias_seleccionadas;
+
+      let html_container_materias_resultados = '';
+      for (let materia_resultado of materias_resultado) {
+        if (materia_resultado.seleccionado === false) {
+          html_container_materias_resultados += `
+          <div class="w-100 d-flex flex-column align-items-center rounded-5 mt-3" style="background-color: white;">
+            <div class="w-100 d-flex my-2">
+              <div class="d-flex m-0 align-items-center justify-content-center" style="width: 100%; padding-left: 10%;">`;
+                for (let i = 0; i < materia_resultado.dias.length; i++) {
+                  html_container_materias_resultados += `
+                  <p class="m-0 me-2">
+                    ${Object.values(horaPorGrp[materia_resultado.grupo_id][materia_resultado.dias[i]]).join(", ")}
+                  </p>`;
+                  if (i !== materia_resultado.dias.length - 1) {
+                    html_container_materias_resultados += `
+                    <p class="m-0 me-3 ivd-text-red">
+                      (${materia_resultado.dias[i]})  
+                    </p>`;
+                  } else {
+                    html_container_materias_resultados += `
+                    <p class="m-0 ivd-text-red">
+                      (${materia_resultado.dias[i]})  
+                    </p>`;
+                  }
+                }
+              html_container_materias_resultados += `
+              </div>
+              <div class="d-flex align-items-center justify-content-end" style="width: 10%;">
+                  <button class="btn-agregar-resultado btn btn-sm p-0 d-flex align-items-center justify-content-center me-3" 
+                  style="
+                      width: 1.3rem;
+                      height: 1.3rem;
+                      border-radius: 50%;
+                      background-color: #84251c;
+                      color: white;
+                      border: none;
+                  "
+                  data-grupo-id="${materia_resultado.grupo_id}"
+                  data-horas="${JSON.stringify(horaPorGrp).replace(/"/g, '&quot;')}"
+                  >
+                      <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-plus" viewBox="0 0 16 16">
+                      <path d="M8 4a.5.5 0 0 1 .5.5v3h3a.5.5 0 0 1 0 1h-3v3a.5.5 0 0 1-1 0v-3h-3a.5.5 0 0 1 0-1h3v-3A.5.5 0 0 1 8 4"/>
+                      </svg>
+                  </button>
+              </div>
+            </div>
+            <div class="ivd-bg-red w-100" style="height: 1px;"></div>
+            <p class="fw-semibold my-3">${materia_resultado.materia_nombre}</p>
+            <p class="mb-3">
+              Salon:`;
+              if (materia_resultado.salon_numero === 9999) {
+                html_container_materias_resultados += `
+                No asignado | `;
+              } else {
+                html_container_materias_resultados += `
+                ${materia_resultado.salon_numero} | `;
+              }
+              html_container_materias_resultados += `
+              ${materia_resultado.profesor_nombre} 
+              ${materia_resultado.profesor_primer_apellido}
+              ${materia_resultado.profesor_segundo_apellido}
+            </p>
+          </div>`;
+        }
+      }
+      document.getElementById('modificarMateriasDisponibles').innerHTML = html_container_materias_resultados;
+      reagregarEventListeners();
+    });
+
+    async function eliminar(event) {
+      const button = event.currentTarget;
+      const grupo_id = button.getAttribute("data-grupo-id");
+      const horasStr = button.getAttribute("data-horas");
+      const horasObj = JSON.parse(horasStr);
+      const escaped = horasStr.replace(/"/g, '&quot;');
+      fetch(`/coordinador/alumnos/editar-resultado/eliminar-resultado-inscripcion`, {
+          method: 'POST',
+          headers: {
+              'Content-Type': 'application/json',
+          }, 
+          body: JSON.stringify({ 
+              grupo_id: grupo_id,
+              alumno_id: alumno_id
+          })
+      }).then((res) => {
+          return res.json();
+      }).then((data) => {
+          // Para las materias seleccionadas
+          let html_container_materias_seleccionadas = ``;
+          for (let materia_resultado of data.materias_resultado) {
+              if (materia_resultado.seleccionado === true) {
+                  html_container_materias_seleccionadas += `
+                      <div class="w-100 d-flex flex-column align-items-center rounded-5 mt-3" style="background-color: white;">
+                          <div class="w-100 d-flex my-2">
+                          <div class="d-flex m-0 align-items-center justify-content-center" style="width: 100%; padding-left: 10%;">`
+                  for (let i = 0; i < materia_resultado.dias.length; i++) { 
+                      html_container_materias_seleccionadas += `
+                              <p class="m-0 me-2">
+                                  ${Object.values(horasObj[materia_resultado.grupo_id][materia_resultado.dias[i]]).join(", ")}
+                              </p>`;
+                      if (i !== materia_resultado.dias.length - 1) {
+                          html_container_materias_seleccionadas += `
+                                  <p class="m-0 me-3 ivd-text-red">
+                                  (${materia_resultado.dias[i]})  
+                                  </p>`;
+                      } else { 
+                          html_container_materias_seleccionadas += `
+                                  <p class="m-0 ivd-text-red">
+                                  (${materia_resultado.dias[i]})  
+                                  </p>`;
+                      }
+                  }
+                  html_container_materias_seleccionadas += `
+                      </div>
+                          <div class="d-flex align-items-center justify-content-end" style="width: 10%;">`
+                  if (materia_resultado.obligatorio === false) {
+                      html_container_materias_seleccionadas += `
+                                  <button class="btn-eliminar-resultado btn btn-sm p-0 d-flex align-items-center justify-content-center me-3" 
+                                  style="
+                                  width: 1.3rem;
+                                  height: 1.3rem;
+                                  border-radius: 50%;
+                                  background-color: #84251c;
+                                  color: white;
+                                  border: none;
+                                  "
+                                  data-grupo-id="${materia_resultado.grupo_id}"
+                                  data-horas="${escaped}"
+                                  >
+                                  <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" fill="currentColor" class="bi bi-x-lg" viewBox="0 0 16 16">
+                                      <path d="M2.146 2.854a.5.5 0 1 1 .708-.708L8 7.293l5.146-5.147a.5.5 0 0 1 .708.708L8.707 8l5.147 5.146a.5.5 0 0 1-.708.708L8 8.707l-5.146 5.147a.5.5 0 0 1-.708-.708L7.293 8z"/>
+                                  </svg>
+                                  </button>`
+                  }
+                  html_container_materias_seleccionadas += `
+                              </div>
+                          </div>
+                          <div class="ivd-bg-red w-100" style="height: 1px;"></div>
+                          <p class="fw-semibold my-3">${materia_resultado.materia_nombre}</p>
+                          <p class="mb-3">
+                          Salon:`;
+                  if (materia_resultado.salon_numero === 9999) {
+                      html_container_materias_seleccionadas += `
+                          No asignado | `;
+                  } else { 
+                      html_container_materias_seleccionadas += `
+                          ${materia_resultado.salon_numero} | `;
+                  }
+                  html_container_materias_seleccionadas += `
+                              ${materia_resultado.profesor_nombre} 
+                              ${materia_resultado.profesor_primer_apellido}
+                              ${materia_resultado.profesor_segundo_apellido}
+                          </p>
+                      </div>`
+              }
+          } 
+          document.getElementById('modificarMateriasSeleccionadas').innerHTML = html_container_materias_seleccionadas;
+          console.log(html_container_materias_seleccionadas);
+
+          // Para las materias disponibles
+          let html_container_materias_disponibles = ``;
+          for (let materia_resultado of data.materias_resultado) { 
+              if (materia_resultado.seleccionado === false) {
+                  html_container_materias_disponibles += `
+                  <div class="w-100 d-flex flex-column align-items-center rounded-5 mt-3" style="background-color: white;">
+                      <div class="w-100 d-flex my-2">
+                          <div class="d-flex m-0 align-items-center justify-content-center" style="width: 100%; padding-left: 10%;">`
+                  for (let i = 0; i < materia_resultado.dias.length; i++) { 
+                      html_container_materias_disponibles += `
+                              <p class="m-0 me-2">
+                                  ${Object.values(horasObj[materia_resultado.grupo_id][materia_resultado.dias[i]]).join(", ")}
+                              </p>`;
+                      if (i !== materia_resultado.dias.length - 1) {
+                          html_container_materias_disponibles += `
+                                  <p class="m-0 me-3 ivd-text-red">
+                                  (${materia_resultado.dias[i]})  
+                                  </p>`;
+                      } else { 
+                          html_container_materias_disponibles += `
+                                  <p class="m-0 ivd-text-red">
+                                  (${materia_resultado.dias[i]})  
+                                  </p>`;
+                      }
+                  }
+                  html_container_materias_disponibles += `
+                  </div>
+                      <div class="d-flex align-items-center justify-content-end" style="width: 10%;">
+                          <button class="btn-agregar-resultado btn btn-sm p-0 d-flex align-items-center justify-content-center me-3" 
+                          style="
+                              width: 1.3rem;
+                              height: 1.3rem;
+                              border-radius: 50%;
+                              background-color: #84251c;
+                              color: white;
+                              border: none;
+                          "
+                          data-grupo-id="${materia_resultado.grupo_id}"
+                          data-horas="${escaped}"
+                          >
+                              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-plus" viewBox="0 0 16 16">
+                              <path d="M8 4a.5.5 0 0 1 .5.5v3h3a.5.5 0 0 1 0 1h-3v3a.5.5 0 0 1-1 0v-3h-3a.5.5 0 0 1 0-1h3v-3A.5.5 0 0 1 8 4"/>
+                              </svg>
+                          </button>
+                      </div>
+                  </div>
+                  <div class="ivd-bg-red w-100" style="height: 1px;"></div>
+                  <p class="fw-semibold my-3">${materia_resultado.materia_nombre}</p>
+                  <p class="mb-3">
+                          Salon:`;
+                  if (materia_resultado.salon_numero === 9999) {
+                      html_container_materias_disponibles += `
+                          No asignado | `;
+                  } else { 
+                      html_container_materias_disponibles += `
+                          ${materia_resultado.salon_numero} | `;
+                  }
+                  html_container_materias_disponibles += `
+                      ${materia_resultado.profesor_nombre} 
+                      ${materia_resultado.profesor_primer_apellido}
+                      ${materia_resultado.profesor_segundo_apellido}
+                  </p>
+                  </div>`;
+              }
+          }
+          document.getElementById('modificarMateriasDisponibles').innerHTML = html_container_materias_disponibles;
+          // Recargar la tabla del horario
+          let html_container_tabla = ``;
+          const colores = ['bg-primary-subtle', 'bg-success-subtle ','bg-warning-subtle ','bg-danger-subtle','bg-info-subtle'];
+          const materiasColor = {};
+          let colorIndex = 0;
+          const bloque_tiempo = data.bloque_tiempo
+          const horario = { 
+            Lunes: {}, Martes: {}, Miércoles: {}, Jueves: {}, Viernes: {} 
+          };
+          
+          if (typeof data.materias_resultado !== 'undefined' && Array.isArray(data.materias_resultado)) {
+              data.materias_resultado.forEach(materia => {
+              // Asignar color único por materia
+              if (!materiasColor[materia.grupo_id]) {
+                  if (materia.obligatorio === true) {
+                    materiasColor[materia.grupo_id] = 'bg-secondary';
+                  } else {
+                    materiasColor[materia.grupo_id] = colores[colorIndex % colores.length];
+                    colorIndex++;
+                  }
+              }
+              
+              let indexDia = 0;
+              materia.dias.forEach(dia => {
+                const diaNombre = dia.charAt(0).toUpperCase() + dia.slice(1).toLowerCase();
+                const bloqueTiempoIds = [];
+                let indexBloque = 0;
+                for (let i = materia.bloque_tiempo_id[indexDia][0]; i <= materia.bloque_tiempo_id[indexDia][materia.bloque_tiempo_id[indexDia].length - 1]; i++) {
+                  
+                  if (i === materia.bloque_tiempo_id[indexDia][indexBloque]) {
+                    bloqueTiempoIds.push(i);
+                    indexBloque++;
+                  } else {
+                    bloqueTiempoIds.push(null);
+                  }
+                }
+                
+                if (horario[diaNombre]) {
+                  let inicioBloque = bloqueTiempoIds[0];
+                  let rowSpan = 0;
+                  for (let bloqueTiempoId of bloqueTiempoIds) {
+                    if (bloqueTiempoId === null || bloqueTiempoId === bloqueTiempoIds[bloqueTiempoIds.length - 1]) {
+                      if (rowSpan > 0) {
+                        if (bloqueTiempoId === null) {
+                          rowSpan --;
+                        }
+                        horario[diaNombre][inicioBloque % 24 + 13] = {
+                          grupo_id: materia.grupo_id,
+                          rowspan: rowSpan,
+                          nombre: materia.materia_nombre,
+                          color: materiasColor[materia.grupo_id],
+                          salon: materia.salon_numero,
+                          profesor: `${materia.profesor_nombre} ${materia.profesor_primer_apellido} ${materia.profesor_segundo_apellido}`,
+                          hora: `${bloque_tiempo[inicioBloque][0].slice(0, 5)} - ${bloque_tiempo[inicioBloque + rowSpan][1].slice(0, 5)}`,
+                          seleccionado: materia.seleccionado
+                        };
+                        if (materia.seleccionado === true) {
+                          for (let b = inicioBloque + 1; b <= inicioBloque + rowSpan; b++) {
+                              horario[diaNombre][b % 24 + 13] = 'ocupar';
+                          }
+                        }
+                        rowSpan = 0;
+                      }
+                    } else {
+                      if (rowSpan === 0) {
+                        inicioBloque = bloqueTiempoId;
+                      }
+                      rowSpan ++;
+                    }
+                  }
+                }
+                indexDia ++;
+              });
+            });
+          }
+
+          for (let bloque = 14; bloque < 32; bloque++) {
+              const hora = Math.floor(bloque / 2);
+              const minutos = bloque % 2 === 0 ? '00' : '30';
+              let horaFormato;
+              if (bloque % 2 !== 0) {
+                  horaFormato = `${hora}:${minutos} - ${hora + 1}:00`;
+              } else {
+                  horaFormato = `${hora}:${minutos} - ${hora}:30`;
+              }
+            
+              html_container_tabla += `
+                  <tr style="max-height: 1rem;">
+                      <th class="hour-cell text-center align-middle">${horaFormato}</th>`;
+
+              ['Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes'].forEach(dia => {
+                  if (horario[dia][bloque] === 'ocupar') return;
+                  if (horario[dia][bloque] && horario[dia][bloque].seleccionado === true) {
+                      const clase = horario[dia][bloque];
+                      html_container_tabla += `
+                          <td class="text-black text-center align-middle ${clase.color} p-0" 
+                              rowspan="${clase.rowspan + 1}"
+                              data-bs-toggle="tooltip" 
+                              data-bs-placement="top" `
+                              if (clase.salon === 9999) {
+                                  html_container_tabla += `
+                                      title="${clase.hora} | Salon: No asignado | Prof: ${clase.profesor}"`;
+                              } else {
+                                  html_container_tabla += `
+                                      title="${clase.hora} | Salon: ${clase.salon} | Prof: ${clase.profesor}"`;
+                              }
+                              html_container_tabla += `
+                              style="height: 2rem">
+                          ${clase.nombre}
+                          </td>`;
+
+                  } else {
+                      html_container_tabla +=`
+                          <td class="empty-slot p-0" style="height: 2rem"></td>`;
+                  }
+              })
+              html_container_tabla += `
+                  </tr>`;
+          }
+          document.getElementById('modifyModalTablebody').innerHTML = html_container_tabla;
+          // Reagregar los evenlisteners para que funcionen los botones
+          reagregarEventListeners();
+      }).catch((error) => {
+          console.log(error);
+      });
+    }
+
+    async function agregar(event) {
+      const button = event.currentTarget;
+      const grupo_id = button.getAttribute("data-grupo-id");
+      const horasStr = button.getAttribute("data-horas");
+      const horasObj = JSON.parse(horasStr);
+      const escaped = horasStr.replace(/"/g, '&quot;');
+      fetch(`/coordinador/alumnos/editar-resultado/agregar-resultado-inscripcion`, {
+          method: 'POST',
+          headers: {
+              'Content-Type': 'application/json',
+          }, 
+          body: JSON.stringify({ 
+              grupo_id: grupo_id,
+              alumno_id: alumno_id
+          })
+      }).then((res) => {
+          return res.json();
+      }).then((data) => {
+          // Para las materias seleccionadas
+          let html_container_materias_seleccionadas = ``;
+          for (let materia_resultado of data.materias_resultado) {
+              if (materia_resultado.seleccionado === true) {
+                  html_container_materias_seleccionadas += `
+                      <div class="w-100 d-flex flex-column align-items-center rounded-5 mt-3" style="background-color: white;">
+                          <div class="w-100 d-flex my-2">
+                          <div class="d-flex m-0 align-items-center justify-content-center" style="width: 100%; padding-left: 10%;">`
+                  for (let i = 0; i < materia_resultado.dias.length; i++) { 
+                      html_container_materias_seleccionadas += `
+                              <p class="m-0 me-2">
+                                  ${Object.values(horasObj[materia_resultado.grupo_id][materia_resultado.dias[i]]).join(", ")}
+                              </p>`;
+                      if (i !== materia_resultado.dias.length - 1) {
+                          html_container_materias_seleccionadas += `
+                                  <p class="m-0 me-3 ivd-text-red">
+                                  (${materia_resultado.dias[i]})  
+                                  </p>`;
+                      } else { 
+                          html_container_materias_seleccionadas += `
+                                  <p class="m-0 ivd-text-red">
+                                  (${materia_resultado.dias[i]})  
+                                  </p>`;
+                      }
+                  }
+                  html_container_materias_seleccionadas += `
+                      </div>
+                          <div class="d-flex align-items-center justify-content-end" style="width: 10%;">`
+                  if (materia_resultado.obligatorio === false) {
+                      html_container_materias_seleccionadas += `
+                                  <button class="btn-eliminar-resultado btn btn-sm p-0 d-flex align-items-center justify-content-center me-3" 
+                                  style="
+                                  width: 1.3rem;
+                                  height: 1.3rem;
+                                  border-radius: 50%;
+                                  background-color: #84251c;
+                                  color: white;
+                                  border: none;
+                                  "
+                                  data-grupo-id="${materia_resultado.grupo_id}"
+                                  data-horas="${escaped}"
+                                  >
+                                  <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" fill="currentColor" class="bi bi-x-lg" viewBox="0 0 16 16">
+                                      <path d="M2.146 2.854a.5.5 0 1 1 .708-.708L8 7.293l5.146-5.147a.5.5 0 0 1 .708.708L8.707 8l5.147 5.146a.5.5 0 0 1-.708.708L8 8.707l-5.146 5.147a.5.5 0 0 1-.708-.708L7.293 8z"/>
+                                  </svg>
+                                  </button>`
+                  }
+                  html_container_materias_seleccionadas += `
+                              </div>
+                          </div>
+                          <div class="ivd-bg-red w-100" style="height: 1px;"></div>
+                          <p class="fw-semibold my-3">${materia_resultado.materia_nombre}</p>
+                          <p class="mb-3">
+                          Salon:`;
+                  if (materia_resultado.salon_numero === 9999) {
+                      html_container_materias_seleccionadas += `
+                          No asignado | `;
+                  } else { 
+                      html_container_materias_seleccionadas += `
+                          ${materia_resultado.salon_numero} | `;
+                  }
+                  html_container_materias_seleccionadas += `
+                              ${materia_resultado.profesor_nombre} 
+                              ${materia_resultado.profesor_primer_apellido}
+                              ${materia_resultado.profesor_segundo_apellido}
+                          </p>
+                      </div>`
+              }
+          } 
+          document.getElementById('modificarMateriasSeleccionadas').innerHTML = html_container_materias_seleccionadas;
+
+          // Para las materias disponibles
+          let html_container_materias_disponibles = ``;
+          for (let materia_resultado of data.materias_resultado) { 
+              if (materia_resultado.seleccionado === false) {
+                  html_container_materias_disponibles += `
+                  <div class="w-100 d-flex flex-column align-items-center rounded-5 mt-3" style="background-color: white;">
+                      <div class="w-100 d-flex my-2">
+                          <div class="d-flex m-0 align-items-center justify-content-center" style="width: 100%; padding-left: 10%;">`
+                  for (let i = 0; i < materia_resultado.dias.length; i++) { 
+                      html_container_materias_disponibles += `
+                              <p class="m-0 me-2">
+                                  ${Object.values(horasObj[materia_resultado.grupo_id][materia_resultado.dias[i]]).join(", ")}
+                              </p>`;
+                      if (i !== materia_resultado.dias.length - 1) {
+                          html_container_materias_disponibles += `
+                                  <p class="m-0 me-3 ivd-text-red">
+                                  (${materia_resultado.dias[i]})  
+                                  </p>`;
+                      } else { 
+                          html_container_materias_disponibles += `
+                                  <p class="m-0 ivd-text-red">
+                                  (${materia_resultado.dias[i]})  
+                                  </p>`;
+                      }
+                  }
+                  html_container_materias_disponibles += `
+                  </div>
+                      <div class="d-flex align-items-center justify-content-end" style="width: 10%;">
+                          <button class="btn-agregar-resultado btn btn-sm p-0 d-flex align-items-center justify-content-center me-3" 
+                          style="
+                              width: 1.3rem;
+                              height: 1.3rem;
+                              border-radius: 50%;
+                              background-color: #84251c;
+                              color: white;
+                              border: none;
+                          "
+                          data-grupo-id="${materia_resultado.grupo_id}"
+                          data-horas="${escaped}"
+                          >
+                              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-plus" viewBox="0 0 16 16">
+                              <path d="M8 4a.5.5 0 0 1 .5.5v3h3a.5.5 0 0 1 0 1h-3v3a.5.5 0 0 1-1 0v-3h-3a.5.5 0 0 1 0-1h3v-3A.5.5 0 0 1 8 4"/>
+                              </svg>
+                          </button>
+                      </div>
+                  </div>
+                  <div class="ivd-bg-red w-100" style="height: 1px;"></div>
+                  <p class="fw-semibold my-3">${materia_resultado.materia_nombre}</p>
+                  <p class="mb-3">
+                          Salon:`;
+                  if (materia_resultado.salon_numero === 9999) {
+                      html_container_materias_disponibles += `
+                          No asignado | `;
+                  } else { 
+                      html_container_materias_disponibles += `
+                          ${materia_resultado.salon_numero} | `;
+                  }
+                  html_container_materias_disponibles += `
+                      ${materia_resultado.profesor_nombre} 
+                      ${materia_resultado.profesor_primer_apellido}
+                      ${materia_resultado.profesor_segundo_apellido}
+                  </p>
+                  </div>`;
+              }
+          }
+          document.getElementById('modificarMateriasDisponibles').innerHTML = html_container_materias_disponibles;
+          // Recargar la tabla del horario
+          let html_container_tabla = ``;
+          const colores = ['bg-primary-subtle', 'bg-success-subtle ','bg-warning-subtle ','bg-danger-subtle','bg-info-subtle'];
+          const materiasColor = {};
+          let colorIndex = 0;
+          const bloque_tiempo = data.bloque_tiempo
+          const horario = { 
+            Lunes: {}, Martes: {}, Miércoles: {}, Jueves: {}, Viernes: {} 
+          };
+          
+          if (typeof data.materias_resultado !== 'undefined' && Array.isArray(data.materias_resultado)) {
+              data.materias_resultado.forEach(materia => {
+              // Asignar color único por materia
+              if (!materiasColor[materia.grupo_id]) {
+                  if (materia.obligatorio === true) {
+                    materiasColor[materia.grupo_id] = 'bg-secondary';
+                  } else {
+                    materiasColor[materia.grupo_id] = colores[colorIndex % colores.length];
+                    colorIndex++;
+                  }
+              }
+              
+              let indexDia = 0;
+              materia.dias.forEach(dia => {
+                const diaNombre = dia.charAt(0).toUpperCase() + dia.slice(1).toLowerCase();
+                const bloqueTiempoIds = [];
+                let indexBloque = 0;
+                for (let i = materia.bloque_tiempo_id[indexDia][0]; i <= materia.bloque_tiempo_id[indexDia][materia.bloque_tiempo_id[indexDia].length - 1]; i++) {
+                  
+                  if (i === materia.bloque_tiempo_id[indexDia][indexBloque]) {
+                    bloqueTiempoIds.push(i);
+                    indexBloque++;
+                  } else {
+                    bloqueTiempoIds.push(null);
+                  }
+                }
+                
+                if (horario[diaNombre]) {
+                  let inicioBloque = bloqueTiempoIds[0];
+                  let rowSpan = 0;
+                  for (let bloqueTiempoId of bloqueTiempoIds) {
+                    if (bloqueTiempoId === null || bloqueTiempoId === bloqueTiempoIds[bloqueTiempoIds.length - 1]) {
+                      if (rowSpan > 0) {
+                        if (bloqueTiempoId === null) {
+                          rowSpan --;
+                        }
+                        horario[diaNombre][inicioBloque % 24 + 13] = {
+                          grupo_id: materia.grupo_id,
+                          rowspan: rowSpan,
+                          nombre: materia.materia_nombre,
+                          color: materiasColor[materia.grupo_id],
+                          salon: materia.salon_numero,
+                          profesor: `${materia.profesor_nombre} ${materia.profesor_primer_apellido} ${materia.profesor_segundo_apellido}`,
+                          hora: `${bloque_tiempo[inicioBloque][0].slice(0, 5)} - ${bloque_tiempo[inicioBloque + rowSpan][1].slice(0, 5)}`,
+                          seleccionado: materia.seleccionado
+                        };
+                        if (materia.seleccionado === true) {
+                          for (let b = inicioBloque + 1; b <= inicioBloque + rowSpan; b++) {
+                              horario[diaNombre][b % 24 + 13] = 'ocupar';
+                          }
+                        }
+                        rowSpan = 0;
+                      }
+                    } else {
+                      if (rowSpan === 0) {
+                        inicioBloque = bloqueTiempoId;
+                      }
+                      rowSpan ++;
+                    }
+                  }
+                }
+                indexDia ++;
+              });
+            });
+          }
+
+          for (let bloque = 14; bloque < 32; bloque++) {
+              const hora = Math.floor(bloque / 2);
+              const minutos = bloque % 2 === 0 ? '00' : '30';
+              let horaFormato;
+              if (bloque % 2 !== 0) {
+                  horaFormato = `${hora}:${minutos} - ${hora + 1}:00`;
+              } else {
+                  horaFormato = `${hora}:${minutos} - ${hora}:30`;
+              }
+            
+              html_container_tabla += `
+                  <tr style="max-height: 1rem;">
+                      <th class="hour-cell text-center align-middle">${horaFormato}</th>`;
+
+              ['Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes'].forEach(dia => {
+                  if (horario[dia][bloque] === 'ocupar') return;
+                  if (horario[dia][bloque] && horario[dia][bloque].seleccionado === true) {
+                      const clase = horario[dia][bloque];
+                      html_container_tabla += `
+                          <td class="text-black text-center align-middle ${clase.color} p-0" 
+                              rowspan="${clase.rowspan + 1}"
+                              data-bs-toggle="tooltip" 
+                              data-bs-placement="top" `
+                              if (clase.salon === 9999) {
+                                  html_container_tabla += `
+                                      title="${clase.hora} | Salon: No asignado | Prof: ${clase.profesor}"`;
+                              } else {
+                                  html_container_tabla += `
+                                      title="${clase.hora} | Salon: ${clase.salon} | Prof: ${clase.profesor}"`;
+                              }
+                              html_container_tabla += `
+                              style="height: 2rem">
+                          ${clase.nombre}
+                          </td>`;
+
+                  } else {
+                      html_container_tabla +=`
+                          <td class="empty-slot p-0" style="height: 2rem"></td>`;
+                  }
+              })
+              html_container_tabla += `
+                  </tr>`;
+          }
+          document.getElementById('modifyModalTablebody').innerHTML = html_container_tabla;
+          // Reagregar los evenlisteners para que funcionen los botones
+          reagregarEventListeners();
+      }).catch((error) => {
+          console.log(error);
+      });
+    }
+
+    // Cuando se elimina una materia selccionada
+    document.querySelectorAll(".btn-eliminar-resultado").forEach((button) => {
+        button.addEventListener("click", eliminar);
+    });
+
+    // Cuando se agrega una materia disponible
+    document.querySelectorAll(".btn-agregar-resultado").forEach((button) => {
+        button.addEventListener("click", agregar);
+    });
+
+  });
+
+  // Para modal de configurar materias
   document.getElementById('editModal').addEventListener('shown.bs.modal', (event) => {
     const button = event.relatedTarget;
-    alumno_id = button.getAttribute('data-alumno-id');
+    const alumno_id = button.getAttribute('data-alumno-id');
     const alumno_nombre = button.getAttribute('data-alumno-nombre');
     document.getElementById('editModalAlumnoNombre').innerHTML = alumno_nombre;
     fetch(`/coordinador/alumnos/modificar-horario/${alumno_id}`, {
