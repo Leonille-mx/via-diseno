@@ -425,3 +425,8 @@ select.form-select {
 .bg-secondary {
   color: white !important;
 }
+
+.bg-secondary-subtle,
+.bg-dark {
+  color: white !important;
+}
