@@ -67,6 +67,8 @@ module.exports = class Profesor {
 
             // Elimina los profesores que ya no están en la API
             for (const [id] of profesoresMap) {
+                await client.query("DELETE FROM profesor_bloque_tiempo WHERE profesor_id = $1", [id]);
+                await client.query("DELETE FROM profesor_materia WHERE profesor_id = $1", [id]);
                 await client.query("DELETE FROM profesor WHERE ivd_id = $1", [id]);
                 deleted++;
             }
