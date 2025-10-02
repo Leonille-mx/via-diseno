@@ -91,9 +91,10 @@ async function getCiclosEscolares() {
     }
 
     return responseData.map(cycle => ({
+      id: cycle.id,
       code: cycle.code,  // Use actual code field from response
       start_date: new Date(cycle.start_date),
-      end_date: new Date(cycle.end_date)
+      end_date: new Date(cycle.end_date),
     }));
     
   } catch (error) {
