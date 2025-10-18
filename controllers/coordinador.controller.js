@@ -150,7 +150,7 @@ exports.post_sincronizar_administradores = async (req, res, nxt) => {
     try {
         const admins = await getAllAdministrators();
 
-        const adminsApi = admins.data;
+        const adminsApi = admins.data.filter(admin => admin.status === "active");;
 
         const resultadoUsuario = await Usuario.sincronizarUsuariosAdmins(adminsApi);
         const resultadoAdmins = await Coordinador.sincronizarAdministradores(adminsApi);
@@ -355,7 +355,7 @@ exports.post_sincronizar_profesores = async (req, res, nxt) => {
         // Trae materias de la API
         const courses = await getAllProfessors(); 
         // Extrae la 'data' de la JSON respuesta
-        const profesoresApi = courses.data; 
+        const profesoresApi = courses.data.filter(profesor => profesor.status === "active");; 
         // Llama la función sincronizarProfesores() para sincronizar los datos del profesor        
         const resultado = await Profesor.sincronizarProfesores(profesoresApi); 
         // Crea una variable para el mensaje de operación
@@ -664,7 +664,7 @@ exports.post_sincronizar_alumnos = async (req, res, nxt) => {
     try {
         const students = await getAllStudents();
 
-        const studentsApi = students.data;
+        const studentsApi = students.data.filter(student => student.status === "active");
 
         const resultadoUsuario = await Usuario.sincronizarUsuariosAlumnos(studentsApi);
         const resultadoAlumno = await Alumno.sincronizarAlumnos(studentsApi);
