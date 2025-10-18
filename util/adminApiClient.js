@@ -152,6 +152,16 @@ async function getAllAcademyHistory( ivd_id ) {
   return response.data;
 }
 
+async function getAllAcademyHistories() {
+  const token = await getToken();
+  const headers = await getHeaders(token);
+  
+  const response = await axiosAdminClient.get("v1/students/all_academic_histories", {
+    headers,
+  }); 
+  return response.data;
+}
+
 
 async function getExternalCycles() {
   const token = await getToken();
@@ -206,4 +216,4 @@ async function getExternalGroups() {
 }
 
 // Export the functions so they can be used in other files
-module.exports = { getExternalGroups, getExternalCycles, getHeaders, getToken, axiosAdminClient, getAllCourses, getAllProfessors, getAllStudents, getAllAdministrators, getCiclosEscolares, getAllDegree, getAllAcademyHistory, updateStudentStatus };
+module.exports = { getExternalGroups, getExternalCycles, getHeaders, getToken, axiosAdminClient, getAllCourses, getAllProfessors, getAllStudents, getAllAdministrators, getCiclosEscolares, getAllDegree, getAllAcademyHistory, getAllAcademyHistories, updateStudentStatus };

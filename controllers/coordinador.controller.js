@@ -15,7 +15,7 @@ const Solicitud = require('../models/solicitudes-cambio.model.js');
 const ResultadoInscripcion = require('../models/resultado_inscripcion.model.js');
 const BloqueTiempo = require('../models/bloque_tiempo.model.js');
 const Coordinador = require('../models/coordinador.model.js');
-const { axiosAdminClient, getToken, getHeaders, getAllProfessors, getAllCourses, getAllStudents, getAllAdministrators, getCiclosEscolares, getAllDegree, getAllAcademyHistory, getExternalCycles, getExternalGroups } = require('../util/adminApiClient.js');
+const { axiosAdminClient, getToken, getHeaders, getAllProfessors, getAllCourses, getAllStudents, getAllAdministrators, getCiclosEscolares, getAllDegree, getAllAcademyHistory, getAllAcademyHistories, getExternalCycles, getExternalGroups } = require('../util/adminApiClient.js');
 
 
 exports.get_dashboard = async (req, res) => {
@@ -671,11 +671,14 @@ exports.post_sincronizar_alumnos = async (req, res, nxt) => {
 
         const alumnos_sin_historial = [];
 
+        const historial = await getAllAcademyHistories();
+        const historialApi = historial.data;
+
         for (const student of studentsApi) {
             try {
-                const historial = await getAllAcademyHistory(student.ivd_id);
-                const historialApi = historial.data;
-                await Historial_Academico.sincronizarHistorialAcademico(student.ivd_id, historialApi);
+                const alumno = historialApi.find(u => u.ivd_id === student.ivd_id);
+                const historialAlumno = alumno.academic_history
+                await Historial_Academico.sincronizarHistorialAcademico(student.ivd_id, historialAlumno);
             } catch (error) {
                 alumnos_sin_historial.push(student.ivd_id);
                 continue;
