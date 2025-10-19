@@ -52,10 +52,10 @@ module.exports = class Usuario {
 
             for (const [id, userDB] of usersMap) {
                 if (userDB.role_id === 2) {
-                  await client.query(
-                    'DELETE FROM usuario WHERE ivd_id = $1 AND role_id = 2',
-                    [id]
-                  );
+                  await client.query('DELETE FROM resultado_inscripcion WHERE alumno_id = $1', [id]);
+                  await client.query('DELETE FROM historial_academico WHERE ivd_id = $1', [id]);
+                  await client.query('DELETE FROM alumno WHERE ivd_id = $1', [id]);
+                  await client.query('DELETE FROM usuario WHERE ivd_id = $1 AND role_id = 2', [id]);
                   deleted++;
                 }
             }
@@ -111,10 +111,7 @@ module.exports = class Usuario {
 
             for (const [id, userDB] of usersMap) {
                 if (userDB.role_id === 1 && userDB.ivd_id != 1037) {
-                  await client.query(
-                    'DELETE FROM usuario WHERE ivd_id = $1 AND role_id = 1',
-                    [id]
-                  );
+                  await client.query('DELETE FROM usuario WHERE ivd_id = $1 AND role_id = 1', [id]);
                   deleted++;
                 }
             }

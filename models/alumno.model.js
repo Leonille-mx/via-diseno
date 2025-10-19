@@ -51,7 +51,7 @@ module.exports = class Alumno {
                 studentsMap.delete(sA.ivd_id);
             }
             for (const [id] of studentsMap) {
-                await client.query('DELETE FROM alumno WHERE ivd_id = $1' [id]);
+                await client.query('DELETE FROM alumno WHERE ivd_id = $1', [id]);
                 deleted++;
             }
             return { inserted, updated, deleted };
