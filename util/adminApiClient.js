@@ -215,5 +215,25 @@ async function getExternalGroups() {
   }
 }
 
+async function retry(fn, retries = 3, delay = 2000) {
+  for (let i = 0; i < retries; i++) {
+    try {
+      return await fn();
+    } catch (err) {
+      const isTimeout =
+        err.code === 'ETIMEDOUT' ||
+        err.code === 'ECONNABORTED' ||
+        err.message?.includes('timeout');
+
+      if (!isTimeout) throw err; // otros errores no se reintentan
+
+      if (i === retries - 1) throw err;
+      console.warn(`Timeout detectado, reintentando en ${delay / 1000}s...`);
+      await new Promise(res => setTimeout(res, delay));
+      delay *= 2;
+    }
+  }
+}
+
 // Export the functions so they can be used in other files
-module.exports = { getExternalGroups, getExternalCycles, getHeaders, getToken, axiosAdminClient, getAllCourses, getAllProfessors, getAllStudents, getAllAdministrators, getCiclosEscolares, getAllDegree, getAllAcademyHistory, getAllAcademyHistories, updateStudentStatus };
+module.exports = { getExternalGroups, getExternalCycles, getHeaders, getToken, axiosAdminClient, getAllCourses, getAllProfessors, getAllStudents, getAllAdministrators, getCiclosEscolares, getAllDegree, getAllAcademyHistory, getAllAcademyHistories, updateStudentStatus, retry };

@@ -7,7 +7,7 @@
       <h1 class="ms-3 mt-2">Alumnos</h1>
       <div style="border-bottom: 3px solid #84251C; width: 13rem; margin-top: -10px;"></div>
     </div>
-    <form action="/coordinador/alumnos/sincronizar" method="POST">
+    <form id="syncForm" action="/coordinador/alumnos/sincronizar" method="POST">
       <button type="submit" class="btn btn-primary d-flex align-items-center gap-2 rounded-pill px-3 py-2 me-5 mt-3" 
       style="background-color: #84251C; border: none;">
         <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-arrow-clockwise" viewBox="0 0 16 16">
@@ -510,6 +510,16 @@
           Aceptar
         </button>
       </div>
+    </div>
+  </div>
+</div>
+
+<!-- Modal de carga -->
+<div class="modal fade" id="loadingModal" tabindex="-1" aria-hidden="true" data-bs-backdrop="static" data-bs-keyboard="false">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content text-center p-4 rounded-5" style="background-color: #f0f0f0;">
+      <div class="spinner-border text-danger mb-3" role="status" style="width: 3rem; height: 3rem;"></div>
+      <h5 class="mb-0">Sincronizando alumnos...</h5>
     </div>
   </div>
 </div>
@@ -3375,6 +3385,20 @@ document.getElementById('alertaModal').addEventListener('show.bs.modal', functio
       }
     });
   });
+
+  document.getElementById('syncForm').addEventListener('submit', function(e) {
+    e.preventDefault(); // prevenimos envío inmediato
+    const form = this;
+    const modalEl = document.getElementById('loadingModal');
+    const loaderModal = new bootstrap.Modal(modalEl, { backdrop: 'static', keyboard: false });
+
+    loaderModal.show();
+
+    // Permitimos que el modal se renderice en el próximo frame, luego enviamos el form
+    requestAnimationFrame(() => {
+      form.submit(); // la navegación ocurre y el modal ya está visible
+    });
+});
 </script>
 
 </body>

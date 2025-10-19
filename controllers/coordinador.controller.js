@@ -15,7 +15,7 @@ const Solicitud = require('../models/solicitudes-cambio.model.js');
 const ResultadoInscripcion = require('../models/resultado_inscripcion.model.js');
 const BloqueTiempo = require('../models/bloque_tiempo.model.js');
 const Coordinador = require('../models/coordinador.model.js');
-const { axiosAdminClient, getToken, getHeaders, getAllProfessors, getAllCourses, getAllStudents, getAllAdministrators, getCiclosEscolares, getAllDegree, getAllAcademyHistory, getAllAcademyHistories, getExternalCycles, getExternalGroups } = require('../util/adminApiClient.js');
+const { axiosAdminClient, getToken, getHeaders, getAllProfessors, getAllCourses, getAllStudents, getAllAdministrators, getCiclosEscolares, getAllDegree, getAllAcademyHistory, getAllAcademyHistories, getExternalCycles, getExternalGroups, retry } = require('../util/adminApiClient.js');
 
 
 exports.get_dashboard = async (req, res) => {
@@ -662,7 +662,7 @@ exports.get_alumnos_carrera = async (req, res, next) => {
 
 exports.post_sincronizar_alumnos = async (req, res, nxt) => {
     try {
-        const students = await getAllStudents();
+        const students = await retry(getAllStudents, 3, 2000);
 
         const studentsApi = students.data.filter(student => student.status === "active");
 
