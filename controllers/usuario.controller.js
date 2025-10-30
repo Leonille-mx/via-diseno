@@ -98,7 +98,7 @@ exports.enviarCorreoContrasena = async (req, res) => {
     dotenv.config();
 
     const link = `${process.env.BASE_URL}/usuario/recuperar/${token}`;
-    sgMail.setApiKey(process.env.BASE_URL);
+    sgMail.setApiKey(process.env.SENDGRID_API_KEY);
 
     // const transporter = nodemailer.createTransport({
     //     host: 'smtp.sendgrid.net',
