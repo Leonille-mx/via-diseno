@@ -112,7 +112,7 @@ exports.enviarCorreoContrasena = async (req, res) => {
 
     const msg = {
         to: usuario.correo_institucional,
-        from: '"IVD Inscripciones" <avisos@inscripciones.ivd.edu.mx>',
+        from: 'IVD Inscripciones <avisos@inscripciones.ivd.edu.mx>',
         subject: 'Registrar nueva contraseña - IVD Inscripciones',
         html: `
             <!DOCTYPE html>
