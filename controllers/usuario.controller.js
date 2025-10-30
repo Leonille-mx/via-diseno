@@ -152,7 +152,10 @@ exports.enviarCorreoContrasena = async (req, res) => {
                 </table>
             </body>
             </html>
-        `
+        `,
+        trackingSettings: {
+            clickTracking: { enable: false, enableText: false }
+        }
     });
 
     res.render('recuperar', { mensaje: 'Se envió un enlace a tu correo institucional.' });
